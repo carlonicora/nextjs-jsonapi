@@ -49,6 +49,11 @@
       "types": "./dist/shadcnui/index.d.ts",
       "import": "./dist/shadcnui/index.mjs",
       "require": "./dist/shadcnui/index.js"
+    },
+    "./hooks": {
+      "types": "./dist/hooks/index.d.ts",
+      "import": "./dist/hooks/index.mjs",
+      "require": "./dist/hooks/index.js"
     }
   },
   "scripts": {
@@ -64,12 +69,16 @@
     "README.md"
   ],
   "peerDependencies": {
+    "@tanstack/react-table": ">=8.0.0",
     "next": ">=14.0.0",
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0",
     "react-hook-form": ">=7.0.0"
   },
   "peerDependenciesMeta": {
+    "@tanstack/react-table": {
+      "optional": true
+    },
     "react-hook-form": {
       "optional": true
     }
@@ -117,6 +126,7 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
+    "@tanstack/react-table": "^8.21.3",
     "@eslint/eslintrc": "^3.3.3",
     "@eslint/js": "^9.39.1",
     "@types/node": "^22.0.0",

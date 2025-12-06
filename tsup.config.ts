@@ -11,6 +11,7 @@ export default defineConfig([
       "permissions/index": "src/permissions/index.ts",
       "utils/index": "src/utils/index.ts",
       "shadcnui/index": "src/shadcnui/index.ts",
+      "hooks/index": "src/hooks/index.ts",
     },
     format: ["cjs", "esm"],
     dts: true,
@@ -18,6 +19,7 @@ export default defineConfig([
     sourcemap: true,
     clean: true,
     external: [
+      "@tanstack/react-table",
       "react",
       "react-dom",
       "next",
