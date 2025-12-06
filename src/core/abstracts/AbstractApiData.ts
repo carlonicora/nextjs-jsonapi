@@ -44,13 +44,13 @@ export abstract class AbstractApiData implements ApiDataInterface {
     return this._jsonApi;
   }
 
-  ingestJsonApi(data: JsonApiHydratedDataInterface): void {}
+  ingestJsonApi(_data: JsonApiHydratedDataInterface): void {}
 
-  generateApiUrl(params?: any): string {
+  generateApiUrl(_params?: any): string {
     throw new Error("Method not implemented.");
   }
 
-  createJsonApi(data?: any): any {
+  createJsonApi(_data?: any): any {
     throw new Error("Method not implemented.");
   }
 

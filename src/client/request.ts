@@ -84,10 +84,10 @@ export async function directFetch(params: DirectFetchParams): Promise<ApiData> {
     response.statusText = apiResponse.statusText;
     try {
       response.data = await apiResponse.json();
-    } catch (error) {
+    } catch {
       response.data = undefined;
     }
-  } catch (error) {
+  } catch {
     response.ok = false;
     response.status = 500;
     response.data = undefined;

@@ -1,5 +1,4 @@
 import { ApiData } from "../core/interfaces/ApiData";
-import { ApiDataInterface } from "../core/interfaces/ApiDataInterface";
 import { ApiRequestDataTypeInterface } from "../core/interfaces/ApiRequestDataTypeInterface";
 import { ApiResponseInterface } from "../core/interfaces/ApiResponseInterface";
 import { JsonApiDataFactory } from "../core/factories/JsonApiDataFactory";

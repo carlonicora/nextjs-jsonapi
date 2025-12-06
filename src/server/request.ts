@@ -100,10 +100,10 @@ export async function serverRequest(params: ServerRequestParams): Promise<ApiDat
     response.statusText = apiResponse.statusText;
     try {
       response.data = await apiResponse.json();
-    } catch (error) {
+    } catch {
       response.data = undefined;
     }
-  } catch (error) {
+  } catch {
     response.ok = false;
     response.status = 500;
     response.data = undefined;
