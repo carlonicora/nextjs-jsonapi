@@ -77,9 +77,7 @@ export class EndpointCreator {
   generate(): string {
     let additionalParams = "";
     if (this._endpoint.additionalParams) {
-      additionalParams = this._endpoint.additionalParams
-        .map((param) => `${param.key}=${param.value}`)
-        .join("&");
+      additionalParams = this._endpoint.additionalParams.map((param) => `${param.key}=${param.value}`).join("&");
     }
 
     let response = `${this._endpoint.endpoint.name}`;

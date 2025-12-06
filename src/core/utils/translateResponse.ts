@@ -89,14 +89,12 @@ export async function translateResponse<T extends ApiDataInterface>(params: {
 
       if (params.apiResponse.data.links.next && params.paginationHandler) {
         response.next = params.apiResponse.data.links.next;
-        response.nextPage = async () =>
-          params.paginationHandler!(params.apiResponse.data.links.next);
+        response.nextPage = async () => params.paginationHandler!(params.apiResponse.data.links.next);
       }
 
       if (params.apiResponse.data.links.prev && params.paginationHandler) {
         response.prev = params.apiResponse.data.links.prev;
-        response.prevPage = async () =>
-          params.paginationHandler!(params.apiResponse.data.links.prev);
+        response.prevPage = async () => params.paginationHandler!(params.apiResponse.data.links.prev);
       }
     }
 

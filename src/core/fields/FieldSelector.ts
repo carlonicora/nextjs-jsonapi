@@ -7,10 +7,7 @@ export type FieldSelector<T> = {
   fields: ReadonlyArray<GetterKeys<T>>;
 };
 
-export function createJsonApiInclusion<T>(
-  dataType: string,
-  fields: ReadonlyArray<GetterKeys<T>>,
-): FieldSelector<T> {
+export function createJsonApiInclusion<T>(dataType: string, fields: ReadonlyArray<GetterKeys<T>>): FieldSelector<T> {
   return {
     type: dataType,
     fields,

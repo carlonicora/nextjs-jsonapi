@@ -14,9 +14,7 @@ export function checkPermissions<T extends PermissionUser>(params: {
   user: T;
   data?: any;
 }): boolean {
-  const selectedModule = params.user.modules.find(
-    (module: PermissionModule) => module.id === params.module.moduleId,
-  );
+  const selectedModule = params.user.modules.find((module: PermissionModule) => module.id === params.module.moduleId);
 
   if (!selectedModule) return false;
   const permissionConfig = selectedModule.permissions[params.action];

@@ -92,9 +92,8 @@ export abstract class AbstractService {
     files?: { [key: string]: File | Blob } | File | Blob;
   }): Promise<T> {
     // Dynamic import to avoid bundling issues
-    const { JsonApiGet, JsonApiPost, JsonApiPut, JsonApiPatch, JsonApiDelete } = await import(
-      "../../unified/JsonApiRequest"
-    );
+    const { JsonApiGet, JsonApiPost, JsonApiPut, JsonApiPatch, JsonApiDelete } =
+      await import("../../unified/JsonApiRequest");
 
     let apiResponse: ApiResponseInterface;
 

@@ -106,9 +106,7 @@ export function useJsonApiMutation<T extends ApiDataInterface>(config: {
       setError(null);
 
       try {
-        const { JsonApiPost, JsonApiPut, JsonApiPatch, JsonApiDelete } = await import(
-          "../../unified/JsonApiRequest"
-        );
+        const { JsonApiPost, JsonApiPut, JsonApiPatch, JsonApiDelete } = await import("../../unified/JsonApiRequest");
         const language = navigator.language.split("-")[0] || "en";
 
         let apiResponse: ApiResponseInterface;

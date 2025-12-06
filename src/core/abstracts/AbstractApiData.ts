@@ -72,8 +72,7 @@ export abstract class AbstractApiData implements ApiDataInterface {
     if (Array.isArray(data.jsonApi.relationships[type].data)) {
       const response: T[] = data.jsonApi.relationships[type].data.map((jsonApiData: any) => {
         const includedData = data.included.find(
-          (includedData: any) =>
-            includedData.id === jsonApiData.id && includedData.type === jsonApiData.type,
+          (includedData: any) => includedData.id === jsonApiData.id && includedData.type === jsonApiData.type,
         );
 
         if (includedData === undefined) return undefined;
@@ -129,10 +128,8 @@ export abstract class AbstractApiData implements ApiDataInterface {
 
     this._type = this._jsonApi.type;
     this._id = this._jsonApi.id;
-    this._createdAt =
-      this._jsonApi.meta?.createdAt !== undefined ? new Date(this._jsonApi.meta.createdAt) : undefined;
-    this._updatedAt =
-      this._jsonApi.meta?.updatedAt !== undefined ? new Date(this._jsonApi.meta.updatedAt) : undefined;
+    this._createdAt = this._jsonApi.meta?.createdAt !== undefined ? new Date(this._jsonApi.meta.createdAt) : undefined;
+    this._updatedAt = this._jsonApi.meta?.updatedAt !== undefined ? new Date(this._jsonApi.meta.updatedAt) : undefined;
 
     this._self = this._jsonApi.links?.self ?? undefined;
 

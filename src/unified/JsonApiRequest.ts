@@ -132,9 +132,7 @@ function getApiUrl(): string {
   // Fallback to environment variable
   const envUrl = process.env.NEXT_PUBLIC_API_URL;
   if (!envUrl) {
-    throw new Error(
-      "API URL not configured. Use configureJsonApi() or set NEXT_PUBLIC_API_URL environment variable.",
-    );
+    throw new Error("API URL not configured. Use configureJsonApi() or set NEXT_PUBLIC_API_URL environment variable.");
   }
   return envUrl;
 }

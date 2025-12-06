@@ -19,9 +19,7 @@ export class DataClassRegistry {
   } {
     const response = this._map.get(classKey.name);
     if (!response) {
-      throw new Error(
-        `Class not registered for key: ${typeof classKey === "string" ? classKey : classKey.name}`,
-      );
+      throw new Error(`Class not registered for key: ${typeof classKey === "string" ? classKey : classKey.name}`);
     }
 
     return response;
