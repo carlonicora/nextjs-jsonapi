@@ -5,11 +5,37 @@ import { ApiResponseInterface } from "../core/interfaces/ApiResponseInterface";
 import { JsonApiDataFactory } from "../core/factories/JsonApiDataFactory";
 import { translateResponse } from "../core/utils/translateResponse";
 
+// Type definitions for dynamically imported functions (avoiding typeof import to prevent bundling)
+type DirectFetchFn = (params: {
+  method: string;
+  url: string;
+  token?: string;
+  body?: any;
+  files?: { [key: string]: File | Blob } | File | Blob;
+  companyId?: string;
+  language: string;
+  additionalHeaders?: Record<string, string>;
+}) => Promise<ApiData>;
+
+type ServerRequestFn = (params: {
+  method: string;
+  url: string;
+  token?: string;
+  cache?: string;
+  body?: any;
+  files?: { [key: string]: File | Blob } | File | Blob;
+  companyId?: string;
+  language: string;
+  additionalHeaders?: Record<string, string>;
+}) => Promise<ApiData>;
+
+type GetTokenFn = () => Promise<string | undefined>;
+
 // These will be dynamically imported based on environment
-let _directFetch: typeof import("../client/request").directFetch;
-let _serverRequest: typeof import("../server/request").serverRequest;
-let _getClientToken: typeof import("../client/token").getClientToken;
-let _getServerToken: typeof import("../server/token").getServerToken;
+let _directFetch: DirectFetchFn;
+let _serverRequest: ServerRequestFn;
+let _getClientToken: GetTokenFn;
+let _getServerToken: GetTokenFn;
 
 // Config storage for non-React contexts
 let _staticConfig: {
@@ -28,6 +54,10 @@ export function configureJsonApi(config: {
   additionalHeaders?: Record<string, string>;
 }): void {
   _staticConfig = config;
+  // Call bootstrapper immediately to register all modules
+  if (config.bootstrapper) {
+    config.bootstrapper();
+  }
 }
 
 async function getToken(): Promise<string | undefined> {

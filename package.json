@@ -29,6 +29,11 @@
       "types": "./dist/server/index.d.ts",
       "import": "./dist/server/index.mjs",
       "require": "./dist/server/index.js"
+    },
+    "./permissions": {
+      "types": "./dist/permissions/index.d.ts",
+      "import": "./dist/permissions/index.mjs",
+      "require": "./dist/permissions/index.js"
     }
   },
   "scripts": {

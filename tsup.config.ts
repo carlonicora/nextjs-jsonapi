@@ -7,10 +7,11 @@ export default defineConfig([
       "core/index": "src/core/index.ts",
       "client/index": "src/client/index.ts",
       "server/index": "src/server/index.ts",
+      "permissions/index": "src/permissions/index.ts",
     },
     format: ["cjs", "esm"],
     dts: true,
-    splitting: false,
+    splitting: true,
     sourcemap: true,
     clean: true,
     external: [

@@ -3,3 +3,6 @@ export * from "./unified";
 
 // Core exports for convenience
 export * from "./core";
+
+// Permissions
+export * from "./permissions";
