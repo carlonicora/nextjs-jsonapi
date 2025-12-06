@@ -5,11 +5,13 @@ export default defineConfig([
     entry: {
       index: "src/index.ts",
       "core/index": "src/core/index.ts",
+      "components/index": "src/components/index.ts",
       "client/index": "src/client/index.ts",
       "server/index": "src/server/index.ts",
       "permissions/index": "src/permissions/index.ts",
       "utils/index": "src/utils/index.ts",
       "shadcnui/index": "src/shadcnui/index.ts",
+      "i18n/index": "src/i18n/index.ts",
     },
     format: ["cjs", "esm"],
     dts: true,

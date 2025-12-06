@@ -20,6 +20,11 @@
       "import": "./dist/core/index.mjs",
       "require": "./dist/core/index.js"
     },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.mjs",
+      "require": "./dist/components/index.js"
+    },
     "./client": {
       "types": "./dist/client/index.d.ts",
       "import": "./dist/client/index.mjs",
@@ -44,6 +49,11 @@
       "types": "./dist/shadcnui/index.d.ts",
       "import": "./dist/shadcnui/index.mjs",
       "require": "./dist/shadcnui/index.js"
+    },
+    "./i18n": {
+      "types": "./dist/i18n/index.d.ts",
+      "import": "./dist/i18n/index.mjs",
+      "require": "./dist/i18n/index.js"
     }
   },
   "scripts": {
@@ -60,11 +70,15 @@
   ],
   "peerDependencies": {
     "next": ">=14.0.0",
+    "next-intl": ">=3.0.0",
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0",
     "react-hook-form": ">=7.0.0"
   },
   "peerDependenciesMeta": {
+    "next-intl": {
+      "optional": true
+    },
     "react-hook-form": {
       "optional": true
     }
@@ -108,7 +122,8 @@
     "recharts": "^3.5.1",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
-    "vaul": "^1.1.0"
+    "vaul": "^1.1.0",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",
@@ -123,6 +138,7 @@
     "eslint-plugin-prettier": "^5.5.4",
     "globals": "^16.5.0",
     "next": "^16.0.0",
+    "next-intl": "^4.1.0",
     "prettier": "^3.7.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
