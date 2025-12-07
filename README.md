@@ -33,15 +33,16 @@ A comprehensive Next.js package providing JSON:API compliant client with unified
 
 ## Architecture
 
-The library is organized into seven entry points:
+The library is organized into eight entry points:
 
 ```
 @carlonicora/nextjs-jsonapi
 ├── (main)          # Unified API (auto-detects environment)
-├── /core           # Interfaces, factories, and utilities
+├── /core           # Interfaces, factories, registries, and utilities
 ├── /client         # React hooks and client-side utilities
 ├── /server         # Server-side requests and caching
 ├── /permissions    # Permission checking utilities
+├── /features       # Built-in feature modules (S3, etc.)
 ├── /utils          # Utility functions (cn, useIsMobile, etc.)
 └── /shadcnui       # 44 shadcn/ui components
 ```
@@ -125,45 +126,82 @@ git submodule update --init --recursive
 
 ### 1. Configure the API Client
 
-For server components, configure the JSON:API client in your layout or a server utility:
+Configure the JSON:API client in your environment setup file:
 
 ```typescript
-// src/lib/api.ts
-import { configureJsonApi, ModuleRegistry } from "@carlonicora/nextjs-jsonapi";
-import { bootstrapModules } from "./modules";
+// src/config/env.ts
+import { configureJsonApi } from "@carlonicora/nextjs-jsonapi";
+import { bootstrap } from "@/config/Bootstrapper";
 
 configureJsonApi({
   apiUrl: process.env.NEXT_PUBLIC_API_URL!,
-  bootstrapper: () => bootstrapModules(),
+  bootstrapper: bootstrap,
 });
 ```
 
-### 2. Define Your Modules
+### 2. Define Your Modules and Bootstrapper
 
-Create module definitions that map to your API resources:
+Create a bootstrapper that registers all modules for both the ModuleRegistry (for `Modules.X` access) and DataClassRegistry (for JSON:API response translation):
 
 ```typescript
-// src/lib/modules.ts
-import { ModuleRegistry, type ApiRequestDataTypeInterface } from "@carlonicora/nextjs-jsonapi/core";
+// src/config/Bootstrapper.ts
+import { DataClassRegistry, FieldSelector, ModuleRegistry } from "@carlonicora/nextjs-jsonapi/core";
+import { ModuleWithPermissions } from "@carlonicora/nextjs-jsonapi/permissions";
+import { S3Module } from "@carlonicora/nextjs-jsonapi/features";
 
-export const Modules = {
-  Article: {
-    type: "articles",
-    cache: "articles", // Cache profile name
-    factory: (data: any) => data,
-  } as ApiRequestDataTypeInterface,
+// Import your module definitions
+import { ArticleModule } from "@/features/article/ArticleModule";
+import { UserModule } from "@/features/user/UserModule";
+import { Article } from "@/features/article/data/Article";
+import { User } from "@/features/user/data/User";
 
-  User: {
-    type: "users",
-    cache: "users",
-    factory: (data: any) => data,
-  } as ApiRequestDataTypeInterface,
-};
+// Module factory helper
+const moduleFactory = (params: {
+  pageUrl?: string;
+  name: string;
+  cache?: string;
+  model: any;
+  feature?: string;
+  moduleId?: string;
+  inclusions?: Record<string, { types?: string[]; fields?: FieldSelector<any>[] }>;
+}): ModuleWithPermissions => ({
+  pageUrl: params.pageUrl,
+  name: params.name,
+  model: params.model,
+  feature: params.feature,
+  moduleId: params.moduleId,
+  cache: params.cache,
+  inclusions: params.inclusions ?? {},
+});
 
-export function bootstrapModules() {
-  Object.entries(Modules).forEach(([key, module]) => {
-    ModuleRegistry.register(module.type, module);
+// Example module definition file (e.g., ArticleModule.ts)
+// export const ArticleModule = (factory: ModuleFactory) =>
+//   factory({ name: "articles", model: Article, pageUrl: "/articles" });
+
+// Single source of truth for all modules
+const allModules = {
+  Article: ArticleModule(moduleFactory),
+  User: UserModule(moduleFactory),
+  S3: S3Module(moduleFactory), // Built-in S3 module from library
+} satisfies Record<string, ModuleWithPermissions>;
+
+// Export type for TypeScript autocompletion
+export type AllModuleDefinitions = typeof allModules;
+
+let bootstrapped = false;
+
+export function bootstrap(): void {
+  if (bootstrapped) return;
+
+  // Register modules for Modules.X access
+  Object.entries(allModules).forEach(([name, module]) => {
+    ModuleRegistry.register(name, module);
   });
+
+  // Register model classes for JSON:API response translation
+  DataClassRegistry.bootstrap(allModules);
+
+  bootstrapped = true;
 }
 ```
 
@@ -172,7 +210,7 @@ export function bootstrapModules() {
 ```typescript
 // src/app/articles/page.tsx
 import { JsonApiGet } from "@carlonicora/nextjs-jsonapi";
-import { Modules } from "@/lib/modules";
+import { Modules } from "@carlonicora/nextjs-jsonapi/core";
 
 export default async function ArticlesPage() {
   const response = await JsonApiGet({
@@ -201,7 +239,7 @@ export default async function ArticlesPage() {
 "use client";
 
 import { useJsonApiGet, useJsonApiMutation } from "@carlonicora/nextjs-jsonapi/client";
-import { Modules } from "@/lib/modules";
+import { Modules } from "@carlonicora/nextjs-jsonapi/core";
 
 export function ArticleList() {
   const { data, loading, error, refetch } = useJsonApiGet({
@@ -268,7 +306,7 @@ import {
 
 ### Core (`/core`)
 
-Core interfaces, factories, and utilities:
+Core interfaces, factories, registries, and utilities:
 
 ```typescript
 import {
@@ -280,8 +318,10 @@ import {
   // Factories
   JsonApiDataFactory,
 
-  // Registry
-  ModuleRegistry,
+  // Registries
+  ModuleRegistry,      // Register modules during bootstrap
+  DataClassRegistry,   // Register model classes for JSON:API translation
+  Modules,             // Access registered modules (e.g., Modules.Article)
 
   // Endpoint builder
   EndpointBuilder,
@@ -335,7 +375,37 @@ Permission checking utilities:
 import {
   checkPermission,
   type PermissionCheck,
+  type ModuleWithPermissions,
+  type ModuleFactory,
 } from "@carlonicora/nextjs-jsonapi/permissions";
+```
+
+### Features (`/features`)
+
+Built-in feature modules that can be used directly in your application:
+
+```typescript
+import {
+  // S3 Module (for file uploads via pre-signed URLs)
+  S3Module,           // Module definition factory
+  S3Service,          // Service with getPreSignedUrl, getSignedUrl, deleteFile
+  S3,                 // Data class
+  type S3Interface,   // Response interface
+  type S3Input,       // Input parameters
+} from "@carlonicora/nextjs-jsonapi/features";
+
+// Usage example:
+const s3Response = await S3Service.getPreSignedUrl({
+  key: "companies/123/documents/file.pdf",
+  contentType: "application/pdf",
+  isPublic: true,
+});
+
+await fetch(s3Response.url, {
+  method: "PUT",
+  headers: s3Response.headers,
+  body: file,
+});
 ```
 
 ### Utils (`/utils`)
