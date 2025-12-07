@@ -2,8 +2,8 @@
 
 // UI Components
 export * from "./ui/accordion";
-export * from "./ui/alert-dialog";
 export * from "./ui/alert";
+export * from "./ui/alert-dialog";
 export * from "./ui/avatar";
 export * from "./ui/badge";
 export * from "./ui/breadcrumb";
@@ -27,6 +27,7 @@ export * from "./ui/navigation-menu";
 export * from "./ui/popover";
 export * from "./ui/progress";
 export * from "./ui/radio-group";
+export * from "./ui/resizable";
 export * from "./ui/scroll-area";
 export * from "./ui/select";
 export * from "./ui/separator";

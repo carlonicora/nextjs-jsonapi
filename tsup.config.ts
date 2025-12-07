@@ -28,6 +28,7 @@ export default defineConfig([
       "next/dist/server/use-cache/cache-life",
       "next/dist/server/use-cache/cache-tag",
       "cookies-next",
+      "next-intl",
       "react-hook-form",
       "next-themes",
     ],
