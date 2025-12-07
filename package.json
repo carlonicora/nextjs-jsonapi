@@ -54,6 +54,11 @@
       "types": "./dist/hooks/index.d.ts",
       "import": "./dist/hooks/index.mjs",
       "require": "./dist/hooks/index.js"
+    },
+    "./features": {
+      "types": "./dist/features/index.d.ts",
+      "import": "./dist/features/index.mjs",
+      "require": "./dist/features/index.js"
     }
   },
   "scripts": {

@@ -12,6 +12,7 @@ export default defineConfig([
       "utils/index": "src/utils/index.ts",
       "shadcnui/index": "src/shadcnui/index.ts",
       "hooks/index": "src/hooks/index.ts",
+      "features/index": "src/features/index.ts",
     },
     format: ["cjs", "esm"],
     dts: true,
