@@ -1,5 +1,5 @@
-import { S3 } from "./data/S3";
-import { ModuleFactory } from "../../permissions/types";
+import { ModuleFactory } from "../../permissions";
+import { S3 } from "./data/s3";
 
 export const S3Module = (factory: ModuleFactory) =>
   factory({

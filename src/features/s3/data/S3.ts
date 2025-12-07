@@ -1,7 +1,5 @@
-import { S3Input, S3Interface } from "./S3Interface";
-import { AbstractApiData } from "../../../core/abstracts/AbstractApiData";
-import { JsonApiHydratedDataInterface } from "../../../core/interfaces/JsonApiHydratedDataInterface";
-import { Modules } from "../../../core/registry/ModuleRegistry";
+import { AbstractApiData, JsonApiHydratedDataInterface, Modules } from "../../../core";
+import { S3Input, S3Interface } from "./s3.interface";
 
 export class S3 extends AbstractApiData implements S3Interface {
   private _url?: string;

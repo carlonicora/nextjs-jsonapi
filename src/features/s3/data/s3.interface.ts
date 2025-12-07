@@ -1,4 +1,4 @@
-import { ApiDataInterface } from "../../../core/interfaces/ApiDataInterface";
+import { ApiDataInterface } from "../../../core";
 
 export type S3Input = {
   key: string;

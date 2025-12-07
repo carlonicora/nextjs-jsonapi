@@ -1,7 +1,5 @@
-import { AbstractService, HttpMethod } from "../../../core/abstracts/AbstractService";
-import { EndpointCreator } from "../../../core/endpoint/EndpointCreator";
-import { Modules } from "../../../core/registry/ModuleRegistry";
-import { S3Interface } from "./S3Interface";
+import { AbstractService, EndpointCreator, HttpMethod, Modules } from "../../../core";
+import { S3Interface } from "./s3.interface";
 
 export class S3Service extends AbstractService {
   static async getPreSignedUrl(params: { key: string; contentType: string; isPublic?: boolean }): Promise<S3Interface> {
