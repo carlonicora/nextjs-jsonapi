@@ -41,11 +41,13 @@ class ModuleRegistryClass {
   }
 
   findByName(moduleName: string): ModuleWithPermissions {
-    const module = this._modules.get(moduleName);
-    if (!module) {
-      throw new Error(`Module not found: ${moduleName}`);
+    // Search by module's name property (e.g., "topics", "articles")
+    for (const module of this._modules.values()) {
+      if ((module as ModuleWithPermissions).name === moduleName) {
+        return module as ModuleWithPermissions;
+      }
     }
-    return module as ModuleWithPermissions;
+    throw new Error(`Module not found: ${moduleName}`);
   }
 }
 
