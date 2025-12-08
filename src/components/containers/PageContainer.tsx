@@ -1,6 +1,6 @@
 "use client";
 
-import { Header } from "../navigation";
+import { Header } from "../navigations";
 
 type PageContainerProps = { children: React.ReactNode; testId?: string };
 
