@@ -25,6 +25,11 @@
       "import": "./dist/components/index.mjs",
       "require": "./dist/components/index.js"
     },
+    "./contexts": {
+      "types": "./dist/contexts/index.d.ts",
+      "import": "./dist/contexts/index.mjs",
+      "require": "./dist/contexts/index.js"
+    },
     "./client": {
       "types": "./dist/client/index.d.ts",
       "import": "./dist/client/index.mjs",
@@ -44,6 +49,11 @@
       "types": "./dist/utils/index.d.ts",
       "import": "./dist/utils/index.mjs",
       "require": "./dist/utils/index.js"
+    },
+    "./interfaces": {
+      "types": "./dist/interfaces/index.d.ts",
+      "import": "./dist/interfaces/index.mjs",
+      "require": "./dist/interfaces/index.js"
     },
     "./shadcnui": {
       "types": "./dist/shadcnui/index.d.ts",

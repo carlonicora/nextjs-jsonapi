@@ -1,5 +1,5 @@
-import { defineConfig } from "tsup";
 import { readFile, writeFile } from "fs/promises";
+import { defineConfig } from "tsup";
 
 // Client entry points that need "use client" directive
 const clientEntries = [
@@ -7,6 +7,8 @@ const clientEntries = [
   "dist/hooks/index.js",
   "dist/components/index.mjs",
   "dist/components/index.js",
+  "dist/contexts/index.mjs",
+  "dist/contexts/index.js",
   "dist/client/index.mjs",
   "dist/client/index.js",
   "dist/shadcnui/index.mjs",
@@ -18,6 +20,7 @@ export default defineConfig({
     index: "src/index.ts",
     "core/index": "src/core/index.ts",
     "components/index": "src/components/index.ts",
+    "contexts/index": "src/contexts/index.ts",
     "client/index": "src/client/index.ts",
     "server/index": "src/server/index.ts",
     "permissions/index": "src/permissions/index.ts",
