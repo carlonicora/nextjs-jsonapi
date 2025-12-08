@@ -1,5 +1,6 @@
 export * from "./containers";
 export * from "./contents";
+export * from "./details";
 export * from "./editors";
 export * from "./errors";
 export * from "./forms";

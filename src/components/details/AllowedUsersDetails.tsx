@@ -1,0 +1,22 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+import { ContentInterface, ContributorsList } from "../../features";
+
+type AllowedUsersDetailsProps = {
+  showTitle?: boolean;
+  content: ContentInterface;
+};
+
+export function AllowedUsersDetails({ showTitle, content }: AllowedUsersDetailsProps) {
+  const t = useTranslations();
+
+  return (
+    <div className="mb-2 flex w-full flex-col gap-y-2">
+      {showTitle && <h3 className="text-xs font-semibold">{t("generic.permissions")}</h3>}
+      <div className="flex w-full items-center justify-start gap-x-4">
+        <ContributorsList content={content} />
+      </div>
+    </div>
+  );
+}
