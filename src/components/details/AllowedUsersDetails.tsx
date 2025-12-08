@@ -1,7 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { ContentInterface, ContributorsList } from "../../features";
+import { ContentInterface } from "../../features/content/data";
+import { ContributorsList } from "../../features/user/components";
 
 type AllowedUsersDetailsProps = {
   showTitle?: boolean;
