@@ -28,6 +28,7 @@ export default defineConfig({
     "shadcnui/index": "src/shadcnui/index.ts",
     "hooks/index": "src/hooks/index.ts",
     "features/index": "src/features/index.ts",
+    "roles/index": "src/roles/index.ts",
   },
   format: ["cjs", "esm"],
   dts: true,
