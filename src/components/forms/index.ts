@@ -1,3 +1,4 @@
+export * from "./CommonAssociationForm";
 export * from "./CommonDeleter";
 export * from "./CommonEditorButtons";
 export * from "./CommonEditorHeader";
