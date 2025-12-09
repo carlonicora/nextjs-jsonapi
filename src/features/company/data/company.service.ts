@@ -49,6 +49,19 @@ export class CompanyService extends AbstractService {
     });
   }
 
+  static async updateConfigurations(params: CompanyInput): Promise<CompanyInterface> {
+    return this.callApi({
+      type: Modules.Company,
+      method: HttpMethod.PUT,
+      endpoint: new EndpointCreator({
+        endpoint: Modules.Company,
+        id: params.id,
+        childEndpoint: "configurations",
+      }).generate(),
+      input: params,
+    });
+  }
+
   static async activateLicense(params: CompanyInput): Promise<CompanyInterface> {
     return this.callApi({
       type: Modules.Company,
