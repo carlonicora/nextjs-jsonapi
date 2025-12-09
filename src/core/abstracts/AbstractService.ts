@@ -17,7 +17,10 @@ export interface PreviousRef {
   previous?: string;
 }
 
-// Global error handler storage
+export interface SelfRef {
+  self?: string;
+}
+
 let globalErrorHandler: ((status: number, message: string) => void) | null = null;
 
 /**
@@ -41,13 +44,41 @@ export function getGlobalErrorHandler(): ((status: number, message: string) => v
  */
 export abstract class AbstractService {
   /**
-   * Fetch the next page of results.
+   * Extract locale from client-side URL pathname
+   * URL structure: /{locale}/route-path (e.g., /it/accounts)
+   * Fallback chain: URL locale → navigator.language → "it"
    */
+  private static getClientLocale(): string {
+    if (typeof window === "undefined") {
+      return "it"; // Server-side fallback
+    }
+
+    // Extract locale from URL pathname (first segment after leading slash)
+    const pathSegments = window.location.pathname.split("/").filter(Boolean);
+    const urlLocale = pathSegments[0];
+
+    // Validate against supported locales (currently only "it")
+    const supportedLocales = ["it"];
+    if (urlLocale && supportedLocales.includes(urlLocale)) {
+      return urlLocale;
+    }
+
+    // Fallback to navigator language
+    const navigatorLocale = navigator.language.split("-")[0];
+    if (navigatorLocale && supportedLocales.includes(navigatorLocale)) {
+      return navigatorLocale;
+    }
+
+    // Final fallback
+    return "en";
+  }
+
   static async next<T>(params: {
     type: ApiRequestDataTypeInterface;
     endpoint: string;
     next?: NextRef;
     previous?: PreviousRef;
+    self?: SelfRef;
   }): Promise<T> {
     return await this.callApi<T>({
       method: HttpMethod.GET,
@@ -55,6 +86,7 @@ export abstract class AbstractService {
       endpoint: params.endpoint,
       next: params.next,
       previous: params.previous,
+      self: params.self,
     });
   }
 
@@ -66,6 +98,7 @@ export abstract class AbstractService {
     endpoint: string;
     next?: NextRef;
     previous?: PreviousRef;
+    self?: SelfRef;
   }): Promise<T> {
     return await this.callApi<T>({
       method: HttpMethod.GET,
@@ -73,6 +106,7 @@ export abstract class AbstractService {
       endpoint: params.endpoint,
       next: params.next,
       previous: params.previous,
+      self: params.self,
     });
   }
 
@@ -88,6 +122,7 @@ export abstract class AbstractService {
     overridesJsonApiCreation?: boolean;
     next?: NextRef;
     previous?: PreviousRef;
+    self?: SelfRef;
     responseType?: ApiRequestDataTypeInterface;
     files?: { [key: string]: File | Blob } | File | Blob;
   }): Promise<T> {
@@ -100,17 +135,11 @@ export abstract class AbstractService {
     // Get language based on environment
     let language = "en";
     if (typeof window === "undefined") {
-      // Server-side: try to get locale from next-intl if available
-      try {
-        // Use require to avoid TypeScript type checking for optional dependency
-        const nextIntl = require("next-intl/server") as { getLocale: () => Promise<string> };
-        language = (await nextIntl.getLocale()) ?? "en";
-      } catch {
-        // next-intl not available, use default
-        language = "en";
-      }
+      const { getLocale } = await import("next-intl/server");
+      language = (await getLocale()) ?? "it";
     } else {
-      language = navigator.language.split("-")[0] || "en";
+      // Client-side: extract locale from URL pathname
+      language = this.getClientLocale();
     }
 
     switch (params.method) {
@@ -184,6 +213,7 @@ export abstract class AbstractService {
 
     if (apiResponse.next && params.next) params.next.next = apiResponse.next;
     if (apiResponse.prev && params.previous) params.previous.previous = apiResponse.prev;
+    if (apiResponse.self && params.self) params.self.self = apiResponse.self;
 
     return apiResponse.data as T;
   }
@@ -202,15 +232,11 @@ export abstract class AbstractService {
     let language = "en";
 
     if (typeof window === "undefined") {
-      // Server-side: try to get locale from next-intl if available
-      try {
-        const nextIntl = require("next-intl/server") as { getLocale: () => Promise<string> };
-        language = (await nextIntl.getLocale()) ?? "en";
-      } catch {
-        language = "en";
-      }
+      const { getLocale } = await import("next-intl/server");
+      language = (await getLocale()) ?? "en";
     } else {
-      language = navigator.language.split("-")[0] || "en";
+      // Client-side: extract locale from URL pathname
+      language = this.getClientLocale();
     }
 
     const apiResponse: ApiResponseInterface = await JsonApiGet({

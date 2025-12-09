@@ -6,5 +6,6 @@ export * from "./errors";
 export * from "./forms";
 export * from "./navigations";
 export * from "./pages";
+export * from "./tables";
 
 export * from "../features/user/components";

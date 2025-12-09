@@ -1,7 +1,13 @@
 "use client";
 
-import { AbstractService } from "../core";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AbstractService } from "../core";
+
+export type PageInfo = {
+  startItem: number;
+  endItem: number;
+  pageSize: number;
+};
 
 export type DataListRetriever<T> = {
   ready?: boolean;
@@ -17,6 +23,7 @@ export type DataListRetriever<T> = {
   setRefreshedElement: (element: T) => void;
   removeElement: (element: T) => void;
   isSearch: boolean;
+  pageInfo?: PageInfo;
 };
 
 export function useDataListRetriever<T>(params: {
@@ -37,9 +44,64 @@ export function useDataListRetriever<T>(params: {
   const additionalParamsRef = useRef<any>({});
   const requestIdRef = useRef(0);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const isFetchingRef = useRef(false);
 
   const resolvedType = params.module;
   const resolvedService = AbstractService; // We'll just use AbstractService directly for pagination
+
+  // Helper to parse page params from pagination URLs
+  const parsePageParams = useCallback((url: string | undefined): { offset: number; size: number } | null => {
+    if (!url) return null;
+    try {
+      const urlObj = new URL(url);
+      const offset = parseInt(urlObj.searchParams.get("page[offset]") || "0", 10);
+      const size = parseInt(urlObj.searchParams.get("page[size]") || "25", 10);
+      return { offset, size };
+    } catch {
+      return null;
+    }
+  }, []);
+
+  // Helper to adjust pagination URL offset (used when removing elements)
+  const adjustPaginationUrl = useCallback((url: string | undefined, delta: number): string | undefined => {
+    if (!url) return undefined;
+    try {
+      const urlObj = new URL(url);
+      const currentOffset = parseInt(urlObj.searchParams.get("page[offset]") || "0", 10);
+      const newOffset = Math.max(0, currentOffset + delta);
+      urlObj.searchParams.set("page[offset]", String(newOffset));
+      return urlObj.toString();
+    } catch {
+      return url;
+    }
+  }, []);
+
+  // Calculate pageInfo from pagination URLs and current data
+  const pageInfo = useMemo((): PageInfo | undefined => {
+    if (!data || data.length === 0) return undefined;
+
+    // Try to determine current offset and page size from pagination URLs
+    const nextParams = parsePageParams(nextPage);
+    const prevParams = parsePageParams(previousPage);
+
+    let currentOffset = 0;
+    let pageSize = 25; // default
+
+    if (nextParams) {
+      // If we have a next page, current offset = next offset - page size
+      pageSize = nextParams.size;
+      currentOffset = Math.max(0, nextParams.offset - pageSize);
+    } else if (prevParams) {
+      // If we only have a previous page (we're on the last page)
+      pageSize = prevParams.size;
+      currentOffset = prevParams.offset + pageSize;
+    }
+
+    const startItem = currentOffset + 1;
+    const endItem = currentOffset + data.length;
+
+    return { startItem, endItem, pageSize };
+  }, [data, nextPage, previousPage, parsePageParams]);
 
   const stableParams = useMemo(
     () => ({
@@ -54,9 +116,17 @@ export function useDataListRetriever<T>(params: {
 
   const fetchData = useCallback(
     async (fetchParams?: { isRefine?: boolean; isRefresh?: boolean; callNext?: boolean; callPrevious?: boolean }) => {
-      if (ready === false) return;
+      if (ready === false) {
+        return;
+      }
+
+      // Prevent concurrent fetches (unless it's a pagination call)
+      if (isFetchingRef.current && !fetchParams?.callNext && !fetchParams?.callPrevious) {
+        return;
+      }
 
       const thisRequestId = ++requestIdRef.current;
+      isFetchingRef.current = true;
 
       if (stableParams.requiresSearch === true && fetchParams?.isRefine !== true && fetchParams?.isRefresh !== true)
         return;
@@ -79,6 +149,7 @@ export function useDataListRetriever<T>(params: {
         let response: T[];
         const nextRef = { next: undefined };
         const previousRef = { previous: undefined };
+        const selfRef = { self: undefined };
 
         if (nextPage && fetchParams?.callNext && fetchParams?.isRefine !== true) {
           const ServiceClass = stableParams.service as typeof AbstractService;
@@ -88,6 +159,7 @@ export function useDataListRetriever<T>(params: {
             endpoint: nextPage,
             next: nextRef,
             previous: previousRef,
+            self: selfRef,
           });
         } else if (previousPage && fetchParams?.callPrevious && fetchParams?.isRefine !== true) {
           const ServiceClass = stableParams.service as typeof AbstractService;
@@ -97,6 +169,7 @@ export function useDataListRetriever<T>(params: {
             endpoint: previousPage,
             next: nextRef,
             previous: previousRef,
+            self: selfRef,
           });
         } else {
           let retrieverParams = stableParams.retrieverParams ? { ...stableParams.retrieverParams } : {};
@@ -109,6 +182,7 @@ export function useDataListRetriever<T>(params: {
           retrieverParams.search = currentSearchTerm;
           retrieverParams.next = nextRef;
           retrieverParams.previous = previousRef;
+          retrieverParams.self = selfRef;
 
           response = await stableParams.retriever(retrieverParams);
         }
@@ -130,6 +204,11 @@ export function useDataListRetriever<T>(params: {
           setIsLoaded(true);
           console.error("Error fetching data:", error);
         }
+      } finally {
+        // Always reset fetching flag when done
+        if (thisRequestId === requestIdRef.current) {
+          isFetchingRef.current = false;
+        }
       }
     },
     [stableParams, ready, params.search],
@@ -141,12 +220,10 @@ export function useDataListRetriever<T>(params: {
         if (!prevData) return prevData;
 
         const index = prevData.findIndex((data) => (data as any).id === (element as any).id);
-
         if (index === -1) return prevData;
 
-        prevData[index] = element;
-
-        return [...prevData];
+        // Use immutable update pattern instead of mutation
+        return prevData.map((item, i) => (i === index ? element : item));
       });
     },
     [setData],
@@ -161,23 +238,26 @@ export function useDataListRetriever<T>(params: {
 
         if (index === -1) return prevData;
 
-        prevData.splice(index, 1);
+        // Adjust nextPage offset since we're removing an item
+        setNextPage((prev) => adjustPaginationUrl(prev, -1));
 
-        return [...prevData];
+        const newData = [...prevData];
+        newData.splice(index, 1);
+        return newData;
       });
     },
-    [setData],
+    [adjustPaginationUrl],
   );
 
+  // Consolidated effect: Only fetch once when ready and not loaded
+  // This prevents the duplicate API calls that occurred when both the mount effect
+  // and ready effect fired simultaneously on initial render
   useEffect(() => {
-    if (!isLoaded || nextPage !== undefined || previousPage !== undefined) fetchData();
-  }, []);
-
-  useEffect(() => {
-    if (ready) {
+    // Only fetch if ready and haven't loaded yet
+    if (ready && !isLoaded) {
       fetchData({ isRefresh: true });
     }
-  }, [ready]);
+  }, [ready, fetchData]);
 
   const loadNext = useCallback(
     async (onlyNewRecords?: boolean) => {
@@ -264,5 +344,6 @@ export function useDataListRetriever<T>(params: {
     setRefreshedElement: setRefreshedElement,
     isSearch: isSearch,
     removeElement: removeElement,
+    pageInfo: pageInfo,
   };
 }

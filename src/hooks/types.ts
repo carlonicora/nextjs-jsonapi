@@ -1,6 +1,6 @@
-import { DataListRetriever } from "./useDataListRetriever";
-import { PageUrl } from "../permissions/types";
 import { ColumnDef } from "@tanstack/react-table";
+import { PageUrl } from "../permissions/types";
+import { DataListRetriever } from "./useDataListRetriever";
 
 export type TableContent<T> = {
   jsonApiData: T;
@@ -24,6 +24,7 @@ export type UseTableStructureHookParams<T, U> = {
   checkedIds?: string[];
   toggleId?: (id: string) => void;
   dataRetriever?: DataListRetriever<T>;
+  context?: Record<string, any>;
 };
 
 export type UseTableStructureHookReturn<T> = {
