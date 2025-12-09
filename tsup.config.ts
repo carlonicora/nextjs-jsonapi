@@ -3,6 +3,8 @@ import { defineConfig } from "tsup";
 
 // Client entry points that need "use client" directive
 const clientEntries = [
+  "dist/atoms/index.mjs",
+  "dist/atoms/index.js",
   "dist/hooks/index.mjs",
   "dist/hooks/index.js",
   "dist/components/index.mjs",
@@ -20,6 +22,7 @@ const clientEntries = [
 export default defineConfig({
   entry: {
     index: "src/index.ts",
+    "atoms/index": "src/atoms/index.ts",
     "core/index": "src/core/index.ts",
     "components/index": "src/components/index.ts",
     "contexts/index": "src/contexts/index.ts",
