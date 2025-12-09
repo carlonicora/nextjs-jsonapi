@@ -46,19 +46,19 @@ export abstract class AbstractService {
   /**
    * Extract locale from client-side URL pathname
    * URL structure: /{locale}/route-path (e.g., /it/accounts)
-   * Fallback chain: URL locale → navigator.language → "it"
+   * Fallback chain: URL locale → navigator.language → "en"
    */
   private static getClientLocale(): string {
     if (typeof window === "undefined") {
-      return "it"; // Server-side fallback
+      return "en"; // Server-side fallback
     }
 
     // Extract locale from URL pathname (first segment after leading slash)
     const pathSegments = window.location.pathname.split("/").filter(Boolean);
     const urlLocale = pathSegments[0];
 
-    // Validate against supported locales (currently only "it")
-    const supportedLocales = ["it"];
+    // Validate against supported locales (currently only "en")
+    const supportedLocales = ["en"];
     if (urlLocale && supportedLocales.includes(urlLocale)) {
       return urlLocale;
     }
@@ -136,7 +136,7 @@ export abstract class AbstractService {
     let language = "en";
     if (typeof window === "undefined") {
       const { getLocale } = await import("next-intl/server");
-      language = (await getLocale()) ?? "it";
+      language = (await getLocale()) ?? "en";
     } else {
       // Client-side: extract locale from URL pathname
       language = this.getClientLocale();
