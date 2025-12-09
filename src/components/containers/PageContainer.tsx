@@ -1,14 +1,15 @@
 "use client";
 
+import { cn } from "../../utils";
 import { Header } from "../navigations";
 
-type PageContainerProps = { children: React.ReactNode; testId?: string };
+type PageContainerProps = { children: React.ReactNode; testId?: string; className?: string };
 
-export function PageContainer({ children, testId }: PageContainerProps) {
+export function PageContainer({ children, testId, className }: PageContainerProps) {
   return (
-    <div className="flex h-full w-full flex-col" data-testid={testId}>
+    <div className={`flex h-full w-full flex-col`} data-testid={testId}>
       <Header />
-      <main className={`flex min-h-[calc(100vh_-_theme(spacing.48))] w-full flex-col gap-y-4 p-4`}>{children}</main>
+      <main className={cn(`flex w-full flex-1 flex-col gap-y-4 pt-4 pl-4 pr-4`, className)}>{children}</main>
     </div>
   );
 }
