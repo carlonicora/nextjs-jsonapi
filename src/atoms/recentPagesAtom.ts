@@ -1,5 +1,4 @@
 import { atomWithStorage } from "jotai/utils";
-import { ReactNode } from "react";
 
 export interface RecentPage {
   url: string;
