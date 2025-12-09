@@ -30,3 +30,4 @@ export type {
   UseRouterHook,
   UseTranslationsHook,
 } from "../i18n";
+export * from "./useCustomD3Graph";

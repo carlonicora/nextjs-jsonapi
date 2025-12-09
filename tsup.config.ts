@@ -11,6 +11,8 @@ const clientEntries = [
   "dist/contexts/index.js",
   "dist/client/index.mjs",
   "dist/client/index.js",
+  "dist/interfaces/index.mjs",
+  "dist/interfaces/index.js",
   "dist/shadcnui/index.mjs",
   "dist/shadcnui/index.js",
 ];
@@ -22,6 +24,7 @@ export default defineConfig({
     "components/index": "src/components/index.ts",
     "contexts/index": "src/contexts/index.ts",
     "client/index": "src/client/index.ts",
+    "interfaces/index": "src/interfaces/index.ts",
     "server/index": "src/server/index.ts",
     "permissions/index": "src/permissions/index.ts",
     "utils/index": "src/utils/index.ts",
