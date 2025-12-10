@@ -1,3 +1,9 @@
+## [1.0.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.0.1...v1.0.2) (2025-12-10)
+
+### 🐛 Bug Fixes
+
+* add NPM_CONFIG_PROVENANCE env var for OIDC ([10c0928](https://github.com/carlonicora/nextjs-jsonapi/commit/10c0928058bd945fc05ec1b35c04f676849cb55d))
+
 ## [1.0.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.0.0...v1.0.1) (2025-12-10)
 
 ### 🐛 Bug Fixes
