@@ -23,6 +23,7 @@ export interface I18nConfig {
   useLocale?: UseLocaleHook;
   useDateFnsLocale?: UseDateFnsLocaleHook;
   Link: LinkComponent;
+  usePathname: () => string;
 }
 
 // Private storage

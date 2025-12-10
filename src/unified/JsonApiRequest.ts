@@ -3,6 +3,7 @@ import { ApiRequestDataTypeInterface } from "../core/interfaces/ApiRequestDataTy
 import { ApiResponseInterface } from "../core/interfaces/ApiResponseInterface";
 import { JsonApiDataFactory } from "../core/factories/JsonApiDataFactory";
 import { translateResponse } from "../core/utils/translateResponse";
+import { ModuleWithPermissions } from "../permissions/types";
 
 // Type definitions for dynamically imported functions (avoiding typeof import to prevent bundling)
 type DirectFetchFn = (params: {
@@ -40,6 +41,7 @@ let _getServerToken: GetTokenFn;
 let _staticConfig: {
   apiUrl: string;
   appUrl?: string;
+  trackablePages?: ModuleWithPermissions[];
   bootstrapper?: () => void;
   additionalHeaders?: Record<string, string>;
 } | null = null;
@@ -51,6 +53,7 @@ let _staticConfig: {
 export function configureJsonApi(config: {
   apiUrl: string;
   appUrl?: string;
+  trackablePages?: ModuleWithPermissions[];
   bootstrapper?: () => void;
   additionalHeaders?: Record<string, string>;
 }): void {
@@ -146,10 +149,14 @@ export function getAppUrl(): string {
   const envUrl = process.env.NEXT_PUBLIC_ADDRESS;
   if (!envUrl) {
     throw new Error(
-      "App URL not configured. Use configureJsonApi({ appUrl }) or set NEXT_PUBLIC_ADDRESS environment variable."
+      "App URL not configured. Use configureJsonApi({ appUrl }) or set NEXT_PUBLIC_ADDRESS environment variable.",
     );
   }
   return envUrl.trim().replace(/\/+$/, "");
+}
+
+export function getTrackablePages(): ModuleWithPermissions[] {
+  return _staticConfig?.trackablePages ?? [];
 }
 
 function runBootstrapper(): void {
