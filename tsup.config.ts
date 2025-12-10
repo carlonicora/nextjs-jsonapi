@@ -1,4 +1,4 @@
-import { readFile, writeFile } from "fs/promises";
+import { readdir, readFile, writeFile } from "fs/promises";
 import { defineConfig } from "tsup";
 
 // Client entry points that need "use client" directive
@@ -17,6 +17,21 @@ const clientEntries = [
   "dist/interfaces/index.js",
   "dist/shadcnui/index.mjs",
   "dist/shadcnui/index.js",
+];
+
+// Patterns that indicate client-only code
+const clientCodePatterns = [
+  "useFormContext",
+  "createContext",
+  "useState",
+  "useEffect",
+  "useCallback",
+  "useMemo",
+  "useRef",
+  "useContext",
+  "useReducer",
+  "useLayoutEffect",
+  "useImperativeHandle",
 ];
 
 export default defineConfig({
@@ -59,8 +74,9 @@ export default defineConfig({
     options.keepNames = true;
     options.jsx = "automatic";
   },
-  // Add "use client" to entry files ONLY (not chunks)
+  // Add "use client" to entry files and chunks containing React hooks
   onSuccess: async () => {
+    // Add to client entry files
     for (const file of clientEntries) {
       try {
         const content = await readFile(file, "utf-8");
@@ -69,6 +85,23 @@ export default defineConfig({
         }
       } catch {
         // File might not exist (e.g., if format doesn't include it)
+      }
+    }
+
+    // Add to chunks containing client-only code
+    const distFiles = await readdir("dist");
+    const chunkFiles = distFiles.filter((f) => f.startsWith("chunk-") && (f.endsWith(".mjs") || f.endsWith(".js")));
+
+    for (const chunkFile of chunkFiles) {
+      const filePath = `dist/${chunkFile}`;
+      try {
+        const content = await readFile(filePath, "utf-8");
+        const hasClientCode = clientCodePatterns.some((pattern) => content.includes(pattern));
+        if (hasClientCode && !content.startsWith('"use client"')) {
+          await writeFile(filePath, `"use client";\n${content}`);
+        }
+      } catch {
+        // Skip if file can't be read
       }
     }
   },

@@ -1,3 +1,5 @@
+"use client";
+
 import * as d3 from "d3";
 import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef } from "react";

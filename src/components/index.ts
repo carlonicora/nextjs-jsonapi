@@ -8,4 +8,5 @@ export * from "./navigations";
 export * from "./pages";
 export * from "./tables";
 
+export * from "../features/auth/components";
 export * from "../features/user/components";
