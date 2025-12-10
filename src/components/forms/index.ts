@@ -19,3 +19,4 @@ export * from "./FormSwitch";
 export * from "./FormTextarea";
 export * from "./MultiFileUploader";
 export * from "./PasswordInput";
+export { FormFeatures } from "../../features/feature/components/forms/FormFeatures";

@@ -4,8 +4,12 @@ import { UseTableStructureHook, UseTableStructureHookParams, UseTableStructureHo
 import { ModuleWithPermissions } from "../permissions";
 import { tableGeneratorRegistry } from "./TableGeneratorRegistry";
 
-export function registerTableGenerator<T, U>(type: ModuleWithPermissions, hook: UseTableStructureHook<T, U>): void {
-  tableGeneratorRegistry.register(type.name, hook);
+export function registerTableGenerator<T, U>(
+  type: string | ModuleWithPermissions,
+  hook: UseTableStructureHook<T, U>,
+): void {
+  const name = typeof type === "string" ? type : type.name;
+  tableGeneratorRegistry.register(name, hook);
 }
 
 export function useTableGenerator<T, U>(

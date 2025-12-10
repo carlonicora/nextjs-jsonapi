@@ -1,2 +1,2 @@
-export * from "./data";
 export * from "./push.module";
+export * from "./data";
