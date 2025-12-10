@@ -5,6 +5,7 @@ import { ContentListTable } from "../../../../components";
 import { Modules } from "../../../../core";
 import { DataListRetriever, useDataListRetriever } from "../../../../hooks";
 import { RoleFields, RoleInterface, RoleService } from "../../data";
+import "../../hooks/useRoleTableStructure";
 
 export function RolesList() {
   const t = useTranslations();

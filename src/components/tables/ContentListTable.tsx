@@ -1,4 +1,5 @@
 "use client";
+import "../../client";
 
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 

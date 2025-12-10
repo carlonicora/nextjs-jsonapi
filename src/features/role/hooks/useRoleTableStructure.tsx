@@ -4,7 +4,8 @@ import { ColumnDef, Row } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { cellDate, cellId } from "../../../components";
-import { registerTableGenerator, TableContent, usePageUrlGenerator, UseTableStructureHook } from "../../../hooks";
+import { Modules } from "../../../core";
+import { TableContent, usePageUrlGenerator, UseTableStructureHook } from "../../../hooks";
 import { Link } from "../../../shadcnui";
 import { RoleFields, RoleInterface } from "../data";
 
@@ -69,5 +70,3 @@ export const useRoleTableStructure: UseTableStructureHook<RoleInterface, RoleFie
   // Memoize the return object to prevent infinite re-renders
   return useMemo(() => ({ data: tableData, columns: columns }), [tableData, columns]);
 };
-
-registerTableGenerator("Role", useRoleTableStructure);

@@ -9,3 +9,14 @@ export * from "./hooks";
 // Client-side request utilities
 export * from "./request";
 export * from "./token";
+
+// Table generator registration (must be in client-only context)
+import { useRoleTableStructure } from "../features/role/hooks";
+import { useUserTableStructure } from "../features/user/hooks";
+import { registerTableGenerator } from "../hooks";
+
+export * from "../features/role/hooks";
+export * from "../features/user/hooks";
+
+registerTableGenerator("roles", useRoleTableStructure);
+registerTableGenerator("users", useUserTableStructure);
