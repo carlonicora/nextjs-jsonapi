@@ -31,3 +31,4 @@ export type {
   UseTranslationsHook,
 } from "../i18n";
 export * from "./useCustomD3Graph";
+export * from "./useSocket";
