@@ -39,6 +39,7 @@ let _getServerToken: GetTokenFn;
 // Config storage for non-React contexts
 let _staticConfig: {
   apiUrl: string;
+  appUrl?: string;
   bootstrapper?: () => void;
   additionalHeaders?: Record<string, string>;
 } | null = null;
@@ -49,6 +50,7 @@ let _staticConfig: {
  */
 export function configureJsonApi(config: {
   apiUrl: string;
+  appUrl?: string;
   bootstrapper?: () => void;
   additionalHeaders?: Record<string, string>;
 }): void {
@@ -134,6 +136,20 @@ function getApiUrl(): string {
     throw new Error("API URL not configured. Use configureJsonApi() or set NEXT_PUBLIC_API_URL environment variable.");
   }
   return envUrl;
+}
+
+export function getAppUrl(): string {
+  if (_staticConfig?.appUrl) {
+    return _staticConfig.appUrl;
+  }
+  // Fallback to environment variable
+  const envUrl = process.env.NEXT_PUBLIC_ADDRESS;
+  if (!envUrl) {
+    throw new Error(
+      "App URL not configured. Use configureJsonApi({ appUrl }) or set NEXT_PUBLIC_ADDRESS environment variable."
+    );
+  }
+  return envUrl.trim().replace(/\/+$/, "");
 }
 
 function runBootstrapper(): void {
