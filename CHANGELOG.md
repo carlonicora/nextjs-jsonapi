@@ -1,3 +1,9 @@
+## [1.0.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.0.0...v1.0.1) (2025-12-10)
+
+### 🐛 Bug Fixes
+
+* enable provenance for npm OIDC publishing ([a5373f0](https://github.com/carlonicora/nextjs-jsonapi/commit/a5373f0bc9b003fc1893c1c55bc16e1abf1be4da))
+
 ## 1.0.0 (2025-12-09)
 
 ### 🚀 Features
