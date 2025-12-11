@@ -49,6 +49,15 @@ class ModuleRegistryClass {
     }
     throw new Error(`Module not found: ${moduleName}`);
   }
+
+  findByModelName(modelName: string): ModuleWithPermissions {
+    // Direct lookup by registry key (e.g., "Article", "Document")
+    const module = this._modules.get(modelName);
+    if (!module) {
+      throw new Error(`Module not found for model: ${modelName}`);
+    }
+    return module as ModuleWithPermissions;
+  }
 }
 
 export const ModuleRegistry = new ModuleRegistryClass();
@@ -59,6 +68,12 @@ export const Modules = new Proxy({} as ModuleDefinitions, {
     if (prop === "findByName") {
       return (name: string) => ModuleRegistry.findByName(name);
     }
+    if (prop === "findByModelName") {
+      return (name: string) => ModuleRegistry.findByModelName(name);
+    }
     return ModuleRegistry.get(prop as keyof ModuleDefinitions);
   },
-}) as ModuleDefinitions & { findByName: (name: string) => ModuleWithPermissions };
+}) as ModuleDefinitions & {
+  findByName: (name: string) => ModuleWithPermissions;
+  findByModelName: (name: string) => ModuleWithPermissions;
+};
