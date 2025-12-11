@@ -1,3 +1,9 @@
+## [1.1.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.1.0...v1.1.1) (2025-12-11)
+
+### 🐛 Bug Fixes
+
+* correct linting issues ([b95709e](https://github.com/carlonicora/nextjs-jsonapi/commit/b95709e3417d51ec398d8cff6697e996e80c2725))
+
 ## [1.1.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.0.6...v1.1.0) (2025-12-11)
 
 ### 🚀 Features
