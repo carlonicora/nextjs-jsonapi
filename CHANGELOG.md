@@ -1,3 +1,9 @@
+## [1.0.6](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.0.5...v1.0.6) (2025-12-11)
+
+### 📚 Documentation
+
+* add license ([ff4663b](https://github.com/carlonicora/nextjs-jsonapi/commit/ff4663b7aee286b4710ee35cc6fd3fc8dcb978a3))
+
 ## [1.0.5](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.0.4...v1.0.5) (2025-12-11)
 
 ### 📦 Code Refactoring
