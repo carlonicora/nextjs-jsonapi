@@ -1,3 +1,18 @@
+## [1.0.5](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.0.4...v1.0.5) (2025-12-11)
+
+### 📦 Code Refactoring
+
+* move Auth components to nextjs-jsonapi ([8cc32da](https://github.com/carlonicora/nextjs-jsonapi/commit/8cc32da5c9bea0cc3f9a7a379b1ed89c9cc440f7))
+* move CommonContext to nextjs-jsonapi ([00438c3](https://github.com/carlonicora/nextjs-jsonapi/commit/00438c34c12d485ec366ded2eb56aa8a80b56f98))
+* move FeatureForm to nextjs-jsonapi ([0fd3777](https://github.com/carlonicora/nextjs-jsonapi/commit/0fd3777d0f41cc86cec31a9e0c9ae7303536fd11))
+* move notification components to nextjs-jsonapi ([a8bfed8](https://github.com/carlonicora/nextjs-jsonapi/commit/a8bfed8a1830cb47cc5ea7e61fef40485c559087))
+* move page tracker to nextjs-jsonapi ([f3a05c8](https://github.com/carlonicora/nextjs-jsonapi/commit/f3a05c84b011a3ccb4939700929e4022117e00a2))
+* move Role components to nextjs-jsonapi ([8ebdaca](https://github.com/carlonicora/nextjs-jsonapi/commit/8ebdaca06a2ccc6746bce72098a0bb2ba7d0a48a))
+* move ServerSession to nextjs-jsonapi ([c5154d0](https://github.com/carlonicora/nextjs-jsonapi/commit/c5154d0039a8c6b57bf49562e881ef8c8a22f20f))
+* move SocketContext to nextjs-jsonapi ([a86c988](https://github.com/carlonicora/nextjs-jsonapi/commit/a86c98834eb85595d88d52442b6dfe3947760d1f))
+* move user and company components to nextjs-jsonapi ([82e6456](https://github.com/carlonicora/nextjs-jsonapi/commit/82e64560cc14d68c3fb21ae19cc11173277e369a))
+* reorganised modules ([d188c32](https://github.com/carlonicora/nextjs-jsonapi/commit/d188c32ddaa6c98971ee0d8dc38da3bbb47e467f))
+
 ## [1.0.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.0.3...v1.0.4) (2025-12-10)
 
 ### 🐛 Bug Fixes
