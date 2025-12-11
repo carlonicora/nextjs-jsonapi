@@ -59,16 +59,6 @@ export const useContentTableStructure: UseTableStructureHook<ContentInterface, C
       enableSorting: false,
       enableHiding: false,
     }),
-    [ContentFields.topic]: () => {
-      const customCellTopic = params.context?.cellTopic;
-      if (!customCellTopic) return undefined;
-      return customCellTopic({ t });
-    },
-    [ContentFields.expertise]: () => {
-      const customCellExpertise = params.context?.cellExpertise;
-      if (!customCellExpertise) return undefined;
-      return customCellExpertise({ t });
-    },
     [ContentFields.relevance]: () => ({
       id: "relevance",
       accessorKey: "relevance",
@@ -121,10 +111,20 @@ export const useContentTableStructure: UseTableStructureHook<ContentInterface, C
   };
 
   const columns = useMemo(() => {
-    return params.fields.map((field) => fieldColumnMap[field]?.()).filter((col) => col !== undefined) as ColumnDef<
-      TableContent<ContentInterface>
-    >[];
-  }, [params.fields, fieldColumnMap, t, generateUrl]);
+    return params.fields
+      .map((field) => {
+        // First check local fieldColumnMap
+        const localHandler = fieldColumnMap[field];
+        if (localHandler) return localHandler();
+
+        // Fallback to customCells from context
+        const customHandler = params.context?.customCells?.[field];
+        if (customHandler) return customHandler({ t });
+
+        return undefined;
+      })
+      .filter((col) => col !== undefined) as ColumnDef<TableContent<ContentInterface>>[];
+  }, [params.fields, fieldColumnMap, t, generateUrl, params.context?.customCells]);
 
   return useMemo(() => ({ data: tableData, columns: columns }), [tableData, columns]);
 };
