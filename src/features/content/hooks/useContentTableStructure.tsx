@@ -64,6 +64,11 @@ export const useContentTableStructure: UseTableStructureHook<ContentInterface, C
       if (!customCellTopic) return undefined;
       return customCellTopic({ t });
     },
+    [ContentFields.expertise]: () => {
+      const customCellExpertise = params.context?.cellExpertise;
+      if (!customCellExpertise) return undefined;
+      return customCellExpertise({ t });
+    },
     [ContentFields.relevance]: () => ({
       id: "relevance",
       accessorKey: "relevance",
