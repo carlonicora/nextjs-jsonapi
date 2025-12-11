@@ -1,3 +1,20 @@
+## [1.1.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.0.6...v1.1.0) (2025-12-11)
+
+### 🚀 Features
+
+* add default icon to module ([a2162a3](https://github.com/carlonicora/nextjs-jsonapi/commit/a2162a32117459b98b330b666ec34bff99e95bab))
+* add expertise cell to content table ([4656af4](https://github.com/carlonicora/nextjs-jsonapi/commit/4656af4e8dbe50e6647225c4b5066d6b6dc6f9a4))
+* add findByModelName method to ModuleRegistry for direct model lookups ([98268de](https://github.com/carlonicora/nextjs-jsonapi/commit/98268dece84ba5db70ad3fde750e181a506763d9))
+
+### 🐛 Bug Fixes
+
+* remove app-specific code from content table ([549f040](https://github.com/carlonicora/nextjs-jsonapi/commit/549f040156b03e3c9bd54d6c809f2cd4dffafcd1))
+* remove app-specific code from content table ([19dd3da](https://github.com/carlonicora/nextjs-jsonapi/commit/19dd3da040856c9273721dfbc1ca367e70f416dc))
+
+### 📦 Code Refactoring
+
+* move content components to nextjs-jsonapi ([1d0dcb8](https://github.com/carlonicora/nextjs-jsonapi/commit/1d0dcb817ea5f1b8e30f7bd3e58c9a8115a86593))
+
 ## [1.0.6](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.0.5...v1.0.6) (2025-12-11)
 
 ### 📚 Documentation
