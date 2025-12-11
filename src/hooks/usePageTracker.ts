@@ -11,7 +11,7 @@ const EXCLUDED_ROUTES = ["/", "/login", "/register", "/forgot-password", "/reset
 
 export function usePageTracker() {
   const pathname = usePathname();
-  const [recentPages, setRecentPages] = useAtom(recentPagesAtom);
+  const [_recentPages, setRecentPages] = useAtom(recentPagesAtom);
 
   useEffect(() => {
     if (!pathname) return;

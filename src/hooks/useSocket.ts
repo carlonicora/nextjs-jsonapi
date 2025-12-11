@@ -31,9 +31,9 @@ interface UseSocketReturn {
 }
 
 export function useSocket({ token }: UseSocketOptions): UseSocketReturn {
-  const errorCount = useRef(0);
+  const _errorCount = useRef(0);
   const shouldConnect = useRef(true);
-  const hookInstanceId = useRef(Math.random().toString(36).substring(2, 11));
+  const _hookInstanceId = useRef(Math.random().toString(36).substring(2, 11));
 
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState<boolean>(false);
@@ -48,7 +48,7 @@ export function useSocket({ token }: UseSocketOptions): UseSocketReturn {
     const globalSocketKey = `__socket_${process.env.NEXT_PUBLIC_API_URL?.replace(/[^a-zA-Z0-9]/g, "_")}`;
 
     if (typeof window !== "undefined") {
-      const allSocketKeys = Object.keys(window).filter((key) => key.startsWith("__socket_"));
+      const _allSocketKeys = Object.keys(window).filter((key) => key.startsWith("__socket_"));
 
       const existingSocket = (window as any)[globalSocketKey];
       if (existingSocket) {
@@ -93,7 +93,7 @@ export function useSocket({ token }: UseSocketOptions): UseSocketReturn {
 
         socketRef.current = currentSocket;
         setSocket(currentSocket);
-      } catch (error) {
+      } catch {
         return () => {}; // Return empty cleanup function on error
       }
     }
