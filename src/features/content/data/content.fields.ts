@@ -5,8 +5,6 @@ export enum ContentFields {
   relevance = "relevance",
 
   authors = "authors",
-  topic = "topic",
-  expertise = "expertise",
 
   createdAt = "createdAt",
   updatedAt = "updatedAt",

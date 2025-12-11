@@ -10,7 +10,9 @@ import { Link, Tooltip, TooltipContent, TooltipTrigger } from "../../../shadcnui
 import { getIconByModule } from "../../../utils";
 import { ContentFields, ContentInterface } from "../data";
 
-export const useContentTableStructure: UseTableStructureHook<ContentInterface, ContentFields> = (params) => {
+export const useContentTableStructure = <U extends string = ContentFields>(
+  params: Parameters<UseTableStructureHook<ContentInterface, U>>[0],
+): ReturnType<UseTableStructureHook<ContentInterface, U>> => {
   const t = useTranslations();
   const generateUrl = usePageUrlGenerator();
 
@@ -21,13 +23,13 @@ export const useContentTableStructure: UseTableStructureHook<ContentInterface, C
       };
       entry[ContentFields.contentId] = content.id;
       params.fields.forEach((field) => {
-        entry[field] = content[field as keyof ContentInterface];
+        entry[field as string] = content[field as keyof ContentInterface];
       });
       return entry;
     });
   }, [params.data, params.fields]);
 
-  const fieldColumnMap: Partial<Record<ContentFields, () => any>> = {
+  const fieldColumnMap: Partial<Record<string, () => any>> = {
     [ContentFields.contentId]: () =>
       cellId({
         name: "contentId",
