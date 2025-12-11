@@ -10,6 +10,7 @@ export * from "./hooks";
 export * from "./request";
 export * from "./token";
 
+import { useCompanyTableStructure } from "../features/company/hooks";
 // Table generator registration (must be in client-only context)
 import { useRoleTableStructure } from "../features/role/hooks";
 import { useUserTableStructure } from "../features/user/hooks";
@@ -20,3 +21,4 @@ export * from "../features/user/hooks";
 
 registerTableGenerator("roles", useRoleTableStructure);
 registerTableGenerator("users", useUserTableStructure);
+registerTableGenerator("companies", useCompanyTableStructure);

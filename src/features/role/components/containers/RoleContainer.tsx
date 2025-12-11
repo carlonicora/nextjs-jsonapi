@@ -1,6 +1,6 @@
 "use client";
 
-import RoleUsersList from "../../../user/components/lists/RoleUsersList";
+import { RoleUsersList } from "../../../user/components/lists/RoleUsersList";
 import { useRoleContext } from "../../contexts";
 import { RoleDetails } from "../details";
 

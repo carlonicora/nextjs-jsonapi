@@ -4,28 +4,27 @@ import { useTranslations } from "next-intl";
 import { ContentListTable } from "../../../../components";
 import { Modules } from "../../../../core";
 import { DataListRetriever, useDataListRetriever } from "../../../../hooks";
-import { RoleInterface } from "../../../role";
 import { UserFields, UserInterface, UserService } from "../../data";
 
-type RoleUsersListProps = {
-  role: RoleInterface;
+type UsersListByContentIdsProps = {
+  contentIds: string[];
 };
 
-export function RoleUsersList({ role }: RoleUsersListProps) {
+export function UsersListByContentIds({ contentIds }: UsersListByContentIdsProps) {
   const t = useTranslations();
 
   const data: DataListRetriever<UserInterface> = useDataListRetriever({
-    retriever: (params) => UserService.findAllUsersByRole(params),
-    retrieverParams: { roleId: role.id },
     module: Modules.User,
-  }) as DataListRetriever<UserInterface>;
+    retriever: (params) => UserService.findManyByContentIds(params),
+    retrieverParams: { contentIds: contentIds },
+  });
 
   return (
     <ContentListTable
       data={data}
       fields={[UserFields.name, UserFields.email]}
       tableGeneratorType={Modules.User}
-      title={t(`types.users`, { count: 2 })}
+      title={t(`generic.relevant_users`)}
     />
   );
 }

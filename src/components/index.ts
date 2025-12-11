@@ -9,6 +9,7 @@ export * from "./pages";
 export * from "./tables";
 
 export * from "../features/auth/components";
+export * from "../features/company/components";
 export * from "../features/feature/components";
 export * from "../features/notification/components";
 export * from "../features/role/components";
