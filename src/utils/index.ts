@@ -13,3 +13,4 @@ export { entityObjectSchema, userObjectSchema, type EntityObject, type UserObjec
 
 export * from "./blocknote-diff.util";
 export * from "./blocknote-word-diff-renderer.util";
+export * from "./icons";

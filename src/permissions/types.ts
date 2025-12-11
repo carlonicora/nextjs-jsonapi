@@ -1,3 +1,4 @@
+import { LucideIcon } from "lucide-react";
 import { ApiRequestDataTypeInterface } from "../core/interfaces/ApiRequestDataTypeInterface";
 import { FieldSelector } from "../core/fields/FieldSelector";
 
@@ -80,6 +81,7 @@ export type ModuleWithPermissions = ApiRequestDataTypeInterface & {
   pageUrl?: string;
   feature?: string;
   moduleId?: string;
+  icon?: LucideIcon;
   inclusions?: Record<
     string,
     {
@@ -99,6 +101,7 @@ export type ModuleFactory = (params: {
   model: any;
   feature?: string;
   moduleId?: string;
+  icon?: LucideIcon;
   inclusions?: Record<
     string,
     {
