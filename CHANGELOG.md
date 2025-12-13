@@ -1,3 +1,9 @@
+## [1.2.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.1.1...v1.2.0) (2025-12-13)
+
+### 🚀 Features
+
+* add user module to exports ([164380f](https://github.com/carlonicora/nextjs-jsonapi/commit/164380f768420ec7334847895e669e0d257356ea))
+
 ## [1.1.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.1.0...v1.1.1) (2025-12-11)
 
 ### 🐛 Bug Fixes
