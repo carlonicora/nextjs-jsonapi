@@ -1,3 +1,9 @@
+## [1.6.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.5.0...v1.6.0) (2025-12-15)
+
+### 🚀 Features
+
+* update complete structure to avoid client/server issues ([7ce60aa](https://github.com/carlonicora/nextjs-jsonapi/commit/7ce60aac67e1a97f1298fa81fd83d41e184ff785))
+
 ## [1.5.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.4.0...v1.5.0) (2025-12-15)
 
 ### 🚀 Features
