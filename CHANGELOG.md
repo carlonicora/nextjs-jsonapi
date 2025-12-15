@@ -1,3 +1,9 @@
+## [1.3.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.3.0...v1.3.1) (2025-12-15)
+
+### 🐛 Bug Fixes
+
+* correct logo url ([7bba8fc](https://github.com/carlonicora/nextjs-jsonapi/commit/7bba8fcae3dfae03f905cc2b80f54808267930e9))
+
 ## [1.3.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.2.0...v1.3.0) (2025-12-15)
 
 ### 🚀 Features
