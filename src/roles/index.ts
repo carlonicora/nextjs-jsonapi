@@ -1,1 +1,9 @@
-export { configureRoles, getRoleId, isRolesConfigured, type RoleIdConfig } from "./config";
+export {
+  configureDiscord,
+  configureRoles,
+  getRoleId,
+  isDiscordConfigured,
+  isInternalAuthConfigured,
+  isRolesConfigured,
+  type RoleIdConfig,
+} from "./config";

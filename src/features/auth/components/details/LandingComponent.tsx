@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import { isDiscordConfigured, isInternalAuthConfigured } from "../../../../roles";
 import { Button, CardDescription, CardFooter, CardHeader, CardTitle, Link } from "../../../../shadcnui";
 import { getApiUrl } from "../../../../unified";
 import { useAuthContext } from "../../contexts";
@@ -23,35 +24,32 @@ export function LandingComponent() {
           {t(`generic.description`)}
         </CardDescription>
       </CardHeader>
-      <CardFooter className="mt-4 flex w-full flex-col justify-between">
-        <Link href="#" className="flex w-full justify-start" onClick={() => setComponentType(AuthComponent.Register)}>
-          <Button className="mt-4 w-full" variant={`default`}>
-            {t(`foundations.auth.buttons.register`)}
-          </Button>
-        </Link>
-        <Link href="#" className="flex w-full justify-end" onClick={() => setComponentType(AuthComponent.Login)}>
-          <Button className="mt-4 w-full" variant={`outline`} data-testid="page-login-button-initial-login">
-            {t(`foundations.auth.buttons.login`)}
-          </Button>
-        </Link>
-
-        <Button
-          onClick={(e) => {
-            e.preventDefault();
-            window.location.href = `${getApiUrl()}auth/discord`;
-          }}
-          className={`flex w-full justify-end`}
-        >
-          {/* <Image
-            className="flex h-4 w-5 items-center justify-center"
-            src={discordIcon}
-            alt="discordIcon"
-            width={20}
-            height={16}
-            style={{ width: "20px", height: "16px" }}
-          /> */}
-          <div className="text-sm font-medium leading-normal">Discord</div>
-        </Button>
+      <CardFooter className="mt-4 flex w-full flex-col justify-between gap-y-4">
+        {isInternalAuthConfigured() && (
+          <>
+            <Link
+              href="#"
+              className="flex w-full justify-start"
+              onClick={() => setComponentType(AuthComponent.Register)}
+            >
+              <Button className="w-full" variant={`default`}>
+                {t(`foundations.auth.buttons.register`)}
+              </Button>
+            </Link>
+            <Link href="#" className="flex w-full justify-end" onClick={() => setComponentType(AuthComponent.Login)}>
+              <Button className="w-full" variant={`outline`} data-testid="page-login-button-initial-login">
+                {t(`foundations.auth.buttons.login`)}
+              </Button>
+            </Link>
+          </>
+        )}
+        {isDiscordConfigured() && (
+          <Link href={`${getApiUrl()}auth/discord`} className="flex w-full justify-end">
+            <Button className="w-full" variant={`outline`} data-testid="page-login-button-initial-login">
+              Login with Discord
+            </Button>
+          </Link>
+        )}
       </CardFooter>
     </>
   );
