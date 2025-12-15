@@ -58,24 +58,28 @@ pnpm add @carlonicora/nextjs-jsonapi
 If you want to use the package as a git submodule (for development or before npm release):
 
 **1. Add the submodule**
+
 ```bash
 cd /path/to/your-project
 git submodule add https://github.com/carlonicora/nextjs-jsonapi packages/nextjs-jsonapi
 ```
 
 **2. Verify it worked**
+
 ```bash
 git submodule status
 # Should show: <commit-sha> packages/nextjs-jsonapi (heads/master)
 ```
 
 **3. Commit the submodule**
+
 ```bash
 git add .gitmodules packages/nextjs-jsonapi
 git commit -m "Add nextjs-jsonapi as submodule"
 ```
 
 **4. Update your `package.json`** (e.g., `apps/web/package.json`)
+
 ```json
 {
   "dependencies": {
@@ -85,6 +89,7 @@ git commit -m "Add nextjs-jsonapi as submodule"
 ```
 
 **5. Ensure `pnpm-workspace.yaml` includes packages**
+
 ```yaml
 packages:
   - "apps/*"
@@ -92,12 +97,14 @@ packages:
 ```
 
 **6. Install and build**
+
 ```bash
 pnpm install
 cd packages/nextjs-jsonapi && pnpm build && cd ../..
 ```
 
 **For CI/CD (GitHub Actions)**, add `submodules: recursive` to your checkout step:
+
 ```yaml
 - uses: actions/checkout@v4
   with:
@@ -105,6 +112,7 @@ cd packages/nextjs-jsonapi && pnpm build && cd ../..
 ```
 
 **Cloning a project with submodules:**
+
 ```bash
 # When cloning fresh
 git clone --recurse-submodules https://github.com/your/repo.git
@@ -115,12 +123,12 @@ git submodule update --init --recursive
 
 ### Peer Dependencies
 
-| Package           | Version   | Required | Purpose                          |
-| ----------------- | --------- | -------- | -------------------------------- |
-| `next`            | >=14.0.0  | Yes      | Next.js framework                |
-| `react`           | >=18.0.0  | Yes      | React library                    |
-| `react-dom`       | >=18.0.0  | Yes      | React DOM                        |
-| `react-hook-form` | >=7.0.0   | Optional | Form handling (for form components) |
+| Package           | Version  | Required | Purpose                             |
+| ----------------- | -------- | -------- | ----------------------------------- |
+| `next`            | >=14.0.0 | Yes      | Next.js framework                   |
+| `react`           | >=18.0.0 | Yes      | React library                       |
+| `react-dom`       | >=18.0.0 | Yes      | React DOM                           |
+| `react-hook-form` | >=7.0.0  | Optional | Form handling (for form components) |
 
 ## Quick Start
 
@@ -319,9 +327,9 @@ import {
   JsonApiDataFactory,
 
   // Registries
-  ModuleRegistry,      // Register modules during bootstrap
-  DataClassRegistry,   // Register model classes for JSON:API translation
-  Modules,             // Access registered modules (e.g., Modules.Article)
+  ModuleRegistry, // Register modules during bootstrap
+  DataClassRegistry, // Register model classes for JSON:API translation
+  Modules, // Access registered modules (e.g., Modules.Article)
 
   // Endpoint builder
   EndpointBuilder,
@@ -360,11 +368,7 @@ import {
 Server-side request utilities:
 
 ```typescript
-import {
-  serverRequest,
-  getServerToken,
-  getCacheProfile,
-} from "@carlonicora/nextjs-jsonapi/server";
+import { serverRequest, getServerToken, getCacheProfile } from "@carlonicora/nextjs-jsonapi/server";
 ```
 
 ### Permissions (`/permissions`)
@@ -387,11 +391,11 @@ Built-in feature modules that can be used directly in your application:
 ```typescript
 import {
   // S3 Module (for file uploads via pre-signed URLs)
-  S3Module,           // Module definition factory
-  S3Service,          // Service with getPreSignedUrl, getSignedUrl, deleteFile
-  S3,                 // Data class
-  type S3Interface,   // Response interface
-  type S3Input,       // Input parameters
+  S3Module, // Module definition factory
+  S3Service, // Service with getPreSignedUrl, getSignedUrl, deleteFile
+  S3, // Data class
+  type S3Interface, // Response interface
+  type S3Input, // Input parameters
 } from "@carlonicora/nextjs-jsonapi/features";
 
 // Usage example:
@@ -414,11 +418,11 @@ Utility functions:
 
 ```typescript
 import {
-  cn,                    // Class name merger (clsx + tailwind-merge)
-  composeRefs,           // Compose multiple refs
-  useComposedRefs,       // Hook for composing refs
-  useIsMobile,           // Mobile detection hook
-  type ClassValue,       // Type for cn function
+  cn, // Class name merger (clsx + tailwind-merge)
+  composeRefs, // Compose multiple refs
+  useComposedRefs, // Hook for composing refs
+  useIsMobile, // Mobile detection hook
+  type ClassValue, // Type for cn function
 } from "@carlonicora/nextjs-jsonapi/utils";
 ```
 
@@ -429,51 +433,128 @@ All shadcn/ui components (requires `"use client"`):
 ```typescript
 import {
   // UI Components (41)
-  Accordion, AccordionItem, AccordionTrigger, AccordionContent,
-  Alert, AlertTitle, AlertDescription,
-  AlertDialog, AlertDialogTrigger, AlertDialogContent, /* ... */
-  Avatar, AvatarImage, AvatarFallback,
-  Badge, badgeVariants,
-  Breadcrumb, BreadcrumbList, BreadcrumbItem, /* ... */
-  Button, buttonVariants,
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+  Alert,
+  AlertTitle,
+  AlertDescription,
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent /* ... */,
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+  Badge,
+  badgeVariants,
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem /* ... */,
+  Button,
+  buttonVariants,
   Calendar,
-  Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter,
-  Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext,
-  ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, /* ... */
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend /* ... */,
   Checkbox,
-  Collapsible, CollapsibleTrigger, CollapsibleContent,
-  Command, CommandInput, CommandList, CommandItem, /* ... */
-  ContextMenu, ContextMenuTrigger, ContextMenuContent, /* ... */
-  Dialog, DialogTrigger, DialogContent, DialogHeader, /* ... */
-  Drawer, DrawerTrigger, DrawerContent, /* ... */
-  DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, /* ... */
-  Form, FormField, FormItem, FormLabel, FormControl, /* ... */
-  HoverCard, HoverCardTrigger, HoverCardContent,
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+  Command,
+  CommandInput,
+  CommandList,
+  CommandItem /* ... */,
+  ContextMenu,
+  ContextMenuTrigger,
+  ContextMenuContent /* ... */,
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader /* ... */,
+  Drawer,
+  DrawerTrigger,
+  DrawerContent /* ... */,
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent /* ... */,
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl /* ... */,
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
   Input,
   Label,
-  NavigationMenu, NavigationMenuList, NavigationMenuItem, /* ... */
-  Popover, PopoverTrigger, PopoverContent,
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem /* ... */,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
   Progress,
-  RadioGroup, RadioGroupItem,
-  ScrollArea, ScrollBar,
-  Select, SelectTrigger, SelectValue, SelectContent, SelectItem, /* ... */
+  RadioGroup,
+  RadioGroupItem,
+  ScrollArea,
+  ScrollBar,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem /* ... */,
   Separator,
-  Sheet, SheetTrigger, SheetContent, SheetHeader, /* ... */
-  Sidebar, SidebarProvider, SidebarContent, SidebarMenu, /* ... */
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetHeader /* ... */,
+  Sidebar,
+  SidebarProvider,
+  SidebarContent,
+  SidebarMenu /* ... */,
   Skeleton,
   Slider,
-  Sonner, Toaster, toast,
+  Sonner,
+  Toaster,
+  toast,
   Switch,
-  Table, TableHeader, TableBody, TableRow, TableHead, TableCell, /* ... */
-  Tabs, TabsList, TabsTrigger, TabsContent,
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell /* ... */,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
   Textarea,
-  Toggle, toggleVariants,
-  Tooltip, TooltipTrigger, TooltipContent, TooltipProvider,
+  Toggle,
+  toggleVariants,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
 
   // Custom Components (3)
-  Kanban, KanbanColumn, KanbanItem,    // Drag-and-drop Kanban board
-  Link,                                 // next-intl compatible Link
-  MultiSelect,                          // Multi-select dropdown
+  Kanban,
+  KanbanColumn,
+  KanbanItem, // Drag-and-drop Kanban board
+  Link, // next-intl compatible Link
+  MultiSelect, // Multi-select dropdown
 } from "@carlonicora/nextjs-jsonapi/shadcnui";
 ```
 
@@ -487,14 +568,14 @@ Fetch data from a JSON:API endpoint:
 
 ```typescript
 const response = await JsonApiGet({
-  classKey: Modules.Article,  // Module definition
-  endpoint: "/articles/123",  // API endpoint
-  companyId: "company-uuid",  // Optional: for multi-tenant apps
-  language: "en",             // Required: for i18n
+  classKey: Modules.Article, // Module definition
+  endpoint: "/articles/123", // API endpoint
+  companyId: "company-uuid", // Optional: for multi-tenant apps
+  language: "en", // Required: for i18n
 });
 
 if (response.ok) {
-  console.log(response.data);       // Deserialized data
+  console.log(response.data); // Deserialized data
   console.log(response.pagination); // Pagination info
 
   // Navigate pages
@@ -516,9 +597,9 @@ const response = await JsonApiPost({
   language: "en",
 
   // Optional
-  files: { attachment: file },           // File uploads
-  overridesJsonApiCreation: false,       // Use raw body instead of JSON:API format
-  responseType: Modules.OtherType,       // If response type differs
+  files: { attachment: file }, // File uploads
+  overridesJsonApiCreation: false, // Use raw body instead of JSON:API format
+  responseType: Modules.OtherType, // If response type differs
 });
 ```
 
@@ -555,21 +636,21 @@ Hook for fetching data with automatic refetching:
 
 ```typescript
 const {
-  data,              // Fetched data or null
-  loading,           // Loading state
-  error,             // Error message or null
-  response,          // Full API response
-  refetch,           // Manual refetch function
-  hasNextPage,       // Pagination: has next page
-  hasPreviousPage,   // Pagination: has previous page
-  fetchNextPage,     // Fetch next page
+  data, // Fetched data or null
+  loading, // Loading state
+  error, // Error message or null
+  response, // Full API response
+  refetch, // Manual refetch function
+  hasNextPage, // Pagination: has next page
+  hasPreviousPage, // Pagination: has previous page
+  fetchNextPage, // Fetch next page
   fetchPreviousPage, // Fetch previous page
 } = useJsonApiGet<Article>({
   classKey: Modules.Article,
   endpoint: `/articles/${id}`,
   companyId: companyId,
   options: {
-    enabled: !!id,          // Conditionally enable
+    enabled: !!id, // Conditionally enable
     deps: [someDependency], // Refetch when these change
   },
 });
@@ -581,12 +662,12 @@ Hook for mutations (POST, PUT, PATCH, DELETE):
 
 ```typescript
 const {
-  data,      // Result data or null
-  loading,   // Loading state
-  error,     // Error message or null
-  response,  // Full API response
-  mutate,    // Execute the mutation
-  reset,     // Reset state
+  data, // Result data or null
+  loading, // Loading state
+  error, // Error message or null
+  response, // Full API response
+  mutate, // Execute the mutation
+  reset, // Reset state
 } = useJsonApiMutation<Article>({
   method: "POST",
   classKey: Modules.Article,
@@ -669,56 +750,56 @@ The package includes 44 pre-built shadcn/ui components:
 
 ### Standard UI Components (41)
 
-| Component | Description |
-|-----------|-------------|
-| `Accordion` | Collapsible content sections |
-| `Alert` | Callout for important messages |
-| `AlertDialog` | Modal dialog for confirmations |
-| `Avatar` | User profile images |
-| `Badge` | Status indicators and labels |
-| `Breadcrumb` | Navigation breadcrumbs |
-| `Button` | Click actions with variants |
-| `Calendar` | Date picker calendar |
-| `Card` | Content container |
-| `Carousel` | Sliding content panels |
-| `Chart` | Data visualization (Recharts) |
-| `Checkbox` | Toggle options |
-| `Collapsible` | Expandable sections |
-| `Command` | Command palette (cmdk) |
-| `ContextMenu` | Right-click menus |
-| `Dialog` | Modal windows |
-| `Drawer` | Sliding side panels (Vaul) |
-| `DropdownMenu` | Dropdown menus |
-| `Form` | Form handling (react-hook-form) |
-| `HoverCard` | Hover-triggered cards |
-| `Input` | Text input fields |
-| `Label` | Form labels |
-| `NavigationMenu` | Navigation menus |
-| `Popover` | Floating content |
-| `Progress` | Progress indicators |
-| `RadioGroup` | Radio button groups |
-| `ScrollArea` | Custom scrollbars |
-| `Select` | Dropdown selects |
-| `Separator` | Visual dividers |
-| `Sheet` | Side panels |
-| `Sidebar` | Application sidebars |
-| `Skeleton` | Loading placeholders |
-| `Slider` | Range sliders |
-| `Sonner` | Toast notifications |
-| `Switch` | Toggle switches |
-| `Table` | Data tables |
-| `Tabs` | Tabbed interfaces |
-| `Textarea` | Multi-line text input |
-| `Toggle` | Toggle buttons |
-| `Tooltip` | Hover tooltips |
+| Component        | Description                     |
+| ---------------- | ------------------------------- |
+| `Accordion`      | Collapsible content sections    |
+| `Alert`          | Callout for important messages  |
+| `AlertDialog`    | Modal dialog for confirmations  |
+| `Avatar`         | User profile images             |
+| `Badge`          | Status indicators and labels    |
+| `Breadcrumb`     | Navigation breadcrumbs          |
+| `Button`         | Click actions with variants     |
+| `Calendar`       | Date picker calendar            |
+| `Card`           | Content container               |
+| `Carousel`       | Sliding content panels          |
+| `Chart`          | Data visualization (Recharts)   |
+| `Checkbox`       | Toggle options                  |
+| `Collapsible`    | Expandable sections             |
+| `Command`        | Command palette (cmdk)          |
+| `ContextMenu`    | Right-click menus               |
+| `Dialog`         | Modal windows                   |
+| `Drawer`         | Sliding side panels (Vaul)      |
+| `DropdownMenu`   | Dropdown menus                  |
+| `Form`           | Form handling (react-hook-form) |
+| `HoverCard`      | Hover-triggered cards           |
+| `Input`          | Text input fields               |
+| `Label`          | Form labels                     |
+| `NavigationMenu` | Navigation menus                |
+| `Popover`        | Floating content                |
+| `Progress`       | Progress indicators             |
+| `RadioGroup`     | Radio button groups             |
+| `ScrollArea`     | Custom scrollbars               |
+| `Select`         | Dropdown selects                |
+| `Separator`      | Visual dividers                 |
+| `Sheet`          | Side panels                     |
+| `Sidebar`        | Application sidebars            |
+| `Skeleton`       | Loading placeholders            |
+| `Slider`         | Range sliders                   |
+| `Sonner`         | Toast notifications             |
+| `Switch`         | Toggle switches                 |
+| `Table`          | Data tables                     |
+| `Tabs`           | Tabbed interfaces               |
+| `Textarea`       | Multi-line text input           |
+| `Toggle`         | Toggle buttons                  |
+| `Tooltip`        | Hover tooltips                  |
 
 ### Custom Components (3)
 
-| Component | Description |
-|-----------|-------------|
-| `Kanban` | Drag-and-drop Kanban board (dnd-kit) |
-| `Link` | next-intl compatible link wrapper |
-| `MultiSelect` | Multi-select dropdown with badges |
+| Component     | Description                          |
+| ------------- | ------------------------------------ |
+| `Kanban`      | Drag-and-drop Kanban board (dnd-kit) |
+| `Link`        | next-intl compatible link wrapper    |
+| `MultiSelect` | Multi-select dropdown with badges    |
 
 ### Usage Example
 
