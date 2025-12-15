@@ -1,3 +1,9 @@
+## [1.5.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.4.0...v1.5.0) (2025-12-15)
+
+### 🚀 Features
+
+* add discord flag ([38bda89](https://github.com/carlonicora/nextjs-jsonapi/commit/38bda8955465a685169dc9340e9a1aee843163f3))
+
 ## [1.4.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.3.1...v1.4.0) (2025-12-15)
 
 ### 🚀 Features
