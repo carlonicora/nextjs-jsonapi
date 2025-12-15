@@ -8,7 +8,7 @@ import { FrontendTemplateData, FrontendField, FrontendRelationship } from "../..
 import { toCamelCase, pluralize, toPascalCase } from "../../transformers/name-transformer";
 import { AUTHOR_VARIANT } from "../../types/field-mapping.types";
 import { getFormFieldJsx } from "../../transformers/field-mapper";
-import { getRelationshipFormJsx, getDefaultValueExpression, getPayloadMapping } from "../../transformers/relationship-resolver";
+import { getRelationshipFormJsx, getDefaultValueExpression, getPayloadMapping, isFoundationImport, FOUNDATION_PACKAGE } from "../../transformers/relationship-resolver";
 
 /**
  * Generate the editor component file content
@@ -154,7 +154,12 @@ function generateImports(data: FrontendTemplateData): string {
       imports.push(`import { UserInterface } from "@/features/foundations/user/data/UserInterface";`);
     } else {
       const componentName = rel.single ? `${rel.name}Selector` : `${rel.name}MultiSelector`;
-      imports.push(`import ${componentName} from "${rel.importPath}";`);
+      if (rel.isFoundation) {
+        // Foundation entities use named imports from the package
+        imports.push(`import { ${componentName} } from "${FOUNDATION_PACKAGE}";`);
+      } else {
+        imports.push(`import ${componentName} from "${rel.importPath}";`);
+      }
     }
   });
 

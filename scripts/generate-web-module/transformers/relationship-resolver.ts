@@ -11,6 +11,21 @@ import { AUTHOR_VARIANT, AUTHOR_ZOD_SCHEMA, ENTITY_ZOD_SCHEMA } from "../types/f
 import { toCamelCase, toKebabCase, pluralize, toPascalCase } from "./name-transformer";
 
 /**
+ * Foundation package name constant for web imports
+ */
+export const FOUNDATION_PACKAGE = "@carlonicora/nextjs-jsonapi/features";
+
+/**
+ * Check if a directory represents a foundation import (from the package)
+ *
+ * @param directory - The directory string from relationship definition
+ * @returns True if this should import from the foundation package
+ */
+export function isFoundationImport(directory: string): boolean {
+  return directory === "@foundation" || directory.startsWith("@foundation/");
+}
+
+/**
  * Resolve a JSON relationship to frontend representation
  *
  * @param rel - JSON relationship definition
@@ -56,11 +71,23 @@ export function resolveRelationship(rel: JsonRelationshipDefinition): FrontendRe
     zodSchema = rel.nullable ? `z.array(${ENTITY_ZOD_SCHEMA}).optional()` : `z.array(${ENTITY_ZOD_SCHEMA})`;
   }
 
-  // Import paths - map directory to web path
-  const webDirectory = mapDirectoryToWebPath(rel.directory);
-  const importPath = `@/features/${webDirectory}/${modelKebab}/components/forms/${selectorComponent}`;
-  const interfaceImportPath = `@/features/${webDirectory}/${modelKebab}/data/${rel.name}Interface`;
-  const serviceImportPath = `@/features/${webDirectory}/${modelKebab}/data/${rel.name}Service`;
+  // Import paths - check for foundation imports
+  let importPath: string;
+  let interfaceImportPath: string;
+  let serviceImportPath: string;
+
+  if (isFoundationImport(rel.directory)) {
+    // Foundation entities import from the package
+    importPath = FOUNDATION_PACKAGE;
+    interfaceImportPath = FOUNDATION_PACKAGE;
+    serviceImportPath = FOUNDATION_PACKAGE;
+  } else {
+    // Feature entities use local paths
+    const webDirectory = mapDirectoryToWebPath(rel.directory);
+    importPath = `@/features/${webDirectory}/${modelKebab}/components/forms/${selectorComponent}`;
+    interfaceImportPath = `@/features/${webDirectory}/${modelKebab}/data/${rel.name}Interface`;
+    serviceImportPath = `@/features/${webDirectory}/${modelKebab}/data/${rel.name}Service`;
+  }
 
   return {
     name: rel.name,
@@ -68,6 +95,7 @@ export function resolveRelationship(rel: JsonRelationshipDefinition): FrontendRe
     directory: rel.directory,
     single: rel.single,
     nullable: rel.nullable,
+    isFoundation: isFoundationImport(rel.directory),
     formFieldId,
     formFieldIdPlural,
     payloadFieldId,
@@ -131,10 +159,9 @@ export function getSelectorImports(relationships: FrontendRelationship[]): strin
   const imports = new Set<string>();
 
   relationships.forEach((rel) => {
-    // Don't import User selector from same module - it's typically a library import
-    if (rel.name === "User" && rel.variant === AUTHOR_VARIANT) {
-      // User selector is imported from library or user feature
-      imports.add(`import { UserSelector } from "@/features/foundations/user/components/forms/UserSelector";`);
+    if (isFoundationImport(rel.directory)) {
+      // Foundation entities use named imports from the package
+      imports.add(`import { ${rel.selectorComponent} } from "${FOUNDATION_PACKAGE}";`);
     } else {
       imports.add(`import ${rel.selectorComponent} from "${rel.importPath}";`);
     }

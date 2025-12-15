@@ -39,4 +39,6 @@ export interface JsonModuleDefinition {
   languages: string[];
   fields: JsonFieldDefinition[];
   relationships: JsonRelationshipDefinition[];
+  /** Explicitly set whether this module extends Content. If not set, auto-detects based on fields. */
+  extendsContent?: boolean;
 }

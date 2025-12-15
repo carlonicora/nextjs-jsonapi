@@ -134,11 +134,11 @@ export function validateJsonSchema(schema: any): ValidationError[] {
         });
       }
 
-      // Directory should be features or foundations
-      if (rel.directory && !["features", "foundations"].includes(rel.directory)) {
+      // Directory should be features, foundations, or @foundation (for package imports)
+      if (rel.directory && !["features", "foundations", "@foundation"].includes(rel.directory) && !rel.directory.startsWith("@foundation/")) {
         errors.push({
           field: `relationships[${index}].directory`,
-          message: 'Relationship directory should be "features" or "foundations"',
+          message: 'Relationship directory should be "features", "foundations", or "@foundation"',
           severity: "warning",
         });
       }

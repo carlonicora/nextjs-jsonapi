@@ -2,19 +2,26 @@
  * Parent Class Detector
  *
  * Determines whether a module should extend Content or AbstractApiData
- * based on the presence of Content-specific fields.
+ * based on the presence of Content-specific fields or explicit configuration.
  */
 
 import { JsonFieldDefinition } from "../types/json-schema.interface";
 import { CONTENT_INDICATOR_FIELDS } from "../types/field-mapping.types";
 
 /**
- * Check if a module should extend Content based on its fields
+ * Check if a module should extend Content
  *
  * @param fields - Array of field definitions from JSON schema
+ * @param explicitValue - Optional explicit value from JSON schema
  * @returns true if the module should extend Content
  */
-export function detectExtendsContent(fields: JsonFieldDefinition[]): boolean {
+export function detectExtendsContent(fields: JsonFieldDefinition[], explicitValue?: boolean): boolean {
+  // If explicitly set in JSON schema, use that value
+  if (explicitValue !== undefined) {
+    return explicitValue;
+  }
+
+  // Otherwise, auto-detect based on fields
   const fieldNames = fields.map((f) => f.name);
   return CONTENT_INDICATOR_FIELDS.some((indicator) => fieldNames.includes(indicator));
 }

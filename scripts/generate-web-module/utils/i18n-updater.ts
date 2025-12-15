@@ -1,14 +1,12 @@
 /**
  * i18n Updater
  *
- * Updates the messages/en.json file with new module translations.
+ * Updates the messages/{language}.json files with new module translations.
  */
 
 import * as fs from "fs";
 import { FrontendTemplateData } from "../types/template-data.interface";
 import { buildI18nMessages } from "../transformers/i18n-generator";
-
-const MESSAGES_PATH = "apps/web/messages/en.json";
 
 export interface I18nUpdateResult {
   success: boolean;
@@ -17,20 +15,22 @@ export interface I18nUpdateResult {
 }
 
 /**
- * Update messages/en.json with new module translations
+ * Update messages/{language}.json with new module translations
  *
  * @param data - Frontend template data
  * @param webBasePath - Base path to web app
+ * @param language - Language code (e.g., "en", "es", "fr")
  * @param dryRun - Whether to perform a dry run
  * @returns Update result
  */
 export function updateI18n(
   data: FrontendTemplateData,
   webBasePath: string,
+  language: string = "en",
   dryRun: boolean = false
 ): I18nUpdateResult {
   const { names, i18nKeys } = data;
-  const messagesPath = `${webBasePath}/${MESSAGES_PATH}`;
+  const messagesPath = `${webBasePath}/apps/web/messages/${language}.json`;
 
   // Check if file exists
   if (!fs.existsSync(messagesPath)) {
@@ -48,7 +48,7 @@ export function updateI18n(
   } catch (e) {
     return {
       success: false,
-      message: `Failed to parse messages/en.json: ${e}`,
+      message: `Failed to parse messages/${language}.json: ${e}`,
     };
   }
 
@@ -56,7 +56,7 @@ export function updateI18n(
   if (messages.features && messages.features[names.camelCase]) {
     return {
       success: true,
-      message: `Module ${names.camelCase} already exists in messages/en.json`,
+      message: `Module ${names.camelCase} already exists in messages/${language}.json`,
       alreadyExists: true,
     };
   }
@@ -82,7 +82,7 @@ export function updateI18n(
   if (dryRun) {
     return {
       success: true,
-      message: `[DRY RUN] Would update messages/en.json with ${names.camelCase} translations`,
+      message: `[DRY RUN] Would update messages/${language}.json with ${names.camelCase} translations`,
     };
   }
 
@@ -92,7 +92,7 @@ export function updateI18n(
 
   return {
     success: true,
-    message: `Updated messages/en.json with ${names.camelCase} translations`,
+    message: `Updated messages/${language}.json with ${names.camelCase} translations`,
   };
 }
 

@@ -108,11 +108,14 @@ export async function generateWebModule(options: GenerateWebModuleOptions): Prom
     console.log(`   ${bootstrapResult.success ? "✅" : "❌"} ${bootstrapResult.message}`);
   }
 
-  // Step 7: Update i18n (unless --no-register)
+  // Step 7: Update i18n for all languages (unless --no-register)
   if (!noRegister) {
-    console.log("\n🌐 Updating messages/en.json...");
-    const i18nResult = updateI18n(templateData, webBasePath, dryRun);
-    console.log(`   ${i18nResult.success ? "✅" : "❌"} ${i18nResult.message}`);
+    const languages = schema.languages || ["en"];
+    console.log(`\n🌐 Updating i18n for ${languages.length} language(s)...`);
+    for (const language of languages) {
+      const i18nResult = updateI18n(templateData, webBasePath, language, dryRun);
+      console.log(`   ${i18nResult.success ? "✅" : "❌"} ${i18nResult.message}`);
+    }
   }
 
   console.log("\n✅ Generation complete!");
@@ -131,7 +134,7 @@ export async function generateWebModule(options: GenerateWebModuleOptions): Prom
 function buildTemplateData(schema: JsonModuleDefinition): FrontendTemplateData {
   const names = transformNames(schema.moduleName, schema.endpointName);
   const targetDir = schema.targetDir as "features" | "foundations";
-  const extendsContent = detectExtendsContent(schema.fields);
+  const extendsContent = detectExtendsContent(schema.fields, schema.extendsContent);
 
   // Map fields
   const allFields = mapFields(schema.fields, names.camelCase);
