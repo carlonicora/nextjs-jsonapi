@@ -1,3 +1,9 @@
+## [1.3.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.2.0...v1.3.0) (2025-12-15)
+
+### 🚀 Features
+
+* add cli generator ([f4e1078](https://github.com/carlonicora/nextjs-jsonapi/commit/f4e1078d0fa5af1af10342426f9d9100e8292c53))
+
 ## [1.2.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.1.1...v1.2.0) (2025-12-13)
 
 ### 🚀 Features
