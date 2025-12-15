@@ -144,14 +144,7 @@ export default function CompanyLicense({ onRevalidate, onUpdateToken }: CompanyL
         className="relative flex min-h-screen w-full flex-col items-center justify-center"
       >
         <div className="absolute top-4 left-4 z-0">
-          <Image
-            src={`/phlow-logo.webp`}
-            className="object-contain p-4"
-            height={300}
-            width={300}
-            alt={"Phlow"}
-            priority
-          />
+          <Image src={`/logo.webp`} className="object-contain p-4" height={300} width={300} alt={"Logo"} priority />
         </div>
         <Card className="z-10 w-3xl">
           {hasRole(getRoleId().CompanyAdministrator) ? (

@@ -24,7 +24,7 @@ function InnerAuthContainer() {
   if (activeComponent === null)
     return (
       <div className="max-w-sm">
-        <Image src="/phlow-logo.webp" alt="Phlow" width={100} height={100} className="animate-spin-slow" priority />
+        <Image src="/logo.webp" alt="Logo" width={100} height={100} className="animate-spin-slow" priority />
       </div>
     );
 

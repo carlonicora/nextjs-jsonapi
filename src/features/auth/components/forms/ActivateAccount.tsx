@@ -52,7 +52,7 @@ export function ActivateAccount() {
     <>
       <CardHeader>
         <CardTitle className="text-primary flex flex-col items-center pb-10 text-4xl">
-          <Image src="/phlow-logo.webp" alt="Phlow" width={100} height={100} priority />
+          <Image src="/logo.webp" alt="Logo" width={100} height={100} priority />
           {t("foundations.auth.accept_invitation")}
         </CardTitle>
         <CardDescription className="text-center text-sm">

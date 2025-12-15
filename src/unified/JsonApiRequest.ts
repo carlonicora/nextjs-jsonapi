@@ -1,7 +1,7 @@
+import { JsonApiDataFactory } from "../core/factories/JsonApiDataFactory";
 import { ApiData } from "../core/interfaces/ApiData";
 import { ApiRequestDataTypeInterface } from "../core/interfaces/ApiRequestDataTypeInterface";
 import { ApiResponseInterface } from "../core/interfaces/ApiResponseInterface";
-import { JsonApiDataFactory } from "../core/factories/JsonApiDataFactory";
 import { translateResponse } from "../core/utils/translateResponse";
 import { ModuleWithPermissions } from "../permissions/types";
 
@@ -129,7 +129,7 @@ async function makeRequest(params: {
   }
 }
 
-function getApiUrl(): string {
+export function getApiUrl(): string {
   if (_staticConfig?.apiUrl) {
     return _staticConfig.apiUrl;
   }

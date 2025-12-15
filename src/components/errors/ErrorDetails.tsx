@@ -10,7 +10,7 @@ export function ErrorDetails({ title, message, code }: { title?: string; message
         <Card className="w-full">
           <CardHeader>
             <CardTitle className="text-foreground flex flex-col items-center gap-y-4 pb-10 text-4xl">
-              <Image src="/phlow-logo.webp" alt="Phlow" width={100} height={100} priority />
+              <Image src="/logo.webp" alt="Logo" width={100} height={100} priority />
               {/* <div>{code}</div> */}
               <div>Unauthorised</div>
             </CardTitle>
@@ -28,7 +28,7 @@ export function ErrorDetails({ title, message, code }: { title?: string; message
       <Card className="w-full">
         <CardHeader>
           <CardTitle className="text-foreground flex flex-col items-center gap-y-4 pb-10 text-center text-4xl">
-            <Image src="/phlow-logo.webp" alt="Phlow" width={100} height={100} priority />
+            <Image src="/logo.webp" alt="Logo" width={100} height={100} priority />
             <div>{code}</div>
             <div>{title}</div>
           </CardTitle>
