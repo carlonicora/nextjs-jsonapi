@@ -1,3 +1,9 @@
+## [1.4.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.3.1...v1.4.0) (2025-12-15)
+
+### 🚀 Features
+
+* add login definition ([5c2daeb](https://github.com/carlonicora/nextjs-jsonapi/commit/5c2daeb74464fb76a16e1d92686bbf32f2f98123))
+
 ## [1.3.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.3.0...v1.3.1) (2025-12-15)
 
 ### 🐛 Bug Fixes
