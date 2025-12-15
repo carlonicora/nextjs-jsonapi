@@ -1,3 +1,9 @@
+## [1.7.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.6.0...v1.7.0) (2025-12-15)
+
+### 🚀 Features
+
+* add service exports for various features ([ebb1ee3](https://github.com/carlonicora/nextjs-jsonapi/commit/ebb1ee3f3ea1a5d0290974f601b9382d04f8d706))
+
 ## [1.6.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.5.0...v1.6.0) (2025-12-15)
 
 ### 🚀 Features
