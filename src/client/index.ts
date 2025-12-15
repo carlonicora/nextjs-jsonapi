@@ -3,12 +3,17 @@
 // Context and Provider
 export * from "./context";
 
-// Hooks
+// Client-side hooks
 export * from "./hooks";
 
 // Client-side request utilities
 export * from "./request";
 export * from "./token";
+export * from "./JsonApiClient";
+export * from "./config";
+
+// All hooks (merged from /hooks entry point)
+export * from "../hooks";
 
 // Table generator registration (must be in client-only context)
 import { useCompanyTableStructure } from "../features/company/hooks";

@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 
 import { createContext, ReactNode, useContext } from "react";
-import { UserInterface } from "../features";
+import { UserInterface } from "../features/user/data";
 import { useCurrentUserContext } from "../features/user/contexts";
 import { BreadcrumbItemData } from "../interfaces";
 import { SharedProvider } from "./SharedContext";

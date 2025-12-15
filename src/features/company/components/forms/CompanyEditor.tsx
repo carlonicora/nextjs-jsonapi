@@ -25,11 +25,14 @@ import { usePageUrlGenerator } from "../../../../hooks";
 import { useI18nRouter } from "../../../../i18n";
 import { getRoleId } from "../../../../roles";
 import { Dialog, DialogContent, Form, ScrollArea } from "../../../../shadcnui";
-import { FeatureInterface, FeatureService } from "../../../feature";
-import { S3Interface, S3Service } from "../../../s3";
+import { FeatureInterface } from "../../../feature";
+import { S3Interface } from "../../../s3";
+import { FeatureService } from "../../../feature/data/feature.service";
+import { S3Service } from "../../../s3/data/s3.service";
 import { UserInterface } from "../../../user";
 import { useCurrentUserContext } from "../../../user/contexts";
-import { CompanyInput, CompanyInterface, CompanyService } from "../../data";
+import { CompanyInput, CompanyInterface } from "../../data";
+import { CompanyService } from "../../data/company.service";
 
 type CompanyEditorProps = {
   company?: CompanyInterface;

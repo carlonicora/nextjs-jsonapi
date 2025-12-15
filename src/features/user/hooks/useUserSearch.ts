@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDebounce } from "../../../hooks/useDebounce";
-import { UserInterface, UserService } from "../data";
+import { UserInterface } from "../data";
+import { UserService } from "../data/user.service";
 
 export const useUserSearch = () => {
   const [users, setUsers] = useState<UserInterface[]>([]);

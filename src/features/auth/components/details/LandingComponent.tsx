@@ -2,9 +2,9 @@
 
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { isDiscordConfigured, isInternalAuthConfigured } from "../../../../roles";
+import { isDiscordConfigured, isInternalAuthConfigured } from "../../../../discord";
 import { Button, CardDescription, CardFooter, CardHeader, CardTitle, Link } from "../../../../shadcnui";
-import { getApiUrl } from "../../../../unified";
+import { getApiUrl } from "../../../../client/config";
 import { useAuthContext } from "../../contexts";
 import { AuthComponent } from "../../enums";
 

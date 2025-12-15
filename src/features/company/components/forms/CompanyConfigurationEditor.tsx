@@ -23,9 +23,11 @@ import {
   TabsList,
   TabsTrigger,
 } from "../../../../shadcnui";
-import { UserInterface, UserService } from "../../../user";
+import { UserInterface } from "../../../user";
+import { UserService } from "../../../user/data/user.service";
 import { useCurrentUserContext } from "../../../user/contexts";
-import { CompanyInput, CompanyInterface, CompanyService } from "../../data";
+import { CompanyInput, CompanyInterface } from "../../data";
+import { CompanyService } from "../../data/company.service";
 import { CompanyConfigurationSecurityForm } from "./CompanyConfigurationSecurityForm";
 
 type CompanyConfigurationEditorProps = {

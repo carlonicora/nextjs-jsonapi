@@ -2,7 +2,8 @@
 
 import { deleteCookie, getCookie } from "cookies-next";
 import { useEffect } from "react";
-import { UserInterface, UserService } from "../../../user";
+import { UserInterface } from "../../../user";
+import { UserService } from "../../../user/data/user.service";
 import { useCurrentUserContext } from "../../../user/contexts";
 import { getTokenHandler } from "../../config";
 

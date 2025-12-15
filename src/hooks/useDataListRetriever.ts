@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AbstractService } from "../core";
+import { ClientAbstractService } from "../core/abstracts/ClientAbstractService";
 
 export type PageInfo = {
   startItem: number;
@@ -47,7 +47,7 @@ export function useDataListRetriever<T>(params: {
   const isFetchingRef = useRef(false);
 
   const resolvedType = params.module;
-  const resolvedService = AbstractService; // We'll just use AbstractService directly for pagination
+  const resolvedService = ClientAbstractService; // We'll just use ClientAbstractService directly for pagination
 
   // Helper to parse page params from pagination URLs
   const parsePageParams = useCallback((url: string | undefined): { offset: number; size: number } | null => {
@@ -152,7 +152,7 @@ export function useDataListRetriever<T>(params: {
         const selfRef = { self: undefined };
 
         if (nextPage && fetchParams?.callNext && fetchParams?.isRefine !== true) {
-          const ServiceClass = stableParams.service as typeof AbstractService;
+          const ServiceClass = stableParams.service as typeof ClientAbstractService;
 
           response = await ServiceClass.next<T[]>({
             type: stableParams.type,
@@ -162,7 +162,7 @@ export function useDataListRetriever<T>(params: {
             self: selfRef,
           });
         } else if (previousPage && fetchParams?.callPrevious && fetchParams?.isRefine !== true) {
-          const ServiceClass = stableParams.service as typeof AbstractService;
+          const ServiceClass = stableParams.service as typeof ClientAbstractService;
 
           response = await ServiceClass.previous<T[]>({
             type: stableParams.type,

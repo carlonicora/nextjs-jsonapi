@@ -5,7 +5,8 @@ import { JsonApiHydratedDataInterface, Modules, rehydrate } from "../../../../co
 import { useI18nRouter } from "../../../../i18n";
 import { UserInterface } from "../../../user";
 import { useCurrentUserContext } from "../../../user/contexts";
-import { AuthInterface, AuthService } from "../../data";
+import { AuthInterface } from "../../data";
+import { AuthService } from "../../data/auth.service";
 
 export function Cookies({ dehydratedAuth, page }: { dehydratedAuth: JsonApiHydratedDataInterface; page?: string }) {
   const { setUser } = useCurrentUserContext<UserInterface>();

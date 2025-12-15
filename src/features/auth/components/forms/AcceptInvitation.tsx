@@ -10,7 +10,7 @@ import { z } from "zod";
 import { errorToast, FormPassword } from "../../../../components";
 import { Button, CardContent, CardDescription, CardHeader, CardTitle, Form } from "../../../../shadcnui";
 import { useAuthContext } from "../../contexts";
-import { AuthService } from "../../data";
+import { AuthService } from "../../data/auth.service";
 import { AuthComponent } from "../../enums";
 
 export function AcceptInvitation() {

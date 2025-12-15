@@ -2,9 +2,10 @@
 
 import { useEffect } from "react";
 import { useCurrentUserContext } from "../contexts";
-import { PushService, UserInterface } from "../features";
+import { UserInterface } from "../features/user/data";
+import { PushService } from "../features/push/data/push.service";
 import { getRoleId } from "../roles";
-import { getAppUrl } from "../unified/JsonApiRequest";
+import { getAppUrl } from "../client/config";
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);

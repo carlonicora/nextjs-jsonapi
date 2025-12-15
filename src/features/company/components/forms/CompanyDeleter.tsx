@@ -21,7 +21,8 @@ import {
 } from "../../../../shadcnui";
 import { UserInterface } from "../../../user";
 import { useCurrentUserContext } from "../../../user/contexts";
-import { CompanyInterface, CompanyService } from "../../data";
+import { CompanyInterface } from "../../data";
+import { CompanyService } from "../../data/company.service";
 
 type CompanyDeleterProps = {
   company: CompanyInterface;

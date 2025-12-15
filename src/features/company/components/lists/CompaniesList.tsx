@@ -5,7 +5,8 @@ import { ReactNode } from "react";
 import { ContentListTable } from "../../../../components";
 import { Modules } from "../../../../core";
 import { DataListRetriever, useDataListRetriever } from "../../../../hooks";
-import { CompanyFields, CompanyInterface, CompanyService } from "../../data";
+import { CompanyFields, CompanyInterface } from "../../data";
+import { CompanyService } from "../../data/company.service";
 import { CompanyEditor } from "../forms/CompanyEditor";
 
 export function CompaniesList() {

@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { errorToast } from "../../../../components";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "../../../../shadcnui";
 import { useAuthContext } from "../../contexts";
-import { AuthService } from "../../data";
+import { AuthService } from "../../data/auth.service";
 import { AuthComponent } from "../../enums";
 
 export function ActivateAccount() {

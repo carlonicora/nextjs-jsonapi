@@ -17,7 +17,8 @@ import {
   DialogTitle,
 } from "../../../../shadcnui";
 import { UserInterface } from "../../../user";
-import { RoleInterface, RoleService } from "../../data";
+import { RoleInterface } from "../../data";
+import { RoleService } from "../../data/role.service";
 
 type UserRoleAddProps = {
   user: UserInterface;

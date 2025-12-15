@@ -16,7 +16,8 @@ import {
   DialogTrigger,
 } from "../../../../shadcnui";
 import { useCurrentUserContext } from "../../contexts";
-import { UserInterface, UserService } from "../../data";
+import { UserInterface } from "../../data";
+import { UserService } from "../../data/user.service";
 
 type UserReactivatorProps = {
   user: UserInterface;

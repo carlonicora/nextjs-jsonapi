@@ -25,9 +25,11 @@ import {
   Label,
   Link,
 } from "../../../../shadcnui";
-import { UserInterface, UserService } from "../../../user";
+import { UserInterface } from "../../../user";
+import { UserService } from "../../../user/data/user.service";
 import { useCurrentUserContext } from "../../../user/contexts";
-import { CompanyInput, CompanyService } from "../../data";
+import { CompanyInput } from "../../data";
+import { CompanyService } from "../../data/company.service";
 
 type TokenPayload = {
   userId: string;

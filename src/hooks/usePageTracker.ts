@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { RecentPage, recentPagesAtom } from "../atoms";
-import { getTrackablePages } from "../unified/JsonApiRequest";
+import { getTrackablePages } from "../client/config";
 
 // Routes to exclude from tracking
 const EXCLUDED_ROUTES = ["/", "/login", "/register", "/forgot-password", "/reset-password", "/activate"];

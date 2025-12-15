@@ -1,7 +1,7 @@
 "use client";
 
 import { useCurrentUserContext } from "../../contexts";
-import { UserInterface } from "../../features";
+import { UserInterface } from "../../features/user/data";
 import { Action, ModuleWithPermissions } from "../../permissions";
 import { ScrollArea, Tabs, TabsContent, TabsList, TabsTrigger } from "../../shadcnui";
 import { cn } from "../../utils";

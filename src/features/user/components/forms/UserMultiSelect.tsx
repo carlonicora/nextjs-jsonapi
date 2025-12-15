@@ -16,7 +16,8 @@ import {
   MultiSelect,
 } from "../../../../shadcnui";
 import { useCurrentUserContext } from "../../contexts";
-import { UserInterface, UserService } from "../../data";
+import { UserInterface } from "../../data";
+import { UserService } from "../../data/user.service";
 
 // Type for user objects in the form
 type UserSelectType = {

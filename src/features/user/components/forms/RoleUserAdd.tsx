@@ -10,9 +10,11 @@ import {
 } from "../../../../components";
 import { Modules } from "../../../../core";
 import { DataListRetriever, useDataListRetriever } from "../../../../hooks";
-import { RoleInterface, RoleService } from "../../../role";
+import { RoleInterface } from "../../../role";
+import { RoleService } from "../../../role/data/role.service";
 import { useCurrentUserContext } from "../../contexts";
-import { UserInterface, UserService } from "../../data";
+import { UserInterface } from "../../data";
+import { UserService } from "../../data/user.service";
 
 type AddUserToRoleProps = {
   role: RoleInterface;

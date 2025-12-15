@@ -15,7 +15,8 @@ import {
   TooltipTrigger,
 } from "../../../../shadcnui";
 import { UserAvatar } from "../../../user/components";
-import { NotificationInterface, NotificationService } from "../../data";
+import { NotificationInterface } from "../../data";
+import { NotificationService } from "../../data/notification.service";
 import { generateNotificationData } from "../notifications/Notification";
 
 type NotificationsListProps = {

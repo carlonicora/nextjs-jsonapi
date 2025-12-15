@@ -17,15 +17,20 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
-    "./atoms": {
-      "types": "./dist/atoms/index.d.ts",
-      "import": "./dist/atoms/index.mjs",
-      "require": "./dist/atoms/index.js"
-    },
     "./core": {
       "types": "./dist/core/index.d.ts",
       "import": "./dist/core/index.mjs",
       "require": "./dist/core/index.js"
+    },
+    "./server": {
+      "types": "./dist/server/index.d.ts",
+      "import": "./dist/server/index.mjs",
+      "require": "./dist/server/index.js"
+    },
+    "./client": {
+      "types": "./dist/client/index.d.ts",
+      "import": "./dist/client/index.mjs",
+      "require": "./dist/client/index.js"
     },
     "./components": {
       "types": "./dist/components/index.d.ts",
@@ -36,55 +41,10 @@
       "types": "./dist/contexts/index.d.ts",
       "import": "./dist/contexts/index.mjs",
       "require": "./dist/contexts/index.js"
-    },
-    "./client": {
-      "types": "./dist/client/index.d.ts",
-      "import": "./dist/client/index.mjs",
-      "require": "./dist/client/index.js"
-    },
-    "./server": {
-      "types": "./dist/server/index.d.ts",
-      "import": "./dist/server/index.mjs",
-      "require": "./dist/server/index.js"
-    },
-    "./permissions": {
-      "types": "./dist/permissions/index.d.ts",
-      "import": "./dist/permissions/index.mjs",
-      "require": "./dist/permissions/index.js"
-    },
-    "./utils": {
-      "types": "./dist/utils/index.d.ts",
-      "import": "./dist/utils/index.mjs",
-      "require": "./dist/utils/index.js"
-    },
-    "./interfaces": {
-      "types": "./dist/interfaces/index.d.ts",
-      "import": "./dist/interfaces/index.mjs",
-      "require": "./dist/interfaces/index.js"
-    },
-    "./shadcnui": {
-      "types": "./dist/shadcnui/index.d.ts",
-      "import": "./dist/shadcnui/index.mjs",
-      "require": "./dist/shadcnui/index.js"
-    },
-    "./hooks": {
-      "types": "./dist/hooks/index.d.ts",
-      "import": "./dist/hooks/index.mjs",
-      "require": "./dist/hooks/index.js"
-    },
-    "./features": {
-      "types": "./dist/features/index.d.ts",
-      "import": "./dist/features/index.mjs",
-      "require": "./dist/features/index.js"
-    },
-    "./roles": {
-      "types": "./dist/roles/index.d.ts",
-      "import": "./dist/roles/index.mjs",
-      "require": "./dist/roles/index.js"
     }
   },
   "scripts": {
-    "build": "tsup && tsc -p scripts/generate-web-module/tsconfig.json",
+    "build": "NODE_OPTIONS='--max-old-space-size=8192' tsup && tsc -p scripts/generate-web-module/tsconfig.json",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
     "lint": "eslint \"src/**/*.ts\" --fix",

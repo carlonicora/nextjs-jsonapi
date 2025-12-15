@@ -18,7 +18,7 @@ import {
   Link,
 } from "../../../../shadcnui";
 import { useAuthContext } from "../../contexts";
-import { AuthService } from "../../data";
+import { AuthService } from "../../data/auth.service";
 import { AuthComponent } from "../../enums";
 
 export function ForgotPassword() {

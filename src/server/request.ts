@@ -1,8 +1,6 @@
-"use server";
+// Server-only utilities (NOT server actions - these cannot be called from client components)
 
 import { ApiData } from "../core/interfaces/ApiData";
-import { cacheLife } from "next/dist/server/use-cache/cache-life";
-import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 
 export interface ServerRequestParams {
   method: string;
@@ -16,30 +14,28 @@ export interface ServerRequestParams {
   additionalHeaders?: Record<string, string>;
 }
 
+// Map cache configuration names to revalidation times in seconds
+const cacheLifeToSeconds: Record<string, number> = {
+  seconds: 1,
+  minutes: 60,
+  hours: 3600,
+  days: 86400,
+  weeks: 604800,
+  max: 31536000, // 1 year
+  default: 60,
+};
+
 /**
  * Server-side request with Next.js caching support.
- * Uses "use cache" directive for automatic caching.
+ * Uses fetch's native caching options for Next.js compatibility.
  */
 export async function serverRequest(params: ServerRequestParams): Promise<ApiData> {
-  "use cache";
-
   const response: ApiData = {
     data: undefined,
     ok: false,
     status: 0,
     statusText: "",
   };
-
-  // Apply caching configuration
-  if (params.cache) {
-    if (["days", "default", "hours", "max", "minutes", "seconds", "weeks"].includes(params.cache)) {
-      cacheLife(params.cache as any);
-    } else {
-      cacheTag(params.cache);
-    }
-  } else {
-    cacheLife("seconds");
-  }
 
   const additionalHeaders: Record<string, string> = { ...params.additionalHeaders };
 
@@ -79,9 +75,27 @@ export async function serverRequest(params: ServerRequestParams): Promise<ApiDat
     additionalHeaders["Content-Type"] = "application/json";
   }
 
-  const options: RequestInit = {
+  // Build Next.js fetch caching options
+  const nextOptions: { revalidate?: number; tags?: string[] } = {};
+
+  if (params.cache) {
+    // Check if it's a predefined cache life name
+    if (params.cache in cacheLifeToSeconds) {
+      nextOptions.revalidate = cacheLifeToSeconds[params.cache];
+    } else {
+      // Treat as a cache tag
+      nextOptions.tags = [params.cache];
+      nextOptions.revalidate = 60; // Default revalidation time for tagged caches
+    }
+  } else {
+    // Default to short caching
+    nextOptions.revalidate = 1;
+  }
+
+  const options: RequestInit & { next?: { revalidate?: number; tags?: string[] } } = {
     method: params.method,
     headers: { Accept: "application/json", ...additionalHeaders },
+    next: nextOptions,
   };
 
   if (requestBody !== undefined) {

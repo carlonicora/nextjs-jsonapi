@@ -20,7 +20,7 @@ import {
 import { UserInterface } from "../../../user";
 import { useCurrentUserContext } from "../../../user/contexts";
 import { useAuthContext } from "../../contexts";
-import { AuthService } from "../../data";
+import { AuthService } from "../../data/auth.service";
 import { AuthComponent } from "../../enums";
 
 export function Login() {

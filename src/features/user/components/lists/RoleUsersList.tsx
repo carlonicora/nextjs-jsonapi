@@ -5,7 +5,8 @@ import { ContentListTable } from "../../../../components";
 import { Modules } from "../../../../core";
 import { DataListRetriever, useDataListRetriever } from "../../../../hooks";
 import { RoleInterface } from "../../../role";
-import { UserFields, UserInterface, UserService } from "../../data";
+import { UserFields, UserInterface } from "../../data";
+import { UserService } from "../../data/user.service";
 
 type RoleUsersListProps = {
   role: RoleInterface;

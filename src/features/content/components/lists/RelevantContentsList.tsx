@@ -4,7 +4,8 @@ import { useTranslations } from "next-intl";
 import { ContentListTable } from "../../../../components";
 import { Modules } from "../../../../core";
 import { DataListRetriever, useDataListRetriever } from "../../../../hooks";
-import { ContentFields, ContentInterface, ContentService } from "../../data";
+import { ContentFields, ContentInterface } from "../../data";
+import { ContentService } from "../../data/content.service";
 
 type RelevantContentsListProps = {
   id: string;

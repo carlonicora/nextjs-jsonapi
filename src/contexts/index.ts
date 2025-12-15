@@ -5,3 +5,6 @@ export * from "../features/user/contexts";
 export * from "./CommonContext";
 export * from "./SharedContext";
 export * from "./SocketContext";
+
+// Jotai atoms (merged from /atoms entry point)
+export * from "../atoms";

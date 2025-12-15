@@ -1,5 +1,5 @@
 import { AuthInput, AuthInterface } from ".";
-import { JsonApiDelete, JsonApiGet, JsonApiPost } from "../../../";
+import { JsonApiDelete, JsonApiGet, JsonApiPost } from "../../../unified";
 import {
   AbstractService,
   ApiResponseInterface,

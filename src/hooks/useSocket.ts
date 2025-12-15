@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import { Modules, rehydrate } from "../core";
-import { NotificationInterface } from "../features";
+import { NotificationInterface } from "../features/notification/data";
 
 type Socket = ReturnType<typeof io>;
 

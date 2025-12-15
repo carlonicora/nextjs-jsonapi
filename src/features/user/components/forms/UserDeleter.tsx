@@ -7,7 +7,8 @@ import { useI18nRouter, usePageUrlGenerator } from "../../../../hooks";
 import { Action } from "../../../../permissions";
 import { getRoleId } from "../../../../roles";
 import { useCurrentUserContext } from "../../contexts";
-import { UserInterface, UserService } from "../../data";
+import { UserInterface } from "../../data";
+import { UserService } from "../../data/user.service";
 
 type UserDeleterProps = {
   user: UserInterface;

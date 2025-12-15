@@ -4,7 +4,8 @@ import { useTranslations } from "next-intl";
 import { ContentListTable } from "../../../../components";
 import { Modules } from "../../../../core";
 import { DataListRetriever, useDataListRetriever } from "../../../../hooks";
-import { RoleFields, RoleInterface, RoleService } from "../../data";
+import { RoleFields, RoleInterface } from "../../data";
+import { RoleService } from "../../data/role.service";
 import "../../hooks/useRoleTableStructure";
 
 export function RolesList() {

@@ -6,7 +6,8 @@ import { useCompanyContext } from "../../../../contexts";
 import { Modules } from "../../../../core";
 import { DataListRetriever, useDataListRetriever } from "../../../../hooks";
 import { CompanyInterface } from "../../../company";
-import { UserFields, UserInterface, UserService } from "../../data";
+import { UserFields, UserInterface } from "../../data";
+import { UserService } from "../../data/user.service";
 import { UserEditor } from "../forms";
 
 type AdminUsersListProps = {

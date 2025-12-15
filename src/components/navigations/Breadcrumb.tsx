@@ -21,7 +21,7 @@ type BreadcrumbProps = { items: BreadcrumbItemData[] };
 
 const ITEMS_TO_DISPLAY = 3;
 
-export function Breadcrumb({ items }: BreadcrumbProps) {
+export function BreadcrumbNavigation({ items }: BreadcrumbProps) {
   const generateUrl = usePageUrlGenerator();
   const t = useTranslations();
 

@@ -13,8 +13,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../../../shadcnui";
-import { UserInterface, UserService } from "../../../user";
-import { RoleInterface, RoleService } from "../../data";
+import { UserInterface } from "../../../user";
+import { UserService } from "../../../user/data/user.service";
+import { RoleInterface } from "../../data";
+import { RoleService } from "../../data/role.service";
 
 type RemoveUserFromRoleProps = {
   user: UserInterface;

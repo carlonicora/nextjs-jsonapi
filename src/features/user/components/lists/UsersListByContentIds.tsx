@@ -4,7 +4,8 @@ import { useTranslations } from "next-intl";
 import { ContentListTable } from "../../../../components";
 import { Modules } from "../../../../core";
 import { DataListRetriever, useDataListRetriever } from "../../../../hooks";
-import { UserFields, UserInterface, UserService } from "../../data";
+import { UserFields, UserInterface } from "../../data";
+import { UserService } from "../../data/user.service";
 
 type UsersListByContentIdsProps = {
   contentIds: string[];

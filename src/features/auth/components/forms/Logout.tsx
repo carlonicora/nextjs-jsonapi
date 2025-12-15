@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { usePageUrlGenerator } from "../../../../hooks";
-import { AuthService } from "../../data";
+import { AuthService } from "../../data/auth.service";
 
 export function Logout() {
   const generateUrl = usePageUrlGenerator();

@@ -22,7 +22,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "../../../../shadcnui";
-import { UserInterface, UserService } from "../../data";
+import { UserInterface } from "../../data";
+import { UserService } from "../../data/user.service";
 import { UserAvatar } from "../widgets";
 
 type UserSelectorProps = {

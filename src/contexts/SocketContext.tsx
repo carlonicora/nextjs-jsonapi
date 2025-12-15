@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext } from "react";
-import { NotificationInterface } from "../features";
+import { NotificationInterface } from "../features/notification/data";
 import { useSocket } from "../hooks";
 
 interface SocketContextProps {

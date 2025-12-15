@@ -1,4 +1,4 @@
-"use server";
+// Server-only cookie utilities (consumers should provide their own server actions via configureAuth)
 
 import { cookies } from "next/headers";
 import zlib from "zlib";

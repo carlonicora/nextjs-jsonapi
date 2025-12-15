@@ -24,10 +24,13 @@ import { Action } from "../../../../permissions";
 import { getRoleId } from "../../../../roles";
 import { Dialog, DialogContent, DialogTrigger, Form } from "../../../../shadcnui";
 import { CompanyInterface } from "../../../company";
-import { RoleInterface, RoleService } from "../../../role";
-import { S3Interface, S3Service } from "../../../s3";
+import { RoleInterface } from "../../../role";
+import { S3Interface } from "../../../s3";
+import { RoleService } from "../../../role/data/role.service";
+import { S3Service } from "../../../s3/data/s3.service";
 import { useCurrentUserContext } from "../../contexts";
-import { UserInput, UserInterface, UserService } from "../../data";
+import { UserInput, UserInterface } from "../../data";
+import { UserService } from "../../data/user.service";
 import { UserAvatarEditor } from "./UserAvatarEditor";
 import { UserDeleter } from "./UserDeleter";
 

@@ -1,4 +1,4 @@
-"use server";
+// Server-only utilities (NOT server actions - these cannot be called from client components)
 
 /**
  * Get the authentication token from cookies (server-side)

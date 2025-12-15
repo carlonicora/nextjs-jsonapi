@@ -7,7 +7,8 @@ import { Modules } from "../../../core";
 import { useI18nRouter } from "../../../i18n";
 import { BreadcrumbItemData } from "../../../interfaces";
 import { NotificationMenuItem, NotificationToast } from "../components/notifications/Notification";
-import { NotificationInterface, NotificationService } from "../data";
+import { NotificationInterface } from "../data";
+import { NotificationService } from "../data/notification.service";
 
 interface NotificationContextType {
   notifications: NotificationInterface[];

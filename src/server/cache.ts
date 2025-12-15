@@ -1,4 +1,4 @@
-"use server";
+// Server-only utilities (NOT server actions - these cannot be called from client components)
 
 import { revalidateTag } from "next/cache";
 

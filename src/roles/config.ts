@@ -10,8 +10,6 @@ export interface RoleIdConfig {
 
 // Private storage for the injected role IDs
 let _roleId: RoleIdConfig | null = null;
-let _useDiscord: boolean = false;
-let _useInternalAuth: boolean = true;
 
 /**
  * Configure role IDs for the library
@@ -27,11 +25,6 @@ let _useInternalAuth: boolean = true;
  */
 export function configureRoles(roleId: RoleIdConfig): void {
   _roleId = roleId;
-}
-
-export function configureDiscord(params: { useDiscord: boolean; useInternalAuth: boolean }): void {
-  _useDiscord = params.useDiscord;
-  _useInternalAuth = params.useInternalAuth;
 }
 
 /**
@@ -50,12 +43,4 @@ export function getRoleId(): RoleIdConfig {
  */
 export function isRolesConfigured(): boolean {
   return _roleId !== null;
-}
-
-export function isDiscordConfigured(): boolean {
-  return _useDiscord;
-}
-
-export function isInternalAuthConfigured(): boolean {
-  return _useInternalAuth;
 }
