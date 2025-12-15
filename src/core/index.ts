@@ -25,6 +25,9 @@ export * from "../interfaces";
 // Top-level utilities (cn, date-formatter, schemas, etc.)
 export * from "../utils";
 
+// Permissions
+export * from "../permissions";
+
 // Feature data classes, interfaces, and modules
 export * from "../features/auth/data";
 export * from "../features/auth/enums";
