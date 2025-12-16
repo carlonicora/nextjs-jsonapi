@@ -1,3 +1,9 @@
+## [1.7.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.7.1...v1.7.2) (2025-12-16)
+
+### 💎 Styles
+
+* correct file structure ([0b582e3](https://github.com/carlonicora/nextjs-jsonapi/commit/0b582e31e0395bd403ab243f15b849d86f702883))
+
 ## [1.7.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.7.0...v1.7.1) (2025-12-16)
 
 ### 🐛 Bug Fixes
