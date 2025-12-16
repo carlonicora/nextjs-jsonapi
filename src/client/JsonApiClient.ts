@@ -40,7 +40,9 @@ export function getClientApiUrl(): string {
   }
   const envUrl = process.env.NEXT_PUBLIC_API_URL;
   if (!envUrl) {
-    throw new Error("API URL not configured. Use configureClientJsonApi() or set NEXT_PUBLIC_API_URL environment variable.");
+    throw new Error(
+      "API URL not configured. Use configureClientJsonApi() or set NEXT_PUBLIC_API_URL environment variable.",
+    );
   }
   return envUrl;
 }
@@ -51,7 +53,9 @@ export function getClientAppUrl(): string {
   }
   const envUrl = process.env.NEXT_PUBLIC_ADDRESS;
   if (!envUrl) {
-    throw new Error("App URL not configured. Use configureClientJsonApi({ appUrl }) or set NEXT_PUBLIC_ADDRESS environment variable.");
+    throw new Error(
+      "App URL not configured. Use configureClientJsonApi({ appUrl }) or set NEXT_PUBLIC_ADDRESS environment variable.",
+    );
   }
   return envUrl.trim().replace(/\/+$/, "");
 }
