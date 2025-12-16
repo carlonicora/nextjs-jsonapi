@@ -1,3 +1,9 @@
+## [1.7.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.7.0...v1.7.1) (2025-12-16)
+
+### 🐛 Bug Fixes
+
+* update generate web module ([08e5104](https://github.com/carlonicora/nextjs-jsonapi/commit/08e5104892cb8ea39d8c9361d2484f563be39c79))
+
 ## [1.7.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.6.0...v1.7.0) (2025-12-15)
 
 ### 🚀 Features
