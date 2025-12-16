@@ -17,11 +17,11 @@ export function generateMultiSelectorTemplate(data: FrontendTemplateData): strin
 
   return `"use client";
 
-import { FormControl, FormField, FormItem, FormLabel, FormMessage, MultiSelect } from "@carlonicora/nextjs-jsonapi/shadcnui";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage, MultiSelect } from "@carlonicora/nextjs-jsonapi/components";
 import { ${names.pascalCase}Interface } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
 import { ${names.pascalCase}Service } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Service";
-import { DataListRetriever, useDataListRetriever } from "@carlonicora/nextjs-jsonapi/hooks";
-import { useDebounce } from "@carlonicora/nextjs-jsonapi/hooks";
+import { DataListRetriever, useDataListRetriever } from "@carlonicora/nextjs-jsonapi/client";
+import { useDebounce } from "@carlonicora/nextjs-jsonapi/client";
 import { Modules } from "@carlonicora/nextjs-jsonapi/core";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";

@@ -25,7 +25,7 @@ export function generateContentTemplate(data: FrontendTemplateData): string | nu
 
 import { use${names.pascalCase}Context } from "@/features/${data.targetDir}/${names.kebabCase}/contexts/${names.pascalCase}Context";
 import { BlockNoteEditorContainer } from "@carlonicora/nextjs-jsonapi/components";
-import { Card } from "@carlonicora/nextjs-jsonapi/shadcnui";
+import { Card } from "@carlonicora/nextjs-jsonapi/components";
 
 export default function ${names.pascalCase}Content() {
   const { ${names.camelCase} } = use${names.pascalCase}Context();

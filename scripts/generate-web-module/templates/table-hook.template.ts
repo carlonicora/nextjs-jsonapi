@@ -26,14 +26,14 @@ import { ${names.pascalCase}Fields } from "@/features/${data.targetDir}/${names.
 import { ${names.pascalCase}Interface } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
 import { cellDate, cellId${hasAuthors ? ", ContributorsList" : ""} } from "@carlonicora/nextjs-jsonapi/components";
 import { Modules } from "@carlonicora/nextjs-jsonapi/core";${extendsContent ? `
-import { ContentInterface } from "@carlonicora/nextjs-jsonapi/features";` : ""}
+import { ContentInterface } from "@carlonicora/nextjs-jsonapi/core";` : ""}
 import {
   registerTableGenerator,
   TableContent,
   usePageUrlGenerator,
   UseTableStructureHook,
-} from "@carlonicora/nextjs-jsonapi/hooks";
-import { Link, Tooltip, TooltipContent, TooltipTrigger } from "@carlonicora/nextjs-jsonapi/shadcnui";
+} from "@carlonicora/nextjs-jsonapi/client";
+import { Link, Tooltip, TooltipContent, TooltipTrigger } from "@carlonicora/nextjs-jsonapi/components";
 import { ColumnDef } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";

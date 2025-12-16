@@ -22,7 +22,7 @@ import { ${names.pascalCase}Service } from "@/features/${data.targetDir}/${names
 import { generateSpecificMetadata } from "@/utils/metadata";
 import { PageContainer } from "@carlonicora/nextjs-jsonapi/components";
 import { Modules } from "@carlonicora/nextjs-jsonapi/core";
-import { Action } from "@carlonicora/nextjs-jsonapi/permissions";
+import { Action } from "@carlonicora/nextjs-jsonapi/core";
 import { ServerSession } from "@carlonicora/nextjs-jsonapi/server";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";

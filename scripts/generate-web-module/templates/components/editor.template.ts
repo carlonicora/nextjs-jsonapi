@@ -199,16 +199,16 @@ function generateImports(data: FrontendTemplateData): string {
 
   // Core imports
   imports.push(`import { Modules } from "@carlonicora/nextjs-jsonapi/core";`);
-  imports.push(`import { usePageUrlGenerator } from "@carlonicora/nextjs-jsonapi/hooks";`);
-  imports.push(`import { Action } from "@carlonicora/nextjs-jsonapi/permissions";`);
-  imports.push(`import { Dialog, DialogContent, Form } from "@carlonicora/nextjs-jsonapi/shadcnui";`);
+  imports.push(`import { usePageUrlGenerator } from "@carlonicora/nextjs-jsonapi/client";`);
+  imports.push(`import { Action } from "@carlonicora/nextjs-jsonapi/core";`);
+  imports.push(`import { Dialog, DialogContent, Form } from "@carlonicora/nextjs-jsonapi/components";`);
 
   // Zod schema imports
   const zodSchemaImports = ["entityObjectSchema"];
   if (hasAuthor) {
     zodSchemaImports.push("userObjectSchema");
   }
-  imports.push(`import { ${zodSchemaImports.join(", ")} } from "@carlonicora/nextjs-jsonapi/utils";`);
+  imports.push(`import { ${zodSchemaImports.join(", ")} } from "@carlonicora/nextjs-jsonapi/core";`);
 
   // Other imports
   imports.push(`import { zodResolver } from "@hookform/resolvers/zod";`);

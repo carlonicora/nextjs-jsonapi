@@ -22,8 +22,8 @@ import ${names.pascalCase}Editor from "@/features/${data.targetDir}/${names.keba
 import { ${names.pascalCase}Interface } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
 import { ${names.pascalCase}Service } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Service";
 import { SharedProvider } from "@carlonicora/nextjs-jsonapi/contexts";
-import { usePageUrlGenerator } from "@carlonicora/nextjs-jsonapi/hooks";
-import { BreadcrumbItemData } from "@carlonicora/nextjs-jsonapi/interfaces";
+import { usePageUrlGenerator } from "@carlonicora/nextjs-jsonapi/client";
+import { BreadcrumbItemData } from "@carlonicora/nextjs-jsonapi/core";
 
 import { JsonApiHydratedDataInterface, Modules, rehydrate } from "@carlonicora/nextjs-jsonapi/core";
 import { useTranslations } from "next-intl";

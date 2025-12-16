@@ -30,11 +30,11 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@carlonicora/nextjs-jsonapi/shadcnui";
+} from "@carlonicora/nextjs-jsonapi/components";
 import { ${names.pascalCase}Interface } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
 import { ${names.pascalCase}Service } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Service";
-import { DataListRetriever, useDataListRetriever } from "@carlonicora/nextjs-jsonapi/hooks";
-import { useDebounce } from "@carlonicora/nextjs-jsonapi/hooks";
+import { DataListRetriever, useDataListRetriever } from "@carlonicora/nextjs-jsonapi/client";
+import { useDebounce } from "@carlonicora/nextjs-jsonapi/client";
 import { Modules } from "@carlonicora/nextjs-jsonapi/core";
 
 import { CircleX, RefreshCwIcon, SearchIcon, XIcon } from "lucide-react";

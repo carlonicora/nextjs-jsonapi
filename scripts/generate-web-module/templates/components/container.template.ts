@@ -42,7 +42,7 @@ import {
   RelevantContentsList,
   RelevantUsersList,
 } from "@carlonicora/nextjs-jsonapi/components";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@carlonicora/nextjs-jsonapi/shadcnui";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@carlonicora/nextjs-jsonapi/components";
 import { useTranslations } from "next-intl";
 
 type ${names.pascalCase}ContainerProps = {

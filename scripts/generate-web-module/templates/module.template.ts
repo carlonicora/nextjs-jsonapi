@@ -22,7 +22,7 @@ export function generateModuleTemplate(data: FrontendTemplateData): string {
 
   return `import { ${names.pascalCase} } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}";
 import { createJsonApiInclusion } from "@carlonicora/nextjs-jsonapi/core";
-import { ModuleFactory } from "@carlonicora/nextjs-jsonapi/permissions";
+import { ModuleFactory } from "@carlonicora/nextjs-jsonapi/core";
 import { ${DEFAULT_MODULE_ICON} } from "lucide-react";
 
 export const ${names.pascalCase}Module = (factory: ModuleFactory) =>
