@@ -14,6 +14,8 @@ import {
   useState,
 } from "react";
 import { DropzoneOptions, DropzoneState, FileRejection, useDropzone } from "react-dropzone";
+
+export type { DropzoneOptions } from "react-dropzone";
 import { toast } from "sonner";
 import { buttonVariants, Input } from "../../shadcnui";
 import { cn } from "../../utils";
