@@ -10,11 +10,22 @@ export function useUrlRewriter() {
   const generateUrl = usePageUrlGenerator();
 
   return useCallback(
-    (params: { page: ModuleWithPermissions | string; id?: string; childPage?: string }): void => {
+    (params: {
+      page: ModuleWithPermissions | string;
+      id?: string;
+      childPage?: ModuleWithPermissions | string;
+      childId?: string;
+    }): void => {
       window.history.replaceState(
         null,
         "",
-        generateUrl({ page: params.page, id: params.id, childPage: params.childPage, language: locale }),
+        generateUrl({
+          page: params.page,
+          id: params.id,
+          childPage: params.childPage,
+          childId: params.childId,
+          language: locale,
+        }),
       );
     },
     [locale, generateUrl],
