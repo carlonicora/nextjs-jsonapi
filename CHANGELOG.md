@@ -1,3 +1,9 @@
+## [1.7.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.7.3...v1.7.4) (2025-12-20)
+
+### 🐛 Bug Fixes
+
+* update formatDate to accept locale parameter and use it for date formatting ([d7b4f64](https://github.com/carlonicora/nextjs-jsonapi/commit/d7b4f64599d35c3870207079ccc10adbff0b0da6))
+
 ## [1.7.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.7.2...v1.7.3) (2025-12-19)
 
 ### 🐛 Bug Fixes

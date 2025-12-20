@@ -1,6 +1,6 @@
 {
   "name": "@carlonicora/nextjs-jsonapi",
-  "version": "1.7.3",
+  "version": "1.7.4",
   "description": "Next.js JSON:API client with server/client support and caching",
   "author": "Carlo Nicora",
   "license": "GPL-3.0-or-later",
