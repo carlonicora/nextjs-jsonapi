@@ -1,3 +1,9 @@
+## [1.7.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.7.2...v1.7.3) (2025-12-19)
+
+### 🐛 Bug Fixes
+
+* export DropzoneOptions type from react-dropzone ([01d8c87](https://github.com/carlonicora/nextjs-jsonapi/commit/01d8c87a4b5638218c4c08c47e29ff0ae6868388))
+
 ## [1.7.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.7.1...v1.7.2) (2025-12-16)
 
 ### 💎 Styles
