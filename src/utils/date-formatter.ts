@@ -1,10 +1,8 @@
 type FormatOption = "date" | "time" | "dateTime" | "timeSince" | "default";
 
-export const formatDate = (eventDate: Date, formatOption: FormatOption): string => {
-  const browserLocale = navigator.language || "en-US";
-
+export const formatDate = (eventDate: Date, formatOption: FormatOption, locale: string = "en-GB"): string => {
   const formatPart = (date: Date, options: Intl.DateTimeFormatOptions): string =>
-    new Intl.DateTimeFormat(browserLocale, options).format(date);
+    new Intl.DateTimeFormat(locale, options).format(date);
 
   const now = new Date();
   const diff = now.getTime() - eventDate.getTime();
