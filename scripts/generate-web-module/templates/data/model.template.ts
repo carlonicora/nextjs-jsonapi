@@ -4,9 +4,9 @@
  * Generates {Module}.ts class file with rehydrate and createJsonApi methods.
  */
 
-import { FrontendTemplateData, FrontendField, FrontendRelationship } from "../../types/template-data.interface";
-import { toCamelCase, toPascalCase, pluralize } from "../../transformers/name-transformer";
+import { pluralize, toCamelCase } from "../../transformers/name-transformer";
 import { AUTHOR_VARIANT } from "../../types/field-mapping.types";
+import { FrontendField, FrontendTemplateData } from "../../types/template-data.interface";
 
 /**
  * Generate the model file content
@@ -48,27 +48,21 @@ function generateImports(data: FrontendTemplateData): string {
 
   // Own interface import
   imports.push(
-    `import { ${names.pascalCase}Input, ${names.pascalCase}Interface } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";`
+    `import { ${names.pascalCase}Input, ${names.pascalCase}Interface } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";`,
   );
 
   // Relationship interface imports
   relationships.forEach((rel) => {
-    imports.push(
-      `import { ${rel.interfaceName} } from "${rel.interfaceImportPath}";`
-    );
+    imports.push(`import { ${rel.interfaceName} } from "${rel.interfaceImportPath}";`);
   });
 
   // Base class and core imports
   if (extendsContent) {
-    imports.push(
-      `import { Content } from "@/features/features/content/data/Content";`
-    );
-    imports.push(
-      `import { JsonApiHydratedDataInterface, Modules } from "@carlonicora/nextjs-jsonapi/core";`
-    );
+    imports.push(`import { Content } from "@/features/features/content/data/Content";`);
+    imports.push(`import { JsonApiHydratedDataInterface, Modules } from "@carlonicora/nextjs-jsonapi/core";`);
   } else {
     imports.push(
-      `import { AbstractApiData, JsonApiHydratedDataInterface, Modules } from "@carlonicora/nextjs-jsonapi/core";`
+      `import { AbstractApiData, JsonApiHydratedDataInterface, Modules } from "@carlonicora/nextjs-jsonapi/core";`,
     );
   }
 
@@ -175,16 +169,14 @@ function generateRehydrateMethod(data: FrontendTemplateData): string {
     if (field.isContentField || field.name === "content") {
       // Content fields need JSON parsing
       lines.push(
-        `    this._${field.name} = data.jsonApi.attributes.${field.name} ? JSON.parse(data.jsonApi.attributes.${field.name}) : undefined;`
+        `    this._${field.name} = data.jsonApi.attributes.${field.name} ? JSON.parse(data.jsonApi.attributes.${field.name}) : undefined;`,
       );
     } else if (field.type === "date") {
       lines.push(
-        `    this._${field.name} = data.jsonApi.attributes.${field.name} ? new Date(data.jsonApi.attributes.${field.name}) : undefined;`
+        `    this._${field.name} = data.jsonApi.attributes.${field.name} ? new Date(data.jsonApi.attributes.${field.name}) : undefined;`,
       );
     } else {
-      lines.push(
-        `    this._${field.name} = data.jsonApi.attributes.${field.name};`
-      );
+      lines.push(`    this._${field.name} = data.jsonApi.attributes.${field.name};`);
     }
   });
 
@@ -197,13 +189,13 @@ function generateRehydrateMethod(data: FrontendTemplateData): string {
         const propName = toCamelCase(effectiveName);
         const relationshipKey = effectiveName.toLowerCase();
         lines.push(
-          `    this._${propName} = this._readIncluded(data, "${relationshipKey}", Modules.${rel.name}) as ${rel.interfaceName}${rel.nullable ? " | undefined" : ""};`
+          `    this._${propName} = this._readIncluded(data, "${relationshipKey}", Modules.${rel.name}) as ${rel.interfaceName}${rel.nullable ? " | undefined" : ""};`,
         );
       } else {
         const propName = pluralize(toCamelCase(rel.name));
         const relationshipKey = pluralize(rel.name.toLowerCase());
         lines.push(
-          `    this._${propName} = this._readIncludedList(data, "${relationshipKey}", Modules.${rel.name}) as ${rel.interfaceName}[];`
+          `    this._${propName} = this._readIncluded(data, "${relationshipKey}", Modules.${rel.name}) as ${rel.interfaceName}[];`,
         );
       }
     });
@@ -250,27 +242,23 @@ function generateCreateJsonApiMethod(data: FrontendTemplateData): string {
   fieldsToInclude.forEach((field) => {
     if (field.isContentField || field.name === "content") {
       lines.push(
-        `    if (data.${field.name} !== undefined) response.data.attributes.${field.name} = JSON.stringify(data.${field.name});`
+        `    if (data.${field.name} !== undefined) response.data.attributes.${field.name} = JSON.stringify(data.${field.name});`,
       );
     } else {
       lines.push(
-        `    if (data.${field.name} !== undefined) response.data.attributes.${field.name} = data.${field.name};`
+        `    if (data.${field.name} !== undefined) response.data.attributes.${field.name} = data.${field.name};`,
       );
     }
   });
 
   // Relationship serialization (skip author for Content, handle others)
-  const relationshipsToSerialize = relationships.filter(
-    (rel) => !(extendsContent && rel.variant === AUTHOR_VARIANT)
-  );
+  const relationshipsToSerialize = relationships.filter((rel) => !(extendsContent && rel.variant === AUTHOR_VARIANT));
 
   if (relationshipsToSerialize.length > 0) {
     lines.push(``);
     relationshipsToSerialize.forEach((rel) => {
       const effectiveName = rel.variant || rel.name;
-      const payloadKey = rel.single
-        ? `${toCamelCase(effectiveName)}Id`
-        : `${toCamelCase(rel.name)}Ids`;
+      const payloadKey = rel.single ? `${toCamelCase(effectiveName)}Id` : `${toCamelCase(rel.name)}Ids`;
       const relationshipKey = toCamelCase(effectiveName);
 
       if (rel.single) {
