@@ -1,3 +1,9 @@
+## [1.7.6](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.7.5...v1.7.6) (2025-12-20)
+
+### 🐛 Bug Fixes
+
+* reorder import statements and streamline code formatting in model template ([e96448c](https://github.com/carlonicora/nextjs-jsonapi/commit/e96448ce51970242a4e52a21aff8b4d7f8f9a839))
+
 ## [1.7.5](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.7.4...v1.7.5) (2025-12-20)
 
 ### 🐛 Bug Fixes
