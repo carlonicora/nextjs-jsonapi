@@ -1,3 +1,9 @@
+## [1.7.5](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.7.4...v1.7.5) (2025-12-20)
+
+### 🐛 Bug Fixes
+
+* extend useUrlRewriter parameters to include childId ([967a5ca](https://github.com/carlonicora/nextjs-jsonapi/commit/967a5caa386ff36c94676e74c14f92e7680a607f))
+
 ## [1.7.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.7.3...v1.7.4) (2025-12-20)
 
 ### 🐛 Bug Fixes
