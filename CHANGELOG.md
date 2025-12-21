@@ -1,3 +1,9 @@
+## [1.8.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.7.6...v1.8.0) (2025-12-21)
+
+### 🚀 Features
+
+* enhance relationship handling by adding support for edge properties and updating imports ([1aae701](https://github.com/carlonicora/nextjs-jsonapi/commit/1aae701a3300830e161c3cd3465210e12ad00489))
+
 ## [1.7.6](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.7.5...v1.7.6) (2025-12-20)
 
 ### 🐛 Bug Fixes
