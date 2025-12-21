@@ -3,6 +3,7 @@
 import { JsonApiDataFactory } from "../core/factories/JsonApiDataFactory";
 import { ApiRequestDataTypeInterface } from "../core/interfaces/ApiRequestDataTypeInterface";
 import { ApiResponseInterface } from "../core/interfaces/ApiResponseInterface";
+import { setBootstrapper } from "../core/registry/bootstrapStore";
 import { translateResponse } from "../core/utils/translateResponse";
 import { ModuleWithPermissions } from "../permissions/types";
 import { directFetch } from "./request";
@@ -30,6 +31,7 @@ export function configureClientJsonApi(config: {
 }): void {
   _clientConfig = config;
   if (config.bootstrapper) {
+    setBootstrapper(config.bootstrapper);
     config.bootstrapper();
   }
 }

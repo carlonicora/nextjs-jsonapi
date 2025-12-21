@@ -2,6 +2,7 @@ import { JsonApiDataFactory } from "../core/factories/JsonApiDataFactory";
 import { ApiData } from "../core/interfaces/ApiData";
 import { ApiRequestDataTypeInterface } from "../core/interfaces/ApiRequestDataTypeInterface";
 import { ApiResponseInterface } from "../core/interfaces/ApiResponseInterface";
+import { setBootstrapper } from "../core/registry/bootstrapStore";
 import { translateResponse } from "../core/utils/translateResponse";
 import { ModuleWithPermissions } from "../permissions/types";
 
@@ -58,8 +59,9 @@ export function configureJsonApi(config: {
   additionalHeaders?: Record<string, string>;
 }): void {
   _staticConfig = config;
-  // Call bootstrapper immediately to register all modules
+  // Register and call bootstrapper to register all modules
   if (config.bootstrapper) {
+    setBootstrapper(config.bootstrapper);
     config.bootstrapper();
   }
 }

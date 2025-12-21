@@ -1,5 +1,6 @@
 import { ApiRequestDataTypeInterface } from "../interfaces/ApiRequestDataTypeInterface";
 import { ModuleWithPermissions } from "../../permissions/types";
+import { tryBootstrap, hasBootstrapper } from "./bootstrapStore";
 
 // Foundation module types - defined by LIBRARY
 export interface FoundationModuleDefinitions {
@@ -33,14 +34,34 @@ class ModuleRegistryClass {
   }
 
   get<K extends keyof ModuleDefinitions>(name: K): ModuleDefinitions[K] {
-    const module = this._modules.get(name as string);
+    let module = this._modules.get(name as string);
+
+    // Self-healing: if module not found, try bootstrapping first
     if (!module) {
-      throw new Error(`Module "${String(name)}" not registered. Call bootstrap() first.`);
+      const didBootstrap = tryBootstrap();
+      if (didBootstrap) {
+        // Retry after bootstrap
+        module = this._modules.get(name as string);
+      }
     }
+
+    if (!module) {
+      // Provide helpful error message based on state
+      const hint = hasBootstrapper()
+        ? "Bootstrap was called but module still not found. Check module registration."
+        : "No bootstrapper registered. Ensure configureJsonApi({ bootstrapper }) is called before accessing modules.";
+      throw new Error(`Module "${String(name)}" not registered. ${hint}`);
+    }
+
     return module as ModuleDefinitions[K];
   }
 
   findByName(moduleName: string): ModuleWithPermissions {
+    // Self-healing: try bootstrap if registry is empty
+    if (this._modules.size === 0) {
+      tryBootstrap();
+    }
+
     // Search by module's name property (e.g., "topics", "articles")
     for (const module of this._modules.values()) {
       if ((module as ModuleWithPermissions).name === moduleName) {
@@ -52,7 +73,16 @@ class ModuleRegistryClass {
 
   findByModelName(modelName: string): ModuleWithPermissions {
     // Direct lookup by registry key (e.g., "Article", "Document")
-    const module = this._modules.get(modelName);
+    let module = this._modules.get(modelName);
+
+    // Self-healing: if not found, try bootstrapping
+    if (!module) {
+      const didBootstrap = tryBootstrap();
+      if (didBootstrap) {
+        module = this._modules.get(modelName);
+      }
+    }
+
     if (!module) {
       throw new Error(`Module not found for model: ${modelName}`);
     }

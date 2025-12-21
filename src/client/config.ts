@@ -1,6 +1,7 @@
 "use client";
 
 import { ModuleWithPermissions } from "../permissions/types";
+import { setBootstrapper } from "../core/registry/bootstrapStore";
 
 // Config storage for client-side contexts
 let _clientConfig: {
@@ -23,8 +24,9 @@ export function configureJsonApi(config: {
   additionalHeaders?: Record<string, string>;
 }): void {
   _clientConfig = config;
-  // Call bootstrapper immediately to register all modules
+  // Register and call bootstrapper to register all modules
   if (config.bootstrapper) {
+    setBootstrapper(config.bootstrapper);
     config.bootstrapper();
   }
 }
