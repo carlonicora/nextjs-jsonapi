@@ -75,8 +75,9 @@ export function updateI18n(
     messages.types = {};
   }
   const typesKey = Object.keys(moduleMessages.types)[0];
-  if (typesKey && !messages.types[names.pluralCamel]) {
-    messages.types[names.pluralCamel] = moduleMessages.types[typesKey];
+  const lowercasePluralKey = names.pluralCamel.toLowerCase();
+  if (typesKey && !messages.types[lowercasePluralKey]) {
+    messages.types[lowercasePluralKey] = moduleMessages.types[typesKey];
   }
 
   if (dryRun) {

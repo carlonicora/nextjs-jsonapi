@@ -6,14 +6,18 @@
  */
 
 import { JsonRelationshipDefinition } from "../types/json-schema.interface";
-import { FrontendRelationship, RelationshipServiceMethod } from "../types/template-data.interface";
+import { FrontendRelationship, FrontendField, RelationshipServiceMethod } from "../types/template-data.interface";
 import { AUTHOR_VARIANT, AUTHOR_ZOD_SCHEMA, ENTITY_ZOD_SCHEMA } from "../types/field-mapping.types";
 import { toCamelCase, toKebabCase, pluralize, toPascalCase } from "./name-transformer";
+import { mapFields } from "./field-mapper";
 
 /**
- * Foundation package name constant for web imports
+ * Foundation package constants for web imports
+ * Components (selectors) come from /components
+ * Data (interfaces, services) come from /core
  */
-export const FOUNDATION_PACKAGE = "@carlonicora/nextjs-jsonapi/features";
+export const FOUNDATION_COMPONENTS_PACKAGE = "@carlonicora/nextjs-jsonapi/components";
+export const FOUNDATION_CORE_PACKAGE = "@carlonicora/nextjs-jsonapi/core";
 
 /**
  * Check if a directory represents a foundation import (from the package)
@@ -78,15 +82,21 @@ export function resolveRelationship(rel: JsonRelationshipDefinition): FrontendRe
 
   if (isFoundationImport(rel.directory)) {
     // Foundation entities import from the package
-    importPath = FOUNDATION_PACKAGE;
-    interfaceImportPath = FOUNDATION_PACKAGE;
-    serviceImportPath = FOUNDATION_PACKAGE;
+    importPath = FOUNDATION_COMPONENTS_PACKAGE;        // Selectors from /components
+    interfaceImportPath = FOUNDATION_CORE_PACKAGE;     // Interfaces from /core
+    serviceImportPath = FOUNDATION_CORE_PACKAGE;       // Services from /core
   } else {
     // Feature entities use local paths
     const webDirectory = mapDirectoryToWebPath(rel.directory);
     importPath = `@/features/${webDirectory}/${modelKebab}/components/forms/${selectorComponent}`;
     interfaceImportPath = `@/features/${webDirectory}/${modelKebab}/data/${rel.name}Interface`;
     serviceImportPath = `@/features/${webDirectory}/${modelKebab}/data/${rel.name}Service`;
+  }
+
+  // Map relationship fields (only for single relationships)
+  let fields: FrontendField[] | undefined;
+  if (rel.single && rel.fields && rel.fields.length > 0) {
+    fields = mapFields(rel.fields, toCamelCase(rel.name));
   }
 
   return {
@@ -106,6 +116,7 @@ export function resolveRelationship(rel: JsonRelationshipDefinition): FrontendRe
     serviceImportPath,
     interfaceName: `${rel.name}Interface`,
     modelKebab,
+    fields,
   };
 }
 
@@ -161,7 +172,7 @@ export function getSelectorImports(relationships: FrontendRelationship[]): strin
   relationships.forEach((rel) => {
     if (isFoundationImport(rel.directory)) {
       // Foundation entities use named imports from the package
-      imports.add(`import { ${rel.selectorComponent} } from "${FOUNDATION_PACKAGE}";`);
+      imports.add(`import { ${rel.selectorComponent} } from "${FOUNDATION_COMPONENTS_PACKAGE}";`);
     } else {
       imports.add(`import ${rel.selectorComponent} from "${rel.importPath}";`);
     }

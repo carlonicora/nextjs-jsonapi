@@ -43,6 +43,18 @@ export function generateI18nKeys(
       error: `${toTitleCase(effectiveName)} is required`,
       list: pluralize(toTitleCase(rel.name)),
     };
+
+    // Add fields for relationship edge properties
+    if (rel.fields && rel.fields.length > 0) {
+      relationshipKeys[effectiveKey].fields = {};
+      rel.fields.forEach((field) => {
+        relationshipKeys[effectiveKey].fields![field.name] = {
+          label: toTitleCase(field.name),
+          placeholder: `Enter ${toTitleCase(field.name).toLowerCase()}`,
+          error: `${toTitleCase(field.name)} is required`,
+        };
+      });
+    }
   });
 
   // Generate type keys
@@ -68,6 +80,9 @@ export function generateI18nKeys(
  * @returns Object structure for en.json
  */
 export function buildI18nMessages(i18nKeys: I18nKeySet): Record<string, any> {
+  // Use proper pluralization and lowercase for types key
+  const pluralLowercaseKey = pluralize(i18nKeys.moduleName).toLowerCase();
+
   return {
     features: {
       [i18nKeys.moduleName]: {
@@ -76,7 +91,7 @@ export function buildI18nMessages(i18nKeys: I18nKeySet): Record<string, any> {
       },
     },
     types: {
-      [i18nKeys.moduleName + "s"]: i18nKeys.type.icuPlural,
+      [pluralLowercaseKey]: i18nKeys.type.icuPlural,
     },
   };
 }
