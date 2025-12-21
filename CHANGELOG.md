@@ -1,3 +1,9 @@
+## [1.8.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.8.0...v1.8.1) (2025-12-21)
+
+### 🐛 Bug Fixes
+
+* standardize module name casing in i18n keys and form schema generation ([680179d](https://github.com/carlonicora/nextjs-jsonapi/commit/680179d9f232f8a57db033e3fc021c9eb2bdb10f))
+
 ## [1.8.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.7.6...v1.8.0) (2025-12-21)
 
 ### 🚀 Features
