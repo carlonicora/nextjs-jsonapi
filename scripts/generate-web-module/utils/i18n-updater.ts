@@ -52,25 +52,12 @@ export function updateI18n(
     };
   }
 
-  // Check if module already exists in features
-  if (messages.features && messages.features[names.camelCase]) {
-    return {
-      success: true,
-      message: `Module ${names.camelCase} already exists in messages/${language}.json`,
-      alreadyExists: true,
-    };
-  }
-
   // Build the i18n messages for this module
   const moduleMessages = buildI18nMessages(i18nKeys);
+  const lowercaseModuleName = names.camelCase.toLowerCase();
 
-  // Add to features section
-  if (!messages.features) {
-    messages.features = {};
-  }
-  messages.features[names.camelCase] = moduleMessages.features[i18nKeys.moduleName];
-
-  // Add to types section (if not exists)
+  // Always ensure types section is updated (even if features already exist)
+  let typesUpdated = false;
   if (!messages.types) {
     messages.types = {};
   }
@@ -78,7 +65,46 @@ export function updateI18n(
   const lowercasePluralKey = names.pluralCamel.toLowerCase();
   if (typesKey && !messages.types[lowercasePluralKey]) {
     messages.types[lowercasePluralKey] = moduleMessages.types[typesKey];
+    typesUpdated = true;
   }
+
+  // Check if module already exists in features
+  const featuresAlreadyExist = messages.features && messages.features[lowercaseModuleName];
+
+  if (featuresAlreadyExist) {
+    // Features exist, but we may have added types
+    if (typesUpdated) {
+      if (dryRun) {
+        return {
+          success: true,
+          message: `[DRY RUN] Module ${names.camelCase} exists, would add types.${lowercasePluralKey}`,
+          alreadyExists: true,
+        };
+      }
+
+      // Write updated content (types were added)
+      const updatedContent = JSON.stringify(messages, null, 2);
+      fs.writeFileSync(messagesPath, updatedContent, "utf-8");
+
+      return {
+        success: true,
+        message: `Module ${names.camelCase} exists, added types.${lowercasePluralKey}`,
+        alreadyExists: true,
+      };
+    }
+
+    return {
+      success: true,
+      message: `Module ${names.camelCase} already exists in messages/${language}.json`,
+      alreadyExists: true,
+    };
+  }
+
+  // Add to features section (new module)
+  if (!messages.features) {
+    messages.features = {};
+  }
+  messages.features[lowercaseModuleName] = moduleMessages.features[i18nKeys.moduleName];
 
   if (dryRun) {
     return {

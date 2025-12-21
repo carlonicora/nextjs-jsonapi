@@ -20,7 +20,7 @@ export function generateI18nKeys(
   fields: FrontendField[],
   relationships: FrontendRelationship[]
 ): I18nKeySet {
-  const lowerModuleName = names.camelCase;
+  const lowerModuleName = names.camelCase.toLowerCase();
 
   // Generate field keys
   const fieldKeys: I18nKeySet["fields"] = {};
@@ -36,7 +36,7 @@ export function generateI18nKeys(
   const relationshipKeys: I18nKeySet["relationships"] = {};
   relationships.forEach((rel) => {
     const effectiveName = rel.variant || rel.name;
-    const effectiveKey = toCamelCase(effectiveName);
+    const effectiveKey = toCamelCase(effectiveName).toLowerCase();
     relationshipKeys[effectiveKey] = {
       label: toTitleCase(effectiveName),
       placeholder: `Select ${toTitleCase(effectiveName).toLowerCase()}`,
