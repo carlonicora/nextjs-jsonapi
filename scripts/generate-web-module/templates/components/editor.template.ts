@@ -8,7 +8,7 @@ import { FrontendTemplateData, FrontendField, FrontendRelationship } from "../..
 import { toCamelCase, pluralize, toPascalCase } from "../../transformers/name-transformer";
 import { AUTHOR_VARIANT } from "../../types/field-mapping.types";
 import { getFormFieldJsx } from "../../transformers/field-mapper";
-import { getRelationshipFormJsx, getDefaultValueExpression, getPayloadMapping, isFoundationImport, FOUNDATION_PACKAGE } from "../../transformers/relationship-resolver";
+import { getRelationshipFormJsx, getDefaultValueExpression, getPayloadMapping, isFoundationImport, FOUNDATION_COMPONENTS_PACKAGE } from "../../transformers/relationship-resolver";
 
 /**
  * Generate the editor component file content
@@ -156,7 +156,7 @@ function generateImports(data: FrontendTemplateData): string {
       const componentName = rel.single ? `${rel.name}Selector` : `${rel.name}MultiSelector`;
       if (rel.isFoundation) {
         // Foundation entities use named imports from the package
-        imports.push(`import { ${componentName} } from "${FOUNDATION_PACKAGE}";`);
+        imports.push(`import { ${componentName} } from "${FOUNDATION_COMPONENTS_PACKAGE}";`);
       } else {
         imports.push(`import ${componentName} from "${rel.importPath}";`);
       }
@@ -186,6 +186,21 @@ function generateImports(data: FrontendTemplateData): string {
   const hasStringFields = fields.some((f) => f.formComponent === "FormInput" || f.formComponent === "FormInputNumber");
   if (hasStringFields) {
     componentImports.push("FormInput");
+  }
+
+  // Check if any relationship has boolean or date fields that need specific form components
+  const hasRelBooleanFields = relationships.some((rel) =>
+    rel.fields?.some((f) => f.type === "boolean")
+  );
+  const hasRelDateFields = relationships.some((rel) =>
+    rel.fields?.some((f) => f.type === "date" || f.type === "datetime")
+  );
+
+  if (hasRelBooleanFields) {
+    componentImports.push("FormCheckbox");
+  }
+  if (hasRelDateFields) {
+    componentImports.push("FormDatePicker");
   }
 
   imports.push(`import {
@@ -256,7 +271,7 @@ function generateFormSchema(data: FrontendTemplateData): string {
   // Add name field for Content-extending modules
   if (extendsContent) {
     schemaFields.push(`    name: z.string().min(1, {
-      message: t(\`features.${names.camelCase}.fields.name.error\`),
+      message: t(\`features.${names.camelCase.toLowerCase()}.fields.name.error\`),
     }),`);
   }
 
@@ -268,7 +283,7 @@ function generateFormSchema(data: FrontendTemplateData): string {
         schemaFields.push(`    ${field.name}: z.string().optional(),`);
       } else {
         schemaFields.push(`    ${field.name}: z.string().min(1, {
-      message: t(\`features.${names.camelCase}.fields.${field.name}.error\`),
+      message: t(\`features.${names.camelCase.toLowerCase()}.fields.${field.name}.error\`),
     }),`);
       }
     } else {
@@ -279,6 +294,7 @@ function generateFormSchema(data: FrontendTemplateData): string {
   // Relationship fields
   relationships.forEach((rel) => {
     const fieldId = toCamelCase(rel.variant || rel.name);
+    const fieldIdLower = fieldId.toLowerCase();
     if (rel.variant === AUTHOR_VARIANT) {
       schemaFields.push(`    ${fieldId}: userObjectSchema.refine((data) => data.id && data.id.length > 0, {
       message: t(\`generic.relationships.author.error\`),
@@ -288,8 +304,33 @@ function generateFormSchema(data: FrontendTemplateData): string {
         schemaFields.push(`    ${fieldId}: entityObjectSchema.optional(),`);
       } else {
         schemaFields.push(`    ${fieldId}: entityObjectSchema.refine((data) => data.id && data.id.length > 0, {
-      message: t(\`generic.relationships.${fieldId}.error\`),
+      message: t(\`features.${names.camelCase.toLowerCase()}.relationships.${fieldIdLower}.error\`),
     }),`);
+      }
+      // Add relationship property fields to schema
+      if (rel.fields && rel.fields.length > 0) {
+        rel.fields.forEach((field) => {
+          const optional = rel.nullable ? ".optional()" : "";
+          switch (field.type) {
+            case "number":
+              schemaFields.push(`    ${field.name}: z.number()${optional},`);
+              break;
+            case "boolean":
+              schemaFields.push(`    ${field.name}: z.boolean()${optional},`);
+              break;
+            case "date":
+            case "datetime":
+              schemaFields.push(`    ${field.name}: z.coerce.date()${optional},`);
+              break;
+            case "any":
+              schemaFields.push(`    ${field.name}: z.any()${optional},`);
+              break;
+            case "string":
+            default:
+              schemaFields.push(`    ${field.name}: z.string()${optional},`);
+              break;
+          }
+        });
       }
     } else {
       schemaFields.push(`    ${fieldId}: z.array(entityObjectSchema).optional(),`);
@@ -349,6 +390,28 @@ function generateDefaultValues(data: FrontendTemplateData): string {
       defaults.push(`    ${fieldId}: ${names.camelCase}?.${propertyName}
       ? { id: ${names.camelCase}.${propertyName}.id, name: ${names.camelCase}.${propertyName}.name }
       : undefined,`);
+      // Add relationship property field defaults
+      if (rel.fields && rel.fields.length > 0) {
+        rel.fields.forEach((field) => {
+          switch (field.type) {
+            case "number":
+              defaults.push(`    ${field.name}: ${names.camelCase}?.${propertyName}?.${field.name} ?? 0,`);
+              break;
+            case "boolean":
+              defaults.push(`    ${field.name}: ${names.camelCase}?.${propertyName}?.${field.name} ?? false,`);
+              break;
+            case "date":
+            case "datetime":
+            case "any":
+              defaults.push(`    ${field.name}: ${names.camelCase}?.${propertyName}?.${field.name},`);
+              break;
+            case "string":
+            default:
+              defaults.push(`    ${field.name}: ${names.camelCase}?.${propertyName}?.${field.name} ?? "",`);
+              break;
+          }
+        });
+      }
     } else {
       defaults.push(`    ${fieldId}: ${names.camelCase}?.${pluralPropertyName}
       ? ${names.camelCase}.${pluralPropertyName}.map((item) => ({ id: item.id, name: item.name }))
@@ -394,6 +457,12 @@ function generateOnSubmit(data: FrontendTemplateData): string {
 
     if (rel.single) {
       payloadFields.push(`      ${payloadKey}: values.${fieldId}?.id,`);
+      // Add relationship property fields to payload
+      if (rel.fields && rel.fields.length > 0) {
+        rel.fields.forEach((field) => {
+          payloadFields.push(`      ${field.name}: values.${field.name},`);
+        });
+      }
     } else {
       payloadFields.push(`      ${payloadKey}: values.${fieldId} ? values.${fieldId}.map((item) => item.id) : [],`);
     }
@@ -435,8 +504,8 @@ function generateFormFields(data: FrontendTemplateData): string {
     formElements.push(`              <FormInput
                 form={form}
                 id="name"
-                name={t(\`features.${names.camelCase}.fields.name.label\`)}
-                placeholder={t(\`features.${names.camelCase}.fields.name.placeholder\`)}
+                name={t(\`features.${names.camelCase.toLowerCase()}.fields.name.label\`)}
+                placeholder={t(\`features.${names.camelCase.toLowerCase()}.fields.name.placeholder\`)}
                 isRequired
               />`);
   }
@@ -448,7 +517,7 @@ function generateFormFields(data: FrontendTemplateData): string {
 
   fieldsToInclude.forEach((field) => {
     if (field.name === "content" || field.isContentField) {
-      formElements.push(`              <FormContainerGeneric form={form} id="${field.name}" name={t(\`features.${names.camelCase}.fields.${field.name}.label\`)}>
+      formElements.push(`              <FormContainerGeneric form={form} id="${field.name}" name={t(\`features.${names.camelCase.toLowerCase()}.fields.${field.name}.label\`)}>
                 <BlockNoteEditorContainer
                   id={form.getValues("id")}
                   type="${names.camelCase}"
@@ -456,7 +525,7 @@ function generateFormFields(data: FrontendTemplateData): string {
                   onChange={(content, isEmpty, hasUnresolvedDiff) => {
                     form.setValue("${field.name}", content);
                   }}
-                  placeholder={t(\`features.${names.camelCase}.fields.${field.name}.placeholder\`)}
+                  placeholder={t(\`features.${names.camelCase.toLowerCase()}.fields.${field.name}.placeholder\`)}
                   bordered
                 />
               </FormContainerGeneric>`);
@@ -465,8 +534,8 @@ function generateFormFields(data: FrontendTemplateData): string {
       formElements.push(`              <FormInput
                 form={form}
                 id="${field.name}"
-                name={t(\`features.${names.camelCase}.fields.${field.name}.label\`)}
-                placeholder={t(\`features.${names.camelCase}.fields.${field.name}.placeholder\`)}${isRequired ? "\n                isRequired" : ""}
+                name={t(\`features.${names.camelCase.toLowerCase()}.fields.${field.name}.label\`)}
+                placeholder={t(\`features.${names.camelCase.toLowerCase()}.fields.${field.name}.placeholder\`)}${isRequired ? "\n                isRequired" : ""}
               />`);
     }
   });
@@ -479,14 +548,57 @@ function generateFormFields(data: FrontendTemplateData): string {
     }
 
     const fieldId = toCamelCase(rel.variant || rel.name);
+    const fieldIdLower = fieldId.toLowerCase();
 
     if (rel.single) {
       formElements.push(`              <${rel.name}Selector
                 id="${fieldId}"
                 form={form}
-                label={t(\`generic.relationships.${fieldId}.label\`)}
-                placeholder={t(\`generic.relationships.${fieldId}.placeholder\`)}${!rel.nullable ? "\n                isRequired" : ""}
+                label={t(\`features.${names.camelCase.toLowerCase()}.relationships.${fieldIdLower}.label\`)}
+                placeholder={t(\`features.${names.camelCase.toLowerCase()}.relationships.${fieldIdLower}.placeholder\`)}${!rel.nullable ? "\n                isRequired" : ""}
               />`);
+      // Add form inputs for relationship property fields
+      if (rel.fields && rel.fields.length > 0) {
+        rel.fields.forEach((field) => {
+          const isRequired = !rel.nullable;
+          switch (field.type) {
+            case "number":
+              formElements.push(`              <FormInput
+                form={form}
+                id="${field.name}"
+                name={t(\`features.${names.camelCase.toLowerCase()}.relationships.${fieldIdLower}.fields.${field.name}.label\`)}
+                placeholder={t(\`features.${names.camelCase.toLowerCase()}.relationships.${fieldIdLower}.fields.${field.name}.placeholder\`)}
+                type="number"${isRequired ? "\n                isRequired" : ""}
+              />`);
+              break;
+            case "boolean":
+              formElements.push(`              <FormCheckbox
+                form={form}
+                id="${field.name}"
+                name={t(\`features.${names.camelCase.toLowerCase()}.relationships.${fieldIdLower}.fields.${field.name}.label\`)}
+              />`);
+              break;
+            case "date":
+            case "datetime":
+              formElements.push(`              <FormDatePicker
+                form={form}
+                id="${field.name}"
+                name={t(\`features.${names.camelCase.toLowerCase()}.relationships.${fieldIdLower}.fields.${field.name}.label\`)}${isRequired ? "\n                isRequired" : ""}
+              />`);
+              break;
+            case "string":
+            case "any":
+            default:
+              formElements.push(`              <FormInput
+                form={form}
+                id="${field.name}"
+                name={t(\`features.${names.camelCase.toLowerCase()}.relationships.${fieldIdLower}.fields.${field.name}.label\`)}
+                placeholder={t(\`features.${names.camelCase.toLowerCase()}.relationships.${fieldIdLower}.fields.${field.name}.placeholder\`)}${isRequired ? "\n                isRequired" : ""}
+              />`);
+              break;
+          }
+        });
+      }
     } else {
       formElements.push(`              <${rel.name}MultiSelector
                 id="${fieldId}"

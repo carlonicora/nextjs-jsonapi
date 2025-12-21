@@ -91,7 +91,13 @@ function generatePrivateFields(data: FrontendTemplateData): string {
       const effectiveName = rel.variant || rel.name;
       if (rel.single) {
         const propName = toCamelCase(effectiveName);
-        lines.push(`  private _${propName}?: ${rel.interfaceName};`);
+        // Use intersection type if relationship has fields
+        let typeDecl = rel.interfaceName;
+        if (rel.fields && rel.fields.length > 0) {
+          const metaFields = rel.fields.map((f) => `${f.name}?: ${f.tsType}`).join("; ");
+          typeDecl = `${rel.interfaceName} & { ${metaFields} }`;
+        }
+        lines.push(`  private _${propName}?: ${typeDecl};`);
       } else {
         const propName = pluralize(toCamelCase(rel.name));
         lines.push(`  private _${propName}?: ${rel.interfaceName}[];`);
@@ -127,12 +133,20 @@ function generateGetters(data: FrontendTemplateData): string {
       const effectiveName = rel.variant || rel.name;
       if (rel.single) {
         const propName = toCamelCase(effectiveName);
+
+        // Build return type - use intersection if relationship has fields
+        let baseType = rel.interfaceName;
+        if (rel.fields && rel.fields.length > 0) {
+          const metaFields = rel.fields.map((f) => `${f.name}?: ${f.tsType}`).join("; ");
+          baseType = `${rel.interfaceName} & { ${metaFields} }`;
+        }
+
         if (rel.nullable) {
-          lines.push(`  get ${propName}(): ${rel.interfaceName} | undefined {
+          lines.push(`  get ${propName}(): (${baseType}) | undefined {
     return this._${propName};
   }`);
         } else {
-          lines.push(`  get ${propName}(): ${rel.interfaceName} {
+          lines.push(`  get ${propName}(): ${baseType} {
     if (this._${propName} === undefined) throw new Error("JsonApi error: ${data.names.camelCase} ${propName} is missing");
     return this._${propName};
   }`);
@@ -188,9 +202,18 @@ function generateRehydrateMethod(data: FrontendTemplateData): string {
       if (rel.single) {
         const propName = toCamelCase(effectiveName);
         const relationshipKey = effectiveName.toLowerCase();
-        lines.push(
-          `    this._${propName} = this._readIncluded(data, "${relationshipKey}", Modules.${rel.name}) as ${rel.interfaceName}${rel.nullable ? " | undefined" : ""};`,
-        );
+
+        // Use _readIncludedWithMeta for relationships with fields
+        if (rel.fields && rel.fields.length > 0) {
+          const metaType = `{ ${rel.fields.map((f) => `${f.name}?: ${f.tsType}`).join("; ")} }`;
+          lines.push(
+            `    this._${propName} = this._readIncludedWithMeta<${rel.interfaceName}, ${metaType}>(data, "${relationshipKey}", Modules.${rel.name});`,
+          );
+        } else {
+          lines.push(
+            `    this._${propName} = this._readIncluded(data, "${relationshipKey}", Modules.${rel.name}) as ${rel.interfaceName}${rel.nullable ? " | undefined" : ""};`,
+          );
+        }
       } else {
         const propName = pluralize(toCamelCase(rel.name));
         const relationshipKey = pluralize(rel.name.toLowerCase());
@@ -268,6 +291,17 @@ function generateCreateJsonApiMethod(data: FrontendTemplateData): string {
         lines.push(`          type: Modules.${rel.name}.name,`);
         lines.push(`          id: data.${payloadKey},`);
         lines.push(`        },`);
+
+        // Add meta for relationship fields
+        if (rel.fields && rel.fields.length > 0) {
+          lines.push(`        meta: {`);
+          rel.fields.forEach((field, i) => {
+            const comma = i < rel.fields!.length - 1 ? "," : "";
+            lines.push(`          ${field.name}: data.${field.name}${comma}`);
+          });
+          lines.push(`        },`);
+        }
+
         lines.push(`      };`);
         lines.push(`    }`);
       } else {

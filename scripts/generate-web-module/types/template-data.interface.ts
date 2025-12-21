@@ -58,6 +58,7 @@ export interface FrontendRelationship {
   serviceImportPath: string; // Full import path for service
   interfaceName: string; // e.g., "UserInterface"
   modelKebab: string; // e.g., "user"
+  fields?: FrontendField[]; // Relationship property fields (stored on edges)
 }
 
 /**
@@ -80,6 +81,14 @@ export interface I18nKeySet {
       placeholder: string;
       error: string;
       list: string;
+      fields?: Record<
+        string,
+        {
+          label: string;
+          placeholder: string;
+          error: string;
+        }
+      >;
     }
   >;
   type: {

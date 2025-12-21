@@ -115,6 +115,40 @@ export abstract class AbstractApiData implements ApiDataInterface {
     }) as T;
   }
 
+  /**
+   * Read included relationship data and augment with relationship meta properties.
+   * Used for single relationships (one-to-one) that have edge properties.
+   *
+   * @param data - Hydrated JSON:API data
+   * @param type - Relationship type key (e.g., "guide")
+   * @param dataType - Module reference for rehydration
+   * @returns Related object augmented with meta properties, or undefined
+   */
+  protected _readIncludedWithMeta<T extends ApiDataInterface, M extends Record<string, any>>(
+    data: JsonApiHydratedDataInterface,
+    type: string,
+    dataType: ApiRequestDataTypeInterface,
+  ): (T & M) | undefined {
+    // Get the base related object using existing logic
+    const related = this._readIncluded<T>(data, type, dataType);
+
+    // Only works for single relationships (not arrays)
+    if (!related || Array.isArray(related)) {
+      return undefined;
+    }
+
+    // Extract relationship meta from JSON:API data
+    const relationshipMeta = data.jsonApi.relationships?.[type]?.meta;
+
+    // If no meta, return the related object as-is
+    if (!relationshipMeta) {
+      return related as T & M;
+    }
+
+    // Augment the object with meta properties
+    return Object.assign(related, relationshipMeta) as T & M;
+  }
+
   dehydrate(): JsonApiHydratedDataInterface {
     return {
       jsonApi: this._jsonApi,

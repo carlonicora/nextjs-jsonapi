@@ -20,7 +20,7 @@ export function generateI18nKeys(
   fields: FrontendField[],
   relationships: FrontendRelationship[]
 ): I18nKeySet {
-  const lowerModuleName = names.camelCase;
+  const lowerModuleName = names.camelCase.toLowerCase();
 
   // Generate field keys
   const fieldKeys: I18nKeySet["fields"] = {};
@@ -36,13 +36,25 @@ export function generateI18nKeys(
   const relationshipKeys: I18nKeySet["relationships"] = {};
   relationships.forEach((rel) => {
     const effectiveName = rel.variant || rel.name;
-    const effectiveKey = toCamelCase(effectiveName);
+    const effectiveKey = toCamelCase(effectiveName).toLowerCase();
     relationshipKeys[effectiveKey] = {
       label: toTitleCase(effectiveName),
       placeholder: `Select ${toTitleCase(effectiveName).toLowerCase()}`,
       error: `${toTitleCase(effectiveName)} is required`,
       list: pluralize(toTitleCase(rel.name)),
     };
+
+    // Add fields for relationship edge properties
+    if (rel.fields && rel.fields.length > 0) {
+      relationshipKeys[effectiveKey].fields = {};
+      rel.fields.forEach((field) => {
+        relationshipKeys[effectiveKey].fields![field.name] = {
+          label: toTitleCase(field.name),
+          placeholder: `Enter ${toTitleCase(field.name).toLowerCase()}`,
+          error: `${toTitleCase(field.name)} is required`,
+        };
+      });
+    }
   });
 
   // Generate type keys
@@ -68,6 +80,9 @@ export function generateI18nKeys(
  * @returns Object structure for en.json
  */
 export function buildI18nMessages(i18nKeys: I18nKeySet): Record<string, any> {
+  // Use proper pluralization and lowercase for types key
+  const pluralLowercaseKey = pluralize(i18nKeys.moduleName).toLowerCase();
+
   return {
     features: {
       [i18nKeys.moduleName]: {
@@ -76,7 +91,7 @@ export function buildI18nMessages(i18nKeys: I18nKeySet): Record<string, any> {
       },
     },
     types: {
-      [i18nKeys.moduleName + "s"]: i18nKeys.type.icuPlural,
+      [pluralLowercaseKey]: i18nKeys.type.icuPlural,
     },
   };
 }

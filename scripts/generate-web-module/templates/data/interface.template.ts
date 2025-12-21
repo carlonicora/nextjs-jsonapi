@@ -74,13 +74,21 @@ function generateInputType(data: FrontendTemplateData): string {
     fieldLines.push(`  ${field.name}${optional}: ${field.tsType};`);
   });
 
-  // Add relationship IDs
+  // Add relationship IDs and relationship property fields
   relationships.forEach((rel) => {
     const effectiveName = rel.variant || rel.name;
     if (rel.single) {
       const key = `${toCamelCase(effectiveName)}Id`;
       const optional = rel.nullable ? "?" : "";
       fieldLines.push(`  ${key}${optional}: string;`);
+
+      // Add relationship property fields to input type (match relationship optionality)
+      if (rel.fields && rel.fields.length > 0) {
+        rel.fields.forEach((field) => {
+          const fieldOptional = rel.nullable ? "?" : "";
+          fieldLines.push(`  ${field.name}${fieldOptional}: ${field.tsType};`);
+        });
+      }
     } else {
       const key = `${toCamelCase(rel.name)}Ids`;
       fieldLines.push(`  ${key}?: string[];`);
@@ -120,7 +128,15 @@ function generateInterface(data: FrontendTemplateData): string {
     const effectiveName = rel.variant || rel.name;
     if (rel.single) {
       const propertyName = toCamelCase(effectiveName);
-      const type = rel.nullable ? `${rel.interfaceName} | undefined` : rel.interfaceName;
+
+      // Build return type - use intersection if relationship has fields
+      let baseType = rel.interfaceName;
+      if (rel.fields && rel.fields.length > 0) {
+        const metaFields = rel.fields.map(f => `${f.name}?: ${f.tsType}`).join("; ");
+        baseType = `${rel.interfaceName} & { ${metaFields} }`;
+      }
+
+      const type = rel.nullable ? `(${baseType}) | undefined` : baseType;
       getterLines.push(`  get ${propertyName}(): ${type};`);
     } else {
       const propertyName = pluralize(toCamelCase(rel.name));

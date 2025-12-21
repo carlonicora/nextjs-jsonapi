@@ -26,6 +26,7 @@ export interface JsonRelationshipDefinition {
   relationshipName: string; // Backend-specific, ignored in frontend
   toNode: boolean; // Backend-specific, ignored in frontend
   nullable: boolean;
+  fields?: JsonFieldDefinition[]; // Relationship property fields (stored on edges)
 }
 
 /**
