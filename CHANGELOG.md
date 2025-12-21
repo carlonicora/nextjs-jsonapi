@@ -1,3 +1,9 @@
+## [1.9.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.8.1...v1.9.0) (2025-12-21)
+
+### 🚀 Features
+
+* implement bootstrapper registration and self-healing module loading ([a8f4f6f](https://github.com/carlonicora/nextjs-jsonapi/commit/a8f4f6faeaf51529ae7bdc707e051536da18e8e9))
+
 ## [1.8.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.8.0...v1.8.1) (2025-12-21)
 
 ### 🐛 Bug Fixes
