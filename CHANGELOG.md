@@ -1,3 +1,9 @@
+## [1.9.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.9.0...v1.9.1) (2025-12-24)
+
+### 🐛 Bug Fixes
+
+* replace zlib with pako for gzip compression in AuthCookies and ServerSession ([a4f1de2](https://github.com/carlonicora/nextjs-jsonapi/commit/a4f1de22a62ab2215905dae1cefac1824c3d9a28))
+
 ## [1.9.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.8.1...v1.9.0) (2025-12-21)
 
 ### 🚀 Features
