@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../../shadcnui";
 
 type PageContentContainerProps = {
@@ -10,8 +10,18 @@ type PageContentContainerProps = {
 };
 
 export function PageContentContainer({ details, footer, content }: PageContentContainerProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
-    <div className="flex h-[calc(100vh-(--spacing(16)))] w-full">
+    <div
+      className={`flex h-[calc(100vh-(--spacing(16)))] w-full transition-opacity duration-150 ${
+        mounted ? "opacity-100" : "opacity-0"
+      }`}
+    >
       <ResizablePanelGroup direction="horizontal" className="items-stretch" autoSaveId="page-content-layout">
         <ResizablePanel id="left-panel" defaultSize={32} minSize={20} maxSize={40}>
           <div className="@container flex h-full flex-col pr-4">

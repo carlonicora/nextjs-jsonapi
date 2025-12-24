@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import zlib from "zlib";
+import pako from "pako";
 import { Action, checkPermissionsFromServer, ModuleWithPermissions } from "../permissions";
 
 export class ServerSession {
@@ -78,7 +78,7 @@ export class ServerSession {
         update: boolean | string;
         delete: boolean | string;
       };
-    }[] = JSON.parse(zlib.gunzipSync(Buffer.from(rawModules, "base64")).toString());
+    }[] = JSON.parse(pako.ungzip(Buffer.from(rawModules, "base64"), { to: "string" }));
 
     const selectedModule = modules.find((module) => module.id === params.module.moduleId);
 

@@ -206,8 +206,9 @@ function generateRehydrateMethod(data: FrontendTemplateData): string {
         // Use _readIncludedWithMeta for relationships with fields
         if (rel.fields && rel.fields.length > 0) {
           const metaType = `{ ${rel.fields.map((f) => `${f.name}?: ${f.tsType}`).join("; ")} }`;
+          const nullableCast = rel.nullable ? ` as (${rel.interfaceName} & ${metaType}) | undefined` : "";
           lines.push(
-            `    this._${propName} = this._readIncludedWithMeta<${rel.interfaceName}, ${metaType}>(data, "${relationshipKey}", Modules.${rel.name});`,
+            `    this._${propName} = this._readIncludedWithMeta<${rel.interfaceName}, ${metaType}>(data, "${relationshipKey}", Modules.${rel.name})${nullableCast};`,
           );
         } else {
           lines.push(
