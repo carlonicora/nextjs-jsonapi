@@ -1,3 +1,9 @@
+## [1.11.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.10.0...v1.11.0) (2025-12-24)
+
+### 🚀 Features
+
+* enhance global state management in ModuleRegistry and bootstrapStore for HMR support ([647cb5e](https://github.com/carlonicora/nextjs-jsonapi/commit/647cb5e964f8ee42d43fee3f5703fd42585b0ddc))
+
 ## [1.10.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.9.1...v1.10.0) (2025-12-24)
 
 ### 🚀 Features
