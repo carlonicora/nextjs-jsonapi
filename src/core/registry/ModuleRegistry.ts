@@ -26,8 +26,23 @@ export interface AppModuleDefinitions {}
 // Combined type for full autocompletion
 export type ModuleDefinitions = FoundationModuleDefinitions & AppModuleDefinitions;
 
+// Symbol key to avoid conflicts with other globals
+const MODULES_KEY = Symbol.for("nextjs-jsonapi:modules");
+
+// Use globalThis to persist module registry across HMR reloads
+const globalStore = globalThis as unknown as {
+  [MODULES_KEY]?: Map<string, ApiRequestDataTypeInterface>;
+};
+
+// Initialize global modules map if not set
+if (!globalStore[MODULES_KEY]) {
+  globalStore[MODULES_KEY] = new Map();
+}
+
 class ModuleRegistryClass {
-  private _modules: Map<string, ApiRequestDataTypeInterface> = new Map();
+  private get _modules(): Map<string, ApiRequestDataTypeInterface> {
+    return globalStore[MODULES_KEY]!;
+  }
 
   register<K extends string>(name: K, module: ApiRequestDataTypeInterface): void {
     this._modules.set(name, module);
