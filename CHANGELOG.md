@@ -1,3 +1,9 @@
+## [1.10.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.9.1...v1.10.0) (2025-12-24)
+
+### 🚀 Features
+
+* enhance PageContentContainer for responsive layout and loading state ([f2d7a72](https://github.com/carlonicora/nextjs-jsonapi/commit/f2d7a72f01b44fe1d7e101669b1ff12bd2d18247))
+
 ## [1.9.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.9.0...v1.9.1) (2025-12-24)
 
 ### 🐛 Bug Fixes
