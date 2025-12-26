@@ -116,20 +116,17 @@ export function useDataListRetriever<T>(params: {
 
   const fetchData = useCallback(
     async (fetchParams?: { isRefine?: boolean; isRefresh?: boolean; callNext?: boolean; callPrevious?: boolean }) => {
-      if (ready === false) {
-        return;
-      }
+      if (ready === false) return;
 
       // Prevent concurrent fetches (unless it's a pagination call)
-      if (isFetchingRef.current && !fetchParams?.callNext && !fetchParams?.callPrevious) {
-        return;
-      }
+      if (isFetchingRef.current && !fetchParams?.callNext && !fetchParams?.callPrevious) return;
 
       const thisRequestId = ++requestIdRef.current;
       isFetchingRef.current = true;
 
-      if (stableParams.requiresSearch === true && fetchParams?.isRefine !== true && fetchParams?.isRefresh !== true)
+      if (stableParams.requiresSearch === true && fetchParams?.isRefine !== true && fetchParams?.isRefresh !== true) {
         return;
+      }
 
       if (
         !nextPage &&
@@ -138,8 +135,9 @@ export function useDataListRetriever<T>(params: {
         fetchParams?.callNext !== true &&
         fetchParams?.callPrevious !== true &&
         params.search === searchTermRef.current
-      )
+      ) {
         return;
+      }
 
       const currentSearchTerm = searchTermRef.current;
 
@@ -199,13 +197,11 @@ export function useDataListRetriever<T>(params: {
           setPreviousPage(previousRef.previous ? previousRef.previous : undefined);
         }
       } catch (error) {
-        // Don't update state if request was aborted (AbortController disabled)
         if (thisRequestId === requestIdRef.current) {
           setIsLoaded(true);
           console.error("Error fetching data:", error);
         }
       } finally {
-        // Always reset fetching flag when done
         if (thisRequestId === requestIdRef.current) {
           isFetchingRef.current = false;
         }
@@ -261,7 +257,9 @@ export function useDataListRetriever<T>(params: {
 
   const loadNext = useCallback(
     async (onlyNewRecords?: boolean) => {
-      if (nextPage) fetchData({ isRefresh: onlyNewRecords, callNext: true });
+      if (nextPage) {
+        fetchData({ isRefresh: onlyNewRecords, callNext: true });
+      }
     },
     [fetchData, nextPage],
   );
