@@ -24,16 +24,12 @@ export function ContentTitle({ type, element, functions, className }: TitleProps
   if (!element) return null;
 
   return (
-    <div className={cn(`mb-4 flex w-full flex-col`, className)}>
-      {(type || isClient) && (
-        <div className="flex flex-row items-center justify-between gap-x-4">
-          {type && <div className={`text-muted-foreground text-xl font-light`}>{type}</div>}
-          {isClient && clientFunctions && (
-            <div className="flex flex-row items-center justify-start">{clientFunctions}</div>
-          )}
-        </div>
-      )}
-      <div className={`text-primary w-full text-3xl font-semibold`}>{element}</div>
+    <div className={cn(`mb-4 flex items-center justify-between gap-x-4 w-full`, className)}>
+      <div className="flex flex-col w-full">
+        {type && <div className={`text-muted-foreground text-xl font-light`}>{type}</div>}
+        <div className={`text-primary w-full text-3xl font-semibold`}>{element}</div>
+      </div>
+      {isClient && clientFunctions && <div className="flex flex-row items-center justify-start">{clientFunctions}</div>}
     </div>
   );
 }
