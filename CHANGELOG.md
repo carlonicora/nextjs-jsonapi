@@ -1,3 +1,10 @@
+## [1.12.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.11.0...v1.12.0) (2025-12-26)
+
+### 🚀 Features
+
+* add header to PageContentContainer ([c34030f](https://github.com/carlonicora/nextjs-jsonapi/commit/c34030f893d550bdb27f88b5bfcbcd0d20f47294))
+* refactor ContentTitle layout for improved structure and readability ([03c3735](https://github.com/carlonicora/nextjs-jsonapi/commit/03c37350fe4950a5a0997b06a604e9ba6db55502))
+
 ## [1.11.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.10.0...v1.11.0) (2025-12-24)
 
 ### 🚀 Features
