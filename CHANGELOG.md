@@ -1,3 +1,13 @@
+## [1.13.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.12.0...v1.13.0) (2025-12-27)
+
+### 🚀 Features
+
+* add InputOTP component and update exports in shadcnui ([3b2d99f](https://github.com/carlonicora/nextjs-jsonapi/commit/3b2d99f037afb58561ac360b44e74c0a3606477b))
+
+### 🐛 Bug Fixes
+
+* simplify error handling in AbstractService by removing response from error message ([c4c4064](https://github.com/carlonicora/nextjs-jsonapi/commit/c4c4064ba7181f81b13239e0f07d298cbf04105a))
+
 ## [1.12.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.11.0...v1.12.0) (2025-12-26)
 
 ### 🚀 Features
