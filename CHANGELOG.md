@@ -1,3 +1,9 @@
+## [1.14.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.13.0...v1.14.0) (2025-12-27)
+
+### 🚀 Features
+
+* enhance notification handling with message and actionUrl support ([b24a8d5](https://github.com/carlonicora/nextjs-jsonapi/commit/b24a8d51b8ded1664a138933db5fd65d91effd84))
+
 ## [1.13.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.12.0...v1.13.0) (2025-12-27)
 
 ### 🚀 Features
