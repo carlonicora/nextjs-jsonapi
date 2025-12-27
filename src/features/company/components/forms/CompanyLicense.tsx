@@ -26,8 +26,8 @@ import {
   Link,
 } from "../../../../shadcnui";
 import { UserInterface } from "../../../user";
-import { UserService } from "../../../user/data/user.service";
 import { useCurrentUserContext } from "../../../user/contexts";
+import { UserService } from "../../../user/data/user.service";
 import { CompanyInput } from "../../data";
 import { CompanyService } from "../../data/company.service";
 
@@ -154,11 +154,11 @@ export default function CompanyLicense({ onRevalidate, onUpdateToken }: CompanyL
               <CardHeader>
                 <CardTitle>Company License Required</CardTitle>
                 <CardDescription className={`flex w-full flex-col`}>
-                  <div>You need to activate your license to use Phlow.</div>
+                  <div>You need to activate your license to use Only35.</div>
                   <div>
                     <span>To obtain your license, please visit</span>
-                    <Link href="https://phlow.com" target="_blank" className={`text-primary`}>
-                      our website (https://phlow.com)
+                    <Link href="https://only35.com" target="_blank" className={`text-primary`}>
+                      our website (https://only35.com)
                     </Link>
                     <span>, register for an account and follow the instructions provided.</span>
                   </div>

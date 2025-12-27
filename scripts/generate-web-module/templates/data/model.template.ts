@@ -100,7 +100,13 @@ function generatePrivateFields(data: FrontendTemplateData): string {
         lines.push(`  private _${propName}?: ${typeDecl};`);
       } else {
         const propName = pluralize(toCamelCase(rel.name));
-        lines.push(`  private _${propName}?: ${rel.interfaceName}[];`);
+        // Use intersection type if relationship has fields (edge properties)
+        if (rel.fields && rel.fields.length > 0) {
+          const metaFields = rel.fields.map((f) => `${f.name}?: ${f.tsType}`).join("; ");
+          lines.push(`  private _${propName}?: (${rel.interfaceName} & { ${metaFields} })[];`);
+        } else {
+          lines.push(`  private _${propName}?: ${rel.interfaceName}[];`);
+        }
       }
     });
   }
@@ -153,9 +159,17 @@ function generateGetters(data: FrontendTemplateData): string {
         }
       } else {
         const propName = pluralize(toCamelCase(rel.name));
-        lines.push(`  get ${propName}(): ${rel.interfaceName}[] {
+        // Use intersection type if relationship has fields (edge properties)
+        if (rel.fields && rel.fields.length > 0) {
+          const metaFields = rel.fields.map((f) => `${f.name}?: ${f.tsType}`).join("; ");
+          lines.push(`  get ${propName}(): (${rel.interfaceName} & { ${metaFields} })[] {
     return this._${propName} ?? [];
   }`);
+        } else {
+          lines.push(`  get ${propName}(): ${rel.interfaceName}[] {
+    return this._${propName} ?? [];
+  }`);
+        }
       }
     });
   }
@@ -218,9 +232,18 @@ function generateRehydrateMethod(data: FrontendTemplateData): string {
       } else {
         const propName = pluralize(toCamelCase(rel.name));
         const relationshipKey = pluralize(rel.name.toLowerCase());
-        lines.push(
-          `    this._${propName} = this._readIncluded(data, "${relationshipKey}", Modules.${rel.name}) as ${rel.interfaceName}[];`,
-        );
+
+        // Use _readIncludedWithMeta for relationships with fields (edge properties)
+        if (rel.fields && rel.fields.length > 0) {
+          const metaType = `{ ${rel.fields.map((f) => `${f.name}?: ${f.tsType}`).join("; ")} }`;
+          lines.push(
+            `    this._${propName} = this._readIncludedWithMeta<${rel.interfaceName}, ${metaType}>(data, "${relationshipKey}", Modules.${rel.name}) as (${rel.interfaceName} & ${metaType})[];`,
+          );
+        } else {
+          lines.push(
+            `    this._${propName} = this._readIncluded(data, "${relationshipKey}", Modules.${rel.name}) as ${rel.interfaceName}[];`,
+          );
+        }
       }
     });
   }

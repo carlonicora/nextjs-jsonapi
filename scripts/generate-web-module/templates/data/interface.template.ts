@@ -140,7 +140,13 @@ function generateInterface(data: FrontendTemplateData): string {
       getterLines.push(`  get ${propertyName}(): ${type};`);
     } else {
       const propertyName = pluralize(toCamelCase(rel.name));
-      getterLines.push(`  get ${propertyName}(): ${rel.interfaceName}[];`);
+      // Use intersection type if relationship has fields (edge properties)
+      if (rel.fields && rel.fields.length > 0) {
+        const metaFields = rel.fields.map(f => `${f.name}?: ${f.tsType}`).join("; ");
+        getterLines.push(`  get ${propertyName}(): (${rel.interfaceName} & { ${metaFields} })[];`);
+      } else {
+        getterLines.push(`  get ${propertyName}(): ${rel.interfaceName}[];`);
+      }
     }
   });
 

@@ -1,7 +1,7 @@
+import { RehydrationFactory } from "../factories/RehydrationFactory";
 import { ApiDataInterface } from "../interfaces/ApiDataInterface";
 import { ApiRequestDataTypeInterface } from "../interfaces/ApiRequestDataTypeInterface";
 import { JsonApiHydratedDataInterface } from "../interfaces/JsonApiHydratedDataInterface";
-import { RehydrationFactory } from "../factories/RehydrationFactory";
 
 export abstract class AbstractApiData implements ApiDataInterface {
   protected _jsonApi?: any;
@@ -117,36 +117,99 @@ export abstract class AbstractApiData implements ApiDataInterface {
 
   /**
    * Read included relationship data and augment with relationship meta properties.
-   * Used for single relationships (one-to-one) that have edge properties.
+   * Handles both single relationships (one-to-one) and array relationships (one-to-many).
+   *
+   * For single relationships: meta is read from `relationships[type].meta`
+   * For array relationships: per-item meta is read from `relationships[type].data[].meta`
    *
    * @param data - Hydrated JSON:API data
-   * @param type - Relationship type key (e.g., "guide")
+   * @param type - Relationship type key (e.g., "guide", "persons")
    * @param dataType - Module reference for rehydration
-   * @returns Related object augmented with meta properties, or undefined
+   * @returns Related object(s) augmented with meta properties, or undefined
    */
   protected _readIncludedWithMeta<T extends ApiDataInterface, M extends Record<string, any>>(
     data: JsonApiHydratedDataInterface,
     type: string,
     dataType: ApiRequestDataTypeInterface,
-  ): (T & M) | undefined {
-    // Get the base related object using existing logic
-    const related = this._readIncluded<T>(data, type, dataType);
-
-    // Only works for single relationships (not arrays)
-    if (!related || Array.isArray(related)) {
+  ): (T & M) | (T & M)[] | undefined {
+    // Check if relationship exists
+    if (
+      data.included === undefined ||
+      data.included.length === 0 ||
+      data.jsonApi.relationships === undefined ||
+      data.jsonApi.relationships[type] === undefined ||
+      data.jsonApi.relationships[type].data === undefined
+    ) {
       return undefined;
     }
 
-    // Extract relationship meta from JSON:API data
-    const relationshipMeta = data.jsonApi.relationships?.[type]?.meta;
+    const relationshipData = data.jsonApi.relationships[type].data;
 
-    // If no meta, return the related object as-is
-    if (!relationshipMeta) {
-      return related as T & M;
+    // Handle array relationships with per-item meta
+    if (Array.isArray(relationshipData)) {
+      const result: (T & M)[] = [];
+
+      for (const item of relationshipData) {
+        const includedData = data.included.find((inc: any) => inc.id === item.id && inc.type === item.type);
+
+        if (!includedData) continue;
+
+        const entity = RehydrationFactory.rehydrate(dataType, {
+          jsonApi: includedData,
+          included: data.included,
+        }) as T;
+
+        // Merge per-item meta from relationships[type].data[].meta
+        if (item.meta) {
+          Object.assign(entity, item.meta);
+        }
+
+        result.push(entity as T & M);
+      }
+
+      return result;
     }
 
-    // Augment the object with meta properties
-    return Object.assign(related, relationshipMeta) as T & M;
+    // Handle single relationship
+    const includedData = data.included.find(
+      (inc: any) => inc.id === relationshipData.id && inc.type === relationshipData.type,
+    );
+
+    if (!includedData) {
+      // Try to find in allData as a fallback
+      if (data.allData !== undefined) {
+        const fallbackData = data.allData.find(
+          (inc: any) => inc.id === relationshipData.id && inc.type === relationshipData.type,
+        );
+        if (fallbackData) {
+          const entity = RehydrationFactory.rehydrate(dataType, {
+            jsonApi: fallbackData,
+            included: data.included,
+          }) as T;
+
+          // Merge relationship-level meta for single relationships
+          const relationshipMeta = data.jsonApi.relationships[type].meta;
+          if (relationshipMeta) {
+            Object.assign(entity, relationshipMeta);
+          }
+          return entity as T & M;
+        }
+      }
+      return undefined;
+    }
+
+    const entity = RehydrationFactory.rehydrate(dataType, {
+      jsonApi: includedData,
+      included: data.included,
+    }) as T;
+
+    // Merge relationship-level meta for single relationships
+    const relationshipMeta = data.jsonApi.relationships[type].meta;
+    if (relationshipMeta) {
+      Object.assign(entity, relationshipMeta);
+    }
+
+    return entity as T & M;
   }
 
   dehydrate(): JsonApiHydratedDataInterface {
