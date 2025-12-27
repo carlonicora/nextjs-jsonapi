@@ -34,6 +34,9 @@ function NotificationModalContent({ isOpen, setIsOpen }: NotificationModalProps)
     markNotificationsAsRead,
     isLoading,
     error,
+    loadNotifications,
+    shouldRefresh,
+    lastLoaded,
   } = useNotificationContext();
   const { socketNotifications, removeSocketNotification, clearSocketNotifications } = useSocketContext();
   const t = useTranslations();
@@ -79,6 +82,11 @@ function NotificationModalContent({ isOpen, setIsOpen }: NotificationModalProps)
   useEffect(() => {
     setNewNotifications(unreadCount > 0);
   }, [unreadCount]);
+
+  // Load notifications from API on mount if never loaded
+  useEffect(() => {
+    if (lastLoaded === 0) loadNotifications();
+  }, [lastLoaded, loadNotifications]);
 
   const processSocketNotificationsRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -155,6 +163,11 @@ function NotificationModalContent({ isOpen, setIsOpen }: NotificationModalProps)
     setIsOpen(newlyRequestedOpenState);
 
     if (newlyRequestedOpenState) {
+      // Refresh notifications from API if cache is stale
+      if (shouldRefresh) {
+        loadNotifications();
+      }
+
       preventAutoClose.current = true;
 
       if (unreadIds.length > 0) {

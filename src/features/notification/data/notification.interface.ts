@@ -9,6 +9,8 @@ export type NotificationInput = {
 export interface NotificationInterface extends ApiDataInterface {
   get notificationType(): string;
   get isRead(): boolean;
+  get message(): string | undefined;
+  get actionUrl(): string | undefined;
 
   get actor(): UserInterface | undefined;
 }

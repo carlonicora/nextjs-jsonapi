@@ -5,6 +5,8 @@ import { NotificationInput, NotificationInterface } from "./notification.interfa
 export class Notification extends AbstractApiData implements NotificationInterface {
   private _notificationType?: string;
   private _isRead?: boolean;
+  private _message?: string;
+  private _actionUrl?: string;
 
   private _actor?: UserInterface;
 
@@ -17,6 +19,14 @@ export class Notification extends AbstractApiData implements NotificationInterfa
     return this._isRead === undefined ? false : this._isRead;
   }
 
+  get message(): string | undefined {
+    return this._message;
+  }
+
+  get actionUrl(): string | undefined {
+    return this._actionUrl;
+  }
+
   get actor(): UserInterface | undefined {
     return this._actor;
   }
@@ -26,6 +36,8 @@ export class Notification extends AbstractApiData implements NotificationInterfa
 
     this._notificationType = data.jsonApi.attributes.notificationType;
     this._isRead = data.jsonApi.attributes.isRead;
+    this._message = data.jsonApi.attributes.message;
+    this._actionUrl = data.jsonApi.attributes.actionUrl;
 
     this._actor = this._readIncluded(data, "actor", Modules.User) as UserInterface;
 

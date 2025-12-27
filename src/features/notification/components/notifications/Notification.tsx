@@ -21,6 +21,11 @@ export const generateNotificationData = (params: {
 
   response.actor = params.notification.actor;
 
+  // Use actionUrl from notification if available (for notifications without actor relationships)
+  if (params.notification.actionUrl) {
+    response.url = params.notification.actionUrl;
+  }
+
   return response;
 };
 
@@ -56,6 +61,7 @@ export function NotificationToast(
               strong: (chunks: any) => <strong>{chunks}</strong>,
               actor: data.actor?.name ?? "",
               title: data.title,
+              message: notification.message ?? "",
             })}
           </p>
           <div className="text-muted-foreground mt-1 w-full text-xs">
@@ -101,6 +107,7 @@ export function NotificationMenuItem({ notification, closePopover }: TaskComment
             strong: (chunks: any) => <strong>{chunks}</strong>,
             actor: data.actor?.name ?? "",
             title: data.title,
+            message: notification.message ?? "",
           })}
         </p>
         <div className="text-muted-foreground mt-1 w-full text-xs">
