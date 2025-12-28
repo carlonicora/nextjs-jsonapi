@@ -1,3 +1,9 @@
+## [1.15.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.14.0...v1.15.0) (2025-12-28)
+
+### 🚀 Features
+
+* enhance relationship handling in templates ([6faa1ef](https://github.com/carlonicora/nextjs-jsonapi/commit/6faa1ef0cef13320b32412af84d84213d865a128))
+
 ## [1.14.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.13.0...v1.14.0) (2025-12-27)
 
 ### 🚀 Features
