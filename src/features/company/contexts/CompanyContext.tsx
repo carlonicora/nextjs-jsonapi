@@ -10,7 +10,7 @@ import { Action } from "../../../permissions";
 import { getRoleId } from "../../../roles";
 import { UserInterface } from "../../user";
 import { useCurrentUserContext } from "../../user/contexts";
-import { CompanyConfigurationEditor, CompanyDeleter, CompanyEditor } from "../components";
+import { CompanyDeleter, CompanyEditor } from "../components";
 import { CompanyInterface } from "../data";
 
 interface CompanyContextType {
@@ -71,7 +71,7 @@ export const CompanyProvider = ({ children, dehydratedCompany }: CompanyProvider
       hasRole(getRoleId().Administrator) ||
       hasPermissionToModule({ module: Modules.Company, action: Action.Update })
     ) {
-      if (company) functions.push(<CompanyConfigurationEditor key="companyConfigurationEditor" company={company} />);
+      // if (company) functions.push(<CompanyConfigurationEditor key="companyConfigurationEditor" company={company} />);
       functions.push(<CompanyEditor key="companyEditor" company={company} propagateChanges={setCompany} />);
     }
 
