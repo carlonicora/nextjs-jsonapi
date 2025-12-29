@@ -3,7 +3,7 @@ import { ModuleInterface } from "../../module";
 
 export interface FeatureInterface extends ApiDataInterface {
   get name(): string;
-  get isProduction(): boolean;
+  get isCore(): boolean;
 
   get modules(): ModuleInterface[];
 }

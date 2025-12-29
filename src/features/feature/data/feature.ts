@@ -4,7 +4,7 @@ import { FeatureInterface } from "./feature.interface";
 
 export class Feature extends AbstractApiData implements FeatureInterface {
   private _name?: string;
-  private _isProduction?: boolean;
+  private _isCore?: boolean;
 
   private _modules: ModuleInterface[] = [];
 
@@ -12,8 +12,8 @@ export class Feature extends AbstractApiData implements FeatureInterface {
     return this._name ?? "";
   }
 
-  get isProduction(): boolean {
-    return this._isProduction == true ? true : false;
+  get isCore(): boolean {
+    return this._isCore == true ? true : false;
   }
 
   get modules(): ModuleInterface[] {
@@ -24,7 +24,7 @@ export class Feature extends AbstractApiData implements FeatureInterface {
     super.rehydrate(data);
 
     this._name = data.jsonApi.attributes.name;
-    this._isProduction = data.jsonApi.attributes.isProduction ?? false;
+    this._isCore = data.jsonApi.attributes.isCore ?? false;
 
     this._modules = this._readIncluded(data, `modules`, Modules.Module) as ModuleInterface[];
 
