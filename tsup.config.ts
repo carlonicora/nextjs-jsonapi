@@ -30,6 +30,8 @@ export default defineConfig({
   dts: { resolve: true },
   external: [
     "@tanstack/react-table",
+    "@stripe/react-stripe-js",
+    "@stripe/stripe-js",
     "react",
     "react-dom",
     "next",

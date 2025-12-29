@@ -17,6 +17,14 @@ export interface FoundationModuleDefinitions {
   Content: ModuleWithPermissions;
   UserTopic: ModuleWithPermissions;
   UserExpertise: ModuleWithPermissions;
+  // Billing modules - READ: all users, UPDATE: CompanyAdministrator, ADMIN: Administrator
+  Billing: ModuleWithPermissions;
+  BillingCustomer: ModuleWithPermissions;
+  Subscription: ModuleWithPermissions;
+  Invoice: ModuleWithPermissions;
+  StripeProduct: ModuleWithPermissions;
+  StripePrice: ModuleWithPermissions;
+  UsageRecord: ModuleWithPermissions;
 }
 
 // App-specific modules - apps will augment this interface ONLY

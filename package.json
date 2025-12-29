@@ -59,6 +59,8 @@
     "README.md"
   ],
   "peerDependencies": {
+    "@stripe/react-stripe-js": ">=2.0.0",
+    "@stripe/stripe-js": ">=3.0.0",
     "@tanstack/react-table": ">=8.0.0",
     "next": ">=14.0.0",
     "next-intl": ">=3.0.0",
@@ -67,6 +69,12 @@
     "react-hook-form": ">=7.0.0"
   },
   "peerDependenciesMeta": {
+    "@stripe/react-stripe-js": {
+      "optional": true
+    },
+    "@stripe/stripe-js": {
+      "optional": true
+    },
     "@tanstack/react-table": {
       "optional": true
     },
