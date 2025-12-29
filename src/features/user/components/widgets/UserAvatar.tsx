@@ -65,7 +65,7 @@ export function UserAvatar({ user, className, showFull, showLink }: UserAvatarPr
           <Link
             href={generateUrl({ page: Modules.User, id: user.id })}
             className={cn(`mb-2 flex w-full flex-row items-center justify-start gap-x-2 text-sm`, className)}
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e: React.MouseEvent<HTMLAnchorElement>) => e.stopPropagation()}
           >
             <div className="flex w-full flex-row items-center gap-x-2">
               {getAvatar()}

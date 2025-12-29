@@ -19,7 +19,7 @@ export function ContributorsList({ content }: ContributorsListProps) {
       <Link
         key={content.author.id}
         href={generateUrl({ page: Modules.User, id: content.author.id })}
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => e.stopPropagation()}
       >
         <UserAvatar user={content.author} className="mr-1 h-6 w-6" />
       </Link>
@@ -30,7 +30,7 @@ export function ContributorsList({ content }: ContributorsListProps) {
             <Link
               key={editor.id}
               href={generateUrl({ page: Modules.User, id: editor.id })}
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e: React.MouseEvent<HTMLAnchorElement>) => e.stopPropagation()}
             >
               <UserAvatar user={editor} className="h-5 w-5" />
             </Link>
