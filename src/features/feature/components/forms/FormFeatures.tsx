@@ -1,15 +1,6 @@
 "use client";
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-  Checkbox,
-  FormLabel,
-  FormMessage,
-} from "../../../../shadcnui";
-import { ModuleInterface } from "../../../module";
+import { Checkbox, FormLabel, FormMessage, ScrollArea } from "../../../../shadcnui";
 import { FeatureInterface } from "../../data";
 
 type FormFeaturesProps = {
@@ -17,88 +8,35 @@ type FormFeaturesProps = {
   name?: string;
   features: FeatureInterface[];
   featureField?: string;
-  moduleField?: string;
 };
 
-export function FormFeatures({
-  form,
-  name,
-  features,
-  featureField = "featureIds",
-  moduleField = "moduleIds",
-}: FormFeaturesProps) {
+export function FormFeatures({ form, name, features, featureField = "featureIds" }: FormFeaturesProps) {
   const selectedFeatures: string[] = form.watch(featureField);
-  const selectedModules: string[] = form.watch(moduleField);
 
   const toggleFeature = (feature: FeatureInterface, checked: boolean) => {
     let newFeatureIds = [...selectedFeatures];
-    let newModuleIds = [...selectedModules];
 
     if (checked) {
       if (!newFeatureIds.includes(feature.id)) {
         newFeatureIds.push(feature.id);
       }
-      feature.modules.forEach((module) => {
-        if (!newModuleIds.includes(module.id)) {
-          newModuleIds.push(module.id);
-        }
-      });
     } else {
       newFeatureIds = newFeatureIds.filter((id) => id !== feature.id);
-      feature.modules.forEach((module) => {
-        newModuleIds = newModuleIds.filter((id) => id !== module.id);
-      });
     }
     form.setValue(featureField, newFeatureIds);
-    form.setValue(moduleField, newModuleIds);
   };
 
-  const toggleModule = (feature: FeatureInterface, module: ModuleInterface, checked: boolean) => {
-    const modulesForFeature = feature.modules.map((m) => m.id);
-    let newModuleIds = [...selectedModules];
-
-    if (checked) {
-      if (!selectedFeatures.includes(feature.id)) {
-        newModuleIds = newModuleIds.filter((id) => !modulesForFeature.includes(id));
-        newModuleIds.push(module.id);
-        form.setValue(featureField, [...selectedFeatures, feature.id]);
-      } else {
-        if (!newModuleIds.includes(module.id)) {
-          newModuleIds.push(module.id);
-        }
-      }
-    } else {
-      newModuleIds = newModuleIds.filter((id) => id !== module.id);
-      const remaining = feature.modules.filter((m) => newModuleIds.includes(m.id));
-      if (remaining.length === 0) {
-        form.setValue(
-          featureField,
-          selectedFeatures.filter((id) => id !== feature.id),
-        );
-      }
-    }
-    form.setValue(moduleField, newModuleIds);
-  };
-
-  const isFeatureChecked = (feature: FeatureInterface) =>
-    selectedFeatures.includes(feature.id) || feature.modules.every((module) => selectedModules.includes(module.id));
+  const isFeatureChecked = (feature: FeatureInterface) => selectedFeatures.includes(feature.id);
 
   return (
     <div className="flex w-full flex-col">
-      {name && <h2 className="mb-5 font-semibold">{name}</h2>}
-      {features.map((feature) => (
-        <Accordion
-          key={feature.id}
-          type="single"
-          collapsible
-          // className={`w-full p-0 ${feature.modules.filter((module) => !module.isCore).length === 0 ? "border-t" : ""}`}
-          className={`w-full p-0`}
-        >
-          <AccordionItem value={feature.id} className="p-0">
-            <div
-              className={`flex items-center justify-between p-0 ${feature.modules.filter((module) => !module.isCore).length === 0 ? "py-4" : ""}`}
-            >
-              <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
+      {name && <h2 className="mb-4 border-b text-lg font-semibold">{name}</h2>}
+      <ScrollArea className="h-[40vh]">
+        <div className="flex flex-col gap-y-2 pr-4">
+          {features
+            .filter((feature) => !feature.isCore)
+            .map((feature) => (
+              <div key={feature.id} className="flex items-center">
                 <Checkbox
                   id={feature.id}
                   checked={isFeatureChecked(feature)}
@@ -110,40 +48,9 @@ export function FormFeatures({
                   {feature.name}
                 </FormLabel>
               </div>
-              {feature.modules.filter((module) => !module.isCore).length > 0 && (
-                <AccordionTrigger asChild>
-                  <div className="w-full"></div>
-                </AccordionTrigger>
-              )}
-            </div>
-            {feature.modules.filter((module) => !module.isCore).length > 0 && (
-              <AccordionContent className="pl-6">
-                {feature.modules
-                  .filter((module) => !module.isCore)
-                  .sort((a: ModuleInterface, b: ModuleInterface) => a.name.localeCompare(b.name))
-                  .map((module: ModuleInterface) => (
-                    <div
-                      key={module.id}
-                      className="flex items-center border-t py-2"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <Checkbox
-                        id={module.id}
-                        checked={selectedModules.includes(module.id)}
-                        onCheckedChange={(val) => {
-                          toggleModule(feature, module, val === true);
-                        }}
-                      />
-                      <FormLabel htmlFor={module.id} className="ml-3 cursor-pointer font-normal">
-                        {module.name}
-                      </FormLabel>
-                    </div>
-                  ))}
-              </AccordionContent>
-            )}
-          </AccordionItem>
-        </Accordion>
-      ))}
+            ))}
+        </div>
+      </ScrollArea>
       <FormMessage />
     </div>
   );

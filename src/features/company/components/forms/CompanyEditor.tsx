@@ -26,8 +26,8 @@ import { useI18nRouter } from "../../../../i18n";
 import { getRoleId } from "../../../../roles";
 import { Dialog, DialogContent, Form, ScrollArea } from "../../../../shadcnui";
 import { FeatureInterface } from "../../../feature";
-import { S3Interface } from "../../../s3";
 import { FeatureService } from "../../../feature/data/feature.service";
+import { S3Interface } from "../../../s3";
 import { S3Service } from "../../../s3/data/s3.service";
 import { UserInterface } from "../../../user";
 import { useCurrentUserContext } from "../../../user/contexts";
@@ -122,7 +122,7 @@ function CompanyEditorInternal({ company, propagateChanges, onRevalidate }: Comp
       if (hasRole(getRoleId().Administrator)) {
         setFeatures(allfeatures);
       } else {
-        setFeatures(allfeatures.filter((feature) => feature.isProduction));
+        setFeatures(allfeatures.filter((feature) => feature.isCore));
       }
     }
     if (
