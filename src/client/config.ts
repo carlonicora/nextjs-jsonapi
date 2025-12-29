@@ -10,6 +10,7 @@ let _clientConfig: {
   trackablePages?: ModuleWithPermissions[];
   bootstrapper?: () => void;
   additionalHeaders?: Record<string, string>;
+  stripePublishableKey?: string;
 } | null = null;
 
 /**
@@ -22,6 +23,7 @@ export function configureJsonApi(config: {
   trackablePages?: ModuleWithPermissions[];
   bootstrapper?: () => void;
   additionalHeaders?: Record<string, string>;
+  stripePublishableKey?: string;
 }): void {
   _clientConfig = config;
   // Register and call bootstrapper to register all modules
@@ -77,4 +79,11 @@ export function getAppUrl(): string {
  */
 export function getTrackablePages(): ModuleWithPermissions[] {
   return _clientConfig?.trackablePages ?? [];
+}
+
+/**
+ * Get the configured Stripe publishable key.
+ */
+export function getStripePublishableKey(): string | undefined {
+  return _clientConfig?.stripePublishableKey;
 }
