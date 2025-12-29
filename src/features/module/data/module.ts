@@ -3,7 +3,6 @@ import { ModuleInterface } from "./module.interface";
 
 export class Module extends AbstractApiData implements ModuleInterface {
   private _name?: string;
-  private _isCore?: boolean;
   private _permissions?: {
     create: boolean | string;
     read: boolean | string;
@@ -14,10 +13,6 @@ export class Module extends AbstractApiData implements ModuleInterface {
   get name(): string {
     if (!this._name) throw new Error("Name is not defined");
     return this._name ?? "";
-  }
-
-  get isCore(): boolean {
-    return this._isCore ?? false;
   }
 
   get permissions(): {
@@ -34,7 +29,6 @@ export class Module extends AbstractApiData implements ModuleInterface {
     super.rehydrate(data);
 
     this._name = data.jsonApi.attributes.name;
-    this._isCore = data.jsonApi.attributes.isCore;
     this._permissions = data.jsonApi.meta.permissions;
 
     return this;
