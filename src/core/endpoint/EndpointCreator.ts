@@ -2,7 +2,7 @@ import { FieldSelector } from "../fields/FieldSelector";
 import { ApiRequestDataTypeInterface } from "../interfaces/ApiRequestDataTypeInterface";
 
 export type EndpointQuery = {
-  endpoint: ApiRequestDataTypeInterface;
+  endpoint: ApiRequestDataTypeInterface | string;
   id?: string;
   childEndpoint?: ApiRequestDataTypeInterface | string;
   childId?: string;
@@ -13,7 +13,7 @@ export class EndpointCreator {
   private _endpoint: EndpointQuery;
 
   constructor(params: {
-    endpoint: ApiRequestDataTypeInterface;
+    endpoint: ApiRequestDataTypeInterface | string;
     id?: string;
     childEndpoint?: ApiRequestDataTypeInterface | string;
     childId?: string;
@@ -28,7 +28,7 @@ export class EndpointCreator {
     };
   }
 
-  endpoint(value: ApiRequestDataTypeInterface): EndpointCreator {
+  endpoint(value: ApiRequestDataTypeInterface | string): EndpointCreator {
     this._endpoint.endpoint = value;
     return this;
   }
@@ -80,7 +80,10 @@ export class EndpointCreator {
       additionalParams = this._endpoint.additionalParams.map((param) => `${param.key}=${param.value}`).join("&");
     }
 
-    let response = `${this._endpoint.endpoint.name}`;
+    let response = ``;
+    response += `${
+      typeof this._endpoint.endpoint === "string" ? this._endpoint.endpoint : this._endpoint.endpoint.name
+    }`;
     if (this._endpoint.id) response += `/${this._endpoint.id}`;
     if (this._endpoint.childEndpoint) {
       response += `/${
