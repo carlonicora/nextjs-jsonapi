@@ -60,7 +60,6 @@ export default function SettingsContainer() {
 
   // Helper function to check if company has metered subscriptions
   const hasMeteredSubscriptions = (): boolean => {
-    console.log("[SettingsContainer] Checking for metered subscriptions...", subscriptions);
     return subscriptions.some((sub) => sub.price?.recurring?.usageType === "metered");
   };
 
