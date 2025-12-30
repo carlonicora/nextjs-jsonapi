@@ -82,4 +82,42 @@ export class StripePriceService extends AbstractService {
       input: params,
     });
   }
+
+  /**
+   * Archive a price (admin)
+   *
+   * Sets the price as inactive. Archived prices cannot be used for new subscriptions.
+   */
+  static async archivePrice(params: { id: string }): Promise<void> {
+    const endpoint = new EndpointCreator({
+      endpoint: Modules.StripePrice,
+      id: params.id,
+      childEndpoint: "archive",
+    });
+
+    await this.callApi({
+      type: Modules.StripePrice,
+      method: HttpMethod.POST,
+      endpoint: endpoint.generate(),
+    });
+  }
+
+  /**
+   * Reactivate a price (admin)
+   *
+   * Sets the price as active. Active prices can be used for new subscriptions.
+   */
+  static async reactivatePrice(params: { id: string }): Promise<void> {
+    const endpoint = new EndpointCreator({
+      endpoint: Modules.StripePrice,
+      id: params.id,
+      childEndpoint: "archive",
+    });
+
+    await this.callApi({
+      type: Modules.StripePrice,
+      method: HttpMethod.DELETE,
+      endpoint: endpoint.generate(),
+    });
+  }
 }
