@@ -1,6 +1,6 @@
 import { AbstractApiData, JsonApiHydratedDataInterface, Modules } from "../../../../core";
 import { StripeProductInterface } from "../../stripe-product";
-import { CreatePriceInput, PriceRecurring, StripePriceInterface, UpdatePriceInput } from "./stripe-price.interface";
+import { PriceRecurring, StripePriceInput, StripePriceInterface } from "./stripe-price.interface";
 
 export class StripePrice extends AbstractApiData implements StripePriceInterface {
   private _stripePriceId?: string;
@@ -71,7 +71,7 @@ export class StripePrice extends AbstractApiData implements StripePriceInterface
     this._active = data.jsonApi.attributes.active ?? true;
     this._currency = data.jsonApi.attributes.currency;
     this._unitAmount = data.jsonApi.attributes.unitAmount;
-    this._priceType = data.jsonApi.attributes.priceType ?? data.jsonApi.attributes.type;
+    this._priceType = data.jsonApi.attributes.priceType;
 
     // Construct recurring object from flat attributes
     if (data.jsonApi.attributes.recurringInterval) {
@@ -97,29 +97,33 @@ export class StripePrice extends AbstractApiData implements StripePriceInterface
     return this;
   }
 
-  createJsonApi(data: CreatePriceInput | UpdatePriceInput): any {
+  createJsonApi(data: StripePriceInput): any {
     const response: any = {
       data: {
         type: Modules.StripePrice.name,
+        id: data.id,
         attributes: {},
       },
     };
 
-    // Check if it's an update (has priceId)
-    if ("priceId" in data) {
-      response.data.id = data.priceId;
-    }
-
     if ("productId" in data && data.productId) {
       response.data.attributes.productId = data.productId;
     }
-    if ("currency" in data && data.currency) response.data.attributes.currency = data.currency;
+    if ("currency" in data && data.currency) {
+      response.data.attributes.currency = data.currency;
+    }
     if ("unitAmount" in data && data.unitAmount !== undefined) {
       response.data.attributes.unitAmount = data.unitAmount;
     }
-    if ("active" in data && data.active !== undefined) response.data.attributes.active = data.active;
-    if ("metadata" in data && data.metadata) response.data.attributes.metadata = data.metadata;
-    if ("recurring" in data && data.recurring) response.data.attributes.recurring = data.recurring;
+    if ("active" in data && data.active !== undefined) {
+      response.data.attributes.active = data.active;
+    }
+    if ("metadata" in data && data.metadata) {
+      response.data.attributes.metadata = data.metadata;
+    }
+    if ("recurring" in data && data.recurring) {
+      response.data.attributes.recurring = data.recurring;
+    }
 
     return response;
   }

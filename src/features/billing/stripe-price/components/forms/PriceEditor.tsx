@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle } from "lucide-react";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { v4 } from "uuid";
 import { z } from "zod";
 import { FormCheckbox, FormInput, FormSelect } from "../../../../../components";
 import { CommonEditorButtons } from "../../../../../components/forms/CommonEditorButtons";
@@ -18,14 +19,30 @@ type PriceEditorProps = {
   onSuccess: () => void;
 };
 
+type PriceFormValues = {
+  unitAmount: number;
+  currency: string;
+  interval: "one_time" | "day" | "week" | "month" | "year";
+  intervalCount?: number;
+  usageType?: "licensed" | "metered";
+  nickname?: string;
+  active: boolean;
+};
+
 export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }: PriceEditorProps) {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const formSchema = z.object({
-    unitAmount: z.number().min(0, { message: "Amount must be 0 or greater" }),
+    unitAmount: z.preprocess(
+      (val) => (typeof val === "string" ? parseFloat(val) : val),
+      z.number().min(0, { message: "Amount must be 0 or greater" }),
+    ),
     currency: z.string().min(1, { message: "Currency is required" }),
     interval: z.enum(["one_time", "day", "week", "month", "year"]),
-    intervalCount: z.number().min(1).optional(),
+    intervalCount: z.preprocess(
+      (val) => (val === "" || val === undefined ? undefined : typeof val === "string" ? parseInt(val, 10) : val),
+      z.number().min(1).optional(),
+    ),
     usageType: z.enum(["licensed", "metered"]).optional(),
     nickname: z.string().optional(),
     active: z.boolean(),
@@ -36,12 +53,12 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
   // Convert cents to dollars for display
   const defaultUnitAmount = price?.unitAmount ? price.unitAmount / 100 : 0;
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<PriceFormValues>({
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       unitAmount: defaultUnitAmount,
       currency: price?.currency || "usd",
-      interval: price?.type === "one_time" ? "one_time" : price?.recurring?.interval || "month",
+      interval: price?.priceType === "one_time" ? "one_time" : price?.recurring?.interval || "month",
       intervalCount: price?.recurring?.intervalCount || 1,
       usageType: price?.recurring?.usageType || "licensed",
       nickname: (price?.metadata?.nickname as string) || "",
@@ -52,27 +69,24 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
   const watchInterval = form.watch("interval");
   const isRecurring = watchInterval !== "one_time";
 
-  const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (values) => {
-    console.log("[PriceEditor] Submitting price:", values);
+  const onSubmit: SubmitHandler<PriceFormValues> = async (values) => {
     setIsSubmitting(true);
 
     try {
       // Convert dollars to cents
       const unitAmountInCents = Math.round(values.unitAmount * 100);
-      console.log("[PriceEditor] Converted amount:", { dollars: values.unitAmount, cents: unitAmountInCents });
 
       if (isEditMode) {
-        // Update existing price (only nickname and active can be updated)
+        // Update existing price (only nickname can be updated - Stripe limitation)
         await StripePriceService.updatePrice({
-          priceId: price.stripePriceId,
-          active: values.active,
+          id: price.id,
           metadata: values.nickname ? { nickname: values.nickname } : undefined,
         });
-        console.log("[PriceEditor] Price updated successfully");
       } else {
         // Create new price
         const createInput: any = {
-          productId,
+          id: v4(),
+          productId: productId,
           currency: values.currency,
           unitAmount: unitAmountInCents,
         };
@@ -91,7 +105,6 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
         }
 
         await StripePriceService.createPrice(createInput);
-        console.log("[PriceEditor] Price created successfully");
       }
 
       onSuccess();
@@ -155,7 +168,6 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
                 id="unitAmount"
                 name="Amount (in dollars)"
                 placeholder="9.99"
-                type="number"
                 disabled={isEditMode}
                 isRequired
               />
@@ -172,7 +184,7 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
             />
 
             {isRecurring && (
-              <>
+              <div className="grid grid-cols-2 gap-x-4">
                 <FormInput
                   form={form}
                   id="intervalCount"
@@ -189,7 +201,7 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
                   values={usageTypeOptions}
                   disabled={isEditMode}
                 />
-              </>
+              </div>
             )}
 
             <FormInput

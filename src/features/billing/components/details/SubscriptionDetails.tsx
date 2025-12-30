@@ -4,10 +4,11 @@ import { useState } from "react";
 import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../../../../shadcnui";
 import { BillingService } from "../../data/billing.service";
 import { SubscriptionInterface, SubscriptionStatus } from "../../data/subscription.interface";
+import { StripeBillingCustomerService } from "../../stripe-billing-customer";
+import { CancelSubscriptionDialog } from "../forms/CancelSubscriptionDialog";
+import { SubscriptionEditor } from "../forms/SubscriptionEditor";
 import { formatDate } from "../utils";
 import { SubscriptionStatusBadge } from "../widgets/SubscriptionStatusBadge";
-import { SubscriptionEditor } from "../forms/SubscriptionEditor";
-import { CancelSubscriptionDialog } from "../forms/CancelSubscriptionDialog";
 
 type SubscriptionDetailsProps = {
   subscription: SubscriptionInterface;
@@ -57,7 +58,7 @@ export function SubscriptionDetails({
   const handleManageViaPortal = async () => {
     console.log("[SubscriptionDetails] Opening Stripe portal...");
     try {
-      const { url } = await BillingService.createPortalSession();
+      const { url } = await StripeBillingCustomerService.createPortalSession();
       console.log("[SubscriptionDetails] Portal URL:", url);
       window.open(url, "_blank");
     } catch (error) {

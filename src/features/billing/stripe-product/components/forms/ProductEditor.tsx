@@ -37,7 +37,6 @@ export function ProductEditor({ product, open, onOpenChange, onSuccess }: Produc
   });
 
   const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (values) => {
-    console.log("[ProductEditor] Submitting product:", values);
     setIsSubmitting(true);
 
     try {
@@ -49,7 +48,6 @@ export function ProductEditor({ product, open, onOpenChange, onSuccess }: Produc
           description: values.description,
           active: values.active,
         });
-        console.log("[ProductEditor] Product updated successfully");
       } else {
         // Create new product
         await StripeProductService.createProduct({
@@ -58,7 +56,6 @@ export function ProductEditor({ product, open, onOpenChange, onSuccess }: Produc
           description: values.description,
           active: values.active,
         });
-        console.log("[ProductEditor] Product created successfully");
       }
 
       onSuccess();

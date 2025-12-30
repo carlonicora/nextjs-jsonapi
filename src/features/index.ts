@@ -1,6 +1,7 @@
 // S3 feature exports
 export * from "./auth";
 export * from "./billing";
+export * from "./billing/stripe-billing-customer";
 export * from "./billing/stripe-price";
 export * from "./billing/stripe-product";
 export * from "./company";

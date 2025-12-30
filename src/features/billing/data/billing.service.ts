@@ -1,94 +1,32 @@
-import { AbstractService, EndpointCreator, HttpMethod, Modules, NextRef, PreviousRef } from "../../../core";
-import { BillingCustomerInterface } from "./billing-customer.interface";
+import {
+  AbstractService,
+  EndpointCreator,
+  HttpMethod,
+  Modules,
+  NextRef,
+  PreviousRef,
+  StripeBillingCustomerInterface,
+} from "../../../core";
+import { InvoiceInterface, ProrationPreview } from "./invoice.interface";
+import { PaymentMethodInterface } from "./payment-method.interface";
 import {
   CancelSubscriptionInput,
   ChangePlanInput,
   CreateSubscriptionInput,
   SubscriptionInterface,
 } from "./subscription.interface";
-import { InvoiceInterface, ProrationPreview } from "./invoice.interface";
 import {
   MeterInterface,
   MeterSummaryInterface,
+  ReportUsageInput,
   UsageRecordInterface,
   UsageSummaryInterface,
-  ReportUsageInput,
 } from "./usage-record.interface";
-import { PaymentMethodInterface } from "./payment-method.interface";
 
 /**
  * Customer-facing billing service for managing subscriptions, payments, and usage
  */
 export class BillingService extends AbstractService {
-  // ============================================================================
-  // Customer Methods
-  // ============================================================================
-
-  /**
-   * Get the current user's billing customer record
-   */
-  static async getCustomer(): Promise<BillingCustomerInterface> {
-    const endpoint = new EndpointCreator({
-      endpoint: Modules.BillingCustomer,
-      id: "me",
-    });
-
-    return this.callApi<BillingCustomerInterface>({
-      type: Modules.BillingCustomer,
-      method: HttpMethod.GET,
-      endpoint: endpoint.generate(),
-    });
-  }
-
-  /**
-   * Create a billing customer for the current user
-   */
-  static async createCustomer(): Promise<BillingCustomerInterface> {
-    const endpoint = new EndpointCreator({
-      endpoint: Modules.BillingCustomer,
-    });
-
-    return this.callApi<BillingCustomerInterface>({
-      type: Modules.BillingCustomer,
-      method: HttpMethod.POST,
-      endpoint: endpoint.generate(),
-    });
-  }
-
-  /**
-   * Create a setup intent for adding payment methods
-   */
-  static async createSetupIntent(): Promise<{ clientSecret: string }> {
-    const endpoint = new EndpointCreator({
-      endpoint: Modules.BillingCustomer,
-      id: "me",
-      childEndpoint: "setup-intent",
-    });
-
-    return this.callApi({
-      type: Modules.BillingCustomer,
-      method: HttpMethod.POST,
-      endpoint: endpoint.generate(),
-    });
-  }
-
-  /**
-   * Create a Stripe customer portal session URL
-   */
-  static async createPortalSession(): Promise<{ url: string }> {
-    const endpoint = new EndpointCreator({
-      endpoint: Modules.BillingCustomer,
-      id: "me",
-      childEndpoint: "portal-session",
-    });
-
-    return this.callApi({
-      type: Modules.BillingCustomer,
-      method: HttpMethod.POST,
-      endpoint: endpoint.generate(),
-    });
-  }
-
   // ============================================================================
   // Payment Method Methods
   // ============================================================================
@@ -115,14 +53,14 @@ export class BillingService extends AbstractService {
   /**
    * Set the default payment method for the current user
    */
-  static async setDefaultPaymentMethod(params: { paymentMethodId: string }): Promise<BillingCustomerInterface> {
+  static async setDefaultPaymentMethod(params: { paymentMethodId: string }): Promise<StripeBillingCustomerInterface> {
     const endpoint = new EndpointCreator({
       endpoint: Modules.BillingCustomer,
       id: "me",
       childEndpoint: "default-payment-method",
     });
 
-    return this.callApi<BillingCustomerInterface>({
+    return this.callApi<StripeBillingCustomerInterface>({
       type: Modules.BillingCustomer,
       method: HttpMethod.PUT,
       endpoint: endpoint.generate(),

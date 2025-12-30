@@ -26,11 +26,9 @@ export function ProductsAdminContainer() {
   }
 
   const loadProducts = async () => {
-    console.log("[ProductsAdminContainer] Loading products...");
     setLoading(true);
     try {
       const fetchedProducts = await StripeProductService.listProducts();
-      console.log("[ProductsAdminContainer] Loaded products:", fetchedProducts);
       setProducts(fetchedProducts);
     } catch (error) {
       console.error("[ProductsAdminContainer] Failed to load products:", error);

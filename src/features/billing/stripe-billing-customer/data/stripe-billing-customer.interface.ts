@@ -1,10 +1,10 @@
-import { ApiDataInterface } from "../../../core";
+import { ApiDataInterface } from "../../../../core";
 
 // ============================================================================
 // Billing Customer Interfaces
 // ============================================================================
 
-export interface BillingCustomerInterface extends ApiDataInterface {
+export interface StripeBillingCustomerInterface extends ApiDataInterface {
   get stripeCustomerId(): string;
   get email(): string | undefined;
   get name(): string | undefined;

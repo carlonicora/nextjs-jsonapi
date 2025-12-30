@@ -92,4 +92,21 @@ export class StripeProductService extends AbstractService {
       endpoint: endpoint.generate(),
     });
   }
+
+  /**
+   * Reactivate a product (admin) - sets active to true
+   */
+  static async reactivateProduct(params: { id: string }): Promise<StripeProductInterface> {
+    const endpoint = new EndpointCreator({
+      endpoint: Modules.StripeProduct,
+      id: params.id,
+      childEndpoint: "archive",
+    });
+
+    return this.callApi<StripeProductInterface>({
+      type: Modules.StripeProduct,
+      method: HttpMethod.DELETE,
+      endpoint: endpoint.generate(),
+    });
+  }
 }

@@ -29,20 +29,15 @@ export interface PriceRecurring {
 // Stripe Price Input DTOs
 // ============================================================================
 
-export type CreatePriceInput = {
-  productId: string;
-  currency: string;
+export type StripePriceInput = {
+  id: string;
+  productId?: string; // Required for create, not for update
+  currency?: string; // Required for create, not for update
   unitAmount?: number;
   recurring?: {
     interval: "day" | "week" | "month" | "year";
     intervalCount?: number;
     usageType?: "metered" | "licensed";
   };
-  metadata?: Record<string, any>;
-};
-
-export type UpdatePriceInput = {
-  priceId: string;
-  active?: boolean;
   metadata?: Record<string, any>;
 };

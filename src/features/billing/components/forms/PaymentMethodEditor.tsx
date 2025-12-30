@@ -15,6 +15,7 @@ import {
   Label,
 } from "../../../../shadcnui";
 import { BillingService } from "../../data/billing.service";
+import { StripeBillingCustomerService } from "../../stripe-billing-customer";
 
 type PaymentMethodEditorProps = {
   open: boolean;
@@ -38,7 +39,7 @@ export function PaymentMethodEditor({ open, onOpenChange, onSuccess }: PaymentMe
       console.log("[PaymentMethodEditor] Fetching setup intent...");
       setLoading(true);
       try {
-        const intent = await BillingService.createSetupIntent();
+        const intent = await StripeBillingCustomerService.createSetupIntent();
         console.log("[PaymentMethodEditor] Setup intent created:", intent);
         setSetupIntent(intent);
       } catch (err) {

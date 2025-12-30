@@ -1,5 +1,5 @@
 import { AbstractService, EndpointCreator, HttpMethod, Modules, NextRef, PreviousRef } from "../../../../core";
-import { CreatePriceInput, StripePriceInterface, UpdatePriceInput } from "./stripe-price.interface";
+import { StripePriceInput, StripePriceInterface } from "./stripe-price.interface";
 
 /**
  * Admin billing service for managing products and prices
@@ -37,10 +37,10 @@ export class StripePriceService extends AbstractService {
   /**
    * Get a specific price by ID (admin)
    */
-  static async getPrice(params: { priceId: string }): Promise<StripePriceInterface> {
+  static async getPrice(params: { id: string }): Promise<StripePriceInterface> {
     const endpoint = new EndpointCreator({
       endpoint: Modules.StripePrice,
-      id: params.priceId,
+      id: params.id,
     });
 
     return this.callApi<StripePriceInterface>({
@@ -53,7 +53,7 @@ export class StripePriceService extends AbstractService {
   /**
    * Create a new price (admin)
    */
-  static async createPrice(params: CreatePriceInput): Promise<StripePriceInterface> {
+  static async createPrice(params: StripePriceInput): Promise<StripePriceInterface> {
     const endpoint = new EndpointCreator({
       endpoint: Modules.StripePrice,
     });
@@ -69,10 +69,10 @@ export class StripePriceService extends AbstractService {
   /**
    * Update an existing price (admin)
    */
-  static async updatePrice(params: UpdatePriceInput): Promise<StripePriceInterface> {
+  static async updatePrice(params: StripePriceInput): Promise<StripePriceInterface> {
     const endpoint = new EndpointCreator({
       endpoint: Modules.StripePrice,
-      id: params.priceId,
+      id: params.id,
     });
 
     return this.callApi<StripePriceInterface>({

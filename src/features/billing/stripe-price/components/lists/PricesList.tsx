@@ -20,11 +20,9 @@ export function PricesList({ productId, onPricesChange }: PricesListProps) {
   const [editingPrice, setEditingPrice] = useState<StripePriceInterface | null>(null);
 
   const loadPrices = async () => {
-    console.log("[PricesList] Loading prices for product:", productId);
     setLoading(true);
     try {
       const fetchedPrices = await StripePriceService.listPrices({ productId });
-      console.log("[PricesList] Loaded prices:", fetchedPrices);
       setPrices(fetchedPrices);
     } catch (error) {
       console.error("[PricesList] Failed to load prices:", error);
@@ -38,7 +36,7 @@ export function PricesList({ productId, onPricesChange }: PricesListProps) {
   }, [productId]);
 
   const formatInterval = (price: StripePriceInterface): string => {
-    if (price.type === "one_time") {
+    if (price.priceType === "one_time") {
       return "one-time";
     }
 
@@ -88,7 +86,7 @@ export function PricesList({ productId, onPricesChange }: PricesListProps) {
       {prices.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {prices.map((price) => (
-            <div key={price.stripePriceId} className="border rounded-lg bg-white p-4 hover:shadow-sm transition-shadow">
+            <div key={price.id} className="border rounded-lg bg-white p-4 hover:shadow-sm transition-shadow">
               <div className="flex items-start justify-between mb-3">
                 <DollarSign className="h-5 w-5 text-primary" />
                 <Button variant="ghost" size="sm" onClick={() => setEditingPrice(price)} className="h-8 w-8 p-0">

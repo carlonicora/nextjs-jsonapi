@@ -1,7 +1,7 @@
-import { AbstractApiData, JsonApiHydratedDataInterface } from "../../../core";
-import { BillingCustomerInterface } from "./billing-customer.interface";
+import { AbstractApiData, JsonApiHydratedDataInterface } from "../../../../core";
+import { StripeBillingCustomerInterface } from "./stripe-billing-customer.interface";
 
-export class BillingCustomer extends AbstractApiData implements BillingCustomerInterface {
+export class StripeBillingCustomer extends AbstractApiData implements StripeBillingCustomerInterface {
   private _stripeCustomerId?: string;
   private _email?: string;
   private _name?: string;
