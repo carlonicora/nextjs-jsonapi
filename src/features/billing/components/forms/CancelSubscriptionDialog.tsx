@@ -7,7 +7,7 @@ import { z } from "zod";
 import { FormCheckbox, FormTextarea } from "../../../../components";
 import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Form } from "../../../../shadcnui";
 import { BillingService } from "../../data/billing.service";
-import { SubscriptionInterface } from "../../data/billing.interface";
+import { SubscriptionInterface } from "../../data/subscription.interface";
 import { formatDate } from "../utils";
 
 type CancelSubscriptionDialogProps = {

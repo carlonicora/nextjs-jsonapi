@@ -2,11 +2,11 @@
 
 import { Archive, ChevronDown, ChevronUp, Edit, Package } from "lucide-react";
 import { useState } from "react";
-import { Button } from "../../../../shadcnui";
-import { BillingAdminService } from "../../data/billing-admin.service";
-import { StripeProductInterface } from "../../data/billing.interface";
+import { Button } from "../../../../../shadcnui";
+import { PricesList } from "../../../stripe-price/components/lists/PricesList";
+import { StripeProductInterface } from "../../data/stripe-product.interface";
+import { StripeProductService } from "../../data/stripe-product.service";
 import { ProductEditor } from "../forms/ProductEditor";
-import { PricesList } from "./PricesList";
 
 type ProductsListProps = {
   products: StripeProductInterface[];
@@ -33,7 +33,7 @@ export function ProductsList({ products, onProductsChange }: ProductsListProps) 
 
     setArchivingProductId(productId);
     try {
-      await BillingAdminService.archiveProduct({ productId });
+      await StripeProductService.archiveProduct({ id: productId });
       console.log("[ProductsList] Product archived successfully");
       onProductsChange();
     } catch (error) {
@@ -51,14 +51,11 @@ export function ProductsList({ products, onProductsChange }: ProductsListProps) 
   return (
     <div className="flex flex-col gap-y-4">
       {products.map((product) => {
-        const isExpanded = expandedProductId === product.stripeProductId;
-        const isArchiving = archivingProductId === product.stripeProductId;
+        const isExpanded = expandedProductId === product.id;
+        const isArchiving = archivingProductId === product.id;
 
         return (
-          <div
-            key={product.stripeProductId}
-            className="border rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
-          >
+          <div key={product.id} className="border rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow">
             {/* Product Card Header */}
             <div className="flex items-center justify-between p-6">
               <div className="flex items-center gap-x-4 flex-1">
@@ -86,16 +83,11 @@ export function ProductsList({ products, onProductsChange }: ProductsListProps) 
                   <Edit className="h-4 w-4 mr-1" />
                   Edit
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleArchive(product.stripeProductId)}
-                  disabled={isArchiving}
-                >
+                <Button variant="outline" size="sm" onClick={() => handleArchive(product.id)} disabled={isArchiving}>
                   <Archive className="h-4 w-4 mr-1" />
                   {isArchiving ? "Archiving..." : "Archive"}
                 </Button>
-                <Button variant="ghost" size="sm" onClick={() => toggleExpand(product.stripeProductId)}>
+                <Button variant="ghost" size="sm" onClick={() => toggleExpand(product.id)}>
                   {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
                 </Button>
               </div>
@@ -104,7 +96,7 @@ export function ProductsList({ products, onProductsChange }: ProductsListProps) 
             {/* Expandable Prices Section */}
             {isExpanded && (
               <div className="border-t bg-muted/30 p-6">
-                <PricesList productId={product.stripeProductId} onPricesChange={onProductsChange} />
+                <PricesList productId={product.id} onPricesChange={onProductsChange} />
               </div>
             )}
           </div>

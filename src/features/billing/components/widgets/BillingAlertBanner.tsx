@@ -2,7 +2,7 @@
 
 import { AlertCircle } from "lucide-react";
 import { Button } from "../../../../shadcnui";
-import { SubscriptionInterface, SubscriptionStatus } from "../../data/billing.interface";
+import { SubscriptionInterface, SubscriptionStatus } from "../../data/subscription.interface";
 
 type BillingAlertBannerProps = {
   subscription: SubscriptionInterface;

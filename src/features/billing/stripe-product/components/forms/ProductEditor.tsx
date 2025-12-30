@@ -3,12 +3,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { v4 } from "uuid";
 import { z } from "zod";
-import { FormCheckbox, FormInput, FormTextarea } from "../../../../components";
-import { CommonEditorButtons } from "../../../../components/forms/CommonEditorButtons";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Form } from "../../../../shadcnui";
-import { BillingAdminService } from "../../data/billing-admin.service";
-import { StripeProductInterface } from "../../data/billing.interface";
+import { FormCheckbox, FormInput, FormTextarea } from "../../../../../components";
+import { CommonEditorButtons } from "../../../../../components/forms/CommonEditorButtons";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Form } from "../../../../../shadcnui";
+import { StripeProductInterface } from "../../data/stripe-product.interface";
+import { StripeProductService } from "../../data/stripe-product.service";
 
 type ProductEditorProps = {
   product?: StripeProductInterface;
@@ -42,8 +43,8 @@ export function ProductEditor({ product, open, onOpenChange, onSuccess }: Produc
     try {
       if (product) {
         // Update existing product
-        await BillingAdminService.updateProduct({
-          productId: product.stripeProductId,
+        await StripeProductService.updateProduct({
+          id: product.id,
           name: values.name,
           description: values.description,
           active: values.active,
@@ -51,7 +52,8 @@ export function ProductEditor({ product, open, onOpenChange, onSuccess }: Produc
         console.log("[ProductEditor] Product updated successfully");
       } else {
         // Create new product
-        await BillingAdminService.createProduct({
+        await StripeProductService.createProduct({
+          id: v4(),
           name: values.name,
           description: values.description,
           active: values.active,

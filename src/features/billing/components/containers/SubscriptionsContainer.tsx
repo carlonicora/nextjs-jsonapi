@@ -4,7 +4,7 @@ import { CreditCard } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "../../../../shadcnui";
 import { BillingService } from "../../data/billing.service";
-import { SubscriptionInterface, SubscriptionStatus } from "../../data/billing.interface";
+import { SubscriptionInterface, SubscriptionStatus } from "../../data/subscription.interface";
 import { SubscriptionEditor } from "../forms/SubscriptionEditor";
 import { SubscriptionsList } from "../lists/SubscriptionsList";
 import { BillingAlertBanner } from "../widgets/BillingAlertBanner";

@@ -22,7 +22,8 @@ import {
   AlertDialogTitle,
 } from "../../../../shadcnui";
 import { BillingService } from "../../data/billing.service";
-import { BillingCustomerInterface, PaymentMethodInterface } from "../../data/billing.interface";
+import { BillingCustomerInterface } from "../../data/billing-customer.interface";
+import { PaymentMethodInterface } from "../../data/payment-method.interface";
 
 type PaymentMethodCardProps = {
   paymentMethod: PaymentMethodInterface;

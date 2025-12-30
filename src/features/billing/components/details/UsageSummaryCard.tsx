@@ -2,7 +2,7 @@
 
 import { Activity } from "lucide-react";
 import { Card, CardContent, CardHeader } from "../../../../shadcnui";
-import { MeterInterface, MeterSummaryInterface } from "../../data/billing.interface";
+import { MeterInterface, MeterSummaryInterface } from "../../data/usage-record.interface";
 
 type UsageSummaryCardProps = {
   meter: MeterInterface;

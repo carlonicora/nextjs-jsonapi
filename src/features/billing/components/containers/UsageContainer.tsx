@@ -3,7 +3,8 @@
 import { Activity } from "lucide-react";
 import { useEffect, useState } from "react";
 import { BillingService } from "../../data/billing.service";
-import { MeterInterface, MeterSummaryInterface, SubscriptionInterface } from "../../data/billing.interface";
+import { MeterInterface, MeterSummaryInterface } from "../../data/usage-record.interface";
+import { SubscriptionInterface } from "../../data/subscription.interface";
 import { UsageSummaryCards } from "../widgets/UsageSummaryCards";
 
 export function UsageContainer() {

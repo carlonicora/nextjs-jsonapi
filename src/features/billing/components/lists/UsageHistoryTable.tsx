@@ -1,7 +1,7 @@
 "use client";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../shadcnui";
-import { UsageRecordInterface } from "../../data/billing.interface";
+import { UsageRecordInterface } from "../../data/usage-record.interface";
 
 type UsageHistoryTableProps = {
   usageRecords: UsageRecordInterface[];
@@ -47,31 +47,22 @@ export function UsageHistoryTable({ usageRecords }: UsageHistoryTableProps) {
           <TableHeader className="bg-muted">
             <TableRow>
               <TableHead>Date & Time</TableHead>
-              <TableHead>Subscription Item</TableHead>
+              <TableHead>Meter Event</TableHead>
               <TableHead className="text-right">Quantity</TableHead>
-              <TableHead>Action</TableHead>
+              <TableHead>Event ID</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {usageRecords.map((record) => {
               const dateTime = formatDateTime(record.timestamp);
               const quantity = record.quantity.toLocaleString();
-              const action = record.action;
 
               return (
                 <TableRow key={record.id}>
                   <TableCell className="font-medium">{dateTime}</TableCell>
-                  <TableCell className="text-muted-foreground text-sm font-mono">{record.subscriptionItemId}</TableCell>
+                  <TableCell className="text-muted-foreground">{record.meterEventName}</TableCell>
                   <TableCell className="text-right font-medium">{quantity}</TableCell>
-                  <TableCell>
-                    <span
-                      className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                        action === "increment" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"
-                      }`}
-                    >
-                      {action}
-                    </span>
-                  </TableCell>
+                  <TableCell className="text-muted-foreground text-sm font-mono">{record.stripeEventId}</TableCell>
                 </TableRow>
               );
             })}

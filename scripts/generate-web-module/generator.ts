@@ -38,6 +38,14 @@ import {
   generateModuleTemplate,
   generateListPageTemplate,
   generateDetailPageTemplate,
+  generateBootstrapperTemplate,
+  generateEnvTemplate,
+  generateMiddlewareEnvTemplate,
+  generateMainLayoutTemplate,
+  generateSettingsContextTemplate,
+  generateSettingsContainerTemplate,
+  generateSettingsPageTemplate,
+  generateSettingsModulePageTemplate,
 } from "./templates";
 import { writeFiles, printResults, updateBootstrapper, updateI18n } from "./utils";
 
@@ -322,6 +330,81 @@ function generateAllFiles(data: FrontendTemplateData, schema: JsonModuleDefiniti
     content: generateDetailPageTemplate(data),
     type: "page",
   });
+
+  // Project setup files (only if they don't exist)
+  const webBasePath = findWebBasePath("");
+
+  const bootstrapper = generateBootstrapperTemplate(webBasePath);
+  if (bootstrapper) {
+    files.push({
+      path: path.join(webBasePath, "apps/web/src/config/Bootstrapper.ts"),
+      content: bootstrapper,
+      type: "project-setup",
+    });
+  }
+
+  const env = generateEnvTemplate(webBasePath);
+  if (env) {
+    files.push({
+      path: path.join(webBasePath, "apps/web/src/config/env.ts"),
+      content: env,
+      type: "project-setup",
+    });
+  }
+
+  const middlewareEnv = generateMiddlewareEnvTemplate(webBasePath);
+  if (middlewareEnv) {
+    files.push({
+      path: path.join(webBasePath, "apps/web/src/config/middleware-env.ts"),
+      content: middlewareEnv,
+      type: "project-setup",
+    });
+  }
+
+  const mainLayout = generateMainLayoutTemplate(webBasePath);
+  if (mainLayout) {
+    files.push({
+      path: path.join(webBasePath, "apps/web/src/app/[locale]/(main)/layout.tsx"),
+      content: mainLayout,
+      type: "project-setup",
+    });
+  }
+
+  const settingsContext = generateSettingsContextTemplate(webBasePath);
+  if (settingsContext) {
+    files.push({
+      path: path.join(webBasePath, "apps/web/src/features/common/contexts/SettingsContext.tsx"),
+      content: settingsContext,
+      type: "project-setup",
+    });
+  }
+
+  const settingsContainer = generateSettingsContainerTemplate(webBasePath);
+  if (settingsContainer) {
+    files.push({
+      path: path.join(webBasePath, "apps/web/src/features/common/components/containers/SettingsContainer.tsx"),
+      content: settingsContainer,
+      type: "project-setup",
+    });
+  }
+
+  const settingsPage = generateSettingsPageTemplate(webBasePath);
+  if (settingsPage) {
+    files.push({
+      path: path.join(webBasePath, "apps/web/src/app/[locale]/(main)/(features)/settings/page.tsx"),
+      content: settingsPage,
+      type: "project-setup",
+    });
+  }
+
+  const settingsModulePage = generateSettingsModulePageTemplate(webBasePath);
+  if (settingsModulePage) {
+    files.push({
+      path: path.join(webBasePath, "apps/web/src/app/[locale]/(main)/(features)/settings/[module]/page.tsx"),
+      content: settingsModulePage,
+      type: "project-setup",
+    });
+  }
 
   return files;
 }

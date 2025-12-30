@@ -1,6 +1,6 @@
 "use client";
 
-import { MeterInterface, MeterSummaryInterface } from "../../data/billing.interface";
+import { MeterInterface, MeterSummaryInterface } from "../../data/usage-record.interface";
 import { UsageSummaryCard } from "../details/UsageSummaryCard";
 
 type UsageSummaryCardsProps = {

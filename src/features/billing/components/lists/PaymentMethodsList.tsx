@@ -1,6 +1,6 @@
 "use client";
 
-import { PaymentMethodInterface } from "../../data/billing.interface";
+import { PaymentMethodInterface } from "../../data/payment-method.interface";
 import { PaymentMethodCard } from "../details/PaymentMethodCard";
 
 type PaymentMethodsListProps = {

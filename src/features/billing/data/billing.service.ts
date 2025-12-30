@@ -1,19 +1,20 @@
 import { AbstractService, EndpointCreator, HttpMethod, Modules, NextRef, PreviousRef } from "../../../core";
+import { BillingCustomerInterface } from "./billing-customer.interface";
 import {
-  BillingCustomerInterface,
   CancelSubscriptionInput,
   ChangePlanInput,
   CreateSubscriptionInput,
-  InvoiceInterface,
+  SubscriptionInterface,
+} from "./subscription.interface";
+import { InvoiceInterface, ProrationPreview } from "./invoice.interface";
+import {
   MeterInterface,
   MeterSummaryInterface,
-  PaymentMethodInterface,
-  ProrationPreview,
-  ReportUsageInput,
-  SubscriptionInterface,
   UsageRecordInterface,
   UsageSummaryInterface,
-} from "./billing.interface";
+  ReportUsageInput,
+} from "./usage-record.interface";
+import { PaymentMethodInterface } from "./payment-method.interface";
 
 /**
  * Customer-facing billing service for managing subscriptions, payments, and usage

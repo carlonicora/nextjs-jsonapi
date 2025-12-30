@@ -2,11 +2,11 @@
 
 import { Package } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getRoleId } from "../../../../roles";
-import { Button } from "../../../../shadcnui";
-import { useCurrentUserContext } from "../../../user/contexts";
-import { BillingAdminService } from "../../data/billing-admin.service";
-import { StripeProductInterface } from "../../data/billing.interface";
+import { getRoleId } from "../../../../../roles";
+import { Button } from "../../../../../shadcnui";
+import { useCurrentUserContext } from "../../../../user/contexts";
+import { StripeProductInterface } from "../../data/stripe-product.interface";
+import { StripeProductService } from "../../data/stripe-product.service";
 import { ProductEditor } from "../forms/ProductEditor";
 import { ProductsList } from "../lists/ProductsList";
 
@@ -29,7 +29,7 @@ export function ProductsAdminContainer() {
     console.log("[ProductsAdminContainer] Loading products...");
     setLoading(true);
     try {
-      const fetchedProducts = await BillingAdminService.listProducts();
+      const fetchedProducts = await StripeProductService.listProducts();
       console.log("[ProductsAdminContainer] Loaded products:", fetchedProducts);
       setProducts(fetchedProducts);
     } catch (error) {

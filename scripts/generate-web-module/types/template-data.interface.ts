@@ -170,5 +170,5 @@ export interface GenerateWebModuleOptions {
 export interface GeneratedFile {
   path: string;
   content: string;
-  type: "data" | "component" | "context" | "hook" | "module" | "page";
+  type: "data" | "component" | "context" | "hook" | "module" | "page" | "project-setup";
 }

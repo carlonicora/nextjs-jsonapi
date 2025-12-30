@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../shadcnui";
-import { InvoiceInterface } from "../../data/billing.interface";
+import { InvoiceInterface } from "../../data/invoice.interface";
 import { formatCurrency, formatDate } from "../utils";
 import { InvoiceStatusBadge } from "../widgets/InvoiceStatusBadge";
 import { InvoiceDetails } from "../details/InvoiceDetails";

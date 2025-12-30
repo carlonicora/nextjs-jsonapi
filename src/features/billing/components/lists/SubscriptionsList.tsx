@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../shadcnui";
-import { SubscriptionInterface } from "../../data/billing.interface";
+import { SubscriptionInterface } from "../../data/subscription.interface";
 import { formatCurrency, formatDate } from "../utils";
 import { SubscriptionStatusBadge } from "../widgets/SubscriptionStatusBadge";
 import { SubscriptionDetails } from "../details/SubscriptionDetails";

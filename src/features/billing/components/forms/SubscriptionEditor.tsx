@@ -7,16 +7,14 @@ import { z } from "zod";
 import { FormSelect } from "../../../../components";
 import { CommonEditorButtons } from "../../../../components/forms/CommonEditorButtons";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Form } from "../../../../shadcnui";
-import { BillingAdminService } from "../../data/billing-admin.service";
 import { BillingService } from "../../data/billing.service";
-import {
-  ProrationPreview as ProrationPreviewType,
-  StripePriceInterface,
-  StripeProductInterface,
-  SubscriptionInterface,
-} from "../../data/billing.interface";
-import { ProrationPreview } from "../widgets/ProrationPreview";
+import { ProrationPreview as ProrationPreviewType } from "../../data/invoice.interface";
+import { SubscriptionInterface } from "../../data/subscription.interface";
+import { StripePriceService } from "../../stripe-price";
+import { StripePriceInterface } from "../../stripe-price/data/stripe-price.interface";
+import { StripeProductInterface, StripeProductService } from "../../stripe-product";
 import { formatCurrency } from "../utils";
+import { ProrationPreview } from "../widgets/ProrationPreview";
 
 type SubscriptionEditorProps = {
   subscription?: SubscriptionInterface;
@@ -60,13 +58,13 @@ export function SubscriptionEditor({ subscription, open, onOpenChange, onSuccess
       console.log("[SubscriptionEditor] Loading active products...");
       setLoadingProducts(true);
       try {
-        const fetchedProducts = await BillingAdminService.listProducts({ active: true });
+        const fetchedProducts = await StripeProductService.listProducts({ active: true });
         console.log("[SubscriptionEditor] Loaded products:", fetchedProducts);
         setProducts(fetchedProducts);
 
         // If editing, find the product for the current price
         if (subscription && currentPriceId) {
-          const allPrices = await BillingAdminService.listPrices({ active: true });
+          const allPrices = await StripePriceService.listPrices({ active: true });
           const currentPrice = allPrices.find((p) => p.stripePriceId === currentPriceId);
           if (currentPrice) {
             form.setValue("productId", currentPrice.productId);
@@ -93,7 +91,7 @@ export function SubscriptionEditor({ subscription, open, onOpenChange, onSuccess
       console.log("[SubscriptionEditor] Loading prices for product:", selectedProductId);
       setLoadingPrices(true);
       try {
-        const fetchedPrices = await BillingAdminService.listPrices({
+        const fetchedPrices = await StripePriceService.listPrices({
           productId: selectedProductId,
           active: true,
         });
@@ -168,7 +166,7 @@ export function SubscriptionEditor({ subscription, open, onOpenChange, onSuccess
 
   // Format product options for select
   const productOptions = products.map((product) => ({
-    id: product.stripeProductId,
+    id: product.id,
     text: product.name,
   }));
 
@@ -210,11 +208,7 @@ export function SubscriptionEditor({ subscription, open, onOpenChange, onSuccess
               id="priceId"
               name="Price"
               placeholder={
-                !selectedProductId
-                  ? "Select a product first"
-                  : loadingPrices
-                    ? "Loading prices..."
-                    : "Select a price"
+                !selectedProductId ? "Select a product first" : loadingPrices ? "Loading prices..." : "Select a price"
               }
               disabled={!selectedProductId || loadingPrices}
               values={priceOptions}

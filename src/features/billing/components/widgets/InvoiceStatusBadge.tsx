@@ -1,6 +1,6 @@
 "use client";
 
-import { InvoiceStatus } from "../../data/billing.interface";
+import { InvoiceStatus } from "../../data/invoice.interface";
 
 type InvoiceStatusBadgeProps = {
   status: InvoiceStatus;

@@ -5,11 +5,10 @@ import { AlertCircle } from "lucide-react";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { FormCheckbox, FormInput, FormSelect } from "../../../../components";
-import { CommonEditorButtons } from "../../../../components/forms/CommonEditorButtons";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Form } from "../../../../shadcnui";
-import { BillingAdminService } from "../../data/billing-admin.service";
-import { StripePriceInterface } from "../../data/billing.interface";
+import { FormCheckbox, FormInput, FormSelect } from "../../../../../components";
+import { CommonEditorButtons } from "../../../../../components/forms/CommonEditorButtons";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Form } from "../../../../../shadcnui";
+import { StripePriceInterface, StripePriceService } from "../../data";
 
 type PriceEditorProps = {
   productId: string;
@@ -64,7 +63,7 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
 
       if (isEditMode) {
         // Update existing price (only nickname and active can be updated)
-        await BillingAdminService.updatePrice({
+        await StripePriceService.updatePrice({
           priceId: price.stripePriceId,
           active: values.active,
           metadata: values.nickname ? { nickname: values.nickname } : undefined,
@@ -91,7 +90,7 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
           createInput.metadata = { nickname: values.nickname };
         }
 
-        await BillingAdminService.createPrice(createInput);
+        await StripePriceService.createPrice(createInput);
         console.log("[PriceEditor] Price created successfully");
       }
 

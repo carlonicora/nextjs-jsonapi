@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../../../../shadcnui";
-import { InvoiceInterface, InvoiceStatus } from "../../data/billing.interface";
+import { InvoiceInterface, InvoiceStatus } from "../../data/invoice.interface";
 import { formatCurrency, formatDate } from "../utils";
 import { InvoiceStatusBadge } from "../widgets/InvoiceStatusBadge";
 import { Download, RefreshCw, ExternalLink } from "lucide-react";

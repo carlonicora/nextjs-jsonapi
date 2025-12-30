@@ -1,6 +1,6 @@
 "use client";
 
-import { SubscriptionStatus } from "../../data/billing.interface";
+import { SubscriptionStatus } from "../../data/subscription.interface";
 
 type SubscriptionStatusBadgeProps = {
   status: SubscriptionStatus;

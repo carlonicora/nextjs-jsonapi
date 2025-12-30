@@ -29,13 +29,17 @@ export * from "../utils";
 export * from "../permissions";
 
 // Feature data classes, interfaces, and modules
+export * from "../features/auth/auth.module";
 export * from "../features/auth/data";
 export * from "../features/auth/enums";
-export * from "../features/auth/auth.module";
-export * from "../features/company/data";
+export * from "../features/billing/data";
+export * from "../features/billing/modules";
+export * from "../features/billing/stripe-price";
+export * from "../features/billing/stripe-product";
 export * from "../features/company/company.module";
-export * from "../features/content/data";
+export * from "../features/company/data";
 export * from "../features/content/content.module";
+export * from "../features/content/data";
 export * from "../features/feature/data";
 export * from "../features/feature/feature.module";
 export * from "../features/module";
@@ -47,6 +51,6 @@ export * from "../features/role/data";
 export * from "../features/role/role.module";
 export * from "../features/s3";
 export * from "../features/search";
+export * from "../features/user/author.module";
 export * from "../features/user/data";
 export * from "../features/user/user.module";
-export * from "../features/user/author.module";

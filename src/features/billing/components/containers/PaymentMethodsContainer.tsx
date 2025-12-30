@@ -4,7 +4,7 @@ import { CreditCard } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "../../../../shadcnui";
 import { BillingService } from "../../data/billing.service";
-import { PaymentMethodInterface } from "../../data/billing.interface";
+import { PaymentMethodInterface } from "../../data/payment-method.interface";
 import { PaymentMethodEditor } from "../forms/PaymentMethodEditor";
 import { PaymentMethodsList } from "../lists/PaymentMethodsList";
 

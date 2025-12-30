@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../../../../shadcnui";
 import { BillingService } from "../../data/billing.service";
-import { SubscriptionInterface, SubscriptionStatus } from "../../data/billing.interface";
+import { SubscriptionInterface, SubscriptionStatus } from "../../data/subscription.interface";
 import { formatDate } from "../utils";
 import { SubscriptionStatusBadge } from "../widgets/SubscriptionStatusBadge";
 import { SubscriptionEditor } from "../forms/SubscriptionEditor";

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "../../../../shadcnui";
 import { BillingService } from "../../data/billing.service";
-import { InvoiceInterface, InvoiceStatus } from "../../data/billing.interface";
+import { InvoiceInterface, InvoiceStatus } from "../../data/invoice.interface";
 import { InvoicesList } from "../lists/InvoicesList";
 
 type StatusFilter = InvoiceStatus | "all";

@@ -2,11 +2,11 @@
 
 import { DollarSign, Edit } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Button } from "../../../../shadcnui";
-import { BillingAdminService } from "../../data/billing-admin.service";
-import { StripePriceInterface } from "../../data/billing.interface";
+import { Button } from "../../../../../shadcnui";
+import { formatCurrency } from "../../../components/utils/currency";
+import { StripePriceService } from "../../data";
+import { StripePriceInterface } from "../../data/stripe-price.interface";
 import { PriceEditor } from "../forms/PriceEditor";
-import { formatCurrency } from "../utils/currency";
 
 type PricesListProps = {
   productId: string;
@@ -23,7 +23,7 @@ export function PricesList({ productId, onPricesChange }: PricesListProps) {
     console.log("[PricesList] Loading prices for product:", productId);
     setLoading(true);
     try {
-      const fetchedPrices = await BillingAdminService.listPrices({ productId });
+      const fetchedPrices = await StripePriceService.listPrices({ productId });
       console.log("[PricesList] Loaded prices:", fetchedPrices);
       setPrices(fetchedPrices);
     } catch (error) {

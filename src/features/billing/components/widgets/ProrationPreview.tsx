@@ -1,6 +1,6 @@
 "use client";
 
-import { ProrationPreview as ProrationPreviewType } from "../../data/billing.interface";
+import { ProrationPreview as ProrationPreviewType } from "../../data/invoice.interface";
 import { formatCurrency, formatDate } from "../utils";
 
 type ProrationPreviewProps = {
