@@ -37,9 +37,5 @@ const statusConfig: Record<InvoiceStatus, StatusConfig> = {
 export function InvoiceStatusBadge({ status }: InvoiceStatusBadgeProps) {
   const config = statusConfig[status] || statusConfig[InvoiceStatus.DRAFT];
 
-  return (
-    <span className={`${config.color} text-xs px-2 py-1 rounded-full font-medium`}>
-      {config.label}
-    </span>
-  );
+  return <span className={`${config.color} text-xs px-2 py-1 rounded-full font-medium`}>{config.label}</span>;
 }

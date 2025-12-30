@@ -1,21 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../shadcnui";
-import { SubscriptionInterface } from "../../data/subscription.interface";
-import { formatCurrency, formatDate } from "../utils";
-import { SubscriptionStatusBadge } from "../widgets/SubscriptionStatusBadge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../shadcnui";
+import { formatCurrency, formatDate } from "../../../components/utils";
+import { StripeSubscriptionInterface } from "../../data";
 import { SubscriptionDetails } from "../details/SubscriptionDetails";
+import { SubscriptionStatusBadge } from "../widgets/SubscriptionStatusBadge";
 
 type SubscriptionsListProps = {
-  subscriptions: SubscriptionInterface[];
+  subscriptions: StripeSubscriptionInterface[];
   onSubscriptionsChange: () => void;
 };
 
 export function SubscriptionsList({ subscriptions, onSubscriptionsChange }: SubscriptionsListProps) {
-  const [selectedSub, setSelectedSub] = useState<SubscriptionInterface | null>(null);
+  const [selectedSub, setSelectedSub] = useState<StripeSubscriptionInterface | null>(null);
 
-  const handleRowClick = (subscription: SubscriptionInterface) => {
+  const handleRowClick = (subscription: StripeSubscriptionInterface) => {
     console.log("[SubscriptionsList] Opening subscription details:", subscription.id);
     setSelectedSub(subscription);
   };
@@ -34,8 +34,10 @@ export function SubscriptionsList({ subscriptions, onSubscriptionsChange }: Subs
           </TableHeader>
           <TableBody>
             {subscriptions.map((subscription) => {
-              const firstItem = subscription.items?.[0];
-              const amount = firstItem ? formatCurrency(0, "usd") : "N/A"; // We'll need to get price details
+              const price = subscription.price;
+              const amount = price?.unitAmount
+                ? formatCurrency(price.unitAmount, price.currency)
+                : "N/A";
               const period = `${formatDate(subscription.currentPeriodStart)} - ${formatDate(subscription.currentPeriodEnd)}`;
 
               return (
@@ -47,9 +49,7 @@ export function SubscriptionsList({ subscriptions, onSubscriptionsChange }: Subs
                   <TableCell>
                     <SubscriptionStatusBadge status={subscription.status} />
                   </TableCell>
-                  <TableCell className="font-medium">
-                    {firstItem?.priceId || "N/A"}
-                  </TableCell>
+                  <TableCell className="font-medium">{price?.stripePriceId || "N/A"}</TableCell>
                   <TableCell className="text-muted-foreground text-sm">{period}</TableCell>
                   <TableCell className="text-right font-medium">{amount}</TableCell>
                 </TableRow>

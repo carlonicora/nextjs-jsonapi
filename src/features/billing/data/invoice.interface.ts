@@ -1,5 +1,4 @@
-import { ApiDataInterface } from "../../../core";
-import { SubscriptionInterface } from "./subscription.interface";
+import { ApiDataInterface, StripeSubscriptionInterface } from "../../../core";
 
 // ============================================================================
 // Invoice Enums
@@ -22,7 +21,7 @@ export interface InvoiceInterface extends ApiDataInterface {
   get stripeInvoiceNumber(): string | undefined;
   get customerId(): string | undefined;
   get subscriptionId(): string | undefined;
-  get subscription(): SubscriptionInterface | undefined;
+  get subscription(): StripeSubscriptionInterface | undefined;
   get status(): InvoiceStatus;
   get amountDue(): number;
   get amountPaid(): number;

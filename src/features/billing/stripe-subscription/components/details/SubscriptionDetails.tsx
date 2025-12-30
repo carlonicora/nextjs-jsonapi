@@ -1,17 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../../../../shadcnui";
-import { BillingService } from "../../data/billing.service";
-import { SubscriptionInterface, SubscriptionStatus } from "../../data/subscription.interface";
-import { StripeBillingCustomerService } from "../../stripe-billing-customer";
+import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../../../../../shadcnui";
+import { formatDate } from "../../../components/utils";
+import { StripeBillingCustomerService } from "../../../stripe-billing-customer";
+import { StripeSubscriptionInterface, StripeSubscriptionService, SubscriptionStatus } from "../../data";
 import { CancelSubscriptionDialog } from "../forms/CancelSubscriptionDialog";
 import { SubscriptionEditor } from "../forms/SubscriptionEditor";
-import { formatDate } from "../utils";
 import { SubscriptionStatusBadge } from "../widgets/SubscriptionStatusBadge";
 
 type SubscriptionDetailsProps = {
-  subscription: SubscriptionInterface;
+  subscription: StripeSubscriptionInterface;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubscriptionChange: () => void;
@@ -31,7 +30,7 @@ export function SubscriptionDetails({
     console.log("[SubscriptionDetails] Pausing subscription:", subscription.id);
     setIsProcessing(true);
     try {
-      await BillingService.pauseSubscription({ subscriptionId: subscription.id });
+      await StripeSubscriptionService.pauseSubscription({ subscriptionId: subscription.id });
       console.log("[SubscriptionDetails] Subscription paused successfully");
       onSubscriptionChange();
     } catch (error) {
@@ -45,7 +44,7 @@ export function SubscriptionDetails({
     console.log("[SubscriptionDetails] Resuming subscription:", subscription.id);
     setIsProcessing(true);
     try {
-      await BillingService.resumeSubscription({ subscriptionId: subscription.id });
+      await StripeSubscriptionService.resumeSubscription({ subscriptionId: subscription.id });
       console.log("[SubscriptionDetails] Subscription resumed successfully");
       onSubscriptionChange();
     } catch (error) {
@@ -66,7 +65,6 @@ export function SubscriptionDetails({
     }
   };
 
-  const firstItem = subscription.items?.[0];
   const canPause = subscription.status === SubscriptionStatus.ACTIVE;
   const canResume = subscription.status === SubscriptionStatus.PAUSED;
   const canCancel =
@@ -94,7 +92,7 @@ export function SubscriptionDetails({
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-sm font-medium text-muted-foreground">Plan:</span>
-                <span className="font-medium">{firstItem?.priceId || "N/A"}</span>
+                <span className="font-medium">{subscription.price?.stripePriceId || "N/A"}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm font-medium text-muted-foreground">Billing Amount:</span>

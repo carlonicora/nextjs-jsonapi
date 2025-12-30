@@ -2,10 +2,10 @@
 
 import { AlertCircle } from "lucide-react";
 import { Button } from "../../../../shadcnui";
-import { SubscriptionInterface, SubscriptionStatus } from "../../data/subscription.interface";
+import { StripeSubscriptionInterface, SubscriptionStatus } from "../../stripe-subscription";
 
 type BillingAlertBannerProps = {
-  subscription: SubscriptionInterface;
+  subscription: StripeSubscriptionInterface;
   onUpdatePayment?: () => void;
   onAddPayment?: () => void;
 };

@@ -1,13 +1,12 @@
-import { AbstractApiData, JsonApiHydratedDataInterface, Modules } from "../../../core";
+import { AbstractApiData, JsonApiHydratedDataInterface, Modules, StripeSubscriptionInterface } from "../../../core";
 import { InvoiceInterface, InvoiceStatus } from "./invoice.interface";
-import { SubscriptionInterface } from "./subscription.interface";
 
 export class Invoice extends AbstractApiData implements InvoiceInterface {
   private _stripeInvoiceId?: string;
   private _stripeInvoiceNumber?: string;
   private _customerId?: string;
   private _subscriptionId?: string;
-  private _subscription?: SubscriptionInterface;
+  private _subscription?: StripeSubscriptionInterface;
   private _status?: InvoiceStatus;
   private _amountDue?: number;
   private _amountPaid?: number;
@@ -44,7 +43,7 @@ export class Invoice extends AbstractApiData implements InvoiceInterface {
     return this._subscriptionId;
   }
 
-  get subscription(): SubscriptionInterface | undefined {
+  get subscription(): StripeSubscriptionInterface | undefined {
     return this._subscription;
   }
 
@@ -163,7 +162,11 @@ export class Invoice extends AbstractApiData implements InvoiceInterface {
       : undefined;
 
     // Hydrate subscription relationship
-    this._subscription = this._readIncluded(data, "subscription", Modules.Subscription) as SubscriptionInterface;
+    this._subscription = this._readIncluded(
+      data,
+      "subscription",
+      Modules.StripeSubscription,
+    ) as StripeSubscriptionInterface;
 
     return this;
   }

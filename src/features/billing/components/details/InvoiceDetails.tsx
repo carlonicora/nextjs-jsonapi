@@ -1,10 +1,10 @@
 "use client";
 
+import { Download, ExternalLink, RefreshCw } from "lucide-react";
 import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../../../../shadcnui";
 import { InvoiceInterface, InvoiceStatus } from "../../data/invoice.interface";
 import { formatCurrency, formatDate } from "../utils";
 import { InvoiceStatusBadge } from "../widgets/InvoiceStatusBadge";
-import { Download, RefreshCw, ExternalLink } from "lucide-react";
 
 type InvoiceDetailsProps = {
   invoice: InvoiceInterface;
@@ -47,9 +47,7 @@ export function InvoiceDetails({ invoice, open, onOpenChange, onInvoiceChange }:
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Invoice {getInvoiceNumber()}</DialogTitle>
-          <DialogDescription>
-            {formatDate(invoice.periodStart)}
-          </DialogDescription>
+          <DialogDescription>{formatDate(invoice.periodStart)}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -131,14 +129,18 @@ export function InvoiceDetails({ invoice, open, onOpenChange, onInvoiceChange }:
             {invoice.amountPaid > 0 && (
               <div className="flex justify-between">
                 <span className="text-sm font-medium text-muted-foreground">Amount Paid:</span>
-                <span className="font-medium text-green-600">{formatCurrency(invoice.amountPaid, invoice.currency)}</span>
+                <span className="font-medium text-green-600">
+                  {formatCurrency(invoice.amountPaid, invoice.currency)}
+                </span>
               </div>
             )}
 
             {invoice.amountRemaining > 0 && (
               <div className="flex justify-between">
                 <span className="text-sm font-medium text-muted-foreground">Amount Due:</span>
-                <span className="font-medium text-red-600">{formatCurrency(invoice.amountRemaining, invoice.currency)}</span>
+                <span className="font-medium text-red-600">
+                  {formatCurrency(invoice.amountRemaining, invoice.currency)}
+                </span>
               </div>
             )}
           </div>

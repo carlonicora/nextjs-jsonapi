@@ -1,15 +1,13 @@
-import { AbstractApiData, JsonApiHydratedDataInterface, Modules } from "../../../core";
-import { StripePriceInterface } from "../stripe-price/data/stripe-price.interface";
+import { AbstractApiData, JsonApiHydratedDataInterface, Modules } from "../../../../core";
+import { StripePriceInterface } from "../../stripe-price";
 import {
-  CreateSubscriptionInput,
-  SubscriptionInterface,
-  SubscriptionItem,
+  StripeSubscriptionInput,
+  StripeSubscriptionInterface,
   SubscriptionStatus,
-} from "./subscription.interface";
+} from "./stripe-subscription.interface";
 
-export class Subscription extends AbstractApiData implements SubscriptionInterface {
+export class StripeSubscription extends AbstractApiData implements StripeSubscriptionInterface {
   private _stripeSubscriptionId?: string;
-  private _customerId?: string;
   private _status?: SubscriptionStatus;
   private _currentPeriodStart?: Date;
   private _currentPeriodEnd?: Date;
@@ -17,17 +15,11 @@ export class Subscription extends AbstractApiData implements SubscriptionInterfa
   private _canceledAt?: Date;
   private _trialStart?: Date;
   private _trialEnd?: Date;
-  private _metadata?: Record<string, any>;
-  private _items: SubscriptionItem[] = [];
   private _price?: StripePriceInterface;
 
   get stripeSubscriptionId(): string {
     if (!this._stripeSubscriptionId) throw new Error("stripeSubscriptionId is not defined");
     return this._stripeSubscriptionId;
-  }
-
-  get customerId(): string | undefined {
-    return this._customerId;
   }
 
   get status(): SubscriptionStatus {
@@ -61,14 +53,6 @@ export class Subscription extends AbstractApiData implements SubscriptionInterfa
     return this._trialEnd;
   }
 
-  get metadata(): Record<string, any> | undefined {
-    return this._metadata;
-  }
-
-  get items(): SubscriptionItem[] {
-    return this._items;
-  }
-
   get price(): StripePriceInterface | undefined {
     return this._price;
   }
@@ -77,7 +61,6 @@ export class Subscription extends AbstractApiData implements SubscriptionInterfa
     super.rehydrate(data);
 
     this._stripeSubscriptionId = data.jsonApi.attributes.stripeSubscriptionId;
-    this._customerId = data.jsonApi.attributes.customerId;
     this._status = data.jsonApi.attributes.status;
 
     this._currentPeriodStart = data.jsonApi.attributes.currentPeriodStart
@@ -93,35 +76,33 @@ export class Subscription extends AbstractApiData implements SubscriptionInterfa
     this._trialStart = data.jsonApi.attributes.trialStart ? new Date(data.jsonApi.attributes.trialStart) : undefined;
     this._trialEnd = data.jsonApi.attributes.trialEnd ? new Date(data.jsonApi.attributes.trialEnd) : undefined;
 
-    this._metadata = data.jsonApi.attributes.metadata
-      ? typeof data.jsonApi.attributes.metadata === "string"
-        ? JSON.parse(data.jsonApi.attributes.metadata)
-        : data.jsonApi.attributes.metadata
-      : undefined;
-
-    // Parse items from attributes
-    this._items = data.jsonApi.attributes.items ?? [];
-
     // Hydrate price relationship
     this._price = this._readIncluded(data, "price", Modules.StripePrice) as StripePriceInterface;
 
     return this;
   }
 
-  createJsonApi(data: CreateSubscriptionInput): any {
+  createJsonApi(data: StripeSubscriptionInput): any {
     const response: any = {
       data: {
-        type: "subscriptions",
-        attributes: {
-          priceId: data.priceId,
-        },
-        relationships: {},
+        type: Modules.StripeSubscription.name,
+        id: data.id,
+        attributes: {},
       },
     };
 
-    if (data.quantity !== undefined) response.data.attributes.quantity = data.quantity;
-    if (data.trialPeriodDays !== undefined) response.data.attributes.trialPeriodDays = data.trialPeriodDays;
-    if (data.metadata) response.data.attributes.metadata = data.metadata;
+    if ("priceId" in data && data.priceId) {
+      response.data.attributes.priceId = data.priceId;
+    }
+    if ("quantity" in data && data.quantity !== undefined) {
+      response.data.attributes.quantity = data.quantity;
+    }
+    if ("trialPeriodDays" in data && data.trialPeriodDays !== undefined) {
+      response.data.attributes.trialPeriodDays = data.trialPeriodDays;
+    }
+    if ("metadata" in data && data.metadata) {
+      response.data.attributes.metadata = data.metadata;
+    }
 
     return response;
   }

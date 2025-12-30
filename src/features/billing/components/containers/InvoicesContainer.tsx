@@ -52,26 +52,18 @@ export function InvoicesContainer() {
       </Tabs>
 
       {/* Loading State */}
-      {loading && (
-        <div className="text-center py-8 text-muted-foreground">
-          Loading invoices...
-        </div>
-      )}
+      {loading && <div className="text-center py-8 text-muted-foreground">Loading invoices...</div>}
 
       {/* Empty State */}
       {!loading && invoices.length === 0 && (
         <div className="border border-dashed border-gray-300 rounded-lg p-8 text-center">
           <p className="text-lg font-medium text-muted-foreground mb-2">No invoices yet</p>
-          <p className="text-sm text-muted-foreground">
-            Invoices will appear here after your first billing cycle
-          </p>
+          <p className="text-sm text-muted-foreground">Invoices will appear here after your first billing cycle</p>
         </div>
       )}
 
       {/* Invoices List */}
-      {!loading && invoices.length > 0 && (
-        <InvoicesList invoices={invoices} onInvoicesChange={loadInvoices} />
-      )}
+      {!loading && invoices.length > 0 && <InvoicesList invoices={invoices} onInvoicesChange={loadInvoices} />}
     </div>
   );
 }

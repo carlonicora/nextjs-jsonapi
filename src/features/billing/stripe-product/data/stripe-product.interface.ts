@@ -6,8 +6,6 @@ export interface StripeProductInterface extends ApiDataInterface {
   get description(): string | undefined;
   get active(): boolean;
   get metadata(): Record<string, any> | undefined;
-  get images(): string[];
-  get unitLabel(): string | undefined;
 }
 
 export type StripeProductInput = {

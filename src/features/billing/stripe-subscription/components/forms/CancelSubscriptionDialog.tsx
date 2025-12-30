@@ -4,14 +4,21 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { FormCheckbox, FormTextarea } from "../../../../components";
-import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Form } from "../../../../shadcnui";
-import { BillingService } from "../../data/billing.service";
-import { SubscriptionInterface } from "../../data/subscription.interface";
-import { formatDate } from "../utils";
+import { FormCheckbox, FormTextarea } from "../../../../../components";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  Form,
+} from "../../../../../shadcnui";
+import { formatDate } from "../../../components/utils";
+import { StripeSubscriptionInterface, StripeSubscriptionService } from "../../data";
 
 type CancelSubscriptionDialogProps = {
-  subscription: SubscriptionInterface;
+  subscription: StripeSubscriptionInterface;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
@@ -22,7 +29,12 @@ const formSchema = z.object({
   reason: z.string().optional(),
 });
 
-export function CancelSubscriptionDialog({ subscription, open, onOpenChange, onSuccess }: CancelSubscriptionDialogProps) {
+export function CancelSubscriptionDialog({
+  subscription,
+  open,
+  onOpenChange,
+  onSuccess,
+}: CancelSubscriptionDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -40,7 +52,7 @@ export function CancelSubscriptionDialog({ subscription, open, onOpenChange, onS
     setIsSubmitting(true);
 
     try {
-      await BillingService.cancelSubscription({
+      await StripeSubscriptionService.cancelSubscription({
         subscriptionId: subscription.id,
         immediate: values.cancelImmediately,
         reason: values.reason,
@@ -70,11 +82,7 @@ export function CancelSubscriptionDialog({ subscription, open, onOpenChange, onS
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-y-4">
-            <FormCheckbox
-              form={form}
-              id="cancelImmediately"
-              name="Cancel Immediately"
-            />
+            <FormCheckbox form={form} id="cancelImmediately" name="Cancel Immediately" />
 
             {cancelImmediately ? (
               <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-800">

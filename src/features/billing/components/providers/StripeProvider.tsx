@@ -1,9 +1,9 @@
 "use client";
 
-import { getStripePublishableKey } from "../../../../client/config";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe, Stripe } from "@stripe/stripe-js";
 import { ReactNode, useMemo } from "react";
+import { getStripePublishableKey } from "../../../../client/config";
 
 // Only load Stripe if the publishable key is configured
 const getPublishableKey = () => getStripePublishableKey();

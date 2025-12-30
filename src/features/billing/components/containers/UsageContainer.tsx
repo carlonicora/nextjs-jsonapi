@@ -4,14 +4,14 @@ import { Activity } from "lucide-react";
 import { useEffect, useState } from "react";
 import { BillingService } from "../../data/billing.service";
 import { MeterInterface, MeterSummaryInterface } from "../../data/usage-record.interface";
-import { SubscriptionInterface } from "../../data/subscription.interface";
+import { StripeSubscriptionInterface, StripeSubscriptionService } from "../../stripe-subscription";
 import { UsageSummaryCards } from "../widgets/UsageSummaryCards";
 
 export function UsageContainer() {
   const [meters, setMeters] = useState<MeterInterface[]>([]);
   const [summaries, setSummaries] = useState<Record<string, MeterSummaryInterface | null>>({});
   const [loading, setLoading] = useState<boolean>(true);
-  const [subscriptions, setSubscriptions] = useState<SubscriptionInterface[]>([]);
+  const [subscriptions, setSubscriptions] = useState<StripeSubscriptionInterface[]>([]);
 
   useEffect(() => {
     loadUsageData();
@@ -23,12 +23,12 @@ export function UsageContainer() {
 
     try {
       // First, check if there are any metered subscriptions
-      const fetchedSubscriptions = await BillingService.listSubscriptions();
+      const fetchedSubscriptions = await StripeSubscriptionService.listSubscriptions();
       console.log("[UsageContainer] Loaded subscriptions:", fetchedSubscriptions);
       setSubscriptions(fetchedSubscriptions);
 
       const hasMeteredSubscriptions = fetchedSubscriptions.some(
-        (sub) => sub.items?.some((item: any) => item.price?.recurring?.usageType === "metered")
+        (sub) => sub.price?.recurring?.usageType === "metered",
       );
 
       console.log("[UsageContainer] Has metered subscriptions:", hasMeteredSubscriptions);
@@ -77,9 +77,7 @@ export function UsageContainer() {
   };
 
   // Check if there are any metered subscriptions
-  const hasMeteredSubscriptions = subscriptions.some(
-    (sub) => sub.items?.some((item: any) => item.price?.recurring?.usageType === "metered")
-  );
+  const hasMeteredSubscriptions = subscriptions.some((sub) => sub.price?.recurring?.usageType === "metered");
 
   // Don't render if no metered subscriptions
   if (!loading && !hasMeteredSubscriptions) {

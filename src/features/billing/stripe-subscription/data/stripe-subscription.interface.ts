@@ -1,9 +1,8 @@
-import { ApiDataInterface } from "../../../core";
-import { StripePriceInterface } from "../stripe-price/data/stripe-price.interface";
-
 // ============================================================================
 // Subscription Enums
 // ============================================================================
+
+import { ApiDataInterface, StripePriceInterface } from "../../../../core";
 
 export enum SubscriptionStatus {
   ACTIVE = "active",
@@ -20,9 +19,8 @@ export enum SubscriptionStatus {
 // Subscription Interfaces
 // ============================================================================
 
-export interface SubscriptionInterface extends ApiDataInterface {
+export interface StripeSubscriptionInterface extends ApiDataInterface {
   get stripeSubscriptionId(): string;
-  get customerId(): string | undefined;
   get status(): SubscriptionStatus;
   get currentPeriodStart(): Date;
   get currentPeriodEnd(): Date;
@@ -30,24 +28,16 @@ export interface SubscriptionInterface extends ApiDataInterface {
   get canceledAt(): Date | undefined;
   get trialStart(): Date | undefined;
   get trialEnd(): Date | undefined;
-  get metadata(): Record<string, any> | undefined;
-  get items(): SubscriptionItem[];
   get price(): StripePriceInterface | undefined;
-}
-
-export interface SubscriptionItem {
-  id: string;
-  priceId: string;
-  quantity: number;
-  metadata?: Record<string, any>;
 }
 
 // ============================================================================
 // Subscription Input DTOs
 // ============================================================================
 
-export type CreateSubscriptionInput = {
-  priceId: string;
+export type StripeSubscriptionInput = {
+  id: string;
+  priceId?: string;
   quantity?: number;
   trialPeriodDays?: number;
   metadata?: Record<string, any>;

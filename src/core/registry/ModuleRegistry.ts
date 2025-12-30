@@ -1,6 +1,6 @@
-import { ApiRequestDataTypeInterface } from "../interfaces/ApiRequestDataTypeInterface";
 import { ModuleWithPermissions } from "../../permissions/types";
-import { tryBootstrap, hasBootstrapper } from "./bootstrapStore";
+import { ApiRequestDataTypeInterface } from "../interfaces/ApiRequestDataTypeInterface";
+import { hasBootstrapper, tryBootstrap } from "./bootstrapStore";
 
 // Foundation module types - defined by LIBRARY
 export interface FoundationModuleDefinitions {
@@ -20,7 +20,7 @@ export interface FoundationModuleDefinitions {
   // Billing modules - READ: all users, UPDATE: CompanyAdministrator, ADMIN: Administrator
   Billing: ModuleWithPermissions;
   BillingCustomer: ModuleWithPermissions;
-  Subscription: ModuleWithPermissions;
+  StripeSubscription: ModuleWithPermissions;
   Invoice: ModuleWithPermissions;
   StripeProduct: ModuleWithPermissions;
   StripePrice: ModuleWithPermissions;

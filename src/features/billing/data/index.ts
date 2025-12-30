@@ -5,18 +5,9 @@ export { BillingService } from "./billing.service";
 
 export { Billing } from "./Billing";
 export { Invoice } from "./Invoice";
-export { Subscription } from "./Subscription";
 export { UsageRecord } from "./UsageRecord";
 
 // Interfaces - Subscription
-export { SubscriptionStatus } from "./subscription.interface";
-export type {
-  CancelSubscriptionInput,
-  ChangePlanInput,
-  CreateSubscriptionInput,
-  SubscriptionInterface,
-  SubscriptionItem,
-} from "./subscription.interface";
 
 // Interfaces - Invoice
 export { InvoiceStatus } from "./invoice.interface";

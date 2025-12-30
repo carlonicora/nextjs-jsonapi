@@ -4,20 +4,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { FormSelect } from "../../../../components";
-import { CommonEditorButtons } from "../../../../components/forms/CommonEditorButtons";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Form } from "../../../../shadcnui";
-import { BillingService } from "../../data/billing.service";
-import { ProrationPreview as ProrationPreviewType } from "../../data/invoice.interface";
-import { SubscriptionInterface } from "../../data/subscription.interface";
-import { StripePriceService } from "../../stripe-price";
-import { StripePriceInterface } from "../../stripe-price/data/stripe-price.interface";
-import { StripeProductInterface, StripeProductService } from "../../stripe-product";
-import { formatCurrency } from "../utils";
-import { ProrationPreview } from "../widgets/ProrationPreview";
+import { FormSelect } from "../../../../../components";
+import { CommonEditorButtons } from "../../../../../components/forms/CommonEditorButtons";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Form } from "../../../../../shadcnui";
+import { formatCurrency } from "../../../components/utils";
+import { ProrationPreview } from "../../../components/widgets/ProrationPreview";
+import { ProrationPreview as ProrationPreviewType } from "../../../data/invoice.interface";
+import { StripePriceService } from "../../../stripe-price";
+import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
+import { StripeProductInterface, StripeProductService } from "../../../stripe-product";
+import { StripeSubscriptionInterface, StripeSubscriptionService } from "../../data";
 
 type SubscriptionEditorProps = {
-  subscription?: SubscriptionInterface;
+  subscription?: StripeSubscriptionInterface;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
@@ -37,9 +36,8 @@ export function SubscriptionEditor({ subscription, open, onOpenChange, onSuccess
   const [prorationPreview, setProrationPreview] = useState<ProrationPreviewType | null>(null);
   const [loadingProration, setLoadingProration] = useState<boolean>(false);
 
-  // Get current subscription item if editing
-  const currentItem = subscription?.items?.[0];
-  const currentPriceId = currentItem?.priceId;
+  // Get current subscription price if editing
+  const currentPriceId = subscription?.price?.stripePriceId;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -118,7 +116,7 @@ export function SubscriptionEditor({ subscription, open, onOpenChange, onSuccess
       console.log("[SubscriptionEditor] Loading proration preview...");
       setLoadingProration(true);
       try {
-        const preview = await BillingService.getProrationPreview({
+        const preview = await StripeSubscriptionService.getProrationPreview({
           subscriptionId: subscription.id,
           newPriceId: selectedPriceId,
         });
@@ -142,14 +140,15 @@ export function SubscriptionEditor({ subscription, open, onOpenChange, onSuccess
     try {
       if (subscription) {
         // Change plan
-        await BillingService.changePlan({
+        await StripeSubscriptionService.changePlan({
           subscriptionId: subscription.id,
           newPriceId: values.priceId,
         });
         console.log("[SubscriptionEditor] Plan changed successfully");
       } else {
         // Create new subscription
-        await BillingService.createSubscription({
+        await StripeSubscriptionService.createSubscription({
+          id: crypto.randomUUID(),
           priceId: values.priceId,
         });
         console.log("[SubscriptionEditor] Subscription created successfully");

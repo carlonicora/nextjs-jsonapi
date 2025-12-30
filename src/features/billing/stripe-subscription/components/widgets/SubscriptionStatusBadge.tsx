@@ -1,6 +1,6 @@
 "use client";
 
-import { SubscriptionStatus } from "../../data/subscription.interface";
+import { SubscriptionStatus } from "../../data";
 
 type SubscriptionStatusBadgeProps = {
   status: SubscriptionStatus;
@@ -49,9 +49,5 @@ const statusConfig: Record<SubscriptionStatus, StatusConfig> = {
 export function SubscriptionStatusBadge({ status }: SubscriptionStatusBadgeProps) {
   const config = statusConfig[status] || statusConfig[SubscriptionStatus.CANCELED];
 
-  return (
-    <span className={`${config.color} text-xs px-2 py-1 rounded-full font-medium`}>
-      {config.label}
-    </span>
-  );
+  return <span className={`${config.color} text-xs px-2 py-1 rounded-full font-medium`}>{config.label}</span>;
 }
