@@ -18,6 +18,7 @@ export function formatCurrency(amount: number | undefined, currency: string): st
       maximumFractionDigits: 2,
     }).format(dollars);
   } catch (error) {
+    console.error("Error formatting currency:", error);
     // Fallback if currency code is invalid
     return `$${dollars.toFixed(2)}`;
   }

@@ -15,6 +15,7 @@ export function formatDate(date: Date | string | undefined): string {
       year: "numeric",
     }).format(dateObj);
   } catch (error) {
+    console.error("Error formatting date:", error);
     return "Invalid Date";
   }
 }
