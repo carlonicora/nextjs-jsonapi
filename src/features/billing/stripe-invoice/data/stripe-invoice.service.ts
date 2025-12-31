@@ -1,11 +1,4 @@
-import {
-  AbstractService,
-  EndpointCreator,
-  HttpMethod,
-  Modules,
-  NextRef,
-  PreviousRef,
-} from "../../../../core";
+import { AbstractService, EndpointCreator, HttpMethod, Modules, NextRef, PreviousRef } from "../../../../core";
 import { StripeInvoiceInterface } from "./stripe-invoice.interface";
 
 /**

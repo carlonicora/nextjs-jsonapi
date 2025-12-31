@@ -1,11 +1,4 @@
-import {
-  AbstractService,
-  EndpointCreator,
-  HttpMethod,
-  Modules,
-  NextRef,
-  PreviousRef,
-} from "../../../core";
+import { AbstractService, EndpointCreator, HttpMethod, Modules, NextRef, PreviousRef } from "../../../core";
 
 // Import from new sub-modules for backwards compatibility re-exports
 import { MeterInterface, MeterSummaryInterface } from "../stripe-usage/data/stripe-usage.interface";
