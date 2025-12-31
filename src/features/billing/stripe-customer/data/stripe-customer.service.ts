@@ -1,10 +1,10 @@
 import { AbstractService, EndpointCreator, HttpMethod, Modules } from "../../../../core";
-import { StripeBillingCustomerInterface } from "./stripe-billing-customer.interface";
+import { StripeCustomerInterface } from "./stripe-customer.interface";
 
 /**
  * Customer-facing billing service for managing subscriptions, payments, and usage
  */
-export class StripeBillingCustomerService extends AbstractService {
+export class StripeCustomerService extends AbstractService {
   // ============================================================================
   // Customer Methods
   // ============================================================================
@@ -12,13 +12,13 @@ export class StripeBillingCustomerService extends AbstractService {
   /**
    * Get the current user's billing customer record
    */
-  static async getCustomer(): Promise<StripeBillingCustomerInterface> {
+  static async getCustomer(): Promise<StripeCustomerInterface> {
     const endpoint = new EndpointCreator({
       endpoint: Modules.BillingCustomer,
       id: "me",
     });
 
-    return this.callApi<StripeBillingCustomerInterface>({
+    return this.callApi<StripeCustomerInterface>({
       type: Modules.BillingCustomer,
       method: HttpMethod.GET,
       endpoint: endpoint.generate(),
@@ -28,12 +28,12 @@ export class StripeBillingCustomerService extends AbstractService {
   /**
    * Create a billing customer for the current user
    */
-  static async createCustomer(): Promise<StripeBillingCustomerInterface> {
+  static async createCustomer(): Promise<StripeCustomerInterface> {
     const endpoint = new EndpointCreator({
       endpoint: Modules.BillingCustomer,
     });
 
-    return this.callApi<StripeBillingCustomerInterface>({
+    return this.callApi<StripeCustomerInterface>({
       type: Modules.BillingCustomer,
       method: HttpMethod.POST,
       endpoint: endpoint.generate(),

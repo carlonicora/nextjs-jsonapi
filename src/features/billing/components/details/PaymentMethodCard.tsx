@@ -23,7 +23,7 @@ import {
 } from "../../../../shadcnui";
 import { BillingService } from "../../data/billing.service";
 import { PaymentMethodInterface } from "../../data/payment-method.interface";
-import { StripeBillingCustomerInterface, StripeBillingCustomerService } from "../../stripe-billing-customer";
+import { StripeCustomerInterface, StripeCustomerService } from "../../stripe-customer";
 
 type PaymentMethodCardProps = {
   paymentMethod: PaymentMethodInterface;
@@ -40,7 +40,7 @@ const brandIcons: Record<string, string> = {
 
 export function PaymentMethodCard({ paymentMethod, onUpdate }: PaymentMethodCardProps) {
   const [loading, setLoading] = useState<boolean>(false);
-  const [customer, setCustomer] = useState<StripeBillingCustomerInterface | null>(null);
+  const [customer, setCustomer] = useState<StripeCustomerInterface | null>(null);
   const [showRemoveDialog, setShowRemoveDialog] = useState<boolean>(false);
 
   // Load customer to check default payment method
@@ -48,7 +48,7 @@ export function PaymentMethodCard({ paymentMethod, onUpdate }: PaymentMethodCard
     const loadCustomer = async () => {
       console.log("[PaymentMethodCard] Loading customer...");
       try {
-        const fetchedCustomer = await StripeBillingCustomerService.getCustomer();
+        const fetchedCustomer = await StripeCustomerService.getCustomer();
         console.log("[PaymentMethodCard] Loaded customer:", fetchedCustomer);
         setCustomer(fetchedCustomer);
       } catch (error) {

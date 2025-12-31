@@ -5,7 +5,7 @@ import {
   Modules,
   NextRef,
   PreviousRef,
-  StripeBillingCustomerInterface,
+  StripeCustomerInterface,
 } from "../../../core";
 import { InvoiceInterface } from "./invoice.interface";
 import { PaymentMethodInterface } from "./payment-method.interface";
@@ -47,14 +47,14 @@ export class BillingService extends AbstractService {
   /**
    * Set the default payment method for the current user
    */
-  static async setDefaultPaymentMethod(params: { paymentMethodId: string }): Promise<StripeBillingCustomerInterface> {
+  static async setDefaultPaymentMethod(params: { paymentMethodId: string }): Promise<StripeCustomerInterface> {
     const endpoint = new EndpointCreator({
       endpoint: Modules.BillingCustomer,
       id: "me",
       childEndpoint: "default-payment-method",
     });
 
-    return this.callApi<StripeBillingCustomerInterface>({
+    return this.callApi<StripeCustomerInterface>({
       type: Modules.BillingCustomer,
       method: HttpMethod.PUT,
       endpoint: endpoint.generate(),

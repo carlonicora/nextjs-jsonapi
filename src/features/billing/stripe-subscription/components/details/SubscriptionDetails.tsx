@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../../../../../shadcnui";
 import { formatDate } from "../../../components/utils";
-import { StripeBillingCustomerService } from "../../../stripe-billing-customer";
+import { StripeCustomerService } from "../../../stripe-customer";
 import { StripeSubscriptionInterface, StripeSubscriptionService, SubscriptionStatus } from "../../data";
 import { CancelSubscriptionDialog } from "../forms/CancelSubscriptionDialog";
 import { SubscriptionEditor } from "../forms/SubscriptionEditor";
@@ -57,7 +57,7 @@ export function SubscriptionDetails({
   const handleManageViaPortal = async () => {
     console.log("[SubscriptionDetails] Opening Stripe portal...");
     try {
-      const { url } = await StripeBillingCustomerService.createPortalSession();
+      const { url } = await StripeCustomerService.createPortalSession();
       console.log("[SubscriptionDetails] Portal URL:", url);
       window.open(url, "_blank");
     } catch (error) {

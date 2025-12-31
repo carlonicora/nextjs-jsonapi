@@ -34,7 +34,7 @@ export * from "../features/auth/data";
 export * from "../features/auth/enums";
 export * from "../features/billing/data";
 export * from "../features/billing/modules";
-export * from "../features/billing/stripe-billing-customer";
+export * from "../features/billing/stripe-customer";
 export * from "../features/billing/stripe-price";
 export * from "../features/billing/stripe-product";
 export * from "../features/billing/stripe-subscription";

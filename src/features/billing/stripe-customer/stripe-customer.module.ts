@@ -1,9 +1,9 @@
 import { ModuleFactory } from "../../../permissions";
-import { StripeBillingCustomer } from "./data";
+import { StripeCustomer } from "./data";
 
-export const StripeBillingCustomerModule = (factory: ModuleFactory) =>
+export const StripeCustomerModule = (factory: ModuleFactory) =>
   factory({
     name: "billing/customers",
-    model: StripeBillingCustomer,
+    model: StripeCustomer,
     moduleId: "25a80cb3-bf18-47fd-963a-639212519920",
   });
