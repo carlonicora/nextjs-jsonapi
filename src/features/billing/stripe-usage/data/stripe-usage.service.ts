@@ -72,11 +72,11 @@ export class StripeUsageService extends AbstractService {
    */
   static async reportUsage(params: ReportUsageInput): Promise<StripeUsageInterface> {
     const endpoint = new EndpointCreator({
-      endpoint: Modules.UsageRecord,
+      endpoint: Modules.StripeUsage,
     });
 
     return this.callApi<StripeUsageInterface>({
-      type: Modules.UsageRecord,
+      type: Modules.StripeUsage,
       method: HttpMethod.POST,
       endpoint: endpoint.generate(),
       input: params,
@@ -92,13 +92,13 @@ export class StripeUsageService extends AbstractService {
     prev?: PreviousRef;
   }): Promise<StripeUsageInterface[]> {
     const endpoint = new EndpointCreator({
-      endpoint: Modules.UsageRecord,
+      endpoint: Modules.StripeUsage,
     });
 
     endpoint.addAdditionalParam("subscriptionItemId", params.subscriptionItemId);
 
     return this.callApi({
-      type: Modules.UsageRecord,
+      type: Modules.StripeUsage,
       method: HttpMethod.GET,
       endpoint: endpoint.generate(),
       next: params?.next,
@@ -115,7 +115,7 @@ export class StripeUsageService extends AbstractService {
     end?: Date;
   }): Promise<UsageSummaryInterface> {
     const endpoint = new EndpointCreator({
-      endpoint: Modules.UsageRecord,
+      endpoint: Modules.StripeUsage,
       childEndpoint: "summary",
     });
 
@@ -128,7 +128,7 @@ export class StripeUsageService extends AbstractService {
     }
 
     return this.callApi({
-      type: Modules.UsageRecord,
+      type: Modules.StripeUsage,
       method: HttpMethod.GET,
       endpoint: endpoint.generate(),
     });

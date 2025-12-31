@@ -1,10 +1,10 @@
 "use client";
 
-import { ProrationPreview as ProrationPreviewType } from "../../../stripe-invoice/data/stripe-invoice.interface";
+import { ProrationPreviewInterface } from "../../../stripe-invoice/data/stripe-invoice.interface";
 import { formatCurrency, formatDate } from "../../../components/utils";
 
 type ProrationPreviewProps = {
-  preview: ProrationPreviewType;
+  preview: ProrationPreviewInterface;
 };
 
 export function ProrationPreview({ preview }: ProrationPreviewProps) {

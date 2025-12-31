@@ -18,14 +18,12 @@ export function generateBootstrapperTemplate(webBasePath: string): string | null
 import {
   AuthModule,
   AuthorModule,
-  BillingCustomerModule,
   BillingModule,
   CompanyModule,
   ContentModule,
   DataClassRegistry,
   FeatureModule,
   FieldSelector,
-  InvoiceModule,
   ModuleModule,
   ModuleRegistry,
   ModuleWithPermissions,
@@ -34,10 +32,12 @@ import {
   RoleModule,
   S3Module,
   setBootstrapper,
+  StripeCustomerModule,
+  StripeInvoiceModule,
   StripePriceModule,
   StripeProductModule,
-  SubscriptionModule,
-  UsageRecordModule,
+  StripeSubscriptionModule,
+  StripeUsageModule,
   UserModule,
 } from "@carlonicora/nextjs-jsonapi/core";
 import { LucideIcon } from "lucide-react";
@@ -77,12 +77,12 @@ const allModules = {
   Content: ContentModule(moduleFactory),
   // Billing modules (Stripe)
   Billing: BillingModule(moduleFactory),
-  BillingCustomer: BillingCustomerModule(moduleFactory),
-  Subscription: SubscriptionModule(moduleFactory),
-  Invoice: InvoiceModule(moduleFactory),
+  StripeCustomer: StripeCustomerModule(moduleFactory),
+  StripeSubscription: StripeSubscriptionModule(moduleFactory),
+  StripeInvoice: StripeInvoiceModule(moduleFactory),
   StripeProduct: StripeProductModule(moduleFactory),
   StripePrice: StripePriceModule(moduleFactory),
-  UsageRecord: UsageRecordModule(moduleFactory),
+  StripeUsage: StripeUsageModule(moduleFactory),
 } satisfies Record<string, ModuleWithPermissions>;
 
 export type AllModuleDefinitions = typeof allModules;

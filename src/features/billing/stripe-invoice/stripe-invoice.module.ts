@@ -7,6 +7,3 @@ export const StripeInvoiceModule = (factory: ModuleFactory) =>
     model: StripeInvoice,
     moduleId: "37c73b8b-d3b1-4e5e-8fcb-a66d8ecfc05b",
   });
-
-// Backwards compatibility alias
-export { StripeInvoiceModule as InvoiceModule };

@@ -54,9 +54,6 @@ export interface ProrationPreviewInterface {
   lineItems: ProrationLineItem[];
 }
 
-// Backwards compatibility alias
-export type ProrationPreview = ProrationPreviewInterface;
-
 export interface ProrationLineItem {
   description: string;
   amount: number;
@@ -66,6 +63,3 @@ export interface ProrationLineItem {
     end: Date;
   };
 }
-
-// Backwards compatibility aliases
-export type InvoiceInterface = StripeInvoiceInterface;

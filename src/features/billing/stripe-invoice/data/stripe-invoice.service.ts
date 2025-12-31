@@ -21,7 +21,7 @@ export class StripeInvoiceService extends AbstractService {
     prev?: PreviousRef;
   }): Promise<StripeInvoiceInterface[]> {
     const endpoint = new EndpointCreator({
-      endpoint: Modules.Invoice,
+      endpoint: Modules.StripeInvoice,
     });
 
     if (params?.status) {
@@ -29,7 +29,7 @@ export class StripeInvoiceService extends AbstractService {
     }
 
     return this.callApi({
-      type: Modules.Invoice,
+      type: Modules.StripeInvoice,
       method: HttpMethod.GET,
       endpoint: endpoint.generate(),
       next: params?.next,
@@ -42,12 +42,12 @@ export class StripeInvoiceService extends AbstractService {
    */
   static async getInvoice(params: { invoiceId: string }): Promise<StripeInvoiceInterface> {
     const endpoint = new EndpointCreator({
-      endpoint: Modules.Invoice,
+      endpoint: Modules.StripeInvoice,
       id: params.invoiceId,
     });
 
     return this.callApi<StripeInvoiceInterface>({
-      type: Modules.Invoice,
+      type: Modules.StripeInvoice,
       method: HttpMethod.GET,
       endpoint: endpoint.generate(),
     });
@@ -58,12 +58,12 @@ export class StripeInvoiceService extends AbstractService {
    */
   static async getUpcomingInvoice(): Promise<StripeInvoiceInterface> {
     const endpoint = new EndpointCreator({
-      endpoint: Modules.Invoice,
+      endpoint: Modules.StripeInvoice,
       id: "upcoming",
     });
 
     return this.callApi<StripeInvoiceInterface>({
-      type: Modules.Invoice,
+      type: Modules.StripeInvoice,
       method: HttpMethod.GET,
       endpoint: endpoint.generate(),
     });

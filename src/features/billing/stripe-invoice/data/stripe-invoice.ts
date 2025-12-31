@@ -175,6 +175,3 @@ export class StripeInvoice extends AbstractApiData implements StripeInvoiceInter
     throw new Error("Invoice is managed by Stripe and cannot be created directly");
   }
 }
-
-// Backwards compatibility alias
-export { StripeInvoice as Invoice };

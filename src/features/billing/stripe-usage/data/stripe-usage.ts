@@ -54,7 +54,7 @@ export class StripeUsage extends AbstractApiData implements StripeUsageInterface
   createJsonApi(data: ReportUsageInput): any {
     const response: any = {
       data: {
-        type: Modules.UsageRecord.name,
+        type: Modules.StripeUsage.name,
         attributes: {
           subscriptionItemId: data.subscriptionItemId,
           quantity: data.quantity,
@@ -68,6 +68,3 @@ export class StripeUsage extends AbstractApiData implements StripeUsageInterface
     return response;
   }
 }
-
-// Backwards compatibility alias
-export { StripeUsage as UsageRecord };

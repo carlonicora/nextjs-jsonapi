@@ -15,12 +15,12 @@ export class StripeCustomerService extends AbstractService {
    */
   static async getCustomer(): Promise<StripeCustomerInterface> {
     const endpoint = new EndpointCreator({
-      endpoint: Modules.BillingCustomer,
+      endpoint: Modules.StripeCustomer,
       id: "me",
     });
 
     return this.callApi<StripeCustomerInterface>({
-      type: Modules.BillingCustomer,
+      type: Modules.StripeCustomer,
       method: HttpMethod.GET,
       endpoint: endpoint.generate(),
     });
@@ -31,11 +31,11 @@ export class StripeCustomerService extends AbstractService {
    */
   static async createCustomer(): Promise<StripeCustomerInterface> {
     const endpoint = new EndpointCreator({
-      endpoint: Modules.BillingCustomer,
+      endpoint: Modules.StripeCustomer,
     });
 
     return this.callApi<StripeCustomerInterface>({
-      type: Modules.BillingCustomer,
+      type: Modules.StripeCustomer,
       method: HttpMethod.POST,
       endpoint: endpoint.generate(),
     });
@@ -46,13 +46,13 @@ export class StripeCustomerService extends AbstractService {
    */
   static async createSetupIntent(): Promise<{ clientSecret: string }> {
     const endpoint = new EndpointCreator({
-      endpoint: Modules.BillingCustomer,
+      endpoint: Modules.StripeCustomer,
       id: "me",
       childEndpoint: "setup-intent",
     });
 
     return this.callApi({
-      type: Modules.BillingCustomer,
+      type: Modules.StripeCustomer,
       method: HttpMethod.POST,
       endpoint: endpoint.generate(),
     });
@@ -63,13 +63,13 @@ export class StripeCustomerService extends AbstractService {
    */
   static async createPortalSession(): Promise<{ url: string }> {
     const endpoint = new EndpointCreator({
-      endpoint: Modules.BillingCustomer,
+      endpoint: Modules.StripeCustomer,
       id: "me",
       childEndpoint: "portal-session",
     });
 
     return this.callApi({
-      type: Modules.BillingCustomer,
+      type: Modules.StripeCustomer,
       method: HttpMethod.POST,
       endpoint: endpoint.generate(),
     });
@@ -84,13 +84,13 @@ export class StripeCustomerService extends AbstractService {
    */
   static async listPaymentMethods(params?: { next?: NextRef; prev?: PreviousRef }): Promise<PaymentMethodInterface[]> {
     const endpoint = new EndpointCreator({
-      endpoint: Modules.BillingCustomer,
+      endpoint: Modules.StripeCustomer,
       id: "me",
       childEndpoint: "payment-methods",
     });
 
     return this.callApi({
-      type: Modules.BillingCustomer,
+      type: Modules.StripeCustomer,
       method: HttpMethod.GET,
       endpoint: endpoint.generate(),
       next: params?.next,
@@ -103,13 +103,13 @@ export class StripeCustomerService extends AbstractService {
    */
   static async setDefaultPaymentMethod(params: { paymentMethodId: string }): Promise<StripeCustomerInterface> {
     const endpoint = new EndpointCreator({
-      endpoint: Modules.BillingCustomer,
+      endpoint: Modules.StripeCustomer,
       id: "me",
       childEndpoint: "default-payment-method",
     });
 
     return this.callApi<StripeCustomerInterface>({
-      type: Modules.BillingCustomer,
+      type: Modules.StripeCustomer,
       method: HttpMethod.PUT,
       endpoint: endpoint.generate(),
       input: { paymentMethodId: params.paymentMethodId },
@@ -121,13 +121,13 @@ export class StripeCustomerService extends AbstractService {
    */
   static async removePaymentMethod(params: { paymentMethodId: string }): Promise<void> {
     const endpoint = new EndpointCreator({
-      endpoint: Modules.BillingCustomer,
+      endpoint: Modules.StripeCustomer,
       id: "me",
       childEndpoint: `payment-methods/${params.paymentMethodId}`,
     });
 
     await this.callApi({
-      type: Modules.BillingCustomer,
+      type: Modules.StripeCustomer,
       method: HttpMethod.DELETE,
       endpoint: endpoint.generate(),
     });
