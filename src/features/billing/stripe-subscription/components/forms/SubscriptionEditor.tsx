@@ -8,8 +8,8 @@ import { FormSelect } from "../../../../../components";
 import { CommonEditorButtons } from "../../../../../components/forms/CommonEditorButtons";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Form } from "../../../../../shadcnui";
 import { formatCurrency } from "../../../components/utils";
-import { ProrationPreview } from "../../../components/widgets/ProrationPreview";
-import { ProrationPreview as ProrationPreviewType } from "../../../data/invoice.interface";
+import { ProrationPreview } from "../widgets/ProrationPreview";
+import { ProrationPreviewInterface } from "../../../stripe-invoice/data/stripe-invoice.interface";
 import { StripePriceService } from "../../../stripe-price";
 import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
 import { StripeProductInterface, StripeProductService } from "../../../stripe-product";
@@ -33,7 +33,7 @@ export function SubscriptionEditor({ subscription, open, onOpenChange, onSuccess
   const [prices, setPrices] = useState<StripePriceInterface[]>([]);
   const [loadingProducts, setLoadingProducts] = useState<boolean>(true);
   const [loadingPrices, setLoadingPrices] = useState<boolean>(false);
-  const [prorationPreview, setProrationPreview] = useState<ProrationPreviewType | null>(null);
+  const [prorationPreview, setProrationPreview] = useState<ProrationPreviewInterface | null>(null);
   const [loadingProration, setLoadingProration] = useState<boolean>(false);
 
   // Get current subscription price if editing

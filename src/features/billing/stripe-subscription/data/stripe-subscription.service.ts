@@ -1,5 +1,5 @@
 import { AbstractService, EndpointCreator, HttpMethod, Modules, NextRef, PreviousRef } from "../../../../core";
-import { ProrationPreview } from "../../data/invoice.interface";
+import { ProrationPreviewInterface } from "../../stripe-invoice/data/stripe-invoice.interface";
 import {
   CancelSubscriptionInput,
   ChangePlanInput,
@@ -92,7 +92,7 @@ export class StripeSubscriptionService extends AbstractService {
     subscriptionId: string;
     newPriceId: string;
     quantity?: number;
-  }): Promise<ProrationPreview> {
+  }): Promise<ProrationPreviewInterface> {
     const endpoint = new EndpointCreator({
       endpoint: Modules.StripeSubscription,
       id: params.subscriptionId,

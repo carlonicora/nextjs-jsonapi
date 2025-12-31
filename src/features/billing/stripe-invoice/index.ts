@@ -1,3 +1,3 @@
 export * from "./components";
 export * from "./data";
-export * from "./stripe-customer.module";
+export * from "./stripe-invoice.module";

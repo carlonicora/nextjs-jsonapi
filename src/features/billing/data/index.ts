@@ -2,25 +2,29 @@
 export { BillingService } from "./billing.service";
 
 // Data classes
-
 export { Billing } from "./Billing";
-export { Invoice } from "./Invoice";
-export { UsageRecord } from "./UsageRecord";
 
-// Interfaces - Subscription
+// Re-export from new sub-modules for backwards compatibility
+// Invoice
+export { Invoice, StripeInvoice } from "../stripe-invoice/data/stripe-invoice";
+export { InvoiceStatus } from "../stripe-invoice/data/stripe-invoice.interface";
+export type {
+  InvoiceInterface,
+  ProrationLineItem,
+  ProrationPreviewInterface,
+  StripeInvoiceInterface,
+} from "../stripe-invoice/data/stripe-invoice.interface";
 
-// Interfaces - Invoice
-export { InvoiceStatus } from "./invoice.interface";
-export type { InvoiceInterface, ProrationLineItem, ProrationPreview } from "./invoice.interface";
-
-// Interfaces - Usage Record
+// Usage
+export { UsageRecord, StripeUsage } from "../stripe-usage/data/stripe-usage";
 export type {
   MeterInterface,
   MeterSummaryInterface,
   ReportUsageInput,
   UsageRecordInterface,
   UsageSummaryInterface,
-} from "./usage-record.interface";
+  StripeUsageInterface,
+} from "../stripe-usage/data/stripe-usage.interface";
 
-// Interfaces - Payment Method
-export type { PaymentMethodInterface } from "./payment-method.interface";
+// Payment Method
+export type { PaymentMethodInterface } from "../stripe-customer/data/payment-method.interface";
