@@ -14,6 +14,8 @@ export class StripePrice extends AbstractApiData implements StripePriceInterface
   private _nickname?: string;
   private _lookupKey?: string;
   private _metadata?: Record<string, any>;
+  private _description?: string;
+  private _features?: string[];
 
   get stripePriceId(): string {
     if (!this._stripePriceId) throw new Error("stripePriceId is not defined");
@@ -63,6 +65,14 @@ export class StripePrice extends AbstractApiData implements StripePriceInterface
     return this._metadata;
   }
 
+  get description(): string | undefined {
+    return this._description;
+  }
+
+  get features(): string[] | undefined {
+    return this._features;
+  }
+
   rehydrate(data: JsonApiHydratedDataInterface): this {
     super.rehydrate(data);
 
@@ -89,6 +99,13 @@ export class StripePrice extends AbstractApiData implements StripePriceInterface
       ? typeof data.jsonApi.attributes.metadata === "string"
         ? JSON.parse(data.jsonApi.attributes.metadata)
         : data.jsonApi.attributes.metadata
+      : undefined;
+
+    this._description = data.jsonApi.attributes.description;
+    this._features = data.jsonApi.attributes.features
+      ? typeof data.jsonApi.attributes.features === "string"
+        ? JSON.parse(data.jsonApi.attributes.features)
+        : data.jsonApi.attributes.features
       : undefined;
 
     // Hydrate product relationship
@@ -123,6 +140,12 @@ export class StripePrice extends AbstractApiData implements StripePriceInterface
     }
     if ("recurring" in data && data.recurring) {
       response.data.attributes.recurring = data.recurring;
+    }
+    if ("description" in data && data.description !== undefined) {
+      response.data.attributes.description = data.description;
+    }
+    if ("features" in data && data.features !== undefined) {
+      response.data.attributes.features = JSON.stringify(data.features);
     }
 
     return response;

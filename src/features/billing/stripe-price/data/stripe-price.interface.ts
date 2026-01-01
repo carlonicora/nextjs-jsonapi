@@ -17,6 +17,8 @@ export interface StripePriceInterface extends ApiDataInterface {
   get nickname(): string | undefined;
   get lookupKey(): string | undefined;
   get metadata(): Record<string, any> | undefined;
+  get description(): string | undefined;
+  get features(): string[] | undefined;
 }
 
 export interface PriceRecurring {
@@ -40,4 +42,6 @@ export type StripePriceInput = {
     usageType?: "metered" | "licensed";
   };
   metadata?: Record<string, any>;
+  description?: string;
+  features?: string[];
 };

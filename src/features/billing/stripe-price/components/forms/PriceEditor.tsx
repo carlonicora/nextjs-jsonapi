@@ -1,14 +1,26 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, PlusIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import { z } from "zod";
-import { FormCheckbox, FormInput, FormSelect } from "../../../../../components";
+import { FormCheckbox, FormInput, FormSelect, FormTextarea } from "../../../../../components";
 import { CommonEditorButtons } from "../../../../../components/forms/CommonEditorButtons";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Form } from "../../../../../shadcnui";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  Form,
+  FormControl,
+  FormItem,
+  FormLabel,
+  Input,
+} from "../../../../../shadcnui";
 import { StripePriceInterface, StripePriceService } from "../../data";
 
 type PriceEditorProps = {
@@ -27,6 +39,8 @@ type PriceFormValues = {
   usageType?: "licensed" | "metered";
   nickname?: string;
   active: boolean;
+  description?: string;
+  features: string[];
 };
 
 export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }: PriceEditorProps) {
@@ -46,6 +60,8 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
     usageType: z.enum(["licensed", "metered"]).optional(),
     nickname: z.string().optional(),
     active: z.boolean(),
+    description: z.string().optional(),
+    features: z.array(z.string()),
   });
 
   const isEditMode = !!price;
@@ -63,6 +79,8 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
       usageType: price?.recurring?.usageType || "licensed",
       nickname: (price?.metadata?.nickname as string) || "",
       active: price?.active ?? true,
+      description: price?.description || "",
+      features: price?.features || [],
     },
   });
 
@@ -77,10 +95,12 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
       const unitAmountInCents = Math.round(values.unitAmount * 100);
 
       if (isEditMode) {
-        // Update existing price (only nickname can be updated - Stripe limitation)
+        // Update existing price (nickname, description, features can be updated - Stripe fields are limited)
         await StripePriceService.updatePrice({
           id: price.id,
           metadata: values.nickname ? { nickname: values.nickname } : undefined,
+          description: values.description || undefined,
+          features: values.features.filter((f) => f.trim()) || undefined,
         });
       } else {
         // Create new price
@@ -102,6 +122,15 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
 
         if (values.nickname) {
           createInput.metadata = { nickname: values.nickname };
+        }
+
+        if (values.description) {
+          createInput.description = values.description;
+        }
+
+        const filteredFeatures = values.features.filter((f) => f.trim());
+        if (filteredFeatures.length > 0) {
+          createInput.features = filteredFeatures;
         }
 
         await StripePriceService.createPrice(createInput);
@@ -210,6 +239,59 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
               name="Nickname (optional)"
               placeholder="e.g., Standard Plan, Pro Tier"
             />
+
+            <FormTextarea
+              form={form}
+              id="description"
+              name="Description (optional)"
+              placeholder="Describe what this price tier includes..."
+              className="min-h-24"
+            />
+
+            {/* Features List */}
+            <FormItem>
+              <FormLabel>Features (optional)</FormLabel>
+              <div className="space-y-2">
+                {form.watch("features").map((_, index) => (
+                  <div key={index} className="flex gap-2">
+                    <FormControl>
+                      <Input
+                        {...form.register(`features.${index}`)}
+                        placeholder={`Feature ${index + 1}`}
+                        className="flex-1"
+                      />
+                    </FormControl>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => {
+                        const currentFeatures = form.getValues("features");
+                        form.setValue(
+                          "features",
+                          currentFeatures.filter((_, i) => i !== index),
+                        );
+                      }}
+                    >
+                      <XIcon className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const currentFeatures = form.getValues("features");
+                    form.setValue("features", [...currentFeatures, ""]);
+                  }}
+                  className="mt-2"
+                >
+                  <PlusIcon className="h-4 w-4 mr-2" />
+                  Add Feature
+                </Button>
+              </div>
+            </FormItem>
 
             <FormCheckbox form={form} id="active" name="Active" />
 
