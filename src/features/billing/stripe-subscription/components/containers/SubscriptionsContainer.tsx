@@ -4,6 +4,7 @@ import { CreditCard } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "../../../../../shadcnui";
 import { BillingAlertBanner } from "../../../components";
+import { PaymentMethodEditor } from "../../../stripe-customer/components/forms/PaymentMethodEditor";
 import { StripeSubscriptionInterface, StripeSubscriptionService, SubscriptionStatus } from "../../data";
 import { SubscriptionEditor } from "../forms";
 import { SubscriptionsList } from "../lists";
@@ -12,6 +13,7 @@ export function SubscriptionsContainer() {
   const [subscriptions, setSubscriptions] = useState<StripeSubscriptionInterface[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [showCreateSubscription, setShowCreateSubscription] = useState<boolean>(false);
+  const [showPaymentMethodEditor, setShowPaymentMethodEditor] = useState<boolean>(false);
 
   const loadSubscriptions = async () => {
     console.log("[SubscriptionsContainer] Loading subscriptions...");
@@ -87,6 +89,22 @@ export function SubscriptionsContainer() {
           open={showCreateSubscription}
           onOpenChange={setShowCreateSubscription}
           onSuccess={loadSubscriptions}
+          onAddPaymentMethod={() => {
+            setShowCreateSubscription(false);
+            setShowPaymentMethodEditor(true);
+          }}
+        />
+      )}
+
+      {/* Payment Method Editor Modal */}
+      {showPaymentMethodEditor && (
+        <PaymentMethodEditor
+          open={showPaymentMethodEditor}
+          onOpenChange={setShowPaymentMethodEditor}
+          onSuccess={() => {
+            setShowPaymentMethodEditor(false);
+            setShowCreateSubscription(true);
+          }}
         />
       )}
     </div>
