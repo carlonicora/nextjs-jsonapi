@@ -1,4 +1,5 @@
 import { PartialBlock } from "@blocknote/core";
+import { v4 } from "uuid";
 import { DiffBlock, WordDiff } from "./blocknote-diff.util";
 
 export class BlockNoteWordDiffRendererUtil {
@@ -62,7 +63,7 @@ export class BlockNoteWordDiffRendererUtil {
     }
 
     const baseBlock: PartialBlock = {
-      id: block.id || crypto.randomUUID(),
+      id: block.id || v4(),
       type: (block.type as any) || "paragraph",
       props: this.getBlockProps(block),
       content: Array.isArray(block.content) ? block.content : [],
@@ -81,7 +82,7 @@ export class BlockNoteWordDiffRendererUtil {
   ): PartialBlock {
     if (!block.diffId) {
       return {
-        id: block.id || crypto.randomUUID(),
+        id: block.id || v4(),
         type: (block.type as any) || "paragraph",
         props: block.props || {},
         content: Array.isArray(block.content) ? block.content : [],
@@ -99,7 +100,7 @@ export class BlockNoteWordDiffRendererUtil {
     if (block.diffType === "added") {
       if (blockRejected) {
         return {
-          id: block.id || crypto.randomUUID(),
+          id: block.id || v4(),
           type: "paragraph",
           props: {},
           content: [],
@@ -119,7 +120,7 @@ export class BlockNoteWordDiffRendererUtil {
     } else if (block.diffType === "removed") {
       if (blockAccepted) {
         return {
-          id: block.id || crypto.randomUUID(),
+          id: block.id || v4(),
           type: "paragraph",
           props: {},
           content: [],
@@ -139,7 +140,7 @@ export class BlockNoteWordDiffRendererUtil {
     }
 
     const baseBlock: PartialBlock = {
-      id: block.id || crypto.randomUUID(),
+      id: block.id || v4(),
       type: (block.type as any) || "paragraph",
       props: this.getBlockProps(block),
       content: content,
@@ -158,7 +159,7 @@ export class BlockNoteWordDiffRendererUtil {
   ): PartialBlock {
     if (!block.wordDiffs) {
       return {
-        id: block.id || crypto.randomUUID(),
+        id: block.id || v4(),
         type: (block.type as any) || "paragraph",
         props: block.props || {},
         content: Array.isArray(block.content) ? block.content : [],
@@ -169,7 +170,7 @@ export class BlockNoteWordDiffRendererUtil {
     const content = this.groupAndRenderWordDiffs(block.wordDiffs);
 
     return {
-      id: block.id || crypto.randomUUID(),
+      id: block.id || v4(),
       type: (block.type as any) || "paragraph",
       props: block.props || {},
       content: Array.isArray(content) ? content : [],

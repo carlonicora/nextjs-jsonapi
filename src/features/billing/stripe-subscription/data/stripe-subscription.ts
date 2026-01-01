@@ -88,18 +88,25 @@ export class StripeSubscription extends AbstractApiData implements StripeSubscri
         type: Modules.StripeSubscription.name,
         id: data.id,
         attributes: {},
+        relationships: {
+          stripePrice: {
+            data: {
+              type: Modules.StripePrice.name,
+              id: data.priceId,
+            },
+          },
+        },
       },
     };
 
-    if ("priceId" in data && data.priceId) {
-      response.data.attributes.priceId = data.priceId;
-    }
     if ("quantity" in data && data.quantity !== undefined) {
       response.data.attributes.quantity = data.quantity;
     }
+
     if ("trialPeriodDays" in data && data.trialPeriodDays !== undefined) {
       response.data.attributes.trialPeriodDays = data.trialPeriodDays;
     }
+
     if ("metadata" in data && data.metadata) {
       response.data.attributes.metadata = data.metadata;
     }

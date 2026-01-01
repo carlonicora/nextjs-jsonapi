@@ -1,4 +1,5 @@
 import { PartialBlock } from "@blocknote/core";
+import { v4 } from "uuid";
 
 export interface WordDiff {
   type: "added" | "removed" | "unchanged";
@@ -79,7 +80,7 @@ export class BlockNoteDiffUtil {
       const blockId = originalBlock.id;
 
       // Generate ID if missing
-      const processId = blockId || crypto.randomUUID();
+      const processId = blockId || v4();
       const newBlock = blockId ? newMap.get(blockId) : null;
 
       if (!newBlock) {

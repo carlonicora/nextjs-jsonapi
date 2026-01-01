@@ -20,6 +20,7 @@ export interface FoundationModuleDefinitions {
   // Billing modules - READ: all users, UPDATE: CompanyAdministrator, ADMIN: Administrator
   Billing: ModuleWithPermissions;
   StripeCustomer: ModuleWithPermissions;
+  StripePaymentMethod: ModuleWithPermissions;
   StripeSubscription: ModuleWithPermissions;
   StripeInvoice: ModuleWithPermissions;
   StripeProduct: ModuleWithPermissions;

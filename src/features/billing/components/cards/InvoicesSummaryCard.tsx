@@ -1,18 +1,8 @@
 "use client";
 
-import { ReceiptIcon, ChevronRight } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Badge,
-  Skeleton,
-} from "../../../../shadcnui";
-import {
-  StripeInvoiceInterface,
-  InvoiceStatus,
-} from "../../stripe-invoice";
+import { ChevronRight, ReceiptIcon } from "lucide-react";
+import { Badge, Card, CardContent, CardHeader, CardTitle, Skeleton } from "../../../../shadcnui";
+import { InvoiceStatus, StripeInvoiceInterface } from "../../stripe-invoice";
 
 type InvoicesSummaryCardProps = {
   invoices: StripeInvoiceInterface[];
@@ -21,9 +11,7 @@ type InvoicesSummaryCardProps = {
   onViewAllClick: () => void;
 };
 
-function getStatusBadgeVariant(
-  status: InvoiceStatus
-): "default" | "secondary" | "destructive" | "outline" {
+function getStatusBadgeVariant(status: InvoiceStatus): "default" | "secondary" | "destructive" | "outline" {
   switch (status) {
     case InvoiceStatus.PAID:
       return "default";
@@ -53,12 +41,7 @@ function formatAmount(amount: number, currency: string): string {
   }).format(amount / 100);
 }
 
-export function InvoicesSummaryCard({
-  invoices,
-  loading,
-  error,
-  onViewAllClick,
-}: InvoicesSummaryCardProps) {
+export function InvoicesSummaryCard({ invoices, loading, error, onViewAllClick }: InvoicesSummaryCardProps) {
   if (loading) {
     return (
       <Card>
@@ -104,30 +87,20 @@ export function InvoicesSummaryCard({
         {invoices.length === 0 ? (
           <div className="space-y-2">
             <p className="text-xl font-bold text-muted-foreground">No invoices yet</p>
-            <p className="text-xs text-muted-foreground">
-              Invoices will appear after your first billing cycle
-            </p>
+            <p className="text-xs text-muted-foreground">Invoices will appear after your first billing cycle</p>
           </div>
         ) : latestInvoice ? (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <p className="text-xl font-bold">
-                {formatAmount(latestInvoice.total, latestInvoice.currency)}
-              </p>
-              <Badge variant={getStatusBadgeVariant(latestInvoice.status)}>
-                {latestInvoice.status}
-              </Badge>
+              <p className="text-xl font-bold">{formatAmount(latestInvoice.total, latestInvoice.currency)}</p>
+              <Badge variant={getStatusBadgeVariant(latestInvoice.status)}>{latestInvoice.status}</Badge>
             </div>
             <p className="text-sm text-muted-foreground">
               {latestInvoice.stripeInvoiceNumber || `Invoice from ${formatDate(latestInvoice.periodStart)}`}
             </p>
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
-              {paidInvoices.length > 0 && (
-                <span>{paidInvoices.length} paid</span>
-              )}
-              {openInvoices.length > 0 && (
-                <span className="text-orange-600">{openInvoices.length} open</span>
-              )}
+              {paidInvoices.length > 0 && <span>{paidInvoices.length} paid</span>}
+              {openInvoices.length > 0 && <span className="text-orange-600">{openInvoices.length} open</span>}
               <span className="flex items-center">
                 View all
                 <ChevronRight className="h-3 w-3 ml-1" />

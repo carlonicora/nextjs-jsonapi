@@ -37,7 +37,7 @@ export interface StripeSubscriptionInterface extends ApiDataInterface {
 
 export type StripeSubscriptionInput = {
   id: string;
-  priceId?: string;
+  priceId: string;
   quantity?: number;
   trialPeriodDays?: number;
   metadata?: Record<string, any>;

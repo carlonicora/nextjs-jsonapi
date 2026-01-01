@@ -17,7 +17,8 @@ export function formatInterval(price: StripePriceInterface): string {
   }
 
   // Pluralize the interval for counts > 1
-  const pluralInterval = interval === "day" ? "days" : interval === "week" ? "weeks" : interval === "month" ? "months" : "years";
+  const pluralInterval =
+    interval === "day" ? "days" : interval === "week" ? "weeks" : interval === "month" ? "months" : "years";
   return `/${intervalCount} ${pluralInterval}`;
 }
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { v4 } from "uuid";
 import {
   Alert,
   AlertDescription,
@@ -153,7 +154,7 @@ export function SubscriptionEditor({
 
       try {
         await StripeSubscriptionService.createSubscription({
-          id: crypto.randomUUID(),
+          id: v4(),
           priceId,
         });
         console.log("[SubscriptionEditor] Subscription created successfully");

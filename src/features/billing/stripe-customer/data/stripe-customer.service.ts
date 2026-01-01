@@ -86,7 +86,7 @@ export class StripeCustomerService extends AbstractService {
     });
 
     return this.callApi({
-      type: Modules.StripeCustomer,
+      type: Modules.StripePaymentMethod,
       method: HttpMethod.GET,
       endpoint: endpoint.generate(),
       next: params?.next,

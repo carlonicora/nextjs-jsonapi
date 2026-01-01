@@ -2,10 +2,11 @@
 
 import { CreditCard } from "lucide-react";
 import { useEffect, useState } from "react";
+import { v4 } from "uuid";
 import { Button } from "../../../../../shadcnui";
 import { BillingAlertBanner } from "../../../components";
-import { StripeCustomerService } from "../../../stripe-customer/data/stripe-customer.service";
 import { PaymentMethodEditor } from "../../../stripe-customer/components/forms/PaymentMethodEditor";
+import { StripeCustomerService } from "../../../stripe-customer/data/stripe-customer.service";
 import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
 import { StripeProductInterface, StripeProductService } from "../../../stripe-product";
 import { StripeSubscriptionInterface, StripeSubscriptionService, SubscriptionStatus } from "../../data";
@@ -86,7 +87,7 @@ export function SubscriptionsContainer() {
     setCreatingSubscription(true);
     try {
       await StripeSubscriptionService.createSubscription({
-        id: crypto.randomUUID(),
+        id: v4(),
         priceId,
       });
       console.log("[SubscriptionsContainer] Subscription created successfully");
@@ -106,7 +107,7 @@ export function SubscriptionsContainer() {
   };
 
   const handleSelectPrice = async (price: StripePriceInterface) => {
-    const priceId = price.stripePriceId;
+    const priceId = price.id; // Use internal UUID, not Stripe ID
 
     if (!hasPaymentMethod) {
       console.log("[SubscriptionsContainer] No payment method, storing pending price:", priceId);
@@ -183,9 +184,7 @@ export function SubscriptionsContainer() {
           <div className="text-center">
             <CreditCard className="text-muted-foreground mx-auto h-16 w-16 mb-4" />
             <h3 className="mb-2 text-xl font-semibold">Choose Your Plan</h3>
-            <p className="text-muted-foreground mb-6">
-              Select a subscription plan to get started with our services.
-            </p>
+            <p className="text-muted-foreground mb-6">Select a subscription plan to get started with our services.</p>
           </div>
 
           <PricingCardsGrid
