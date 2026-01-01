@@ -82,6 +82,18 @@ export async function translateResponse<T extends ApiDataInterface>(params: {
   response.raw = params.apiResponse.data;
 
   try {
+    // Check if response is JSON:API formatted (has a 'data' property)
+    // If not, return the raw response data directly (e.g., { url: "..." } or { clientSecret: "..." })
+    if (
+      params.apiResponse.data &&
+      typeof params.apiResponse.data === "object" &&
+      !Array.isArray(params.apiResponse.data) &&
+      params.apiResponse.data.data === undefined
+    ) {
+      response.data = params.apiResponse.data;
+      return response;
+    }
+
     const included: any = params.apiResponse.data.included ?? [];
 
     if (params.apiResponse.data.links) {

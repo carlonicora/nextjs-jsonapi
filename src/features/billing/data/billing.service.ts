@@ -19,12 +19,12 @@ export class BillingService extends AbstractService {
    */
   static async listMeters(params?: { next?: NextRef; prev?: PreviousRef }): Promise<MeterInterface[]> {
     const endpoint = new EndpointCreator({
-      endpoint: Modules.Billing,
+      endpoint: Modules.StripeUsage,
       childEndpoint: "meters",
     });
 
     return this.callApi({
-      type: Modules.Billing,
+      type: Modules.StripeUsage,
       method: HttpMethod.GET,
       endpoint: endpoint.generate(),
       next: params?.next,
@@ -38,19 +38,19 @@ export class BillingService extends AbstractService {
    */
   static async getMeterSummaries(params: {
     meterId: string;
-    start: Date;
-    end: Date;
+    startTime: Date;
+    endTime: Date;
   }): Promise<MeterSummaryInterface[]> {
     const endpoint = new EndpointCreator({
-      endpoint: Modules.Billing,
+      endpoint: Modules.StripeUsage,
       childEndpoint: `meters/${params.meterId}/summaries`,
     });
 
-    endpoint.addAdditionalParam("start", params.start.toISOString());
-    endpoint.addAdditionalParam("end", params.end.toISOString());
+    endpoint.addAdditionalParam("startTime", params.startTime.toISOString());
+    endpoint.addAdditionalParam("endTime", params.endTime.toISOString());
 
     return this.callApi({
-      type: Modules.Billing,
+      type: Modules.StripeUsage,
       method: HttpMethod.GET,
       endpoint: endpoint.generate(),
     });

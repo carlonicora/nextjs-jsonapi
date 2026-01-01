@@ -56,8 +56,8 @@ export function UsageContainer() {
         try {
           const meterSummaries = await StripeUsageService.getMeterSummaries({
             meterId: meter.id,
-            start: startOfMonth,
-            end: endOfMonth,
+            startTime: startOfMonth,
+            endTime: endOfMonth,
           });
           console.log(`[UsageContainer] Loaded summaries for meter ${meter.id}:`, meterSummaries);
           // Use the first (most recent) summary
