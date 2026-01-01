@@ -1,3 +1,26 @@
+import { StripePriceInterface } from "../../stripe-price/data/stripe-price.interface";
+
+/**
+ * Format price recurring interval for display
+ * @param price - Stripe price object
+ * @returns Formatted interval string (e.g., "/month", "/year", "/2 weeks", "one-time")
+ */
+export function formatInterval(price: StripePriceInterface): string {
+  if (price.priceType === "one_time" || !price.recurring) {
+    return "one-time";
+  }
+
+  const { interval, intervalCount } = price.recurring;
+
+  if (intervalCount === 1) {
+    return `/${interval}`;
+  }
+
+  // Pluralize the interval for counts > 1
+  const pluralInterval = interval === "day" ? "days" : interval === "week" ? "weeks" : interval === "month" ? "months" : "years";
+  return `/${intervalCount} ${pluralInterval}`;
+}
+
 /**
  * Format currency amount from cents to localized currency string
  * @param amount - Amount in cents

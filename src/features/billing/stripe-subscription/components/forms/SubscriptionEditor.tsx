@@ -1,11 +1,6 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { z } from "zod";
-import { FormSelect } from "../../../../../components";
-import { CommonEditorButtons } from "../../../../../components/forms/CommonEditorButtons";
 import {
   Alert,
   AlertDescription,
@@ -16,16 +11,14 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  Form,
 } from "../../../../../shadcnui";
-import { formatCurrency } from "../../../components/utils";
-import { ProrationPreview } from "../widgets/ProrationPreview";
-import { ProrationPreviewInterface } from "../../../stripe-invoice/data/stripe-invoice.interface";
 import { StripeCustomerService } from "../../../stripe-customer/data/stripe-customer.service";
-import { StripePriceService } from "../../../stripe-price";
+import { ProrationPreviewInterface } from "../../../stripe-invoice/data/stripe-invoice.interface";
 import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
 import { StripeProductInterface, StripeProductService } from "../../../stripe-product";
 import { StripeSubscriptionInterface, StripeSubscriptionService } from "../../data";
+import { PricesByProduct, PricingCardsGrid } from "../widgets/PricingCardsGrid";
+import { ProrationPreview } from "../widgets/ProrationPreview";
 
 type SubscriptionEditorProps = {
   subscription?: StripeSubscriptionInterface;
@@ -35,11 +28,6 @@ type SubscriptionEditorProps = {
   onAddPaymentMethod?: () => void;
 };
 
-const formSchema = z.object({
-  productId: z.string().min(1, { message: "Product is required" }),
-  priceId: z.string().min(1, { message: "Price is required" }),
-});
-
 export function SubscriptionEditor({
   subscription,
   open,
@@ -47,11 +35,11 @@ export function SubscriptionEditor({
   onSuccess,
   onAddPaymentMethod,
 }: SubscriptionEditorProps) {
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [products, setProducts] = useState<StripeProductInterface[]>([]);
-  const [prices, setPrices] = useState<StripePriceInterface[]>([]);
-  const [loadingProducts, setLoadingProducts] = useState<boolean>(true);
-  const [loadingPrices, setLoadingPrices] = useState<boolean>(false);
+  const [pricesByProduct, setPricesByProduct] = useState<PricesByProduct>(new Map());
+  const [loading, setLoading] = useState<boolean>(true);
+  const [selectedPriceId, setSelectedPriceId] = useState<string | null>(null);
+  const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
   const [prorationPreview, setProrationPreview] = useState<ProrationPreviewInterface | null>(null);
   const [loadingProration, setLoadingProration] = useState<boolean>(false);
   const [hasPaymentMethod, setHasPaymentMethod] = useState<boolean>(true);
@@ -60,17 +48,7 @@ export function SubscriptionEditor({
 
   // Get current subscription price if editing
   const currentPriceId = subscription?.price?.stripePriceId;
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      productId: "",
-      priceId: currentPriceId || "",
-    },
-  });
-
-  const selectedProductId = form.watch("productId");
-  const selectedPriceId = form.watch("priceId");
+  const isEditMode = !!subscription;
 
   // Check payment methods on mount (only for new subscriptions)
   useEffect(() => {
@@ -101,62 +79,39 @@ export function SubscriptionEditor({
     }
   }, [open, subscription]);
 
-  // Load active products on mount
+  // Load products with prices on mount
   useEffect(() => {
-    const loadProducts = async () => {
-      console.log("[SubscriptionEditor] Loading active products...");
-      setLoadingProducts(true);
+    const loadData = async () => {
+      console.log("[SubscriptionEditor] Loading products with prices...");
+      setLoading(true);
       try {
         const fetchedProducts = await StripeProductService.listProducts({ active: true });
-        console.log("[SubscriptionEditor] Loaded products:", fetchedProducts);
-        setProducts(fetchedProducts);
 
-        // If editing, find the product for the current price
-        if (subscription && currentPriceId) {
-          const allPrices = await StripePriceService.listPrices({ active: true });
-          const currentPrice = allPrices.find((p) => p.stripePriceId === currentPriceId);
-          if (currentPrice) {
-            form.setValue("productId", currentPrice.productId);
+        console.log("[SubscriptionEditor] Loaded products with prices:", fetchedProducts);
+
+        // Build prices map from product.stripePrices
+        const grouped: PricesByProduct = new Map();
+        for (const product of fetchedProducts) {
+          if (product.stripePrices && product.stripePrices.length > 0) {
+            grouped.set(product.id, product.stripePrices);
           }
         }
+
+        setProducts(fetchedProducts);
+        setPricesByProduct(grouped);
       } catch (error) {
-        console.error("[SubscriptionEditor] Failed to load products:", error);
+        console.error("[SubscriptionEditor] Failed to load products/prices:", error);
       } finally {
-        setLoadingProducts(false);
+        setLoading(false);
       }
     };
 
-    loadProducts();
-  }, []);
+    if (open) {
+      loadData();
+    }
+  }, [open]);
 
-  // Load prices when product changes
-  useEffect(() => {
-    const loadPrices = async () => {
-      if (!selectedProductId) {
-        setPrices([]);
-        return;
-      }
-
-      console.log("[SubscriptionEditor] Loading prices for product:", selectedProductId);
-      setLoadingPrices(true);
-      try {
-        const fetchedPrices = await StripePriceService.listPrices({
-          productId: selectedProductId,
-          active: true,
-        });
-        console.log("[SubscriptionEditor] Loaded prices:", fetchedPrices);
-        setPrices(fetchedPrices);
-      } catch (error) {
-        console.error("[SubscriptionEditor] Failed to load prices:", error);
-      } finally {
-        setLoadingPrices(false);
-      }
-    };
-
-    loadPrices();
-  }, [selectedProductId]);
-
-  // Load proration preview when editing and price changes
+  // Load proration preview when editing and price is selected
   useEffect(() => {
     const loadProration = async () => {
       if (!subscription || !selectedPriceId || selectedPriceId === currentPriceId) {
@@ -184,67 +139,75 @@ export function SubscriptionEditor({
     loadProration();
   }, [selectedPriceId, subscription, currentPriceId]);
 
-  const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (values) => {
-    console.log("[SubscriptionEditor] Submitting subscription:", values);
-    setIsSubmitting(true);
+  const handleSelectPrice = async (price: StripePriceInterface) => {
+    const priceId = price.stripePriceId;
 
-    try {
-      if (subscription) {
-        // Change plan
-        await StripeSubscriptionService.changePlan({
-          subscriptionId: subscription.id,
-          newPriceId: values.priceId,
-        });
-        console.log("[SubscriptionEditor] Plan changed successfully");
-      } else {
-        // Create new subscription
+    if (isEditMode) {
+      // Edit mode: just select the price to show proration preview
+      setSelectedPriceId(priceId);
+    } else {
+      // Create mode: immediately create subscription
+      console.log("[SubscriptionEditor] Creating subscription with price:", priceId);
+      setLoadingPriceId(priceId);
+      setSelectedPriceId(priceId);
+
+      try {
         await StripeSubscriptionService.createSubscription({
           id: crypto.randomUUID(),
-          priceId: values.priceId,
+          priceId,
         });
         console.log("[SubscriptionEditor] Subscription created successfully");
+        onSuccess();
+        onOpenChange(false);
+      } catch (error: any) {
+        console.error("[SubscriptionEditor] Failed to create subscription:", error);
+        // Handle 402 Payment Required error
+        if (error?.status === 402 || error?.response?.status === 402) {
+          console.log("[SubscriptionEditor] Payment method required");
+          setPaymentRequiredError(true);
+          setHasPaymentMethod(false);
+        }
+      } finally {
+        setLoadingPriceId(null);
       }
-
-      onSuccess();
-      onOpenChange(false);
-    } catch (error: any) {
-      console.error("[SubscriptionEditor] Failed to save subscription:", error);
-      // Handle 402 Payment Required error
-      if (error?.status === 402 || error?.response?.status === 402) {
-        console.log("[SubscriptionEditor] Payment method required");
-        setPaymentRequiredError(true);
-        setHasPaymentMethod(false);
-      }
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
-  // Format product options for select
-  const productOptions = products.map((product) => ({
-    id: product.id,
-    text: product.name,
-  }));
+  const handleConfirmPlanChange = async () => {
+    if (!subscription || !selectedPriceId) return;
 
-  // Format price options for select
-  const priceOptions = prices.map((price) => {
-    const interval = price.recurring?.interval || "one-time";
-    const amount = formatCurrency(price.unitAmount, price.currency);
-    return {
-      id: price.stripePriceId,
-      text: `${amount} / ${interval}`,
-    };
-  });
+    console.log("[SubscriptionEditor] Changing plan to:", selectedPriceId);
+    setLoadingPriceId(selectedPriceId);
+
+    try {
+      await StripeSubscriptionService.changePlan({
+        subscriptionId: subscription.id,
+        newPriceId: selectedPriceId,
+      });
+      console.log("[SubscriptionEditor] Plan changed successfully");
+      onSuccess();
+      onOpenChange(false);
+    } catch (error) {
+      console.error("[SubscriptionEditor] Failed to change plan:", error);
+    } finally {
+      setLoadingPriceId(null);
+    }
+  };
+
+  const handleCancel = () => {
+    setSelectedPriceId(null);
+    setProrationPreview(null);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{subscription ? "Change Plan" : "Subscribe to a Plan"}</DialogTitle>
           <DialogDescription>
             {subscription
               ? "Select a new plan to switch to. You'll see a proration preview before confirming."
-              : "Choose a product and pricing plan to start your subscription."}
+              : "Choose a plan to start your subscription."}
           </DialogDescription>
         </DialogHeader>
 
@@ -269,39 +232,37 @@ export function SubscriptionEditor({
             </AlertDescription>
           </Alert>
         ) : (
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-y-4">
-              <FormSelect
-                form={form}
-                id="productId"
-                name="Product"
-                placeholder={loadingProducts ? "Loading products..." : "Select a product"}
-                disabled={loadingProducts}
-                values={productOptions}
-              />
+          <div className="space-y-6">
+            <PricingCardsGrid
+              products={products}
+              pricesByProduct={pricesByProduct}
+              currentPriceId={currentPriceId}
+              selectedPriceId={selectedPriceId ?? undefined}
+              loadingPriceId={loadingPriceId ?? undefined}
+              loading={loading}
+              onSelectPrice={handleSelectPrice}
+            />
 
-              <FormSelect
-                form={form}
-                id="priceId"
-                name="Price"
-                placeholder={
-                  !selectedProductId ? "Select a product first" : loadingPrices ? "Loading prices..." : "Select a price"
-                }
-                disabled={!selectedProductId || loadingPrices}
-                values={priceOptions}
-              />
+            {isEditMode && loadingProration && (
+              <div className="bg-muted/50 rounded-lg p-4 text-sm text-muted-foreground text-center">
+                Loading proration preview...
+              </div>
+            )}
 
-              {loadingProration && (
-                <div className="bg-muted/50 rounded-lg p-4 text-sm text-muted-foreground text-center">
-                  Loading proration preview...
+            {isEditMode && prorationPreview && !loadingProration && (
+              <div className="space-y-4">
+                <ProrationPreview preview={prorationPreview} />
+                <div className="flex justify-end gap-3">
+                  <Button variant="outline" onClick={handleCancel} disabled={!!loadingPriceId}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleConfirmPlanChange} disabled={!!loadingPriceId}>
+                    {loadingPriceId ? "Processing..." : "Confirm Plan Change"}
+                  </Button>
                 </div>
-              )}
-
-              {prorationPreview && !loadingProration && <ProrationPreview preview={prorationPreview} />}
-
-              <CommonEditorButtons isEdit={!!subscription} form={form} disabled={isSubmitting} setOpen={onOpenChange} />
-            </form>
-          </Form>
+              </div>
+            )}
+          </div>
         )}
       </DialogContent>
     </Dialog>

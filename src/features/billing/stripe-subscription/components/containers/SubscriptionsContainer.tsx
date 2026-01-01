@@ -4,16 +4,30 @@ import { CreditCard } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "../../../../../shadcnui";
 import { BillingAlertBanner } from "../../../components";
+import { StripeCustomerService } from "../../../stripe-customer/data/stripe-customer.service";
 import { PaymentMethodEditor } from "../../../stripe-customer/components/forms/PaymentMethodEditor";
+import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
+import { StripeProductInterface, StripeProductService } from "../../../stripe-product";
 import { StripeSubscriptionInterface, StripeSubscriptionService, SubscriptionStatus } from "../../data";
 import { SubscriptionEditor } from "../forms";
 import { SubscriptionsList } from "../lists";
+import { PricesByProduct, PricingCardsGrid } from "../widgets/PricingCardsGrid";
 
 export function SubscriptionsContainer() {
   const [subscriptions, setSubscriptions] = useState<StripeSubscriptionInterface[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [showCreateSubscription, setShowCreateSubscription] = useState<boolean>(false);
   const [showPaymentMethodEditor, setShowPaymentMethodEditor] = useState<boolean>(false);
+
+  // Pricing data for empty state
+  const [products, setProducts] = useState<StripeProductInterface[]>([]);
+  const [pricesByProduct, setPricesByProduct] = useState<PricesByProduct>(new Map());
+  const [loadingPricing, setLoadingPricing] = useState<boolean>(false);
+
+  // Payment method and pending subscription state
+  const [hasPaymentMethod, setHasPaymentMethod] = useState<boolean | null>(null);
+  const [pendingPriceId, setPendingPriceId] = useState<string | null>(null);
+  const [creatingSubscription, setCreatingSubscription] = useState<boolean>(false);
 
   const loadSubscriptions = async () => {
     console.log("[SubscriptionsContainer] Loading subscriptions...");
@@ -29,9 +43,104 @@ export function SubscriptionsContainer() {
     }
   };
 
+  const loadPricingData = async () => {
+    console.log("[SubscriptionsContainer] Loading pricing data...");
+    setLoadingPricing(true);
+    try {
+      const fetchedProducts = await StripeProductService.listProducts({ active: true });
+
+      console.log("[SubscriptionsContainer] Loaded products with prices:", fetchedProducts);
+
+      // Build prices map from product.stripePrices
+      const grouped: PricesByProduct = new Map();
+      for (const product of fetchedProducts) {
+        if (product.stripePrices && product.stripePrices.length > 0) {
+          grouped.set(product.id, product.stripePrices);
+        }
+      }
+
+      setProducts(fetchedProducts);
+      setPricesByProduct(grouped);
+    } catch (error) {
+      console.error("[SubscriptionsContainer] Failed to load pricing data:", error);
+    } finally {
+      setLoadingPricing(false);
+    }
+  };
+
+  const checkPaymentMethod = async () => {
+    console.log("[SubscriptionsContainer] Checking payment methods...");
+    try {
+      const paymentMethods = await StripeCustomerService.listPaymentMethods();
+      const hasMethod = paymentMethods.length > 0;
+      console.log("[SubscriptionsContainer] Has payment method:", hasMethod);
+      setHasPaymentMethod(hasMethod);
+    } catch (error) {
+      console.error("[SubscriptionsContainer] Failed to check payment methods:", error);
+      setHasPaymentMethod(false);
+    }
+  };
+
+  const createSubscriptionWithPrice = async (priceId: string) => {
+    console.log("[SubscriptionsContainer] Creating subscription with price:", priceId);
+    setCreatingSubscription(true);
+    try {
+      await StripeSubscriptionService.createSubscription({
+        id: crypto.randomUUID(),
+        priceId,
+      });
+      console.log("[SubscriptionsContainer] Subscription created successfully");
+      await loadSubscriptions();
+    } catch (error: any) {
+      console.error("[SubscriptionsContainer] Failed to create subscription:", error);
+      // Handle 402 error - payment method required despite our check
+      if (error?.status === 402 || error?.response?.status === 402) {
+        console.log("[SubscriptionsContainer] Payment method required, opening editor");
+        setPendingPriceId(priceId);
+        setHasPaymentMethod(false);
+        setShowPaymentMethodEditor(true);
+      }
+    } finally {
+      setCreatingSubscription(false);
+    }
+  };
+
+  const handleSelectPrice = async (price: StripePriceInterface) => {
+    const priceId = price.stripePriceId;
+
+    if (!hasPaymentMethod) {
+      console.log("[SubscriptionsContainer] No payment method, storing pending price:", priceId);
+      setPendingPriceId(priceId);
+      setShowPaymentMethodEditor(true);
+      return;
+    }
+
+    await createSubscriptionWithPrice(priceId);
+  };
+
+  const handlePaymentMethodSuccess = async () => {
+    console.log("[SubscriptionsContainer] Payment method added successfully");
+    setShowPaymentMethodEditor(false);
+    setHasPaymentMethod(true);
+
+    if (pendingPriceId) {
+      console.log("[SubscriptionsContainer] Creating subscription with pending price:", pendingPriceId);
+      await createSubscriptionWithPrice(pendingPriceId);
+      setPendingPriceId(null);
+    }
+  };
+
   useEffect(() => {
     loadSubscriptions();
   }, []);
+
+  // Load pricing data when there are no subscriptions
+  useEffect(() => {
+    if (!loading && subscriptions.length === 0) {
+      loadPricingData();
+      checkPaymentMethod();
+    }
+  }, [loading, subscriptions.length]);
 
   // Detect critical subscriptions
   const criticalSubscriptions = subscriptions.filter(
@@ -58,7 +167,9 @@ export function SubscriptionsContainer() {
           <CreditCard className="h-8 w-8" />
           <h1 className="text-3xl font-bold">Subscriptions</h1>
         </div>
-        <Button onClick={() => setShowCreateSubscription(true)}>Subscribe to a Plan</Button>
+        {subscriptions.length > 0 && (
+          <Button onClick={() => setShowCreateSubscription(true)}>Subscribe to a Plan</Button>
+        )}
       </div>
 
       {/* Alert Banners */}
@@ -66,15 +177,24 @@ export function SubscriptionsContainer() {
         <BillingAlertBanner key={subscription.id} subscription={subscription} />
       ))}
 
-      {/* Empty State */}
+      {/* Pricing Cards when no subscriptions */}
       {subscriptions.length === 0 && (
-        <div className="bg-muted/50 flex flex-col items-center justify-center gap-y-4 rounded-lg border-2 border-dashed p-12">
-          <CreditCard className="text-muted-foreground h-16 w-16" />
+        <div className="space-y-6">
           <div className="text-center">
-            <h3 className="mb-2 text-xl font-semibold">No active subscriptions</h3>
-            <p className="text-muted-foreground mb-4">Subscribe to a plan to get started with our services.</p>
-            <Button onClick={() => setShowCreateSubscription(true)}>Get Started</Button>
+            <CreditCard className="text-muted-foreground mx-auto h-16 w-16 mb-4" />
+            <h3 className="mb-2 text-xl font-semibold">Choose Your Plan</h3>
+            <p className="text-muted-foreground mb-6">
+              Select a subscription plan to get started with our services.
+            </p>
           </div>
+
+          <PricingCardsGrid
+            products={products}
+            pricesByProduct={pricesByProduct}
+            loading={loadingPricing}
+            loadingPriceId={creatingSubscription ? (pendingPriceId ?? undefined) : undefined}
+            onSelectPrice={handleSelectPrice}
+          />
         </div>
       )}
 
@@ -83,7 +203,7 @@ export function SubscriptionsContainer() {
         <SubscriptionsList subscriptions={subscriptions} onSubscriptionsChange={loadSubscriptions} />
       )}
 
-      {/* Create Subscription Modal */}
+      {/* Create Subscription Modal (for users who already have subscriptions) */}
       {showCreateSubscription && (
         <SubscriptionEditor
           open={showCreateSubscription}
@@ -100,11 +220,14 @@ export function SubscriptionsContainer() {
       {showPaymentMethodEditor && (
         <PaymentMethodEditor
           open={showPaymentMethodEditor}
-          onOpenChange={setShowPaymentMethodEditor}
-          onSuccess={() => {
-            setShowPaymentMethodEditor(false);
-            setShowCreateSubscription(true);
+          onOpenChange={(open) => {
+            setShowPaymentMethodEditor(open);
+            if (!open) {
+              // Clear pending price if user cancels
+              setPendingPriceId(null);
+            }
           }}
+          onSuccess={handlePaymentMethodSuccess}
         />
       )}
     </div>

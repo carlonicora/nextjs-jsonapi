@@ -1,4 +1,4 @@
-import { AbstractApiData, JsonApiHydratedDataInterface, Modules } from "../../../../core";
+import { AbstractApiData, JsonApiHydratedDataInterface, Modules, StripePriceInterface } from "../../../../core";
 import { StripeProductInput, StripeProductInterface } from "./stripe-product.interface";
 
 export class StripeProduct extends AbstractApiData implements StripeProductInterface {
@@ -7,6 +7,8 @@ export class StripeProduct extends AbstractApiData implements StripeProductInter
   private _description?: string;
   private _active: boolean = true;
   private _metadata?: Record<string, any>;
+
+  private _stripePrices: StripePriceInterface[] = [];
 
   get stripeProductId(): string {
     if (!this._stripeProductId) throw new Error("stripeProductId is not defined");
@@ -30,6 +32,10 @@ export class StripeProduct extends AbstractApiData implements StripeProductInter
     return this._metadata;
   }
 
+  get stripePrices(): StripePriceInterface[] {
+    return this._stripePrices ?? [];
+  }
+
   rehydrate(data: JsonApiHydratedDataInterface): this {
     super.rehydrate(data);
 
@@ -43,6 +49,8 @@ export class StripeProduct extends AbstractApiData implements StripeProductInter
         ? JSON.parse(data.jsonApi.attributes.metadata)
         : data.jsonApi.attributes.metadata
       : undefined;
+
+    this._stripePrices = this._readIncluded(data, "stripePrices", Modules.StripePrice) as StripePriceInterface[];
 
     return this;
   }

@@ -1,4 +1,4 @@
-import { ApiDataInterface } from "../../../../core";
+import { ApiDataInterface, StripePriceInterface } from "../../../../core";
 
 export interface StripeProductInterface extends ApiDataInterface {
   get stripeProductId(): string;
@@ -6,6 +6,7 @@ export interface StripeProductInterface extends ApiDataInterface {
   get description(): string | undefined;
   get active(): boolean;
   get metadata(): Record<string, any> | undefined;
+  get stripePrices(): StripePriceInterface[];
 }
 
 export type StripeProductInput = {
