@@ -41,6 +41,11 @@
       "types": "./dist/contexts/index.d.ts",
       "import": "./dist/contexts/index.mjs",
       "require": "./dist/contexts/index.js"
+    },
+    "./testing": {
+      "types": "./dist/testing/index.d.ts",
+      "import": "./dist/testing/index.mjs",
+      "require": "./dist/testing/index.js"
     }
   },
   "scripts": {
@@ -50,7 +55,11 @@
     "lint": "eslint \"src/**/*.ts\" --fix",
     "format": "prettier --write \"src/**/*.ts\"",
     "prepublishOnly": "pnpm build",
-    "generate-web-module": "node dist/scripts/generate-web-module/index.js"
+    "generate-web-module": "node dist/scripts/generate-web-module/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui"
   },
   "files": [
     "dist",
@@ -150,6 +159,10 @@
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@tanstack/react-table": "^8.21.3",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/d3": "^7.4.3",
     "@types/node": "^25.0.1",
     "@types/pako": "^2.0.4",
@@ -157,11 +170,15 @@
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/eslint-plugin": "^8.49.0",
     "@typescript-eslint/parser": "^8.49.0",
+    "@vitejs/plugin-react": "^4.5.2",
+    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/ui": "^3.2.4",
     "conventional-changelog-conventionalcommits": "^9.1.0",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "globals": "^16.5.0",
+    "jsdom": "^26.1.0",
     "next": "^16.0.10",
     "next-intl": "^4.5.8",
     "prettier": "^3.7.4",
@@ -169,7 +186,8 @@
     "react-dom": "^19.2.3",
     "semantic-release": "^25.0.2",
     "tsup": "^8.5.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
   },
   "keywords": [
     "nextjs",

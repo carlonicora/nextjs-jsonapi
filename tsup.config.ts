@@ -9,6 +9,8 @@ const clientEntries = [
   "dist/components/index.js",
   "dist/contexts/index.mjs",
   "dist/contexts/index.js",
+  "dist/testing/index.mjs",
+  "dist/testing/index.js",
 ];
 
 export default defineConfig({
@@ -19,6 +21,7 @@ export default defineConfig({
     "client/index": "src/client/index.ts",
     "components/index": "src/components/index.ts",
     "contexts/index": "src/contexts/index.ts",
+    "testing/index": "src/testing/index.ts",
   },
   format: ["cjs", "esm"],
   // Enable splitting to keep dynamic imports as separate chunks
@@ -44,6 +47,12 @@ export default defineConfig({
     "next-intl/server",
     "react-hook-form",
     "next-themes",
+    // Test dependencies (for /testing export)
+    "vitest",
+    "@testing-library/react",
+    "@testing-library/dom",
+    "@testing-library/jest-dom",
+    "@testing-library/user-event",
   ],
   esbuildOptions(options) {
     options.keepNames = true;
