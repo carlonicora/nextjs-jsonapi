@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { isDiscordConfigured, isInternalAuthConfigured, isRegistrationAllowed } from "../../../../discord";
+import { isDiscordAuthEnabled, isInternalAuthEnabled, isRegistrationAllowed } from "../../../../login";
 import { Button, CardDescription, CardFooter, CardHeader, CardTitle, Link } from "../../../../shadcnui";
 import { getApiUrl } from "../../../../client/config";
 import { useAuthContext } from "../../contexts";
@@ -25,7 +25,7 @@ export function LandingComponent() {
         </CardDescription>
       </CardHeader>
       <CardFooter className="mt-4 flex w-full flex-col justify-between gap-y-4">
-        {isInternalAuthConfigured() && (
+        {isInternalAuthEnabled() && (
           <>
             {isRegistrationAllowed() && (
               <Link
@@ -45,7 +45,7 @@ export function LandingComponent() {
             </Link>
           </>
         )}
-        {isDiscordConfigured() && (
+        {isDiscordAuthEnabled() && (
           <Link href={`${getApiUrl()}auth/discord`} className="flex w-full justify-end">
             <Button className="w-full" variant={`outline`} data-testid="page-login-button-initial-login">
               Login with Discord

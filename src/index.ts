@@ -15,8 +15,11 @@ export { configureJsonApi, getApiUrl, getAppUrl, getTrackablePages, getStripePub
 export { configureI18n } from "./i18n";
 export type { I18nConfig } from "./i18n";
 
+// Login configuration (multi-provider auth)
+export { configureLogin } from "./login";
+export type { LoginConfig } from "./login";
+
 // Roles configuration
-export { configureDiscord } from "./discord";
 export { configureRoles, getRoleId, isRolesConfigured } from "./roles";
 export type { RoleIdConfig } from "./roles";
 
