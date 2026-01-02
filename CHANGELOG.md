@@ -1,3 +1,12 @@
+## [1.17.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.16.0...v1.17.0) (2026-01-02)
+
+### 🚀 Features
+
+* add allowRegistration ([619eb2e](https://github.com/carlonicora/nextjs-jsonapi/commit/619eb2e434fee5b4d404e152dad1153d4a9ea5e9))
+* add tests ([9d158f2](https://github.com/carlonicora/nextjs-jsonapi/commit/9d158f248939236d461e269f095d362dd06804e1))
+* refactor authentication handling by moving Discord and internal auth logic to login module ([12b79cb](https://github.com/carlonicora/nextjs-jsonapi/commit/12b79cb6e1acb5565b47b2eb8ad5b96913de370f))
+* refactor authentication handling by moving Discord and internal auth logic to login module ([d72b956](https://github.com/carlonicora/nextjs-jsonapi/commit/d72b9561c22142b70f36e1cc66895ceb5d19c213))
+
 ## [1.16.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.15.0...v1.16.0) (2026-01-02)
 
 ### 🚀 Features
