@@ -56,7 +56,7 @@ export function DateRangeSelector({ onDateChange, avoidSettingDates, showPreviou
   return (
     <div className={cn("grid gap-2")}>
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
+        <PopoverTrigger>
           <Button
             id="date"
             variant={"outline"}

@@ -41,7 +41,7 @@ function UserReactivatorInterface({ user, propagateChanges }: UserReactivatorPro
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <Button size="sm">
           <UserCheckIcon className="mr-3 h-3.5 w-3.5" />
           {t(`foundations.user.buttons.reactivate`)}

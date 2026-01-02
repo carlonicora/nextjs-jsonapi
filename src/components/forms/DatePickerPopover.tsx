@@ -126,7 +126,7 @@ export const DatePickerPopover = ({
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild>{children}</PopoverTrigger>
+      <PopoverTrigger>{children}</PopoverTrigger>
       <PopoverContent className={cn("w-auto p-0", className)} align={align} onClick={(e) => e.stopPropagation()}>
         <div className="p-3">
           {/* Manual Input */}
@@ -163,6 +163,7 @@ export const DatePickerPopover = ({
             <Select
               value={displayMonth.getMonth().toString()}
               onValueChange={(value) => {
+                if (!value) return;
                 const newMonth = parseInt(value);
                 const newDate = new Date(displayMonth.getFullYear(), newMonth, 1);
                 setDisplayMonth(newDate);
@@ -183,6 +184,7 @@ export const DatePickerPopover = ({
             <Select
               value={displayMonth.getFullYear().toString()}
               onValueChange={(value) => {
+                if (!value) return;
                 const newYear = parseInt(value);
                 const newDate = new Date(newYear, displayMonth.getMonth(), 1);
                 setDisplayMonth(newDate);

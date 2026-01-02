@@ -24,8 +24,8 @@ import {
   TabsTrigger,
 } from "../../../../shadcnui";
 import { UserInterface } from "../../../user";
-import { UserService } from "../../../user/data/user.service";
 import { useCurrentUserContext } from "../../../user/contexts";
+import { UserService } from "../../../user/data/user.service";
 import { CompanyInput, CompanyInterface } from "../../data";
 import { CompanyService } from "../../data/company.service";
 import { CompanyConfigurationSecurityForm } from "./CompanyConfigurationSecurityForm";
@@ -103,7 +103,7 @@ function CompanyConfigurationEditorInternal({ company }: CompanyConfigurationEdi
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <Button size="sm" variant={`ghost`} className="cursor-pointer">
           <Settings2Icon className="h-3.5 w-3.5" />
         </Button>

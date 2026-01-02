@@ -59,10 +59,7 @@ export function createMockService(options: CreateMockServiceOptions = {}): MockS
  * const errorService = createMockErrorService(500, 'Internal Server Error');
  * ```
  */
-export function createMockErrorService(
-  statusCode: number = 500,
-  errorMessage: string = "Error"
-): MockService {
+export function createMockErrorService(statusCode: number = 500, errorMessage: string = "Error"): MockService {
   const errorResponse = createMockResponse({
     ok: false,
     response: statusCode,

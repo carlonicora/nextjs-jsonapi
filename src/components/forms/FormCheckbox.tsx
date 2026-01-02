@@ -35,7 +35,7 @@ export function FormCheckbox({ form, id, name, labelBefore, description, isRequi
     else
       return (
         <Tooltip>
-          <TooltipTrigger asChild>{simpleLabel()}</TooltipTrigger>
+          <TooltipTrigger>{simpleLabel()}</TooltipTrigger>
           <TooltipContent>{description}</TooltipContent>
         </Tooltip>
       );

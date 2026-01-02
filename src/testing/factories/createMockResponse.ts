@@ -58,13 +58,11 @@ export function createMockResponse(options: CreateMockResponseOptions = {}): Api
 
   // Add pagination methods if next/prev provided
   if (next) {
-    mockResponse.nextPage = async () =>
-      createMockResponse({ ...options, next: undefined, prev: self });
+    mockResponse.nextPage = async () => createMockResponse({ ...options, next: undefined, prev: self });
   }
 
   if (prev) {
-    mockResponse.prevPage = async () =>
-      createMockResponse({ ...options, prev: undefined, next: self });
+    mockResponse.prevPage = async () => createMockResponse({ ...options, prev: undefined, next: self });
   }
 
   return mockResponse;
@@ -80,10 +78,7 @@ export function createMockResponse(options: CreateMockResponseOptions = {}): Api
  * const errorResponse = createMockErrorResponse(404, 'Not Found');
  * ```
  */
-export function createMockErrorResponse(
-  statusCode: number,
-  errorMessage: string
-): ApiResponseInterface {
+export function createMockErrorResponse(statusCode: number, errorMessage: string): ApiResponseInterface {
   return createMockResponse({
     ok: false,
     response: statusCode,

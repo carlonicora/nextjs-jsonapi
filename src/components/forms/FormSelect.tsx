@@ -52,7 +52,7 @@ export function FormSelect({
             >
               <FormControl className="w-full">
                 <SelectTrigger>
-                  <SelectValue placeholder={placeholder} />
+                  <SelectValue />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>

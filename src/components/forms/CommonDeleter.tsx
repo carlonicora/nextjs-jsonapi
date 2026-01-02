@@ -43,8 +43,8 @@ export function CommonDeleter({ deleteFunction, redirectTo, type, forceShow }: C
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       {forceShow ? null : (
-        <AlertDialogTrigger asChild>
-          <Button size="sm" variant={"ghost"} className="text-muted-foreground hover:text-destructive">
+        <AlertDialogTrigger>
+          <Button render={<div />} nativeButton={false} size="sm" variant={"ghost"} className="text-muted-foreground hover:text-destructive">
             <Trash2Icon />
           </Button>
         </AlertDialogTrigger>

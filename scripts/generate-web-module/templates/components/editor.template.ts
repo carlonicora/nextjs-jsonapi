@@ -108,10 +108,9 @@ ${onSubmit}
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {dialogOpen === undefined && (trigger ? trigger : <CommonEditorTrigger isEdit={!!${names.camelCase}} />)}
+      {dialogOpen === undefined && (trigger ? <DialogTrigger>{trigger}</DialogTrigger> : <CommonEditorTrigger isEdit={!!${names.camelCase}} />)}
       <DialogContent
-        className={\`flex max-h-[90vh] max-w-[90vw] flex-col overflow-y-auto\`}
-        onEscapeKeyDown={(e) => e.preventDefault()}
+        className="flex max-h-[70vh] max-w-3xl flex-col overflow-y-auto"
       >
         <CommonEditorHeader type={t(\`types.${names.pluralKebab}\`, { count: 1 })} name={${names.camelCase}?.name} />
         <Form {...form}>
@@ -200,7 +199,13 @@ function generateImports(data: FrontendTemplateData): string {
     componentImports.push("FormCheckbox");
   }
   if (hasRelDateFields) {
-    componentImports.push("FormDatePicker");
+    componentImports.push("FormDate");
+  }
+
+  // Check for description/textarea fields
+  const hasTextareaFields = fields.some((f) => f.name === "description" || f.type === "textarea");
+  if (hasTextareaFields) {
+    componentImports.push("FormTextarea");
   }
 
   imports.push(`import {
@@ -216,7 +221,7 @@ function generateImports(data: FrontendTemplateData): string {
   imports.push(`import { Modules } from "@carlonicora/nextjs-jsonapi/core";`);
   imports.push(`import { usePageUrlGenerator } from "@carlonicora/nextjs-jsonapi/client";`);
   imports.push(`import { Action } from "@carlonicora/nextjs-jsonapi/core";`);
-  imports.push(`import { Dialog, DialogContent, Form } from "@carlonicora/nextjs-jsonapi/components";`);
+  imports.push(`import { Dialog, DialogContent, DialogTrigger, Form } from "@carlonicora/nextjs-jsonapi/components";`);
 
   // Zod schema imports
   const zodSchemaImports = ["entityObjectSchema"];
@@ -529,6 +534,15 @@ function generateFormFields(data: FrontendTemplateData): string {
                   bordered
                 />
               </FormContainerGeneric>`);
+    } else if (field.name === "description" || field.type === "textarea") {
+      // Use FormTextarea for description and textarea fields
+      formElements.push(`              <FormTextarea
+                className="h-20 min-h-20"
+                form={form}
+                id="${field.name}"
+                name={t(\`features.${names.camelCase.toLowerCase()}.fields.${field.name}.label\`)}
+                placeholder={t(\`features.${names.camelCase.toLowerCase()}.fields.${field.name}.placeholder\`)}
+              />`);
     } else {
       const isRequired = !field.nullable;
       formElements.push(`              <FormInput
@@ -580,7 +594,7 @@ function generateFormFields(data: FrontendTemplateData): string {
               break;
             case "date":
             case "datetime":
-              formElements.push(`              <FormDatePicker
+              formElements.push(`              <FormDate
                 form={form}
                 id="${field.name}"
                 name={t(\`features.${names.camelCase.toLowerCase()}.relationships.${fieldIdLower}.fields.${field.name}.label\`)}${isRequired ? "\n                isRequired" : ""}

@@ -11,13 +11,13 @@ export function CommonEditorTrigger({ isEdit, edit, create }: CommonEditorTrigge
   const t = useTranslations();
 
   return (
-    <DialogTrigger asChild>
+    <DialogTrigger>
       {isEdit ? (
-        <Button size="sm" variant={`ghost`} className="text-muted-foreground">
+        <Button render={<div />} nativeButton={false} size="sm" variant={`ghost`} className="text-muted-foreground">
           <PencilIcon />
         </Button>
       ) : (
-        <Button size="sm" variant={`outline`}>
+        <Button render={<div />} nativeButton={false} size="sm" variant={`outline`}>
           {create ? create : t(`generic.buttons.create`)}
         </Button>
       )}

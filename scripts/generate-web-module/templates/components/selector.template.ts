@@ -18,7 +18,11 @@ export function generateSelectorTemplate(data: FrontendTemplateData): string {
   return `"use client";
 
 import {
+  Button,
   Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
   CommandItem,
   CommandList,
   FormControl,
@@ -26,7 +30,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Input,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -37,7 +40,7 @@ import { DataListRetriever, useDataListRetriever } from "@carlonicora/nextjs-jso
 import { useDebounce } from "@carlonicora/nextjs-jsonapi/client";
 import { Modules } from "@carlonicora/nextjs-jsonapi/core";
 
-import { CircleX, RefreshCwIcon, SearchIcon, XIcon } from "lucide-react";
+import { ChevronsUpDown, Loader2, XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -129,60 +132,54 @@ export default function ${names.pascalCase}Selector({
               <Popover open={open} onOpenChange={setOpen} modal={true}>
                 <div className="flex w-full flex-row items-center justify-between">
                   <PopoverTrigger className="w-full">
-                    <div className="flex w-full flex-row items-center justify-start rounded-md text-sm">
-                      {field.value ? (
-                        <>
-                          <div className="flex w-full flex-row items-center justify-start rounded-md border p-2">
-                            <span className="">{field.value?.name ?? ""}</span>
-                          </div>
-                        </>
-                      ) : (
-                        <div className="text-muted-foreground mr-7 flex h-10 w-full flex-row items-center justify-start rounded-md border p-2 text-sm">
-                          {placeholder ?? t(\`generic.search.placeholder\`, { type: t(\`types.${names.pluralKebab}\`, { count: 1 }) })}
-                        </div>
-                      )}
-                    </div>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={open}
+                      className="h-auto min-h-10 w-full justify-between px-3 py-2"
+                    >
+                      <span className={field.value ? "" : "text-muted-foreground"}>
+                        {field.value?.name ?? placeholder ?? t(\`generic.search.placeholder\`, { type: t(\`types.${names.pluralKebab}\`, { count: 1 }) })}
+                      </span>
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
                   </PopoverTrigger>
                   {field.value && (
-                    <CircleX
-                      className="text-muted hover:text-destructive ml-2 h-6 w-6 cursor-pointer"
+                    <XIcon
+                      className="text-muted-foreground hover:text-destructive ml-2 h-5 w-5 cursor-pointer"
                       onClick={() => set${names.pascalCase}()}
                     />
                   )}
                 </div>
-                <PopoverContent>
+                <PopoverContent className="w-(--radix-popover-trigger-width) p-0" align="start">
                   <Command shouldFilter={false}>
-                    <div className="relative mb-2 w-full">
-                      <SearchIcon className="text-muted-foreground absolute left-2.5 top-2.5 h-4 w-4" />
-                      <Input
-                        placeholder={t(\`generic.search.placeholder\`, { type: t(\`types.${names.pluralKebab}\`, { count: 1 }) })}
-                        type="text"
-                        className="w-full pl-8 pr-8"
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        value={searchTerm}
-                      />
-                      {isSearching ? (
-                        <RefreshCwIcon className="text-muted-foreground absolute right-2.5 top-2.5 h-4 w-4 animate-spin" />
-                      ) : searchTermRef.current ? (
-                        <XIcon
-                          className={\`absolute right-2.5 top-2.5 h-4 w-4 \${searchTermRef.current ? "cursor-pointer" : "text-muted-foreground"}\`}
-                          onClick={() => {
-                            setSearchTerm("");
-                            search("");
-                          }}
-                        />
-                      ) : (
-                        <></>
-                      )}
-                    </div>
+                    <CommandInput
+                      placeholder={t(\`generic.search.placeholder\`, { type: t(\`types.${names.pluralKebab}\`, { count: 1 }) })}
+                      value={searchTerm}
+                      onValueChange={setSearchTerm}
+                    />
                     <CommandList>
-                      {data.data &&
-                        data.data.length > 0 &&
-                        (data.data as ${names.pascalCase}Interface[]).map((${names.camelCase}: ${names.pascalCase}Interface) => (
-                          <CommandItem className="cursor-pointer" key={${names.camelCase}.id} onSelect={() => set${names.pascalCase}(${names.camelCase})}>
-                            <span className="">{${names.camelCase}.name}</span>
-                          </CommandItem>
-                        ))}
+                      {isSearching && (
+                        <div className="flex items-center justify-center py-6">
+                          <Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />
+                        </div>
+                      )}
+                      {!isSearching && data.data && data.data.length === 0 && (
+                        <CommandEmpty>{t(\`generic.search.no_results\`)}</CommandEmpty>
+                      )}
+                      {!isSearching && data.data && data.data.length > 0 && (
+                        <CommandGroup>
+                          {(data.data as ${names.pascalCase}Interface[]).map((${names.camelCase}: ${names.pascalCase}Interface) => (
+                            <CommandItem
+                              key={${names.camelCase}.id}
+                              value={${names.camelCase}.id}
+                              onSelect={() => set${names.pascalCase}(${names.camelCase})}
+                            >
+                              {${names.camelCase}.name}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      )}
                     </CommandList>
                   </Command>
                 </PopoverContent>

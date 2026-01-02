@@ -19,9 +19,10 @@ type UserAvatarProps = {
   className?: string;
   showFull?: boolean;
   showLink?: boolean;
+  showTooltip?: boolean;
 };
 
-export function UserAvatar({ user, className, showFull, showLink }: UserAvatarProps) {
+export function UserAvatar({ user, className, showFull, showLink, showTooltip = true }: UserAvatarProps) {
   const generateUrl = usePageUrlGenerator();
 
   const getInitial = (param?: string) => {
@@ -48,38 +49,43 @@ export function UserAvatar({ user, className, showFull, showLink }: UserAvatarPr
     );
   };
 
+  const content =
+    showLink === false ? (
+      // If showLink is explicitly false, never show a link
+      showFull ? (
+        <div className={cn(`mb-2 flex w-full flex-row items-center justify-start gap-x-2 text-sm`, className)}>
+          {getAvatar()}
+          {user.name}
+        </div>
+      ) : (
+        getAvatar()
+      )
+    ) : showFull ? (
+      <Link
+        href={generateUrl({ page: Modules.User, id: user.id })}
+        className={cn(`mb-2 flex w-full flex-row items-center justify-start gap-x-2 text-sm`, className)}
+        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => e.stopPropagation()}
+      >
+        <div className="flex w-full flex-row items-center gap-x-2">
+          {getAvatar()}
+          {user.name}
+        </div>
+      </Link>
+    ) : showLink ? (
+      <Link href={generateUrl({ page: Modules.User, id: user.id })} className={className}>
+        {getAvatar()}
+      </Link>
+    ) : (
+      getAvatar()
+    );
+
+  if (!showTooltip) {
+    return content;
+  }
+
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
-        {showLink === false ? (
-          // If showLink is explicitly false, never show a link
-          showFull ? (
-            <div className={cn(`mb-2 flex w-full flex-row items-center justify-start gap-x-2 text-sm`, className)}>
-              {getAvatar()}
-              {user.name}
-            </div>
-          ) : (
-            getAvatar()
-          )
-        ) : showFull ? (
-          <Link
-            href={generateUrl({ page: Modules.User, id: user.id })}
-            className={cn(`mb-2 flex w-full flex-row items-center justify-start gap-x-2 text-sm`, className)}
-            onClick={(e: React.MouseEvent<HTMLAnchorElement>) => e.stopPropagation()}
-          >
-            <div className="flex w-full flex-row items-center gap-x-2">
-              {getAvatar()}
-              {user.name}
-            </div>
-          </Link>
-        ) : showLink ? (
-          <Link href={generateUrl({ page: Modules.User, id: user.id })} className={className}>
-            {getAvatar()}
-          </Link>
-        ) : (
-          getAvatar()
-        )}
-      </TooltipTrigger>
+      <TooltipTrigger>{content}</TooltipTrigger>
       <TooltipContent>{user.name}</TooltipContent>
     </Tooltip>
   );

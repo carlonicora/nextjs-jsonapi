@@ -33,7 +33,10 @@ export function FormSlider({
                   <div className="text-muted-foreground mb-2 flex w-full justify-center text-xs">{`${value}%`}</div>
                 )}
                 <Slider
-                  onValueChange={(value: number[]) => form.setValue(id, value[0])}
+                  onValueChange={(val) => {
+                    const newValue = Array.isArray(val) ? val[0] : val;
+                    form.setValue(id, newValue);
+                  }}
                   value={[value]}
                   max={100}
                   step={5}

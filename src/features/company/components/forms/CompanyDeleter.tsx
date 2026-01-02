@@ -48,7 +48,7 @@ function CompanyDeleterInternal({ company }: CompanyDeleterProps) {
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger asChild>
+      <AlertDialogTrigger>
         <Button size="sm" variant={"destructive"}>
           <Trash2Icon className="mr-3 h-3.5 w-3.5" />
           {t(`generic.buttons.delete`)}

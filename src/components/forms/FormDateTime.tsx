@@ -106,7 +106,7 @@ export function FormDateTime({
               <div className="relative flex flex-row">
                 <Popover open={open} onOpenChange={setOpen} modal={true}>
                   <div className="flex w-full flex-row items-center justify-between">
-                    <PopoverTrigger asChild>
+                    <PopoverTrigger>
                       <FormControl>
                         <Button
                           variant={"outline"}
@@ -159,6 +159,7 @@ export function FormDateTime({
                           <Select
                             value={String(field.value ? new Date(field.value).getHours() : selectedHours)}
                             onValueChange={(value) => {
+                              if (!value) return;
                               const hours = parseInt(value);
                               setSelectedHours(hours);
                               handleTimeChange(
@@ -170,7 +171,7 @@ export function FormDateTime({
                             }}
                           >
                             <SelectTrigger id="hours-select" className="w-[70px]">
-                              <SelectValue placeholder="Hour" />
+                              <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
                               {hoursOptions.map((option) => (
@@ -191,13 +192,14 @@ export function FormDateTime({
                                 : selectedMinutes,
                             )}
                             onValueChange={(value) => {
+                              if (!value) return;
                               const minutes = parseInt(value);
                               setSelectedMinutes(minutes);
                               handleTimeChange(field.value ? new Date(field.value).getHours() : selectedHours, minutes);
                             }}
                           >
                             <SelectTrigger id="minutes-select" className="w-[70px]">
-                              <SelectValue placeholder="Min" />
+                              <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
                               {minutesOptions.map((option) => (

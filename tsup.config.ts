@@ -1,4 +1,5 @@
 import { readFile, writeFile } from "fs/promises";
+import path from "path";
 import { defineConfig } from "tsup";
 
 // Client entry points that need "use client" directive
@@ -57,6 +58,12 @@ export default defineConfig({
   esbuildOptions(options) {
     options.keepNames = true;
     options.jsx = "automatic";
+    // Add alias resolution for @/ path imports
+    options.alias = {
+      "@/lib/utils": path.resolve(__dirname, "src/lib/utils"),
+      "@/hooks/use-mobile": path.resolve(__dirname, "src/hooks/use-mobile"),
+      "@/components/ui": path.resolve(__dirname, "src/shadcnui/ui"),
+    };
   },
   // Add "use client" to client entry files
   onSuccess: async () => {

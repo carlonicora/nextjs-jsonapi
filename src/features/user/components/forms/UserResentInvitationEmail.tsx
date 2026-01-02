@@ -47,8 +47,8 @@ function UserResentInvitationEmailInternal({ user }: UserResentInvitationEmailPr
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <Tooltip>
-        <TooltipTrigger asChild>
-          <DialogTrigger asChild>
+        <TooltipTrigger>
+          <DialogTrigger>
             <Button size="sm" variant={`ghost`} className="text-muted-foreground">
               <MailIcon />
             </Button>

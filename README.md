@@ -830,7 +830,7 @@ export function ArticleCard({ article, className }) {
         <p>{article.excerpt}</p>
 
         <Dialog>
-          <DialogTrigger asChild>
+          <DialogTrigger>
             <Button variant="outline">Read More</Button>
           </DialogTrigger>
           <DialogContent>

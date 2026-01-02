@@ -1,5 +1,12 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/hooks/*": ["./src/hooks/*"],
+      "@/components/ui/*": ["./src/shadcnui/ui/*"]
+    },
     "target": "ES2022",
     "lib": ["ES2022", "dom", "dom.iterable"],
     "jsx": "react-jsx",

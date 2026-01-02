@@ -151,7 +151,7 @@ export function FormDate({
                       className="pr-16"
                     />
                     <div className="absolute right-1 top-1/2 flex -translate-y-1/2 items-center space-x-1">
-                      <PopoverTrigger asChild>
+                      <PopoverTrigger>
                         <button
                           type="button"
                           className="hover:bg-muted flex h-8 w-8 items-center justify-center rounded-md"
@@ -181,6 +181,7 @@ export function FormDate({
                         <Select
                           value={displayMonth.getMonth().toString()}
                           onValueChange={(value) => {
+                            if (!value) return;
                             const newMonth = parseInt(value);
                             const newDate = new Date(displayMonth.getFullYear(), newMonth, 1);
                             setDisplayMonth(newDate);
@@ -201,6 +202,7 @@ export function FormDate({
                         <Select
                           value={displayMonth.getFullYear().toString()}
                           onValueChange={(value) => {
+                            if (!value) return;
                             const newYear = parseInt(value);
                             const newDate = new Date(newYear, displayMonth.getMonth(), 1);
                             setDisplayMonth(newDate);

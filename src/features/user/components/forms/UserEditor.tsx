@@ -25,8 +25,8 @@ import { getRoleId } from "../../../../roles";
 import { Dialog, DialogContent, DialogTrigger, Form } from "../../../../shadcnui";
 import { CompanyInterface } from "../../../company";
 import { RoleInterface } from "../../../role";
-import { S3Interface } from "../../../s3";
 import { RoleService } from "../../../role/data/role.service";
+import { S3Interface } from "../../../s3";
 import { S3Service } from "../../../s3/data/s3.service";
 import { useCurrentUserContext } from "../../contexts";
 import { UserInput, UserInterface } from "../../data";
@@ -212,7 +212,7 @@ function UserEditorInternal({ user, propagateChanges, adminCreated, trigger, onR
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {trigger ? <DialogTrigger asChild>{trigger}</DialogTrigger> : <CommonEditorTrigger isEdit={!!user} />}
+      {trigger ? <DialogTrigger>{trigger}</DialogTrigger> : <CommonEditorTrigger isEdit={!!user} />}
       <DialogContent
         className={`flex max-h-[70vh] ${canChangeRoles ? `max-w-[90vw]` : `max-w-3xl`} min-h-3xl max-h-[90vh] flex-col overflow-y-auto`}
       >

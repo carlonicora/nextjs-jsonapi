@@ -100,7 +100,7 @@ export function NotificationsList({ archived }: NotificationsListProps) {
                     )}
                     {!archived && (
                       <Tooltip>
-                        <TooltipTrigger asChild>
+                        <TooltipTrigger>
                           <Button
                             variant={`link`}
                             onClick={(e) => {

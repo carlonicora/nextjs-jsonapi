@@ -131,13 +131,13 @@ export function createMockApiData(options: CreateMockApiDataOptions): ApiDataInt
 export function createMockApiDataList(
   type: string,
   count: number,
-  attributesFactory?: (index: number) => Record<string, any>
+  attributesFactory?: (index: number) => Record<string, any>,
 ): ApiDataInterface[] {
   return Array.from({ length: count }, (_, index) =>
     createMockApiData({
       type,
       id: `${index + 1}`,
       attributes: attributesFactory?.(index) ?? {},
-    })
+    }),
   );
 }

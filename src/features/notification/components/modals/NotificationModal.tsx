@@ -191,8 +191,8 @@ function NotificationModalContent({ isOpen, setIsOpen }: NotificationModalProps)
 
   return (
     <Popover open={isOpen} onOpenChange={handleOpenChange} data-testid={`sidebar-notification button`}>
-      <PopoverTrigger asChild>
-        <SidebarMenuButton className="text-muted-foreground h-6" disabled={isLoading}>
+      <PopoverTrigger>
+        <SidebarMenuButton render={<div />} className="text-muted-foreground h-6" disabled={isLoading}>
           <BellIcon
             className={`h-5 w-5 cursor-pointer ${unreadNotifications ? "text-destructive" : ""} ${isLoading ? "animate-pulse" : ""}`}
           />

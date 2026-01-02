@@ -19,17 +19,10 @@
  */
 
 // Providers
-export {
-  MockJsonApiProvider,
-  defaultMockConfig,
-  type MockJsonApiProviderProps,
-} from "./providers/MockJsonApiProvider";
+export { MockJsonApiProvider, defaultMockConfig, type MockJsonApiProviderProps } from "./providers/MockJsonApiProvider";
 
 // Factories
-export {
-  createMockModule,
-  type CreateMockModuleOptions,
-} from "./factories/createMockModule";
+export { createMockModule, type CreateMockModuleOptions } from "./factories/createMockModule";
 
 export {
   createMockResponse,
@@ -45,17 +38,10 @@ export {
   type CreateMockServiceOptions,
 } from "./factories/createMockService";
 
-export {
-  createMockApiData,
-  createMockApiDataList,
-  type CreateMockApiDataOptions,
-} from "./factories/createMockApiData";
+export { createMockApiData, createMockApiDataList, type CreateMockApiDataOptions } from "./factories/createMockApiData";
 
 // Matchers
-export {
-  jsonApiMatchers,
-  extendExpectWithJsonApiMatchers,
-} from "./matchers/jsonApiMatchers";
+export { jsonApiMatchers, extendExpectWithJsonApiMatchers } from "./matchers/jsonApiMatchers";
 
 // Utilities
 export {

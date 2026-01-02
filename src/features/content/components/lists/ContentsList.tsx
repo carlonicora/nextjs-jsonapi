@@ -41,7 +41,7 @@ function ContentsListElement({ content }: ContentsListElementProps) {
     <div className="hover:bg-muted flex w-full flex-col gap-y-2 border-b p-2 py-4">
       <div className="flex w-full justify-between gap-x-2">
         <HoverCard>
-          <HoverCardTrigger asChild>
+          <HoverCardTrigger>
             <Link href={link} className="flex w-full items-center justify-start gap-2 font-semibold">
               {contentModule && getIconByModule({ module: contentModule, className: "h-4 w-4" })}
               {content.name}

@@ -1,17 +1,19 @@
 import { expect } from "vitest";
 
 interface JsonApiResponse {
-  data?: {
-    type?: string;
-    id?: string;
-    attributes?: Record<string, any>;
-    relationships?: Record<string, any>;
-  } | Array<{
-    type?: string;
-    id?: string;
-    attributes?: Record<string, any>;
-    relationships?: Record<string, any>;
-  }>;
+  data?:
+    | {
+        type?: string;
+        id?: string;
+        attributes?: Record<string, any>;
+        relationships?: Record<string, any>;
+      }
+    | Array<{
+        type?: string;
+        id?: string;
+        attributes?: Record<string, any>;
+        relationships?: Record<string, any>;
+      }>;
 }
 
 /**
@@ -70,11 +72,7 @@ export const jsonApiMatchers = {
   /**
    * Asserts that the response data has an attribute with the expected value.
    */
-  toHaveJsonApiAttribute(
-    received: JsonApiResponse,
-    attributeName: string,
-    expectedValue?: any
-  ) {
+  toHaveJsonApiAttribute(received: JsonApiResponse, attributeName: string, expectedValue?: any) {
     const data = Array.isArray(received?.data) ? received.data[0] : received?.data;
     const attributes = data?.attributes ?? {};
     const hasAttribute = attributeName in attributes;

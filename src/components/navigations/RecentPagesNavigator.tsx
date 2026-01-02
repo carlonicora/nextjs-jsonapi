@@ -26,7 +26,7 @@ export function RecentPagesNavigator() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger>
         <div className="flex w-full cursor-pointer items-center gap-2">
           {state === "collapsed" ? <HistoryIcon className="h-4 w-4" /> : <span>{t(`generic.recent_pages`)}</span>}
         </div>
@@ -35,7 +35,7 @@ export function RecentPagesNavigator() {
         <DropdownMenuLabel>{t(`generic.recent_pages`)}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {recentPages.map((page, index) => (
-          <DropdownMenuItem key={`${page.url}-${index}`} asChild>
+          <DropdownMenuItem key={`${page.url}-${index}`}>
             <Link href={page.url} className="flex items-center gap-2">
               <div className="flex flex-col">
                 <div className="truncate text-sm">{page.title}</div>

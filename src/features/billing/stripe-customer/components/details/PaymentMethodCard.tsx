@@ -100,8 +100,8 @@ export function PaymentMethodCard({ paymentMethod, onUpdate }: PaymentMethodCard
             <span className="text-sm font-medium capitalize">{brand}</span>
           </div>
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" disabled={loading} className="h-8 w-8 p-0">
+            <DropdownMenuTrigger>
+              <Button render={<div />} nativeButton={false} variant="ghost" size="sm" disabled={loading} className="h-8 w-8 p-0">
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>

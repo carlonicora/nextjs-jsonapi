@@ -41,7 +41,7 @@ export const UserSearchPopover = ({ children, onSelect, align = "start", classNa
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild>{children}</PopoverTrigger>
+      <PopoverTrigger>{children}</PopoverTrigger>
       <PopoverContent align={align} onClick={(e) => e.stopPropagation()} className={className ?? "w-80"}>
         <Command shouldFilter={false}>
           <div className="relative mb-2 w-full">

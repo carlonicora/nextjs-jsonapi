@@ -5,7 +5,6 @@ import { CheckIcon, ChevronDown, WandSparkles, XCircle, XIcon } from "lucide-rea
 import * as React from "react";
 
 import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
 import {
   Command,
   CommandEmpty,
@@ -100,12 +99,6 @@ interface MultiSelectProps
   modalPopover?: boolean;
 
   /**
-   * If true, renders the multi-select component as a child of another component.
-   * Optional, defaults to false.
-   */
-  asChild?: boolean;
-
-  /**
    * Additional class names to apply custom styles to the multi-select component.
    * Optional, can be used to add custom styles.
    */
@@ -130,12 +123,11 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
       animation = 0,
       maxCount = 3,
       modalPopover = false,
-      asChild = false,
       className,
       onSearchChange,
       ...props
     },
-    ref,
+    _ref,
   ) => {
     // Using internal state only if value prop is not provided (uncontrolled mode)
     const [internalSelectedValues, setInternalSelectedValues] = React.useState<string[]>(defaultValue);
@@ -223,16 +215,14 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
 
     return (
       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen} modal={modalPopover}>
-        <PopoverTrigger asChild>
-          <Button
-            ref={ref}
-            {...props}
-            onClick={handleTogglePopover}
-            className={cn(
-              "flex h-auto min-h-10 w-full items-center justify-between rounded-md border bg-inherit p-1 hover:bg-inherit [&_svg]:pointer-events-auto",
-              className,
-            )}
-          >
+        <PopoverTrigger
+          {...props}
+          onClick={handleTogglePopover}
+          className={cn(
+            "flex h-auto min-h-10 w-full items-center justify-between rounded-md border bg-inherit p-1 hover:bg-inherit [&_svg]:pointer-events-auto",
+            className,
+          )}
+        >
             {selectedValues.length > 0 ? (
               <div className="flex w-full items-center justify-between">
                 <div className="flex flex-wrap items-center">
@@ -295,9 +285,8 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
                 <ChevronDown className="text-muted-foreground mx-2 h-4 cursor-pointer" />
               </div>
             )}
-          </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start" onEscapeKeyDown={() => setIsPopoverOpen(false)}>
+        <PopoverContent className="w-auto p-0" align="start">
           <Command>
             <CommandInput
               autoFocus

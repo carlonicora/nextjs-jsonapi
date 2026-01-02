@@ -3,7 +3,7 @@ import "../../client";
 
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
-import { CaretLeftIcon, CaretRightIcon } from "@radix-ui/react-icons";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ReactNode, memo, useMemo } from "react";
 import { DataListRetriever, useTableGenerator } from "../../hooks";
 import { ModuleWithPermissions } from "../../permissions";
@@ -136,7 +136,7 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                       }}
                       disabled={!data.previous}
                     >
-                      <CaretLeftIcon className="h-4 w-4" />
+                      <ChevronLeft className="h-4 w-4" />
                     </Button>
                     {data.pageInfo && (
                       <span className="text-muted-foreground text-xs">
@@ -152,7 +152,7 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                       }}
                       disabled={!data.next}
                     >
-                      <CaretRightIcon className="h-4 w-4" />
+                      <ChevronRight className="h-4 w-4" />
                     </Button>
                   </div>
                 </TableCell>
