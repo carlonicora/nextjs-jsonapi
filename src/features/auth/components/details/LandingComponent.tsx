@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { isDiscordConfigured, isInternalAuthConfigured } from "../../../../discord";
+import { isDiscordConfigured, isInternalAuthConfigured, isRegistrationAllowed } from "../../../../discord";
 import { Button, CardDescription, CardFooter, CardHeader, CardTitle, Link } from "../../../../shadcnui";
 import { getApiUrl } from "../../../../client/config";
 import { useAuthContext } from "../../contexts";
@@ -27,15 +27,17 @@ export function LandingComponent() {
       <CardFooter className="mt-4 flex w-full flex-col justify-between gap-y-4">
         {isInternalAuthConfigured() && (
           <>
-            <Link
-              href="#"
-              className="flex w-full justify-start"
-              onClick={() => setComponentType(AuthComponent.Register)}
-            >
-              <Button className="w-full" variant={`default`}>
-                {t(`foundations.auth.buttons.register`)}
-              </Button>
-            </Link>
+            {isRegistrationAllowed() && (
+              <Link
+                href="#"
+                className="flex w-full justify-start"
+                onClick={() => setComponentType(AuthComponent.Register)}
+              >
+                <Button className="w-full" variant={`default`}>
+                  {t(`foundations.auth.buttons.register`)}
+                </Button>
+              </Link>
+            )}
             <Link href="#" className="flex w-full justify-end" onClick={() => setComponentType(AuthComponent.Login)}>
               <Button className="w-full" variant={`outline`} data-testid="page-login-button-initial-login">
                 {t(`foundations.auth.buttons.login`)}

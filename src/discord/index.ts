@@ -1,1 +1,1 @@
-export { configureDiscord, isDiscordConfigured, isInternalAuthConfigured } from "./config";
+export { configureDiscord, isDiscordConfigured, isInternalAuthConfigured, isRegistrationAllowed } from "./config";
