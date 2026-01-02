@@ -1,3 +1,10 @@
+## [1.18.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.17.0...v1.18.0) (2026-01-02)
+
+### 🚀 Features
+
+* centralised tests with vite ([fdd7a7c](https://github.com/carlonicora/nextjs-jsonapi/commit/fdd7a7c4912f43b8e2c6b62e6e11c1067ec267f0))
+* update to new shadcn and base-ui ([b6a0867](https://github.com/carlonicora/nextjs-jsonapi/commit/b6a08677160825db424c64d59ed9f2b83d9bb88d))
+
 ## [1.17.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.16.0...v1.17.0) (2026-01-02)
 
 ### 🚀 Features
