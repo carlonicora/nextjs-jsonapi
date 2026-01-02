@@ -1,3 +1,39 @@
+## [1.16.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.15.0...v1.16.0) (2026-01-02)
+
+### 🚀 Features
+
+* add description and features fields to stripe prices ([24f3eb6](https://github.com/carlonicora/nextjs-jsonapi/commit/24f3eb646e1c342b13c5198649b761a7f095b71f))
+* add single billing entry point ([b456cd9](https://github.com/carlonicora/nextjs-jsonapi/commit/b456cd99623da87a7ff6ea168bc17015a5d19627))
+* add stripe price archival and restore ([583ee56](https://github.com/carlonicora/nextjs-jsonapi/commit/583ee5600b8cdbbbca721c4c146d523c195113dc))
+* add StripePaymentMethod module and related classes for payment processing ([0ffc460](https://github.com/carlonicora/nextjs-jsonapi/commit/0ffc46061c10f3c578826d01e63afaa4dd653ab8))
+* add StripePaymentMethod module to bootstrapper template ([0326f64](https://github.com/carlonicora/nextjs-jsonapi/commit/0326f645435d0fe68a751ff4c93787d8f43eb5fe))
+* add StripeProvider and integrate Stripe publishable key configuration ([1b3fa29](https://github.com/carlonicora/nextjs-jsonapi/commit/1b3fa29cc504813750cf6bbb96fad06e899442bb))
+* add type annotations for onClick event in ContributorsList and UserAvatar components ([29f392d](https://github.com/carlonicora/nextjs-jsonapi/commit/29f392d0a4fe189764015250507d3bbc39bcb015))
+* allow endpoint to accept string type in EndpointQuery ([66013d8](https://github.com/carlonicora/nextjs-jsonapi/commit/66013d81314ee03e138a98b181f4f84a466cdb2e))
+* **billing:** add billing components, services, and interfaces ([5efb3e7](https://github.com/carlonicora/nextjs-jsonapi/commit/5efb3e708a7090113b3f533dc394e8d621062f76))
+* enhance subscription and payment components with improved formatting and sync functionality ([8fc027b](https://github.com/carlonicora/nextjs-jsonapi/commit/8fc027bf20d11c9abb5fff762de185c217bac646))
+* enhance subscription management with cancelation status and improved data handling ([8cd23ef](https://github.com/carlonicora/nextjs-jsonapi/commit/8cd23ef37efa0037f83ae87631e60299c24cbe2a))
+* implement payment method checks and editor in subscription forms ([d82d625](https://github.com/carlonicora/nextjs-jsonapi/commit/d82d625de3a97bb3b75eca4f42a7dc0aabedcfe6))
+* implement SCA-compliant payment confirmation flow for subscriptions ([0e29864](https://github.com/carlonicora/nextjs-jsonapi/commit/0e29864b0f67fea5a998cefa7dd91bfc6cd8c66e))
+* refactor CompanyEditor and FormFeatures components for improved feature handling ([d31d438](https://github.com/carlonicora/nextjs-jsonapi/commit/d31d438afb59b3ba11217e2f75cccda07005d405))
+* remove CompanyConfigurationEditor from CompanyProvider functions ([9f24981](https://github.com/carlonicora/nextjs-jsonapi/commit/9f2498104f4e70033110610447b7096612b126f1))
+* remove isCore property from ModuleInterface and Module class ([e095a82](https://github.com/carlonicora/nextjs-jsonapi/commit/e095a8242b359e32f7aa69b12ac728256e78ca7a))
+* rename isProduction to isCore in FeatureInterface and implementation ([87ee10e](https://github.com/carlonicora/nextjs-jsonapi/commit/87ee10e19bed0d74e50346fc5abdb8b870e7ae93))
+
+### 🐛 Bug Fixes
+
+* correct linting ([11ca437](https://github.com/carlonicora/nextjs-jsonapi/commit/11ca4377a18d5938f29af18aa06d71af55ff771c))
+* correct linting ([d1fdce1](https://github.com/carlonicora/nextjs-jsonapi/commit/d1fdce1fa8f4f2ee7c6b62f2d1db71fef732e6bf))
+* remove console logs ([d1769e2](https://github.com/carlonicora/nextjs-jsonapi/commit/d1769e231abb9fc9f24008e91b833aba47fa0221))
+
+### 💎 Styles
+
+* update product selector ([04eaee6](https://github.com/carlonicora/nextjs-jsonapi/commit/04eaee620e82a69e2c81d41c9b617728f3c3f9e0))
+
+### 📦 Code Refactoring
+
+* rename billing modules to stripe modules for clarity and consistency ([e3d4d45](https://github.com/carlonicora/nextjs-jsonapi/commit/e3d4d4506f9f1285444fcc9efec5479a6e6340ec))
+
 ## [1.15.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.14.0...v1.15.0) (2025-12-28)
 
 ### 🚀 Features
