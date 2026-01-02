@@ -88,26 +88,45 @@ export class StripeSubscription extends AbstractApiData implements StripeSubscri
         type: Modules.StripeSubscription.name,
         id: data.id,
         attributes: {},
-        relationships: {
-          stripePrice: {
-            data: {
-              type: Modules.StripePrice.name,
-              id: data.priceId,
-            },
-          },
-        },
       },
     };
 
-    if ("quantity" in data && data.quantity !== undefined) {
+    // CREATE: priceId goes to relationships
+    if (data.priceId) {
+      response.data.relationships = {
+        stripePrice: {
+          data: {
+            type: Modules.StripePrice.name,
+            id: data.priceId,
+          },
+        },
+      };
+    }
+
+    // CHANGE-PLAN: newPriceId goes to attributes.priceId
+    if (data.newPriceId) {
+      response.data.attributes.priceId = data.newPriceId;
+    }
+
+    // CANCEL: cancelImmediately goes to attributes
+    if (data.cancelImmediately !== undefined) {
+      response.data.attributes.cancelImmediately = data.cancelImmediately;
+    }
+
+    // Shared optional fields
+    if (data.quantity !== undefined) {
       response.data.attributes.quantity = data.quantity;
     }
 
-    if ("trialPeriodDays" in data && data.trialPeriodDays !== undefined) {
+    if (data.trialPeriodDays !== undefined) {
       response.data.attributes.trialPeriodDays = data.trialPeriodDays;
     }
 
-    if ("metadata" in data && data.metadata) {
+    if (data.paymentMethodId) {
+      response.data.attributes.paymentMethodId = data.paymentMethodId;
+    }
+
+    if (data.metadata) {
       response.data.attributes.metadata = data.metadata;
     }
 

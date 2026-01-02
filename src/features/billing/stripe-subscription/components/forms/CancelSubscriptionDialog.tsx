@@ -52,9 +52,8 @@ export function CancelSubscriptionDialog({
 
     try {
       await StripeSubscriptionService.cancelSubscription({
-        subscriptionId: subscription.id,
-        immediate: values.cancelImmediately,
-        reason: values.reason,
+        id: subscription.id,
+        cancelImmediately: values.cancelImmediately,
       });
 
       onSuccess();

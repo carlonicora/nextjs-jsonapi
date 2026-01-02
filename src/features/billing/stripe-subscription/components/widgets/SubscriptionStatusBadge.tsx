@@ -4,6 +4,7 @@ import { SubscriptionStatus } from "../../data";
 
 type SubscriptionStatusBadgeProps = {
   status: SubscriptionStatus;
+  cancelAtPeriodEnd?: boolean;
 };
 
 type StatusConfig = {
@@ -46,8 +47,14 @@ const statusConfig: Record<SubscriptionStatus, StatusConfig> = {
   },
 };
 
-export function SubscriptionStatusBadge({ status }: SubscriptionStatusBadgeProps) {
-  const config = statusConfig[status] || statusConfig[SubscriptionStatus.CANCELED];
+const cancelingConfig: StatusConfig = {
+  label: "Canceling",
+  color: "bg-amber-100 text-amber-800",
+};
+
+export function SubscriptionStatusBadge({ status, cancelAtPeriodEnd }: SubscriptionStatusBadgeProps) {
+  // Show "Canceling" when subscription is set to cancel at period end
+  const config = cancelAtPeriodEnd ? cancelingConfig : statusConfig[status] || statusConfig[SubscriptionStatus.CANCELED];
 
   return <span className={`${config.color} text-xs px-2 py-1 rounded-full font-medium`}>{config.label}</span>;
 }

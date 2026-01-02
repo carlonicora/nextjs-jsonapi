@@ -118,7 +118,7 @@ export function SubscriptionDetails({
             {/* Status */}
             <div className="flex items-center gap-x-3">
               <span className="text-sm font-medium text-muted-foreground">Status:</span>
-              <SubscriptionStatusBadge status={subscription.status} />
+              <SubscriptionStatusBadge status={subscription.status} cancelAtPeriodEnd={subscription.cancelAtPeriodEnd} />
             </div>
 
             {/* Plan Info */}

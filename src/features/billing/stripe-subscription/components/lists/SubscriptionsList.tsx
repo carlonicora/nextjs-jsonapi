@@ -75,7 +75,7 @@ export function SubscriptionsList({ subscriptions, onSubscriptionsChange }: Subs
                   className="cursor-pointer hover:bg-muted/50"
                 >
                   <TableCell>
-                    <SubscriptionStatusBadge status={subscription.status} />
+                    <SubscriptionStatusBadge status={subscription.status} cancelAtPeriodEnd={subscription.cancelAtPeriodEnd} />
                   </TableCell>
                   <TableCell className="font-medium">{formatPlanName(price)}</TableCell>
                   <TableCell className="text-muted-foreground text-sm">{period}</TableCell>

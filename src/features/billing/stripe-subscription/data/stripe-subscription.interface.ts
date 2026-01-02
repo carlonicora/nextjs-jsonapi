@@ -37,23 +37,17 @@ export interface StripeSubscriptionInterface extends ApiDataInterface {
 
 export type StripeSubscriptionInput = {
   id: string;
-  priceId: string;
+  // For CREATE - goes to relationships.stripePrice
+  priceId?: string;
+  // For CHANGE-PLAN - goes to attributes.priceId
+  newPriceId?: string;
+  // For CANCEL - goes to attributes.cancelImmediately
+  cancelImmediately?: boolean;
+  // Shared optional fields
   quantity?: number;
   trialPeriodDays?: number;
+  paymentMethodId?: string;
   metadata?: Record<string, any>;
-};
-
-export type ChangePlanInput = {
-  subscriptionId: string;
-  newPriceId: string;
-  quantity?: number;
-  prorationBehavior?: "create_prorations" | "none" | "always_invoice";
-};
-
-export type CancelSubscriptionInput = {
-  subscriptionId: string;
-  immediate?: boolean;
-  reason?: string;
 };
 
 // ============================================================================

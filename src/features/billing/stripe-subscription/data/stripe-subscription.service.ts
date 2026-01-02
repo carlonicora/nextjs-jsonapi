@@ -1,8 +1,6 @@
 import { AbstractService, EndpointCreator, HttpMethod, Modules, NextRef, PreviousRef } from "../../../../core";
 import { ProrationPreviewInterface } from "../../stripe-invoice/data/stripe-invoice.interface";
 import {
-  CancelSubscriptionInput,
-  ChangePlanInput,
   StripeSubscriptionCreateMeta,
   StripeSubscriptionCreateResponse,
   StripeSubscriptionInput,
@@ -82,10 +80,10 @@ export class StripeSubscriptionService extends AbstractService {
   /**
    * Change the plan of an existing subscription
    */
-  static async changePlan(params: ChangePlanInput): Promise<StripeSubscriptionInterface> {
+  static async changePlan(params: StripeSubscriptionInput): Promise<StripeSubscriptionInterface> {
     const endpoint = new EndpointCreator({
       endpoint: Modules.StripeSubscription,
-      id: params.subscriptionId,
+      id: params.id,
       childEndpoint: "change-plan",
     });
 
@@ -126,10 +124,10 @@ export class StripeSubscriptionService extends AbstractService {
   /**
    * Cancel a subscription
    */
-  static async cancelSubscription(params: CancelSubscriptionInput): Promise<StripeSubscriptionInterface> {
+  static async cancelSubscription(params: StripeSubscriptionInput): Promise<StripeSubscriptionInterface> {
     const endpoint = new EndpointCreator({
       endpoint: Modules.StripeSubscription,
-      id: params.subscriptionId,
+      id: params.id,
       childEndpoint: "cancel",
     });
 

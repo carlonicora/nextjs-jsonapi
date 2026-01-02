@@ -55,8 +55,8 @@ export function SubscriptionEditor({
   const [paymentConfirmationState, setPaymentConfirmationState] = useState<PaymentConfirmationState>("idle");
   const [paymentError, setPaymentError] = useState<string | null>(null);
 
-  // Get current subscription price if editing
-  const currentPriceId = subscription?.price?.stripePriceId;
+  // Get current subscription price if editing (use internal UUID for comparison)
+  const currentPriceId = subscription?.price?.id;
   const isEditMode = !!subscription;
 
   // Check payment methods on mount (only for new subscriptions)
@@ -142,7 +142,7 @@ export function SubscriptionEditor({
   }, [selectedPriceId, subscription, currentPriceId]);
 
   const handleSelectPrice = async (price: StripePriceInterface) => {
-    const priceId = price.stripePriceId;
+    const priceId = price.id; // Use internal UUID, not Stripe ID
 
     if (isEditMode) {
       // Edit mode: just select the price to show proration preview
@@ -208,7 +208,7 @@ export function SubscriptionEditor({
 
     try {
       await StripeSubscriptionService.changePlan({
-        subscriptionId: subscription.id,
+        id: subscription.id,
         newPriceId: selectedPriceId,
       });
       onSuccess();
