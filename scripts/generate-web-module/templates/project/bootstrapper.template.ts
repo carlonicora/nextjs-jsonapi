@@ -34,6 +34,7 @@ import {
   setBootstrapper,
   StripeCustomerModule,
   StripeInvoiceModule,
+  StripePaymentMethodModule,
   StripePriceModule,
   StripeProductModule,
   StripeSubscriptionModule,
@@ -78,6 +79,7 @@ const allModules = {
   // Billing modules (Stripe)
   Billing: BillingModule(moduleFactory),
   StripeCustomer: StripeCustomerModule(moduleFactory),
+  StripePaymentMethod: StripePaymentMethodModule(moduleFactory),
   StripeSubscription: StripeSubscriptionModule(moduleFactory),
   StripeInvoice: StripeInvoiceModule(moduleFactory),
   StripeProduct: StripeProductModule(moduleFactory),
