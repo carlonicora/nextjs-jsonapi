@@ -2,12 +2,51 @@
 
 import { useState } from "react";
 import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../../../../../shadcnui";
-import { formatDate } from "../../../components/utils";
+import { formatCurrency, formatDate } from "../../../components/utils";
 import { StripeCustomerService } from "../../../stripe-customer";
+import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
 import { StripeSubscriptionInterface, StripeSubscriptionService, SubscriptionStatus } from "../../data";
 import { CancelSubscriptionDialog } from "../forms/CancelSubscriptionDialog";
 import { SubscriptionEditor } from "../forms/SubscriptionEditor";
 import { SubscriptionStatusBadge } from "../widgets/SubscriptionStatusBadge";
+
+/**
+ * Formats the plan name from price data.
+ * Format: "Product Name - Nickname (Interval)" e.g., "Only 35 - Pro (Monthly)"
+ */
+function formatPlanName(price: StripePriceInterface | undefined): string {
+  if (!price) return "N/A";
+
+  const productName = price.product?.name || "";
+  const nickname = price.nickname || "";
+
+  // Format interval: "month" -> "Monthly", "year" -> "Yearly", etc.
+  let interval = "";
+  if (price.recurring?.interval) {
+    const intervalMap: Record<string, string> = {
+      day: "Daily",
+      week: "Weekly",
+      month: "Monthly",
+      year: "Yearly",
+    };
+    interval = intervalMap[price.recurring.interval] || price.recurring.interval;
+  }
+
+  // Build the plan label: "Product - Nickname" or just "Product"
+  const parts = [productName, nickname].filter(Boolean);
+  const planLabel = parts.join(" - ");
+
+  // Add interval in parentheses if available
+  return interval ? `${planLabel} (${interval})` : planLabel || "N/A";
+}
+
+/**
+ * Formats the billing amount from price data.
+ */
+function formatBillingAmount(price: StripePriceInterface | undefined): string {
+  if (!price?.unitAmount) return "N/A";
+  return formatCurrency(price.unitAmount, price.currency);
+}
 
 type SubscriptionDetailsProps = {
   subscription: StripeSubscriptionInterface;
@@ -27,11 +66,9 @@ export function SubscriptionDetails({
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
   const handlePause = async () => {
-    console.log("[SubscriptionDetails] Pausing subscription:", subscription.id);
     setIsProcessing(true);
     try {
       await StripeSubscriptionService.pauseSubscription({ subscriptionId: subscription.id });
-      console.log("[SubscriptionDetails] Subscription paused successfully");
       onSubscriptionChange();
     } catch (error) {
       console.error("[SubscriptionDetails] Failed to pause subscription:", error);
@@ -41,11 +78,9 @@ export function SubscriptionDetails({
   };
 
   const handleResume = async () => {
-    console.log("[SubscriptionDetails] Resuming subscription:", subscription.id);
     setIsProcessing(true);
     try {
       await StripeSubscriptionService.resumeSubscription({ subscriptionId: subscription.id });
-      console.log("[SubscriptionDetails] Subscription resumed successfully");
       onSubscriptionChange();
     } catch (error) {
       console.error("[SubscriptionDetails] Failed to resume subscription:", error);
@@ -55,10 +90,8 @@ export function SubscriptionDetails({
   };
 
   const handleManageViaPortal = async () => {
-    console.log("[SubscriptionDetails] Opening Stripe portal...");
     try {
       const { url } = await StripeCustomerService.createPortalSession();
-      console.log("[SubscriptionDetails] Portal URL:", url);
       window.open(url, "_blank");
     } catch (error) {
       console.error("[SubscriptionDetails] Failed to create portal session:", error);
@@ -92,11 +125,11 @@ export function SubscriptionDetails({
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-sm font-medium text-muted-foreground">Plan:</span>
-                <span className="font-medium">{subscription.price?.stripePriceId || "N/A"}</span>
+                <span className="font-medium">{formatPlanName(subscription.price)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm font-medium text-muted-foreground">Billing Amount:</span>
-                <span className="font-medium">N/A</span>
+                <span className="font-medium">{formatBillingAmount(subscription.price)}</span>
               </div>
             </div>
 

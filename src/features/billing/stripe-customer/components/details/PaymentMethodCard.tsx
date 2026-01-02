@@ -44,10 +44,8 @@ export function PaymentMethodCard({ paymentMethod, onUpdate }: PaymentMethodCard
   // Load customer to check default payment method
   useEffect(() => {
     const loadCustomer = async () => {
-      console.log("[PaymentMethodCard] Loading customer...");
       try {
         const fetchedCustomer = await StripeCustomerService.getCustomer();
-        console.log("[PaymentMethodCard] Loaded customer:", fetchedCustomer);
         setCustomer(fetchedCustomer);
       } catch (error) {
         console.error("[PaymentMethodCard] Failed to load customer:", error);
@@ -65,11 +63,9 @@ export function PaymentMethodCard({ paymentMethod, onUpdate }: PaymentMethodCard
   const brandIcon = brandIcons[brand.toLowerCase()] || "💳";
 
   const handleSetDefault = async () => {
-    console.log("[PaymentMethodCard] Setting payment method as default:", paymentMethod.id);
     setLoading(true);
     try {
       await StripeCustomerService.setDefaultPaymentMethod({ paymentMethodId: paymentMethod.id });
-      console.log("[PaymentMethodCard] Successfully set as default");
       onUpdate();
     } catch (error) {
       console.error("[PaymentMethodCard] Failed to set as default:", error);
@@ -79,11 +75,9 @@ export function PaymentMethodCard({ paymentMethod, onUpdate }: PaymentMethodCard
   };
 
   const handleRemove = async () => {
-    console.log("[PaymentMethodCard] Removing payment method:", paymentMethod.id);
     setLoading(true);
     try {
       await StripeCustomerService.removePaymentMethod({ paymentMethodId: paymentMethod.id });
-      console.log("[PaymentMethodCard] Successfully removed");
       setShowRemoveDialog(false);
       onUpdate();
     } catch (error) {

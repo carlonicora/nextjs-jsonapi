@@ -40,11 +40,9 @@ export function SubscriptionsContainer() {
   const [paymentError, setPaymentError] = useState<string | null>(null);
 
   const loadSubscriptions = async () => {
-    console.log("[SubscriptionsContainer] Loading subscriptions...");
     setLoading(true);
     try {
       const fetchedSubscriptions = await StripeSubscriptionService.listSubscriptions();
-      console.log("[SubscriptionsContainer] Loaded subscriptions:", fetchedSubscriptions);
       setSubscriptions(fetchedSubscriptions);
     } catch (error) {
       console.error("[SubscriptionsContainer] Failed to load subscriptions:", error);
@@ -54,12 +52,9 @@ export function SubscriptionsContainer() {
   };
 
   const loadPricingData = async () => {
-    console.log("[SubscriptionsContainer] Loading pricing data...");
     setLoadingPricing(true);
     try {
       const fetchedProducts = await StripeProductService.listProducts({ active: true });
-
-      console.log("[SubscriptionsContainer] Loaded products with prices:", fetchedProducts);
 
       // Build prices map from product.stripePrices
       const grouped: PricesByProduct = new Map();
@@ -79,11 +74,9 @@ export function SubscriptionsContainer() {
   };
 
   const checkPaymentMethod = async () => {
-    console.log("[SubscriptionsContainer] Checking payment methods...");
     try {
       const paymentMethods = await StripeCustomerService.listPaymentMethods();
       const hasMethod = paymentMethods.length > 0;
-      console.log("[SubscriptionsContainer] Has payment method:", hasMethod);
       setHasPaymentMethod(hasMethod);
     } catch (error) {
       console.error("[SubscriptionsContainer] Failed to check payment methods:", error);
@@ -92,7 +85,6 @@ export function SubscriptionsContainer() {
   };
 
   const createSubscriptionWithPrice = async (priceId: string) => {
-    console.log("[SubscriptionsContainer] Creating subscription with price:", priceId);
     setCreatingSubscription(true);
     setPaymentError(null);
     setPaymentConfirmationState("idle");
@@ -102,11 +94,9 @@ export function SubscriptionsContainer() {
         id: v4(),
         priceId,
       });
-      console.log("[SubscriptionsContainer] Subscription created:", result);
 
       // Check if payment confirmation is required (SCA flow)
       if (result.meta.requiresAction && result.meta.clientSecret) {
-        console.log("[SubscriptionsContainer] Payment confirmation required, confirming...");
         setPaymentConfirmationState("confirming");
 
         const confirmation = await confirmPayment(result.meta.clientSecret);
@@ -119,7 +109,10 @@ export function SubscriptionsContainer() {
           return;
         }
 
-        console.log("[SubscriptionsContainer] Payment confirmed successfully");
+        // Sync subscription to get updated status from Stripe
+        await StripeSubscriptionService.syncSubscription({
+          subscriptionId: result.subscription.id,
+        });
       }
 
       // Success
@@ -129,7 +122,6 @@ export function SubscriptionsContainer() {
       console.error("[SubscriptionsContainer] Failed to create subscription:", error);
       // Handle 402 error - payment method required despite our check
       if (error?.status === 402 || error?.response?.status === 402) {
-        console.log("[SubscriptionsContainer] Payment method required, opening editor");
         setPendingPriceId(priceId);
         setHasPaymentMethod(false);
         setShowPaymentMethodEditor(true);
@@ -146,7 +138,6 @@ export function SubscriptionsContainer() {
     const priceId = price.id; // Use internal UUID, not Stripe ID
 
     if (!hasPaymentMethod) {
-      console.log("[SubscriptionsContainer] No payment method, storing pending price:", priceId);
       setPendingPriceId(priceId);
       setShowPaymentMethodEditor(true);
       return;
@@ -156,12 +147,10 @@ export function SubscriptionsContainer() {
   };
 
   const handlePaymentMethodSuccess = async () => {
-    console.log("[SubscriptionsContainer] Payment method added successfully");
     setShowPaymentMethodEditor(false);
     setHasPaymentMethod(true);
 
     if (pendingPriceId) {
-      console.log("[SubscriptionsContainer] Creating subscription with pending price:", pendingPriceId);
       await createSubscriptionWithPrice(pendingPriceId);
       setPendingPriceId(null);
     }
@@ -261,7 +250,9 @@ export function SubscriptionsContainer() {
               <div className="text-center">
                 <CreditCard className="text-muted-foreground mx-auto h-16 w-16 mb-4" />
                 <h3 className="mb-2 text-xl font-semibold">Choose Your Plan</h3>
-                <p className="text-muted-foreground mb-6">Select a subscription plan to get started with our services.</p>
+                <p className="text-muted-foreground mb-6">
+                  Select a subscription plan to get started with our services.
+                </p>
               </div>
 
               <PricingCardsGrid

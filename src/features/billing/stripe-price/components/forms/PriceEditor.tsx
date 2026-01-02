@@ -77,7 +77,7 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
       interval: price?.priceType === "one_time" ? "one_time" : price?.recurring?.interval || "month",
       intervalCount: price?.recurring?.intervalCount || 1,
       usageType: price?.recurring?.usageType || "licensed",
-      nickname: (price?.metadata?.nickname as string) || "",
+      nickname: price?.nickname || "",
       active: price?.active ?? true,
       description: price?.description || "",
       features: price?.features || [],
@@ -98,7 +98,7 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
         // Update existing price (nickname, description, features can be updated - Stripe fields are limited)
         await StripePriceService.updatePrice({
           id: price.id,
-          metadata: values.nickname ? { nickname: values.nickname } : undefined,
+          nickname: values.nickname || undefined,
           description: values.description || undefined,
           features: values.features.filter((f) => f.trim()) || undefined,
         });
@@ -121,7 +121,7 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
         }
 
         if (values.nickname) {
-          createInput.metadata = { nickname: values.nickname };
+          createInput.nickname = values.nickname;
         }
 
         if (values.description) {

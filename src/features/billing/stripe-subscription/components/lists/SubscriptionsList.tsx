@@ -3,9 +3,40 @@
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../shadcnui";
 import { formatCurrency, formatDate } from "../../../components/utils";
+import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
 import { StripeSubscriptionInterface } from "../../data";
 import { SubscriptionDetails } from "../details/SubscriptionDetails";
 import { SubscriptionStatusBadge } from "../widgets/SubscriptionStatusBadge";
+
+/**
+ * Formats the plan name from price data.
+ * Format: "Product Name - Nickname (Interval)" e.g., "Only 35 - Pro (Monthly)"
+ */
+function formatPlanName(price: StripePriceInterface | undefined): string {
+  if (!price) return "N/A";
+
+  const productName = price.product?.name || "";
+  const nickname = price.nickname || "";
+
+  // Format interval: "month" -> "Monthly", "year" -> "Yearly", etc.
+  let interval = "";
+  if (price.recurring?.interval) {
+    const intervalMap: Record<string, string> = {
+      day: "Daily",
+      week: "Weekly",
+      month: "Monthly",
+      year: "Yearly",
+    };
+    interval = intervalMap[price.recurring.interval] || price.recurring.interval;
+  }
+
+  // Build the plan label: "Product - Nickname" or just "Product"
+  const parts = [productName, nickname].filter(Boolean);
+  const planLabel = parts.join(" - ");
+
+  // Add interval in parentheses if available
+  return interval ? `${planLabel} (${interval})` : planLabel || "N/A";
+}
 
 type SubscriptionsListProps = {
   subscriptions: StripeSubscriptionInterface[];
@@ -16,7 +47,6 @@ export function SubscriptionsList({ subscriptions, onSubscriptionsChange }: Subs
   const [selectedSub, setSelectedSub] = useState<StripeSubscriptionInterface | null>(null);
 
   const handleRowClick = (subscription: StripeSubscriptionInterface) => {
-    console.log("[SubscriptionsList] Opening subscription details:", subscription.id);
     setSelectedSub(subscription);
   };
 
@@ -35,9 +65,7 @@ export function SubscriptionsList({ subscriptions, onSubscriptionsChange }: Subs
           <TableBody>
             {subscriptions.map((subscription) => {
               const price = subscription.price;
-              const amount = price?.unitAmount
-                ? formatCurrency(price.unitAmount, price.currency)
-                : "N/A";
+              const amount = price?.unitAmount ? formatCurrency(price.unitAmount, price.currency) : "N/A";
               const period = `${formatDate(subscription.currentPeriodStart)} - ${formatDate(subscription.currentPeriodEnd)}`;
 
               return (
@@ -49,7 +77,7 @@ export function SubscriptionsList({ subscriptions, onSubscriptionsChange }: Subs
                   <TableCell>
                     <SubscriptionStatusBadge status={subscription.status} />
                   </TableCell>
-                  <TableCell className="font-medium">{price?.stripePriceId || "N/A"}</TableCell>
+                  <TableCell className="font-medium">{formatPlanName(price)}</TableCell>
                   <TableCell className="text-muted-foreground text-sm">{period}</TableCell>
                   <TableCell className="text-right font-medium">{amount}</TableCell>
                 </TableRow>

@@ -48,7 +48,6 @@ export function CancelSubscriptionDialog({
   const cancelImmediately = form.watch("cancelImmediately");
 
   const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (values) => {
-    console.log("[CancelSubscriptionDialog] Canceling subscription:", values);
     setIsSubmitting(true);
 
     try {
@@ -57,7 +56,6 @@ export function CancelSubscriptionDialog({
         immediate: values.cancelImmediately,
         reason: values.reason,
       });
-      console.log("[CancelSubscriptionDialog] Subscription canceled successfully");
 
       onSuccess();
       onOpenChange(false);

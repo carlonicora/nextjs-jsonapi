@@ -13,11 +13,9 @@ export function PaymentMethodsContainer() {
   const [showAddPaymentMethod, setShowAddPaymentMethod] = useState<boolean>(false);
 
   const loadPaymentMethods = async () => {
-    console.log("[PaymentMethodsContainer] Loading payment methods...");
     setLoading(true);
     try {
       const fetchedPaymentMethods = await StripeCustomerService.listPaymentMethods();
-      console.log("[PaymentMethodsContainer] Loaded payment methods:", fetchedPaymentMethods);
       setPaymentMethods(fetchedPaymentMethods);
     } catch (error) {
       console.error("[PaymentMethodsContainer] Failed to load payment methods:", error);

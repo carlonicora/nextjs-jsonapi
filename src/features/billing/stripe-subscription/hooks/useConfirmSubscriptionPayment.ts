@@ -62,7 +62,6 @@ export function useConfirmSubscriptionPayment(): UseConfirmSubscriptionPaymentRe
         };
       }
 
-      console.log("[useConfirmSubscriptionPayment] Confirming payment...");
       setIsConfirming(true);
 
       try {
@@ -77,20 +76,17 @@ export function useConfirmSubscriptionPayment(): UseConfirmSubscriptionPaymentRe
         }
 
         if (paymentIntent?.status === "succeeded") {
-          console.log("[useConfirmSubscriptionPayment] Payment confirmed successfully");
           return { success: true };
         }
 
         if (paymentIntent?.status === "requires_action") {
           // This shouldn't happen as Stripe handles 3DS inline, but handle it just in case
-          console.log("[useConfirmSubscriptionPayment] Payment requires additional action");
           return {
             success: false,
             error: "Additional authentication required. Please complete the verification.",
           };
         }
 
-        console.log("[useConfirmSubscriptionPayment] Payment status:", paymentIntent?.status);
         return {
           success: false,
           error: "Payment could not be completed. Please try again.",

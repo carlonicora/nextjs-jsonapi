@@ -36,6 +36,7 @@ export type StripePriceInput = {
   productId?: string; // Required for create, not for update
   currency?: string; // Required for create, not for update
   unitAmount?: number;
+  nickname?: string;
   recurring?: {
     interval: "day" | "week" | "month" | "year";
     intervalCount?: number;

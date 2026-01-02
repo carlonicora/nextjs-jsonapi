@@ -2,8 +2,8 @@
 
 import { Download, ExternalLink, RefreshCw } from "lucide-react";
 import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../../../../../shadcnui";
-import { InvoiceStatus, StripeInvoiceInterface } from "../../data/stripe-invoice.interface";
 import { formatCurrency, formatDate } from "../../../components/utils";
+import { InvoiceStatus, StripeInvoiceInterface } from "../../data/stripe-invoice.interface";
 import { InvoiceStatusBadge } from "../widgets/InvoiceStatusBadge";
 
 type InvoiceDetailsProps = {
@@ -15,19 +15,16 @@ type InvoiceDetailsProps = {
 
 export function InvoiceDetails({ invoice, open, onOpenChange, onInvoiceChange }: InvoiceDetailsProps) {
   const handleDownloadPDF = () => {
-    console.log("[InvoiceDetails] Downloading PDF:", invoice.stripePdfUrl);
     if (invoice.stripePdfUrl) {
       window.open(invoice.stripePdfUrl, "_blank");
     }
   };
 
   const handleRetryPayment = async () => {
-    console.log("[InvoiceDetails] Retry payment functionality not yet implemented");
     // TODO: Implement retry payment logic
   };
 
   const handleViewInStripe = () => {
-    console.log("[InvoiceDetails] Opening Stripe hosted invoice:", invoice.stripeHostedInvoiceUrl);
     if (invoice.stripeHostedInvoiceUrl) {
       window.open(invoice.stripeHostedInvoiceUrl, "_blank");
     }

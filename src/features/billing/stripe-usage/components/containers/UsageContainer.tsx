@@ -2,9 +2,9 @@
 
 import { Activity } from "lucide-react";
 import { useEffect, useState } from "react";
-import { StripeUsageService } from "../../data/stripe-usage.service";
-import { MeterInterface, MeterSummaryInterface } from "../../data/stripe-usage.interface";
 import { StripeSubscriptionInterface, StripeSubscriptionService } from "../../../stripe-subscription";
+import { MeterInterface, MeterSummaryInterface } from "../../data/stripe-usage.interface";
+import { StripeUsageService } from "../../data/stripe-usage.service";
 import { UsageSummaryCards } from "../widgets/UsageSummaryCards";
 
 export function UsageContainer() {
@@ -18,30 +18,22 @@ export function UsageContainer() {
   }, []);
 
   const loadUsageData = async () => {
-    console.log("[UsageContainer] Loading usage data...");
     setLoading(true);
 
     try {
       // First, check if there are any metered subscriptions
       const fetchedSubscriptions = await StripeSubscriptionService.listSubscriptions();
-      console.log("[UsageContainer] Loaded subscriptions:", fetchedSubscriptions);
       setSubscriptions(fetchedSubscriptions);
 
-      const hasMeteredSubscriptions = fetchedSubscriptions.some(
-        (sub) => sub.price?.recurring?.usageType === "metered",
-      );
-
-      console.log("[UsageContainer] Has metered subscriptions:", hasMeteredSubscriptions);
+      const hasMeteredSubscriptions = fetchedSubscriptions.some((sub) => sub.price?.recurring?.usageType === "metered");
 
       if (!hasMeteredSubscriptions) {
-        console.log("[UsageContainer] No metered subscriptions found, skipping meter load");
         setLoading(false);
         return;
       }
 
       // Load meters
       const fetchedMeters = await StripeUsageService.listMeters();
-      console.log("[UsageContainer] Loaded meters:", fetchedMeters);
       setMeters(fetchedMeters);
 
       // Load summaries for each meter (current month)
@@ -50,8 +42,6 @@ export function UsageContainer() {
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
       const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
-      console.log("[UsageContainer] Loading summaries for period:", startOfMonth, "to", endOfMonth);
-
       for (const meter of fetchedMeters) {
         try {
           const meterSummaries = await StripeUsageService.getMeterSummaries({
@@ -59,7 +49,6 @@ export function UsageContainer() {
             startTime: startOfMonth,
             endTime: endOfMonth,
           });
-          console.log(`[UsageContainer] Loaded summaries for meter ${meter.id}:`, meterSummaries);
           // Use the first (most recent) summary
           summariesMap[meter.id] = meterSummaries.length > 0 ? meterSummaries[0] : null;
         } catch (error) {
@@ -81,7 +70,6 @@ export function UsageContainer() {
 
   // Don't render if no metered subscriptions
   if (!loading && !hasMeteredSubscriptions) {
-    console.log("[UsageContainer] No metered subscriptions, not rendering");
     return null;
   }
 

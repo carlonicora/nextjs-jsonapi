@@ -29,8 +29,6 @@ function formatDateTime(date: Date | string | undefined): string {
 }
 
 export function UsageHistoryTable({ usageRecords }: UsageHistoryTableProps) {
-  console.log("[UsageHistoryTable] Rendering usage records:", usageRecords);
-
   if (usageRecords.length === 0) {
     return (
       <div className="rounded-lg border p-8 text-center">

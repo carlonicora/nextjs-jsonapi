@@ -43,6 +43,16 @@ function formatPrice(amount: number | undefined, currency: string | undefined): 
   }).format(amount / 100);
 }
 
+function formatPlanName(subscription: StripeSubscriptionInterface): string {
+  const productName = subscription.price?.product?.name || "";
+  const nickname = subscription.price?.nickname || "";
+
+  if (productName && nickname) {
+    return `${productName} - ${nickname}`;
+  }
+  return productName || nickname || "Subscription";
+}
+
 export function SubscriptionSummaryCard({
   subscriptions,
   loading,
@@ -111,7 +121,7 @@ export function SubscriptionSummaryCard({
         ) : primarySubscription ? (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <p className="text-xl font-bold">{primarySubscription.price?.product?.name || "Subscription"}</p>
+              <p className="text-xl font-bold">{formatPlanName(primarySubscription)}</p>
               <Badge variant={getStatusBadgeVariant(primarySubscription.status)}>{primarySubscription.status}</Badge>
             </div>
             <p className="text-sm text-muted-foreground">

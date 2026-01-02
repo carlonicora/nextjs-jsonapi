@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "../../../../../shadcnui";
-import { StripeInvoiceService } from "../../data/stripe-invoice.service";
 import { InvoiceStatus, StripeInvoiceInterface } from "../../data/stripe-invoice.interface";
+import { StripeInvoiceService } from "../../data/stripe-invoice.service";
 import { InvoicesList } from "../lists/InvoicesList";
 
 type StatusFilter = InvoiceStatus | "all";
@@ -14,12 +14,10 @@ export function InvoicesContainer() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
   const loadInvoices = async () => {
-    console.log("[InvoicesContainer] Loading invoices with filter:", statusFilter);
     setLoading(true);
     try {
       const params = statusFilter !== "all" ? { status: statusFilter } : undefined;
       const data = await StripeInvoiceService.listInvoices(params);
-      console.log("[InvoicesContainer] Loaded invoices:", data.length);
       setInvoices(data);
     } catch (error) {
       console.error("[InvoicesContainer] Failed to load invoices:", error);
@@ -34,7 +32,6 @@ export function InvoicesContainer() {
   }, [statusFilter]);
 
   const handleFilterChange = (value: string) => {
-    console.log("[InvoicesContainer] Filter changed to:", value);
     setStatusFilter(value as StatusFilter);
   };
 

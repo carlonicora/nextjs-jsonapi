@@ -68,12 +68,10 @@ export function SubscriptionEditor({
         return;
       }
 
-      console.log("[SubscriptionEditor] Checking payment methods...");
       setLoadingPaymentMethods(true);
       try {
         const paymentMethods = await StripeCustomerService.listPaymentMethods();
         const hasMethod = paymentMethods.length > 0;
-        console.log("[SubscriptionEditor] Payment methods found:", hasMethod);
         setHasPaymentMethod(hasMethod);
       } catch (error) {
         console.error("[SubscriptionEditor] Failed to check payment methods:", error);
@@ -91,12 +89,9 @@ export function SubscriptionEditor({
   // Load products with prices on mount
   useEffect(() => {
     const loadData = async () => {
-      console.log("[SubscriptionEditor] Loading products with prices...");
       setLoading(true);
       try {
         const fetchedProducts = await StripeProductService.listProducts({ active: true });
-
-        console.log("[SubscriptionEditor] Loaded products with prices:", fetchedProducts);
 
         // Build prices map from product.stripePrices
         const grouped: PricesByProduct = new Map();
@@ -128,14 +123,12 @@ export function SubscriptionEditor({
         return;
       }
 
-      console.log("[SubscriptionEditor] Loading proration preview...");
       setLoadingProration(true);
       try {
         const preview = await StripeSubscriptionService.getProrationPreview({
           subscriptionId: subscription.id,
           newPriceId: selectedPriceId,
         });
-        console.log("[SubscriptionEditor] Loaded proration preview:", preview);
         setProrationPreview(preview);
       } catch (error) {
         console.error("[SubscriptionEditor] Failed to load proration preview:", error);
@@ -156,7 +149,6 @@ export function SubscriptionEditor({
       setSelectedPriceId(priceId);
     } else {
       // Create mode: immediately create subscription
-      console.log("[SubscriptionEditor] Creating subscription with price:", priceId);
       setLoadingPriceId(priceId);
       setSelectedPriceId(priceId);
       setPaymentError(null);
@@ -167,11 +159,9 @@ export function SubscriptionEditor({
           id: v4(),
           priceId,
         });
-        console.log("[SubscriptionEditor] Subscription created:", result);
 
         // Check if payment confirmation is required (SCA flow)
         if (result.meta.requiresAction && result.meta.clientSecret) {
-          console.log("[SubscriptionEditor] Payment confirmation required, confirming...");
           setPaymentConfirmationState("confirming");
 
           const confirmation = await confirmPayment(result.meta.clientSecret);
@@ -184,7 +174,10 @@ export function SubscriptionEditor({
             return;
           }
 
-          console.log("[SubscriptionEditor] Payment confirmed successfully");
+          // Sync subscription to get updated status from Stripe
+          await StripeSubscriptionService.syncSubscription({
+            subscriptionId: result.subscription.id,
+          });
         }
 
         // Success - show brief success state then close
@@ -197,7 +190,6 @@ export function SubscriptionEditor({
         console.error("[SubscriptionEditor] Failed to create subscription:", error);
         // Handle 402 Payment Required error
         if (error?.status === 402 || error?.response?.status === 402) {
-          console.log("[SubscriptionEditor] Payment method required");
           setPaymentRequiredError(true);
           setHasPaymentMethod(false);
         } else {
@@ -212,7 +204,6 @@ export function SubscriptionEditor({
   const handleConfirmPlanChange = async () => {
     if (!subscription || !selectedPriceId) return;
 
-    console.log("[SubscriptionEditor] Changing plan to:", selectedPriceId);
     setLoadingPriceId(selectedPriceId);
 
     try {
@@ -220,7 +211,6 @@ export function SubscriptionEditor({
         subscriptionId: subscription.id,
         newPriceId: selectedPriceId,
       });
-      console.log("[SubscriptionEditor] Plan changed successfully");
       onSuccess();
       onOpenChange(false);
     } catch (error) {

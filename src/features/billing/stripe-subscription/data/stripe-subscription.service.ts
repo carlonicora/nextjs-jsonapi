@@ -174,4 +174,22 @@ export class StripeSubscriptionService extends AbstractService {
       endpoint: endpoint.generate(),
     });
   }
+
+  /**
+   * Sync a subscription with the latest data from Stripe
+   * This is useful after payment confirmation to get the updated status
+   */
+  static async syncSubscription(params: { subscriptionId: string }): Promise<StripeSubscriptionInterface> {
+    const endpoint = new EndpointCreator({
+      endpoint: Modules.StripeSubscription,
+      id: params.subscriptionId,
+      childEndpoint: "sync",
+    });
+
+    return this.callApi<StripeSubscriptionInterface>({
+      type: Modules.StripeSubscription,
+      method: HttpMethod.POST,
+      endpoint: endpoint.generate(),
+    });
+  }
 }

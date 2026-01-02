@@ -36,8 +36,6 @@ function formatDate(date: Date | undefined): string {
 }
 
 export function UsageSummaryCard({ meter, summary }: UsageSummaryCardProps) {
-  console.log("[UsageSummaryCard] Rendering meter:", meter, "summary:", summary);
-
   const currentUsage = summary?.aggregatedValue ?? 0;
   const limit = (meter as any).limit; // Meters may have optional limit field
   const percentage = limit && limit > 0 ? (currentUsage / limit) * 100 : null;

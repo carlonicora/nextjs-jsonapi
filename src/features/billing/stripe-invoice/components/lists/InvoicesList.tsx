@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../shadcnui";
+import { formatCurrency, formatDate } from "../../../components/utils";
 import { StripeInvoiceInterface } from "../../data/stripe-invoice.interface";
 import { InvoiceDetails } from "../details/InvoiceDetails";
-import { formatCurrency, formatDate } from "../../../components/utils";
 import { InvoiceStatusBadge } from "../widgets/InvoiceStatusBadge";
 
 type InvoicesListProps = {
@@ -16,7 +16,6 @@ export function InvoicesList({ invoices, onInvoicesChange }: InvoicesListProps) 
   const [selectedInvoice, setSelectedInvoice] = useState<StripeInvoiceInterface | null>(null);
 
   const handleRowClick = (invoice: StripeInvoiceInterface) => {
-    console.log("[InvoicesList] Opening invoice details:", invoice.id);
     setSelectedInvoice(invoice);
   };
 

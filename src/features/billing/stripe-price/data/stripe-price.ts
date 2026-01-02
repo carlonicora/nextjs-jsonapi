@@ -135,6 +135,9 @@ export class StripePrice extends AbstractApiData implements StripePriceInterface
     if ("active" in data && data.active !== undefined) {
       response.data.attributes.active = data.active;
     }
+    if ("nickname" in data && data.nickname !== undefined) {
+      response.data.attributes.nickname = data.nickname;
+    }
     if ("metadata" in data && data.metadata) {
       response.data.attributes.metadata = data.metadata;
     }

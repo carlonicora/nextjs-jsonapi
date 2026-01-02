@@ -35,11 +35,9 @@ export function PaymentMethodEditor({ open, onOpenChange, onSuccess }: PaymentMe
   // Fetch setup intent on component mount
   useEffect(() => {
     const fetchSetupIntent = async () => {
-      console.log("[PaymentMethodEditor] Fetching setup intent...");
       setLoading(true);
       try {
         const intent = await StripeCustomerService.createSetupIntent();
-        console.log("[PaymentMethodEditor] Setup intent created:", intent);
         setSetupIntent(intent);
       } catch (err) {
         console.error("[PaymentMethodEditor] Failed to create setup intent:", err);
@@ -56,10 +54,8 @@ export function PaymentMethodEditor({ open, onOpenChange, onSuccess }: PaymentMe
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("[PaymentMethodEditor] Submitting payment method...");
 
     if (!stripe || !elements || !setupIntent) {
-      console.error("[PaymentMethodEditor] Stripe not ready");
       return;
     }
 
@@ -73,7 +69,6 @@ export function PaymentMethodEditor({ open, onOpenChange, onSuccess }: PaymentMe
       }
 
       // Confirm card setup with Stripe
-      console.log("[PaymentMethodEditor] Confirming card setup...");
       const { error: stripeError, setupIntent: confirmedSetupIntent } = await stripe.confirmCardSetup(
         setupIntent.clientSecret,
         {
@@ -90,11 +85,8 @@ export function PaymentMethodEditor({ open, onOpenChange, onSuccess }: PaymentMe
         return;
       }
 
-      console.log("[PaymentMethodEditor] Card setup confirmed:", confirmedSetupIntent);
-
       // Set as default if checkbox is checked
       if (setAsDefault && confirmedSetupIntent?.payment_method) {
-        console.log("[PaymentMethodEditor] Setting as default payment method...");
         await StripeCustomerService.setDefaultPaymentMethod({
           paymentMethodId:
             typeof confirmedSetupIntent.payment_method === "string"
@@ -103,7 +95,6 @@ export function PaymentMethodEditor({ open, onOpenChange, onSuccess }: PaymentMe
         });
       }
 
-      console.log("[PaymentMethodEditor] Payment method added successfully");
       onSuccess();
       onOpenChange(false);
     } catch (err: any) {
