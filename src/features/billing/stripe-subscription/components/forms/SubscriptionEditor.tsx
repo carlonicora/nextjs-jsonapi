@@ -1,5 +1,6 @@
 "use client";
 
+import { CheckCircle, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { v4 } from "uuid";
 import {
@@ -18,8 +19,11 @@ import { ProrationPreviewInterface } from "../../../stripe-invoice/data/stripe-i
 import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
 import { StripeProductInterface, StripeProductService } from "../../../stripe-product";
 import { StripeSubscriptionInterface, StripeSubscriptionService } from "../../data";
+import { useConfirmSubscriptionPayment } from "../../hooks";
 import { PricesByProduct, PricingCardsGrid } from "../widgets/PricingCardsGrid";
 import { ProrationPreview } from "../widgets/ProrationPreview";
+
+type PaymentConfirmationState = "idle" | "confirming" | "success" | "error";
 
 type SubscriptionEditorProps = {
   subscription?: StripeSubscriptionInterface;
@@ -36,6 +40,8 @@ export function SubscriptionEditor({
   onSuccess,
   onAddPaymentMethod,
 }: SubscriptionEditorProps) {
+  const { confirmPayment, isConfirming } = useConfirmSubscriptionPayment();
+
   const [products, setProducts] = useState<StripeProductInterface[]>([]);
   const [pricesByProduct, setPricesByProduct] = useState<PricesByProduct>(new Map());
   const [loading, setLoading] = useState<boolean>(true);
@@ -46,6 +52,8 @@ export function SubscriptionEditor({
   const [hasPaymentMethod, setHasPaymentMethod] = useState<boolean>(true);
   const [loadingPaymentMethods, setLoadingPaymentMethods] = useState<boolean>(true);
   const [paymentRequiredError, setPaymentRequiredError] = useState<boolean>(false);
+  const [paymentConfirmationState, setPaymentConfirmationState] = useState<PaymentConfirmationState>("idle");
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   // Get current subscription price if editing
   const currentPriceId = subscription?.price?.stripePriceId;
@@ -151,15 +159,40 @@ export function SubscriptionEditor({
       console.log("[SubscriptionEditor] Creating subscription with price:", priceId);
       setLoadingPriceId(priceId);
       setSelectedPriceId(priceId);
+      setPaymentError(null);
+      setPaymentConfirmationState("idle");
 
       try {
-        await StripeSubscriptionService.createSubscription({
+        const result = await StripeSubscriptionService.createSubscription({
           id: v4(),
           priceId,
         });
-        console.log("[SubscriptionEditor] Subscription created successfully");
-        onSuccess();
-        onOpenChange(false);
+        console.log("[SubscriptionEditor] Subscription created:", result);
+
+        // Check if payment confirmation is required (SCA flow)
+        if (result.meta.requiresAction && result.meta.clientSecret) {
+          console.log("[SubscriptionEditor] Payment confirmation required, confirming...");
+          setPaymentConfirmationState("confirming");
+
+          const confirmation = await confirmPayment(result.meta.clientSecret);
+
+          if (!confirmation.success) {
+            console.error("[SubscriptionEditor] Payment confirmation failed:", confirmation.error);
+            setPaymentConfirmationState("error");
+            setPaymentError(confirmation.error || "Payment confirmation failed");
+            setLoadingPriceId(null);
+            return;
+          }
+
+          console.log("[SubscriptionEditor] Payment confirmed successfully");
+        }
+
+        // Success - show brief success state then close
+        setPaymentConfirmationState("success");
+        setTimeout(() => {
+          onSuccess();
+          onOpenChange(false);
+        }, 1000);
       } catch (error: any) {
         console.error("[SubscriptionEditor] Failed to create subscription:", error);
         // Handle 402 Payment Required error
@@ -167,8 +200,10 @@ export function SubscriptionEditor({
           console.log("[SubscriptionEditor] Payment method required");
           setPaymentRequiredError(true);
           setHasPaymentMethod(false);
+        } else {
+          setPaymentConfirmationState("error");
+          setPaymentError(error?.message || "Failed to create subscription");
         }
-      } finally {
         setLoadingPriceId(null);
       }
     }
@@ -232,6 +267,41 @@ export function SubscriptionEditor({
               )}
             </AlertDescription>
           </Alert>
+        ) : paymentConfirmationState === "confirming" || isConfirming ? (
+          <div className="flex flex-col items-center justify-center py-12 space-y-4">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <div className="text-center">
+              <p className="font-medium">Processing payment...</p>
+              <p className="text-sm text-muted-foreground">Please complete any verification if prompted.</p>
+            </div>
+          </div>
+        ) : paymentConfirmationState === "success" ? (
+          <div className="flex flex-col items-center justify-center py-12 space-y-4">
+            <CheckCircle className="h-12 w-12 text-green-500" />
+            <div className="text-center">
+              <p className="font-medium text-green-600">Payment successful!</p>
+              <p className="text-sm text-muted-foreground">Your subscription is now active.</p>
+            </div>
+          </div>
+        ) : paymentConfirmationState === "error" ? (
+          <div className="space-y-4">
+            <Alert variant="destructive">
+              <AlertTitle>Payment Failed</AlertTitle>
+              <AlertDescription className="mt-2">
+                <p className="mb-4">{paymentError || "We couldn't process your payment. Please try again."}</p>
+                <Button
+                  onClick={() => {
+                    setPaymentConfirmationState("idle");
+                    setPaymentError(null);
+                    setLoadingPriceId(null);
+                  }}
+                  variant="outline"
+                >
+                  Try Again
+                </Button>
+              </AlertDescription>
+            </Alert>
+          </div>
         ) : (
           <div className="space-y-6">
             <PricingCardsGrid

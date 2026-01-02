@@ -55,3 +55,18 @@ export type CancelSubscriptionInput = {
   immediate?: boolean;
   reason?: string;
 };
+
+// ============================================================================
+// Subscription Response Types (for SCA payment confirmation)
+// ============================================================================
+
+export interface StripeSubscriptionCreateMeta {
+  clientSecret: string | null;
+  paymentIntentId: string | null;
+  requiresAction: boolean;
+}
+
+export interface StripeSubscriptionCreateResponse {
+  subscription: StripeSubscriptionInterface;
+  meta: StripeSubscriptionCreateMeta;
+}

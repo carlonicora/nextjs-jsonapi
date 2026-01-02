@@ -1,20 +1,25 @@
 "use client";
 
-import { CreditCard } from "lucide-react";
+import { CheckCircle, CreditCard, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { v4 } from "uuid";
-import { Button } from "../../../../../shadcnui";
+import { Alert, AlertDescription, AlertTitle, Button } from "../../../../../shadcnui";
 import { BillingAlertBanner } from "../../../components";
 import { PaymentMethodEditor } from "../../../stripe-customer/components/forms/PaymentMethodEditor";
 import { StripeCustomerService } from "../../../stripe-customer/data/stripe-customer.service";
 import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
 import { StripeProductInterface, StripeProductService } from "../../../stripe-product";
 import { StripeSubscriptionInterface, StripeSubscriptionService, SubscriptionStatus } from "../../data";
+import { useConfirmSubscriptionPayment } from "../../hooks";
 import { SubscriptionEditor } from "../forms";
 import { SubscriptionsList } from "../lists";
 import { PricesByProduct, PricingCardsGrid } from "../widgets/PricingCardsGrid";
 
+type PaymentConfirmationState = "idle" | "confirming" | "success" | "error";
+
 export function SubscriptionsContainer() {
+  const { confirmPayment, isConfirming } = useConfirmSubscriptionPayment();
+
   const [subscriptions, setSubscriptions] = useState<StripeSubscriptionInterface[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [showCreateSubscription, setShowCreateSubscription] = useState<boolean>(false);
@@ -29,6 +34,10 @@ export function SubscriptionsContainer() {
   const [hasPaymentMethod, setHasPaymentMethod] = useState<boolean | null>(null);
   const [pendingPriceId, setPendingPriceId] = useState<string | null>(null);
   const [creatingSubscription, setCreatingSubscription] = useState<boolean>(false);
+
+  // Payment confirmation state
+  const [paymentConfirmationState, setPaymentConfirmationState] = useState<PaymentConfirmationState>("idle");
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   const loadSubscriptions = async () => {
     console.log("[SubscriptionsContainer] Loading subscriptions...");
@@ -85,12 +94,36 @@ export function SubscriptionsContainer() {
   const createSubscriptionWithPrice = async (priceId: string) => {
     console.log("[SubscriptionsContainer] Creating subscription with price:", priceId);
     setCreatingSubscription(true);
+    setPaymentError(null);
+    setPaymentConfirmationState("idle");
+
     try {
-      await StripeSubscriptionService.createSubscription({
+      const result = await StripeSubscriptionService.createSubscription({
         id: v4(),
         priceId,
       });
-      console.log("[SubscriptionsContainer] Subscription created successfully");
+      console.log("[SubscriptionsContainer] Subscription created:", result);
+
+      // Check if payment confirmation is required (SCA flow)
+      if (result.meta.requiresAction && result.meta.clientSecret) {
+        console.log("[SubscriptionsContainer] Payment confirmation required, confirming...");
+        setPaymentConfirmationState("confirming");
+
+        const confirmation = await confirmPayment(result.meta.clientSecret);
+
+        if (!confirmation.success) {
+          console.error("[SubscriptionsContainer] Payment confirmation failed:", confirmation.error);
+          setPaymentConfirmationState("error");
+          setPaymentError(confirmation.error || "Payment confirmation failed");
+          setCreatingSubscription(false);
+          return;
+        }
+
+        console.log("[SubscriptionsContainer] Payment confirmed successfully");
+      }
+
+      // Success
+      setPaymentConfirmationState("success");
       await loadSubscriptions();
     } catch (error: any) {
       console.error("[SubscriptionsContainer] Failed to create subscription:", error);
@@ -100,6 +133,9 @@ export function SubscriptionsContainer() {
         setPendingPriceId(priceId);
         setHasPaymentMethod(false);
         setShowPaymentMethodEditor(true);
+      } else {
+        setPaymentConfirmationState("error");
+        setPaymentError(error?.message || "Failed to create subscription");
       }
     } finally {
       setCreatingSubscription(false);
@@ -181,19 +217,62 @@ export function SubscriptionsContainer() {
       {/* Pricing Cards when no subscriptions */}
       {subscriptions.length === 0 && (
         <div className="space-y-6">
-          <div className="text-center">
-            <CreditCard className="text-muted-foreground mx-auto h-16 w-16 mb-4" />
-            <h3 className="mb-2 text-xl font-semibold">Choose Your Plan</h3>
-            <p className="text-muted-foreground mb-6">Select a subscription plan to get started with our services.</p>
-          </div>
+          {/* Payment confirmation states */}
+          {(paymentConfirmationState === "confirming" || isConfirming) && (
+            <div className="flex flex-col items-center justify-center py-12 space-y-4 bg-muted/50 rounded-lg">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <div className="text-center">
+                <p className="font-medium">Processing payment...</p>
+                <p className="text-sm text-muted-foreground">Please complete any verification if prompted.</p>
+              </div>
+            </div>
+          )}
 
-          <PricingCardsGrid
-            products={products}
-            pricesByProduct={pricesByProduct}
-            loading={loadingPricing}
-            loadingPriceId={creatingSubscription ? (pendingPriceId ?? undefined) : undefined}
-            onSelectPrice={handleSelectPrice}
-          />
+          {paymentConfirmationState === "success" && (
+            <div className="flex flex-col items-center justify-center py-8 space-y-4 bg-green-50 rounded-lg border border-green-200">
+              <CheckCircle className="h-12 w-12 text-green-500" />
+              <div className="text-center">
+                <p className="font-medium text-green-600">Payment successful!</p>
+                <p className="text-sm text-muted-foreground">Your subscription is now active.</p>
+              </div>
+            </div>
+          )}
+
+          {paymentConfirmationState === "error" && (
+            <Alert variant="destructive">
+              <AlertTitle>Payment Failed</AlertTitle>
+              <AlertDescription className="mt-2">
+                <p className="mb-4">{paymentError || "We couldn't process your payment. Please try again."}</p>
+                <Button
+                  onClick={() => {
+                    setPaymentConfirmationState("idle");
+                    setPaymentError(null);
+                  }}
+                  variant="outline"
+                >
+                  Try Again
+                </Button>
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {paymentConfirmationState === "idle" && !isConfirming && (
+            <>
+              <div className="text-center">
+                <CreditCard className="text-muted-foreground mx-auto h-16 w-16 mb-4" />
+                <h3 className="mb-2 text-xl font-semibold">Choose Your Plan</h3>
+                <p className="text-muted-foreground mb-6">Select a subscription plan to get started with our services.</p>
+              </div>
+
+              <PricingCardsGrid
+                products={products}
+                pricesByProduct={pricesByProduct}
+                loading={loadingPricing}
+                loadingPriceId={creatingSubscription ? (pendingPriceId ?? undefined) : undefined}
+                onSelectPrice={handleSelectPrice}
+              />
+            </>
+          )}
         </div>
       )}
 

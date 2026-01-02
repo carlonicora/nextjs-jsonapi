@@ -219,6 +219,110 @@ export abstract class AbstractService {
   }
 
   /**
+   * Make an API call and return both data and meta from the response.
+   */
+  protected static async callApiWithMeta<T>(params: {
+    type: ApiRequestDataTypeInterface;
+    method: HttpMethod;
+    endpoint: string;
+    companyId?: string;
+    input?: any;
+    overridesJsonApiCreation?: boolean;
+    responseType?: ApiRequestDataTypeInterface;
+    files?: { [key: string]: File | Blob } | File | Blob;
+  }): Promise<{ data: T; meta?: Record<string, any> }> {
+    // Dynamic import to avoid bundling issues
+    const { JsonApiGet, JsonApiPost, JsonApiPut, JsonApiPatch, JsonApiDelete } =
+      await import("../../unified/JsonApiRequest");
+
+    let apiResponse: ApiResponseInterface;
+
+    // Get language based on environment
+    let language = "en";
+    if (typeof window === "undefined") {
+      const { getLocale } = await import("next-intl/server");
+      language = (await getLocale()) ?? "en";
+    } else {
+      // Client-side: extract locale from URL pathname
+      language = this.getClientLocale();
+    }
+
+    switch (params.method) {
+      case HttpMethod.GET:
+        apiResponse = await JsonApiGet({
+          classKey: params.type,
+          endpoint: params.endpoint,
+          companyId: params.companyId,
+          language: language,
+        });
+        break;
+      case HttpMethod.POST:
+        apiResponse = await JsonApiPost({
+          classKey: params.type,
+          endpoint: params.endpoint,
+          companyId: params.companyId,
+          body: params.input,
+          overridesJsonApiCreation: params.overridesJsonApiCreation,
+          language: language,
+          responseType: params.responseType,
+          files: params.files,
+        });
+        break;
+      case HttpMethod.PUT:
+        apiResponse = await JsonApiPut({
+          classKey: params.type,
+          endpoint: params.endpoint,
+          companyId: params.companyId,
+          body: params.input,
+          language: language,
+          responseType: params.responseType,
+          files: params.files,
+        });
+        break;
+      case HttpMethod.PATCH:
+        apiResponse = await JsonApiPatch({
+          classKey: params.type,
+          endpoint: params.endpoint,
+          companyId: params.companyId,
+          body: params.input,
+          overridesJsonApiCreation: params.overridesJsonApiCreation,
+          language: language,
+          responseType: params.responseType,
+          files: params.files,
+        });
+        break;
+      case HttpMethod.DELETE:
+        apiResponse = await JsonApiDelete({
+          classKey: params.type,
+          endpoint: params.endpoint,
+          companyId: params.companyId,
+          language: language,
+          responseType: params.responseType,
+        });
+        break;
+      default:
+        throw new Error("Method not found");
+    }
+
+    if (!apiResponse.ok) {
+      if (globalErrorHandler && typeof window !== "undefined") {
+        globalErrorHandler(apiResponse.response, apiResponse.error);
+        return { data: undefined as any, meta: undefined };
+      } else {
+        const error = new Error(`${apiResponse.error}`) as any;
+        error.status = apiResponse.response;
+        error.digest = `HTTP_${apiResponse.response}`;
+        throw error;
+      }
+    }
+
+    return {
+      data: apiResponse.data as T,
+      meta: apiResponse.meta,
+    };
+  }
+
+  /**
    * Get raw JSON:API response data without deserialization.
    */
   protected static async getRawData(params: {

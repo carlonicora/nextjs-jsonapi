@@ -81,6 +81,11 @@ export async function translateResponse<T extends ApiDataInterface>(params: {
 
   response.raw = params.apiResponse.data;
 
+  // Extract meta from JSON:API response
+  if (params.apiResponse.data?.meta) {
+    response.meta = params.apiResponse.data.meta;
+  }
+
   try {
     // Check if response is JSON:API formatted (has a 'data' property)
     // If not, return the raw response data directly (e.g., { url: "..." } or { clientSecret: "..." })

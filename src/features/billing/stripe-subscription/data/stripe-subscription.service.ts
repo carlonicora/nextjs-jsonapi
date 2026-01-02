@@ -3,6 +3,8 @@ import { ProrationPreviewInterface } from "../../stripe-invoice/data/stripe-invo
 import {
   CancelSubscriptionInput,
   ChangePlanInput,
+  StripeSubscriptionCreateMeta,
+  StripeSubscriptionCreateResponse,
   StripeSubscriptionInput,
   StripeSubscriptionInterface,
 } from "./stripe-subscription.interface";
@@ -53,18 +55,28 @@ export class StripeSubscriptionService extends AbstractService {
 
   /**
    * Create a new subscription
+   * Returns subscription data along with meta containing SCA payment confirmation details
    */
-  static async createSubscription(params: StripeSubscriptionInput): Promise<StripeSubscriptionInterface> {
+  static async createSubscription(params: StripeSubscriptionInput): Promise<StripeSubscriptionCreateResponse> {
     const endpoint = new EndpointCreator({
       endpoint: Modules.StripeSubscription,
     });
 
-    return this.callApi<StripeSubscriptionInterface>({
+    const result = await this.callApiWithMeta<StripeSubscriptionInterface>({
       type: Modules.StripeSubscription,
       method: HttpMethod.POST,
       endpoint: endpoint.generate(),
       input: params,
     });
+
+    return {
+      subscription: result.data,
+      meta: (result.meta as StripeSubscriptionCreateMeta) ?? {
+        clientSecret: null,
+        paymentIntentId: null,
+        requiresAction: false,
+      },
+    };
   }
 
   /**

@@ -4,6 +4,7 @@ export interface ApiResponseInterface {
   ok: boolean;
   response: number;
   raw?: any;
+  meta?: Record<string, any>;
 
   self?: string;
   next?: string;
