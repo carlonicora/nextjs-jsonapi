@@ -316,6 +316,7 @@ export function useDataListRetriever<T>(params: {
   const refresh = useCallback(async () => {
     setNextPage(undefined);
     setPreviousPage(undefined);
+    setData(undefined); // Clear stale data immediately before fetching new data
     fetchData({ isRefresh: true });
   }, [fetchData]);
 
