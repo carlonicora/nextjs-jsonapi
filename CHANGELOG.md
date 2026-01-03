@@ -1,3 +1,9 @@
+## [1.19.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.19.0...v1.19.1) (2026-01-03)
+
+### 🐛 Bug Fixes
+
+* remove project templated from web module generation ([2889413](https://github.com/carlonicora/nextjs-jsonapi/commit/28894138f3691bc4a06fac38649bf640b30bbea5))
+
 ## [1.19.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.18.0...v1.19.0) (2026-01-03)
 
 ### 🚀 Features
