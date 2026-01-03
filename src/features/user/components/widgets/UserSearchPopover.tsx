@@ -69,7 +69,11 @@ export const UserSearchPopover = ({ children, onSelect, align = "start", classNa
           <CommandList>
             {users.length > 0 ? (
               users.map((user) => (
-                <CommandItem key={user.id} className="cursor-pointer" onSelect={() => handleSelectUser(user.id)}>
+                <CommandItem
+                  key={user.id}
+                  className="cursor-pointer hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent"
+                  onSelect={() => handleSelectUser(user.id)}
+                >
                   <UserAvatar user={user} className="mr-2 h-4 w-4" showLink={false} />
                   <span>{user.name}</span>
                 </CommandItem>

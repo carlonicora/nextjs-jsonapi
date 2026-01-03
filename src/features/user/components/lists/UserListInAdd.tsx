@@ -26,7 +26,7 @@ export function UserListInAdd({ data, existingUsers, setSelectedUser, setLevelOp
             return (
               <React.Fragment key={user.id}>
                 <CommandItem
-                  className="cursor-pointer"
+                  className="cursor-pointer hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent"
                   key={user.id}
                   onClick={(e) => {
                     setSelectedUser(user);

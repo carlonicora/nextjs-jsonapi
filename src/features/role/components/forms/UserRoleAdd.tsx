@@ -113,7 +113,7 @@ export function UserRoleAdd({ user, refresh }: UserRoleAddProps) {
             <CommandEmpty>{t(`generic.search.no_results`, { type: t(`types.roles`, { count: 1 }) })}</CommandEmpty>
             {roles.map((role: RoleInterface) => (
               <CommandItem
-                className="cursor-pointer"
+                className="cursor-pointer hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent"
                 key={role.id}
                 onSelect={() => addUserToRole(role)}
                 onClick={() => addUserToRole(role)}

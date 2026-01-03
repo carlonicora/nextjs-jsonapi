@@ -174,6 +174,7 @@ export default function ${names.pascalCase}Selector({
                               key={${names.camelCase}.id}
                               value={${names.camelCase}.id}
                               onSelect={() => set${names.pascalCase}(${names.camelCase})}
+                              className="hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent cursor-pointer"
                             >
                               {${names.camelCase}.name}
                             </CommandItem>

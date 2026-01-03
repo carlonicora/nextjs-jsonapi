@@ -4,6 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { CheckIcon, ChevronDown, WandSparkles, XCircle, XIcon } from "lucide-react";
 import * as React from "react";
 
+import { cn } from "../../utils/cn";
 import { Badge } from "../ui/badge";
 import {
   Command,
@@ -16,7 +17,6 @@ import {
 } from "../ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Separator } from "../ui/separator";
-import { cn } from "../../utils/cn";
 
 /**
  * Variants for the multi-select component to handle different styles.
@@ -43,8 +43,7 @@ const multiSelectVariants = cva(
  * Props for MultiSelect component
  */
 interface MultiSelectProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof multiSelectVariants> {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof multiSelectVariants> {
   /**
    * An array of option objects to be displayed in the multi-select component.
    * Each option object has a label, value, and an optional icon.
@@ -223,68 +222,68 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
             className,
           )}
         >
-            {selectedValues.length > 0 ? (
-              <div className="flex w-full items-center justify-between">
-                <div className="flex flex-wrap items-center">
-                  {selectedValues.slice(0, maxCount).map((value) => {
-                    const option = options.find((o) => o.value === value);
-                    const IconComponent = option?.icon;
-                    return (
-                      <Badge
-                        key={value}
-                        className={cn(isAnimating ? "animate-bounce" : "", multiSelectVariants({ variant }))}
-                        style={{ animationDuration: `${animation}s` }}
-                      >
-                        {IconComponent && <IconComponent className="mr-2 h-4 w-4" />}
-                        {option?.label}
-                        <XCircle
-                          className="ml-2 h-4 w-4 cursor-pointer"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            toggleOption(value);
-                          }}
-                        />
-                      </Badge>
-                    );
-                  })}
-                  {selectedValues.length > maxCount && (
+          {selectedValues.length > 0 ? (
+            <div className="flex w-full items-center justify-between">
+              <div className="flex flex-wrap items-center">
+                {selectedValues.slice(0, maxCount).map((value) => {
+                  const option = options.find((o) => o.value === value);
+                  const IconComponent = option?.icon;
+                  return (
                     <Badge
-                      className={cn(
-                        "text-foreground border-foreground/1 bg-transparent hover:bg-transparent",
-                        isAnimating ? "animate-bounce" : "",
-                        multiSelectVariants({ variant }),
-                      )}
+                      key={value}
+                      className={cn(isAnimating ? "animate-bounce" : "", multiSelectVariants({ variant }))}
                       style={{ animationDuration: `${animation}s` }}
                     >
-                      {`+ ${selectedValues.length - maxCount} more`}
+                      {IconComponent && <IconComponent className="mr-2 h-4 w-4" />}
+                      {option?.label}
                       <XCircle
                         className="ml-2 h-4 w-4 cursor-pointer"
                         onClick={(event) => {
                           event.stopPropagation();
-                          clearExtraOptions();
+                          toggleOption(value);
                         }}
                       />
                     </Badge>
-                  )}
-                </div>
-                <div className="flex items-center justify-between">
-                  <XIcon
-                    className="text-muted-foreground mx-2 h-4 cursor-pointer"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      handleClear();
-                    }}
-                  />
-                  <Separator orientation="vertical" className="flex h-full min-h-6" />
-                  <ChevronDown className="text-muted-foreground mx-2 h-4 cursor-pointer" />
-                </div>
+                  );
+                })}
+                {selectedValues.length > maxCount && (
+                  <Badge
+                    className={cn(
+                      "text-foreground border-foreground/1 bg-transparent hover:bg-transparent",
+                      isAnimating ? "animate-bounce" : "",
+                      multiSelectVariants({ variant }),
+                    )}
+                    style={{ animationDuration: `${animation}s` }}
+                  >
+                    {`+ ${selectedValues.length - maxCount} more`}
+                    <XCircle
+                      className="ml-2 h-4 w-4 cursor-pointer"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        clearExtraOptions();
+                      }}
+                    />
+                  </Badge>
+                )}
               </div>
-            ) : (
-              <div className="mx-auto flex w-full items-center justify-between">
-                <span className="text-muted-foreground mx-3 text-sm">{placeholder}</span>
+              <div className="flex items-center justify-between">
+                <XIcon
+                  className="text-muted-foreground mx-2 h-4 cursor-pointer"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleClear();
+                  }}
+                />
+                <Separator orientation="vertical" className="flex h-full min-h-6" />
                 <ChevronDown className="text-muted-foreground mx-2 h-4 cursor-pointer" />
               </div>
-            )}
+            </div>
+          ) : (
+            <div className="mx-auto flex w-full items-center justify-between">
+              <span className="text-muted-foreground mx-3 text-sm">{placeholder}</span>
+              <ChevronDown className="text-muted-foreground mx-2 h-4 cursor-pointer" />
+            </div>
+          )}
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Command>
@@ -297,7 +296,11 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
             <CommandList>
               <CommandEmpty>No results found.</CommandEmpty>
               <CommandGroup>
-                <CommandItem key="all" onSelect={toggleAll} className="cursor-pointer">
+                <CommandItem
+                  key="all"
+                  onSelect={toggleAll}
+                  className="cursor-pointer hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent"
+                >
                   <div
                     className={cn(
                       "border-primary mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
@@ -316,7 +319,7 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
                     <CommandItem
                       key={option.value}
                       onSelect={() => toggleOption(option.value)}
-                      className="cursor-pointer"
+                      className="cursor-pointer hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent"
                     >
                       <div
                         className={cn(
@@ -345,7 +348,7 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
                   )}
                   <CommandItem
                     onSelect={() => setIsPopoverOpen(false)}
-                    className="max-w-full flex-1 cursor-pointer justify-center"
+                    className="max-w-full flex-1 cursor-pointer justify-center hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent"
                   >
                     Close
                   </CommandItem>

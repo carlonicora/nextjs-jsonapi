@@ -167,7 +167,11 @@ export function UserSelector({ id, form, label, placeholder, onChange, isRequire
                       {data.data &&
                         data.data.length > 0 &&
                         (data.data as UserInterface[]).map((user: UserInterface) => (
-                          <CommandItem className="cursor-pointer" key={user.id} onSelect={() => setUser(user)}>
+                          <CommandItem
+                            className="cursor-pointer hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent"
+                            key={user.id}
+                            onSelect={() => setUser(user)}
+                          >
                             <UserAvatar user={user} className={`mr-2 h-4 w-4`} />
                             <span className="">{user.name}</span>
                           </CommandItem>
