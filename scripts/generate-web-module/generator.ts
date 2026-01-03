@@ -7,47 +7,34 @@
 import * as fs from "fs";
 import * as path from "path";
 import {
-  JsonModuleDefinition,
-  FrontendTemplateData,
-  GeneratedFile,
-  GenerateWebModuleOptions,
-} from "./types";
-import { transformNames, toCamelCase, pluralize, toTitleCase } from "./transformers/name-transformer";
-import { detectExtendsContent } from "./transformers/parent-detector";
-import { mapFields, filterInheritedFields } from "./transformers/field-mapper";
-import { resolveRelationships, generateServiceMethods } from "./transformers/relationship-resolver";
-import { buildImportStatements, buildFilePaths } from "./transformers/import-resolver";
-import { generateI18nKeys } from "./transformers/i18n-generator";
-import { parseAndValidate, validationPassed } from "./validators/json-schema-validator";
-import {
-  generateInterfaceTemplate,
-  generateModelTemplate,
-  generateServiceTemplate,
-  generateFieldsTemplate,
-  generateEditorTemplate,
-  generateDeleterTemplate,
-  generateSelectorTemplate,
-  generateMultiSelectorTemplate,
-  generateListTemplate,
-  generateDetailsTemplate,
-  generateContentTemplate,
   generateContainerTemplate,
-  generateListContainerTemplate,
+  generateContentTemplate,
   generateContextTemplate,
-  generateTableHookTemplate,
-  generateModuleTemplate,
-  generateListPageTemplate,
+  generateDeleterTemplate,
   generateDetailPageTemplate,
-  generateBootstrapperTemplate,
-  generateEnvTemplate,
-  generateMiddlewareEnvTemplate,
-  generateMainLayoutTemplate,
-  generateSettingsContextTemplate,
-  generateSettingsContainerTemplate,
-  generateSettingsPageTemplate,
-  generateSettingsModulePageTemplate,
+  generateDetailsTemplate,
+  generateEditorTemplate,
+  generateFieldsTemplate,
+  generateInterfaceTemplate,
+  generateListContainerTemplate,
+  generateListPageTemplate,
+  generateListTemplate,
+  generateModelTemplate,
+  generateModuleTemplate,
+  generateMultiSelectorTemplate,
+  generateSelectorTemplate,
+  generateServiceTemplate,
+  generateTableHookTemplate,
 } from "./templates";
-import { writeFiles, printResults, updateBootstrapper, updateI18n } from "./utils";
+import { filterInheritedFields, mapFields } from "./transformers/field-mapper";
+import { generateI18nKeys } from "./transformers/i18n-generator";
+import { buildFilePaths, buildImportStatements } from "./transformers/import-resolver";
+import { toCamelCase, transformNames } from "./transformers/name-transformer";
+import { detectExtendsContent } from "./transformers/parent-detector";
+import { generateServiceMethods, resolveRelationships } from "./transformers/relationship-resolver";
+import { FrontendTemplateData, GeneratedFile, GenerateWebModuleOptions, JsonModuleDefinition } from "./types";
+import { printResults, updateBootstrapper, updateI18n, writeFiles } from "./utils";
+import { parseAndValidate, validationPassed } from "./validators/json-schema-validator";
 
 /**
  * Generate all frontend module files from JSON schema
@@ -330,81 +317,6 @@ function generateAllFiles(data: FrontendTemplateData, schema: JsonModuleDefiniti
     content: generateDetailPageTemplate(data),
     type: "page",
   });
-
-  // Project setup files (only if they don't exist)
-  const webBasePath = findWebBasePath("");
-
-  const bootstrapper = generateBootstrapperTemplate(webBasePath);
-  if (bootstrapper) {
-    files.push({
-      path: path.join(webBasePath, "apps/web/src/config/Bootstrapper.ts"),
-      content: bootstrapper,
-      type: "project-setup",
-    });
-  }
-
-  const env = generateEnvTemplate(webBasePath);
-  if (env) {
-    files.push({
-      path: path.join(webBasePath, "apps/web/src/config/env.ts"),
-      content: env,
-      type: "project-setup",
-    });
-  }
-
-  const middlewareEnv = generateMiddlewareEnvTemplate(webBasePath);
-  if (middlewareEnv) {
-    files.push({
-      path: path.join(webBasePath, "apps/web/src/config/middleware-env.ts"),
-      content: middlewareEnv,
-      type: "project-setup",
-    });
-  }
-
-  const mainLayout = generateMainLayoutTemplate(webBasePath);
-  if (mainLayout) {
-    files.push({
-      path: path.join(webBasePath, "apps/web/src/app/[locale]/(main)/layout.tsx"),
-      content: mainLayout,
-      type: "project-setup",
-    });
-  }
-
-  const settingsContext = generateSettingsContextTemplate(webBasePath);
-  if (settingsContext) {
-    files.push({
-      path: path.join(webBasePath, "apps/web/src/features/common/contexts/SettingsContext.tsx"),
-      content: settingsContext,
-      type: "project-setup",
-    });
-  }
-
-  const settingsContainer = generateSettingsContainerTemplate(webBasePath);
-  if (settingsContainer) {
-    files.push({
-      path: path.join(webBasePath, "apps/web/src/features/common/components/containers/SettingsContainer.tsx"),
-      content: settingsContainer,
-      type: "project-setup",
-    });
-  }
-
-  const settingsPage = generateSettingsPageTemplate(webBasePath);
-  if (settingsPage) {
-    files.push({
-      path: path.join(webBasePath, "apps/web/src/app/[locale]/(main)/(features)/settings/page.tsx"),
-      content: settingsPage,
-      type: "project-setup",
-    });
-  }
-
-  const settingsModulePage = generateSettingsModulePageTemplate(webBasePath);
-  if (settingsModulePage) {
-    files.push({
-      path: path.join(webBasePath, "apps/web/src/app/[locale]/(main)/(features)/settings/[module]/page.tsx"),
-      content: settingsModulePage,
-      type: "project-setup",
-    });
-  }
 
   return files;
 }
