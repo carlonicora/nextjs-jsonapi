@@ -1,3 +1,13 @@
+## [1.19.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.18.0...v1.19.0) (2026-01-03)
+
+### 🚀 Features
+
+* clear stale data before refreshing in useDataListRetriever ([2202d1e](https://github.com/carlonicora/nextjs-jsonapi/commit/2202d1eceeff0d69ab795c9baced5da000e37c68))
+
+### 💎 Styles
+
+* correct command item style ([2e010bc](https://github.com/carlonicora/nextjs-jsonapi/commit/2e010bc2b18bc9de1f32f64d1d288477fdabacc0))
+
 ## [1.18.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.17.0...v1.18.0) (2026-01-02)
 
 ### 🚀 Features
