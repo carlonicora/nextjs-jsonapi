@@ -95,7 +95,7 @@ export function createMockApiData(options: CreateMockApiDataOptions): ApiDataInt
       included,
       allData: [jsonApiData],
     }),
-    rehydrate: function (data: any) {
+    rehydrate: function (_data: any) {
       return this;
     },
     createJsonApi: (data: any) => ({
