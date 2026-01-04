@@ -52,13 +52,16 @@ export function validateJsonSchema(schema: any): ValidationError[] {
     });
   }
 
-  // Target directory validation
-  if (schema.targetDir && !["features", "foundations"].includes(schema.targetDir)) {
-    errors.push({
-      field: "targetDir",
-      message: 'Must be either "features" or "foundations"',
-      severity: "error",
-    });
+  // Target directory validation - must start with "features" or "foundations"
+  if (schema.targetDir) {
+    const baseDir = schema.targetDir.split("/")[0];
+    if (!["features", "foundations"].includes(baseDir)) {
+      errors.push({
+        field: "targetDir",
+        message: 'Must start with "features" or "foundations"',
+        severity: "error",
+      });
+    }
   }
 
   // Module ID validation (required for frontend)

@@ -9,6 +9,19 @@ import { FrontendTemplateData } from "../types/template-data.interface";
 
 const BOOTSTRAPPER_PATH = "apps/web/src/config/Bootstrapper.ts";
 
+/**
+ * Get the subdirectory path from targetDir, stripping the base "features" or "foundations" prefix
+ * since the @/features/ alias already provides that base.
+ *
+ * @param targetDir - Target directory (e.g., "features/customer-management" or "features")
+ * @returns Subdirectory path (e.g., "customer-management" or "")
+ */
+function getSubdirectoryPath(targetDir: string): string {
+  const segments = targetDir.split("/");
+  // Remove the first segment (features or foundations) since @/features/ already includes it
+  return segments.slice(1).join("/");
+}
+
 export interface BootstrapperUpdateResult {
   success: boolean;
   message: string;
@@ -52,7 +65,9 @@ export function updateBootstrapper(
   }
 
   // Add import statement
-  const importStatement = `import { ${names.pascalCase}Module } from "@/features/${targetDir}/${names.kebabCase}/${names.pascalCase}Module";`;
+  const subdir = getSubdirectoryPath(targetDir);
+  const subdirPath = subdir ? `${subdir}/` : "";
+  const importStatement = `import { ${names.pascalCase}Module } from "@/features/${subdirPath}${names.kebabCase}/${names.pascalCase}Module";`;
 
   // Find the right place to insert import (after "// Feature module imports" or at end of imports)
   const featureImportsMarker = "// Feature module imports";
@@ -133,7 +148,9 @@ export function updateBootstrapper(
  */
 export function generateImportStatement(data: FrontendTemplateData): string {
   const { names, targetDir } = data;
-  return `import { ${names.pascalCase}Module } from "@/features/${targetDir}/${names.kebabCase}/${names.pascalCase}Module";`;
+  const subdir = getSubdirectoryPath(targetDir);
+  const subdirPath = subdir ? `${subdir}/` : "";
+  return `import { ${names.pascalCase}Module } from "@/features/${subdirPath}${names.kebabCase}/${names.pascalCase}Module";`;
 }
 
 /**

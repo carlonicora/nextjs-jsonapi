@@ -128,7 +128,7 @@ export async function generateWebModule(options: GenerateWebModuleOptions): Prom
  */
 function buildTemplateData(schema: JsonModuleDefinition): FrontendTemplateData {
   const names = transformNames(schema.moduleName, schema.endpointName);
-  const targetDir = schema.targetDir as "features" | "foundations";
+  const targetDir = schema.targetDir;
   const extendsContent = detectExtendsContent(schema.fields, schema.extendsContent);
 
   // Map fields

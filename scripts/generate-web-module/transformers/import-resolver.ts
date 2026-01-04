@@ -94,6 +94,19 @@ export function buildLibraryImports(extendsContent: boolean): string[] {
 }
 
 /**
+ * Get the subdirectory path from targetDir, stripping the base "features" or "foundations" prefix
+ * since the @/features/ alias already provides that base.
+ *
+ * @param targetDir - Target directory (e.g., "features/customer-management" or "features")
+ * @returns Subdirectory path (e.g., "customer-management" or "")
+ */
+function getSubdirectoryPath(targetDir: string): string {
+  const segments = targetDir.split("/");
+  // Remove the first segment (features or foundations) since @/features/ already includes it
+  return segments.slice(1).join("/");
+}
+
+/**
  * Build import path for a module's own files
  *
  * @param targetDir - Target directory
@@ -107,7 +120,9 @@ export function buildModuleImportPath(
   fileName: string
 ): string {
   const kebab = toKebabCase(moduleName);
-  return `@/features/${targetDir}/${kebab}/data/${fileName}`;
+  const subdir = getSubdirectoryPath(targetDir);
+  const subdirPath = subdir ? `${subdir}/` : "";
+  return `@/features/${subdirPath}${kebab}/data/${fileName}`;
 }
 
 /**
@@ -124,13 +139,15 @@ export function buildSelectorImportPath(rel: FrontendRelationship): string {
 /**
  * Get the web base path for generated files
  *
- * @param targetDir - Target directory (features or foundations)
+ * @param targetDir - Target directory (e.g., "features/customer-management" or "features")
  * @param moduleName - Module name (PascalCase)
  * @returns Base path for generated files
  */
 export function getWebBasePath(targetDir: string, moduleName: string): string {
   const kebab = toKebabCase(moduleName);
-  return `apps/web/src/features/${targetDir}/${kebab}`;
+  const subdir = getSubdirectoryPath(targetDir);
+  const subdirPath = subdir ? `${subdir}/` : "";
+  return `apps/web/src/features/${subdirPath}${kebab}`;
 }
 
 /**
@@ -180,7 +197,9 @@ export function buildFilePaths(
 ): ModuleFilePaths {
   const { names, targetDir } = data;
   const prefix = rootPath ? `${rootPath}/` : "";
-  const basePath = `${prefix}apps/web/src/features/${targetDir}/${names.kebabCase}`;
+  const subdir = getSubdirectoryPath(targetDir);
+  const subdirPath = subdir ? `${subdir}/` : "";
+  const basePath = `${prefix}apps/web/src/features/${subdirPath}${names.kebabCase}`;
   const pagePath = `${prefix}apps/web/src/app/[locale]/(main)/(features)/${names.pluralKebab}`;
 
   return {

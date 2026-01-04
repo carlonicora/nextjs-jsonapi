@@ -120,7 +120,7 @@ export interface FrontendTemplateData {
   // Module metadata
   moduleId: string;
   endpoint: string;
-  targetDir: "features" | "foundations";
+  targetDir: string;
 
   // Parent class detection
   extendsContent: boolean;
