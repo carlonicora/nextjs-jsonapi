@@ -1,3 +1,9 @@
+## [1.19.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.19.1...v1.19.2) (2026-01-04)
+
+### 🐛 Bug Fixes
+
+* rename parameter in rehydrate function for clarity ([bd29932](https://github.com/carlonicora/nextjs-jsonapi/commit/bd2993226a8e367fb4a95fa9f23fbe8402885a36))
+
 ## [1.19.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.19.0...v1.19.1) (2026-01-03)
 
 ### 🐛 Bug Fixes
