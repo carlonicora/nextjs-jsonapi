@@ -106,16 +106,16 @@ export function FormDateTime({
               <div className="relative flex flex-row">
                 <Popover open={open} onOpenChange={setOpen} modal={true}>
                   <div className="flex w-full flex-row items-center justify-between">
-                    <PopoverTrigger>
-                      <FormControl>
+                    <PopoverTrigger
+                      render={
                         <Button
                           variant={"outline"}
                           className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
-                        >
-                          {field.value ? formatDateTime(field.value) : <span>{t(`generic.pick_date_time`)}</span>}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
+                        />
+                      }
+                    >
+                      {field.value ? formatDateTime(field.value) : <span>{t(`generic.pick_date_time`)}</span>}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </PopoverTrigger>
                     {field.value && allowEmpty !== false && (
                       <CircleXIcon

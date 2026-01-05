@@ -151,13 +151,12 @@ export function FormDate({
                       className="pr-16"
                     />
                     <div className="absolute right-1 top-1/2 flex -translate-y-1/2 items-center space-x-1">
-                      <PopoverTrigger>
-                        <button
-                          type="button"
-                          className="hover:bg-muted flex h-8 w-8 items-center justify-center rounded-md"
-                        >
-                          <CalendarIcon className="h-4 w-4 opacity-50" />
-                        </button>
+                      <PopoverTrigger
+                        render={<div />}
+                        nativeButton={false}
+                        className="hover:bg-muted flex h-8 w-8 cursor-pointer items-center justify-center rounded-md"
+                      >
+                        <CalendarIcon className="h-4 w-4 opacity-50" />
                       </PopoverTrigger>
                       {field.value && (
                         <button
