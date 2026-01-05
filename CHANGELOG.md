@@ -1,3 +1,9 @@
+## [1.22.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.21.0...v1.22.0) (2026-01-05)
+
+### 🚀 Features
+
+* add module support to ContentTitle component and update usages in details views ([b23995d](https://github.com/carlonicora/nextjs-jsonapi/commit/b23995d949b4988070d1c06558a5ec1982c99a0d))
+
 ## [1.21.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.20.0...v1.21.0) (2026-01-05)
 
 ### 🚀 Features
