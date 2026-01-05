@@ -1,3 +1,9 @@
+## [1.23.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.22.0...v1.23.0) (2026-01-05)
+
+### 🚀 Features
+
+* update PopoverTrigger usage in FormDate and FormDateTime components for improved rendering ([1dcd69f](https://github.com/carlonicora/nextjs-jsonapi/commit/1dcd69fe03a0aedbc540c7d5725b19c90f98278a))
+
 ## [1.22.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.21.0...v1.22.0) (2026-01-05)
 
 ### 🚀 Features
