@@ -51,7 +51,7 @@ export function UserDetails({ user }: UserDetailsProps) {
           />
         </div>
       )}
-      <ContentTitle type={title.type} element={title.element} functions={title.functions} />
+      <ContentTitle module={Modules.User} type={title.type} element={title.element} functions={title.functions} />
       {user.isDeleted ? (
         <div>
           <Badge variant="destructive">{t(`foundations.user.errors.deleted`)}</Badge>

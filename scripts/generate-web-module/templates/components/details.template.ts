@@ -4,8 +4,8 @@
  * Generates {Module}Details.tsx component for displaying item details.
  */
 
+import { pluralize, toCamelCase } from "../../transformers/name-transformer";
 import { FrontendTemplateData } from "../../types/template-data.interface";
-import { toCamelCase, pluralize } from "../../transformers/name-transformer";
 
 /**
  * Generate the details component file content
@@ -23,6 +23,7 @@ export function generateDetailsTemplate(data: FrontendTemplateData): string {
 import { use${names.pascalCase}Context } from "@/features/${data.targetDir}/${names.kebabCase}/contexts/${names.pascalCase}Context";
 import { AttributeElement, ContentTitle, ReactMarkdownContainer } from "@carlonicora/nextjs-jsonapi/components";
 import { useSharedContext } from "@carlonicora/nextjs-jsonapi/contexts";
+import { Modules } from "@carlonicora/nextjs-jsonapi/core";
 import { useTranslations } from "next-intl";
 
 function ${names.pascalCase}DetailsInternal() {
@@ -34,7 +35,7 @@ function ${names.pascalCase}DetailsInternal() {
 
   return (
     <div className="flex w-full flex-col gap-y-2">
-      <ContentTitle type={title.type} element={title.element} functions={title.functions} />
+      <ContentTitle type={title.type} element={title.element} functions={title.functions} module={Modules.${names.pascalCase}} />
 ${attributeElements}
     </div>
   );
@@ -65,9 +66,7 @@ function generateAttributeElements(data: FrontendTemplateData): string {
   }
 
   // Add custom fields (excluding name, tldr, abstract, content which are handled elsewhere)
-  const displayableFields = fields.filter(
-    (f) => !["name", "tldr", "abstract", "content", "id"].includes(f.name)
-  );
+  const displayableFields = fields.filter((f) => !["name", "tldr", "abstract", "content", "id"].includes(f.name));
 
   displayableFields.forEach((field) => {
     if (field.type === "string") {
