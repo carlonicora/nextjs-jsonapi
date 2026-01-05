@@ -5,8 +5,10 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
+import { getApiUrl } from "../../../../client/config";
 import { errorToast, FormInput, FormPassword } from "../../../../components";
 import { useI18nRouter, usePageUrlGenerator } from "../../../../hooks";
+import { isDiscordAuthEnabled, isInternalAuthEnabled } from "../../../../login";
 import {
   Button,
   CardContent,
@@ -75,41 +77,54 @@ export function Login() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent>
-            <FormInput
-              autoFocus
-              form={form}
-              id="email"
-              name={t(`generic.fields.email.label`)}
-              placeholder={t(`generic.fields.email.placeholder`)}
-              testId="form-login-input-email"
-            />
-            <FormPassword
-              form={form}
-              id="password"
-              name={t(`foundations.user.fields.password.label`)}
-              placeholder={t(`foundations.user.fields.password.placeholder`)}
-              testId="form-login-input-password"
-            />
-            <Button className="mt-4 w-full" type={"submit"} data-testid="form-login-button-submit">
-              {t(`foundations.auth.login`)}
-            </Button>
+            {isInternalAuthEnabled() && (
+              <>
+                <FormInput
+                  autoFocus
+                  form={form}
+                  id="email"
+                  name={t(`generic.fields.email.label`)}
+                  placeholder={t(`generic.fields.email.placeholder`)}
+                  testId="form-login-input-email"
+                />
+                <FormPassword
+                  form={form}
+                  id="password"
+                  name={t(`foundations.user.fields.password.label`)}
+                  placeholder={t(`foundations.user.fields.password.placeholder`)}
+                  testId="form-login-input-password"
+                />
+                <Button className="mt-4 w-full" type={"submit"} data-testid="form-login-button-submit">
+                  {t(`foundations.auth.login`)}
+                </Button>
+              </>
+            )}
           </CardContent>
-          <CardFooter className="flex w-full flex-row justify-between">
-            <Link
-              href="#"
-              className="flex w-full justify-start"
-              onClick={() => setComponentType(AuthComponent.Register)}
-            >
-              {t(`foundations.auth.register`)}
-            </Link>
-            <Link
-              href="#"
-              className="flex w-full justify-end"
-              onClick={() => setComponentType(AuthComponent.ForgotPassword)}
-              data-testid="form-login-link-forgot-password"
-            >
-              {t(`foundations.auth.forgot_password`)}
-            </Link>
+          <CardFooter className="flex w-full flex-col gap-y-4 mt-4">
+            {isDiscordAuthEnabled() && (
+              <Link href={`${getApiUrl()}auth/discord`} className="flex w-full justify-end">
+                <Button className="w-full" variant={`outline`} data-testid="page-login-button-initial-login">
+                  Login with Discord
+                </Button>
+              </Link>
+            )}
+            <div className="flex w-full flex-row justify-between">
+              <Link
+                href="#"
+                className="flex w-full justify-start"
+                onClick={() => setComponentType(AuthComponent.Register)}
+              >
+                {t(`foundations.auth.register`)}
+              </Link>
+              <Link
+                href="#"
+                className="flex w-full justify-end"
+                onClick={() => setComponentType(AuthComponent.ForgotPassword)}
+                data-testid="form-login-link-forgot-password"
+              >
+                {t(`foundations.auth.forgot_password`)}
+              </Link>
+            </div>
           </CardFooter>
         </form>
       </Form>
