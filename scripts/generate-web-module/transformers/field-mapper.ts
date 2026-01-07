@@ -115,18 +115,16 @@ export function getFormFieldJsx(field: FrontendField, moduleName: string): strin
 
   switch (field.formComponent) {
     case "BlockNoteEditor":
-      return `<FormContainerGeneric form={form} id="${field.name}" name={t(\`features.${lowerModuleName}.fields.${field.name}.label\`)}>
-  <BlockNoteEditorContainer
-    id={form.getValues("id")}
-    type="${lowerModuleName}"
-    initialContent={form.getValues("${field.name}")}
-    onChange={(content, isEmpty, hasUnresolvedDiff) => {
-      form.setValue("${field.name}", content);
-    }}
-    placeholder={t(\`features.${lowerModuleName}.fields.${field.name}.placeholder\`)}
-    bordered
-  />
-</FormContainerGeneric>`;
+      return `<BlockNoteEditorContainer
+  id={form.getValues("id")}
+  type="${lowerModuleName}"
+  initialContent={form.getValues("${field.name}")}
+  onChange={(content, isEmpty, hasUnresolvedDiff) => {
+    form.setValue("${field.name}", content);
+  }}
+  placeholder={t(\`features.${lowerModuleName}.fields.${field.name}.placeholder\`)}
+  bordered
+/>`;
 
     case "FormTextarea":
       return `<FormTextarea

@@ -17,7 +17,7 @@ export function generateMultiSelectorTemplate(data: FrontendTemplateData): strin
 
   return `"use client";
 
-import { FormControl, FormField, FormItem, FormLabel, FormMessage, MultiSelect } from "@carlonicora/nextjs-jsonapi/components";
+import { FormFieldWrapper, MultiSelect } from "@carlonicora/nextjs-jsonapi/components";
 import { ${names.pascalCase}Interface } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
 import { ${names.pascalCase}Service } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Service";
 import { DataListRetriever, useDataListRetriever } from "@carlonicora/nextjs-jsonapi/client";
@@ -151,32 +151,19 @@ export default function ${names.pascalCase}MultiSelector({
 
   return (
     <div className="flex w-full flex-col">
-      <FormField
-        control={form.control}
-        name={id}
-        render={({ field }) => (
-          <FormItem className={\`\${label ? "mb-5" : "mb-1"}\`}>
-            {label && (
-              <FormLabel className="flex items-center">
-                {label}
-                {isRequired && <span className="text-destructive ml-2 font-semibold">*</span>}
-              </FormLabel>
-            )}
-            <FormControl>
-              <MultiSelect
-                options={${names.camelCase}Options}
-                onValueChange={handleValueChange}
-                defaultValue={selected${names.pascalCase}Ids}
-                placeholder={placeholder}
-                maxCount={maxCount}
-                animation={0}
-                onSearchChange={setSearchTerm}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+      <FormFieldWrapper form={form} name={id} label={label} isRequired={isRequired}>
+        {(field) => (
+          <MultiSelect
+            options={${names.camelCase}Options}
+            onValueChange={handleValueChange}
+            defaultValue={selected${names.pascalCase}Ids}
+            placeholder={placeholder}
+            maxCount={maxCount}
+            animation={0}
+            onSearchChange={setSearchTerm}
+          />
         )}
-      />
+      </FormFieldWrapper>
     </div>
   );
 }

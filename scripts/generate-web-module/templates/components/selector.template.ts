@@ -25,11 +25,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+  FormFieldWrapper,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -117,79 +113,66 @@ export default function ${names.pascalCase}Selector({
 
   return (
     <div className="flex w-full flex-col">
-      <FormField
-        control={form.control}
-        name={id}
-        render={({ field }) => (
-          <FormItem className={\`\${label ? "mb-5" : "mb-1"}\`}>
-            {label && (
-              <FormLabel className="flex items-center">
-                {label}
-                {isRequired && <span className="text-destructive ml-2 font-semibold">*</span>}
-              </FormLabel>
-            )}
-            <FormControl>
-              <Popover open={open} onOpenChange={setOpen} modal={true}>
-                <div className="flex w-full flex-row items-center justify-between">
-                  <PopoverTrigger className="w-full">
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      aria-expanded={open}
-                      className="h-auto min-h-10 w-full justify-between px-3 py-2"
-                    >
-                      <span className={field.value ? "" : "text-muted-foreground"}>
-                        {field.value?.name ?? placeholder ?? t(\`generic.search.placeholder\`, { type: t(\`types.${names.pluralKebab}\`, { count: 1 }) })}
-                      </span>
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  {field.value && (
-                    <XIcon
-                      className="text-muted-foreground hover:text-destructive ml-2 h-5 w-5 cursor-pointer"
-                      onClick={() => set${names.pascalCase}()}
-                    />
+      <FormFieldWrapper form={form} name={id} label={label} isRequired={isRequired}>
+        {(field) => (
+          <Popover open={open} onOpenChange={setOpen} modal={true}>
+            <div className="flex w-full flex-row items-center justify-between">
+              <PopoverTrigger className="w-full">
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={open}
+                  className="h-auto min-h-10 w-full justify-between px-3 py-2"
+                >
+                  <span className={field.value ? "" : "text-muted-foreground"}>
+                    {field.value?.name ?? placeholder ?? t(\`generic.search.placeholder\`, { type: t(\`types.${names.pluralKebab}\`, { count: 1 }) })}
+                  </span>
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              {field.value && (
+                <XIcon
+                  className="text-muted-foreground hover:text-destructive ml-2 h-5 w-5 cursor-pointer"
+                  onClick={() => set${names.pascalCase}()}
+                />
+              )}
+            </div>
+            <PopoverContent className="w-(--radix-popover-trigger-width) p-0" align="start">
+              <Command shouldFilter={false}>
+                <CommandInput
+                  placeholder={t(\`generic.search.placeholder\`, { type: t(\`types.${names.pluralKebab}\`, { count: 1 }) })}
+                  value={searchTerm}
+                  onValueChange={setSearchTerm}
+                />
+                <CommandList>
+                  {isSearching && (
+                    <div className="flex items-center justify-center py-6">
+                      <Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />
+                    </div>
                   )}
-                </div>
-                <PopoverContent className="w-(--radix-popover-trigger-width) p-0" align="start">
-                  <Command shouldFilter={false}>
-                    <CommandInput
-                      placeholder={t(\`generic.search.placeholder\`, { type: t(\`types.${names.pluralKebab}\`, { count: 1 }) })}
-                      value={searchTerm}
-                      onValueChange={setSearchTerm}
-                    />
-                    <CommandList>
-                      {isSearching && (
-                        <div className="flex items-center justify-center py-6">
-                          <Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />
-                        </div>
-                      )}
-                      {!isSearching && data.data && data.data.length === 0 && (
-                        <CommandEmpty>{t(\`generic.search.no_results\`)}</CommandEmpty>
-                      )}
-                      {!isSearching && data.data && data.data.length > 0 && (
-                        <CommandGroup>
-                          {(data.data as ${names.pascalCase}Interface[]).map((${names.camelCase}: ${names.pascalCase}Interface) => (
-                            <CommandItem
-                              key={${names.camelCase}.id}
-                              value={${names.camelCase}.id}
-                              onSelect={() => set${names.pascalCase}(${names.camelCase})}
-                              className="hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent cursor-pointer"
-                            >
-                              {${names.camelCase}.name}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      )}
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+                  {!isSearching && data.data && data.data.length === 0 && (
+                    <CommandEmpty>{t(\`generic.search.no_results\`)}</CommandEmpty>
+                  )}
+                  {!isSearching && data.data && data.data.length > 0 && (
+                    <CommandGroup>
+                      {(data.data as ${names.pascalCase}Interface[]).map((${names.camelCase}: ${names.pascalCase}Interface) => (
+                        <CommandItem
+                          key={${names.camelCase}.id}
+                          value={${names.camelCase}.id}
+                          onSelect={() => set${names.pascalCase}(${names.camelCase})}
+                          className="hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent cursor-pointer"
+                        >
+                          {${names.camelCase}.name}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  )}
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
         )}
-      />
+      </FormFieldWrapper>
     </div>
   );
 }
