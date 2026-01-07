@@ -1,3 +1,10 @@
+## [1.24.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.24.2...v1.24.3) (2026-01-07)
+
+### 📦 Code Refactoring
+
+* add form components to use FormFieldWrapper for improved structure and consistency ([5a23048](https://github.com/carlonicora/nextjs-jsonapi/commit/5a23048e35dcbe994c9fcbe5016fcd9a993eee9e))
+* replace FormContainerGeneric with FormFieldWrapper for improved component structure ([e092b54](https://github.com/carlonicora/nextjs-jsonapi/commit/e092b54e3a395ae84f80d3e46505b9f894c8fecc))
+
 ## [1.24.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.24.1...v1.24.2) (2026-01-07)
 
 ### 🐛 Bug Fixes
