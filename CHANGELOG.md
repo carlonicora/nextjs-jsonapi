@@ -1,3 +1,9 @@
+## [1.25.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.25.0...v1.25.1) (2026-01-07)
+
+### 🐛 Bug Fixes
+
+* implement OAuth client state management atoms ([009f313](https://github.com/carlonicora/nextjs-jsonapi/commit/009f313498d25c10fdf37d18ec70e8c9202c13e9))
+
 ## [1.25.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.24.3...v1.25.0) (2026-01-07)
 
 ### 🚀 Features
