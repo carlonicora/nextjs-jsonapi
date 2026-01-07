@@ -1,3 +1,9 @@
+## [1.25.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.24.3...v1.25.0) (2026-01-07)
+
+### 🚀 Features
+
+* add OAuth support ([e806952](https://github.com/carlonicora/nextjs-jsonapi/commit/e80695258d81d5bef0548a22ce8e7c835765bdc1))
+
 ## [1.24.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.24.2...v1.24.3) (2026-01-07)
 
 ### 📦 Code Refactoring
