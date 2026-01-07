@@ -58,3 +58,6 @@ export * from "../features/search";
 export * from "../features/user/author.module";
 export * from "../features/user/data";
 export * from "../features/user/user.module";
+export * from "../features/oauth/oauth.module";
+export * from "../features/oauth/data";
+export * from "../features/oauth/interfaces";

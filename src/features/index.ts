@@ -17,3 +17,4 @@ export * from "./role";
 export * from "./s3";
 export * from "./search";
 export * from "./user";
+export * from "./oauth";

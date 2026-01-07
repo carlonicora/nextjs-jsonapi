@@ -24,6 +24,7 @@ import { registerTableGenerator } from "../hooks";
 export * from "../features/content/hooks";
 export * from "../features/role/hooks";
 export * from "../features/user/hooks";
+export * from "../features/oauth/hooks";
 
 registerTableGenerator("roles", useRoleTableStructure);
 registerTableGenerator("users", useUserTableStructure);

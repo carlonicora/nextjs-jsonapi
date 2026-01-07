@@ -17,6 +17,7 @@ export * from "../features/feature/components";
 export * from "../features/notification/components";
 export * from "../features/role/components";
 export * from "../features/user/components";
+export * from "../features/oauth/components";
 
 // shadcn/ui components (merged from /shadcnui entry point)
 export * from "../shadcnui";
