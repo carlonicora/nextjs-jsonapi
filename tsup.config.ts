@@ -12,6 +12,8 @@ const clientEntries = [
   "dist/contexts/index.js",
   "dist/testing/index.mjs",
   "dist/testing/index.js",
+  "dist/billing/index.mjs",
+  "dist/billing/index.js",
 ];
 
 export default defineConfig({
@@ -23,6 +25,7 @@ export default defineConfig({
     "components/index": "src/components/index.ts",
     "contexts/index": "src/contexts/index.ts",
     "testing/index": "src/testing/index.ts",
+    "billing/index": "src/billing/index.ts",
   },
   format: ["cjs", "esm"],
   // Enable splitting to keep dynamic imports as separate chunks

@@ -46,6 +46,11 @@
       "types": "./dist/testing/index.d.ts",
       "import": "./dist/testing/index.mjs",
       "require": "./dist/testing/index.js"
+    },
+    "./billing": {
+      "types": "./dist/billing/index.d.ts",
+      "import": "./dist/billing/index.mjs",
+      "require": "./dist/billing/index.js"
     }
   },
   "scripts": {

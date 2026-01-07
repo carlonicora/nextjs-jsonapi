@@ -10,13 +10,7 @@ export * from "./tables";
 
 // Feature components
 export * from "../features/auth/components";
-export * from "../features/billing/components";
-export * from "../features/billing/stripe-customer/components";
-export * from "../features/billing/stripe-invoice/components";
-export * from "../features/billing/stripe-price/components";
-export * from "../features/billing/stripe-product/components";
-export * from "../features/billing/stripe-subscription/components";
-export * from "../features/billing/stripe-usage/components";
+// Billing components moved to separate entry point: @carlonicora/nextjs-jsonapi/billing
 export * from "../features/company/components";
 export * from "../features/content/components";
 export * from "../features/feature/components";
