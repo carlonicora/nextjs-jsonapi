@@ -12,16 +12,6 @@ export class ServerSession {
     return true;
   }
 
-  static async isLicenseActive(): Promise<boolean> {
-    const cookieStore = await cookies();
-    const licenseExpirationDate = cookieStore.get("licenseExpirationDate")?.value;
-
-    if (!licenseExpirationDate) return false;
-
-    const now = new Date();
-    return new Date(licenseExpirationDate) > now;
-  }
-
   static async companyId() {
     const cookieStore = await cookies();
     return cookieStore.get("companyId")?.value ?? "";

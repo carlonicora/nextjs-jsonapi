@@ -1,5 +1,4 @@
 import { AuthInput, AuthInterface } from ".";
-import { JsonApiDelete, JsonApiGet, JsonApiPost } from "../../../unified";
 import {
   AbstractService,
   ApiResponseInterface,
@@ -9,6 +8,7 @@ import {
   Modules,
   rehydrate,
 } from "../../../core";
+import { JsonApiDelete, JsonApiGet, JsonApiPost } from "../../../unified";
 import { UserInterface } from "../../user";
 import { getTokenHandler } from "../config";
 
@@ -35,7 +35,6 @@ export class AuthService extends AbstractService {
         refreshToken: auth.refreshToken,
         userId: auth.user.id,
         companyId: auth.user.company?.id,
-        licenseExpirationDate: auth.user.company?.licenseExpirationDate,
         roles: auth.user.roles.map((role) => role.id),
         features: auth.user.company?.features?.map((feature) => feature.id) ?? [],
         modules: auth.user.modules.map((module) => ({
@@ -146,7 +145,6 @@ export class AuthService extends AbstractService {
         refreshToken: auth.refreshToken,
         userId: auth.user.id,
         companyId: auth.user.company?.id,
-        licenseExpirationDate: auth.user.company?.licenseExpirationDate,
         roles: auth.user.roles.map((role) => role.id),
         features: auth.user.company?.features?.map((feature) => feature.id) ?? [],
         modules: auth.user.modules.map((module) => ({

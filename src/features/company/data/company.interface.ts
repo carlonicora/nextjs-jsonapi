@@ -21,8 +21,6 @@ export interface CompanyInterface extends ApiDataInterface {
   get logo(): string | undefined;
   get logoUrl(): string | undefined;
 
-  get licenseExpirationDate(): Date | undefined;
-
   get features(): FeatureInterface[];
   get modules(): ModuleInterface[];
 }

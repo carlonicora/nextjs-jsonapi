@@ -9,8 +9,6 @@ export class Company extends AbstractApiData implements CompanyInterface {
   private _logoUrl?: string;
   private _configurations?: any;
 
-  private _licenseExpirationDate?: Date;
-
   private _features?: FeatureInterface[];
   private _modules?: ModuleInterface[];
 
@@ -25,10 +23,6 @@ export class Company extends AbstractApiData implements CompanyInterface {
 
   get logoUrl(): string | undefined {
     return this._logoUrl;
-  }
-
-  get licenseExpirationDate(): Date | undefined {
-    return this._licenseExpirationDate;
   }
 
   get features(): FeatureInterface[] {
@@ -52,10 +46,6 @@ export class Company extends AbstractApiData implements CompanyInterface {
       : undefined;
     this._logo = data.jsonApi.attributes.logo;
     this._logoUrl = data.jsonApi.attributes.logoUrl;
-
-    this._licenseExpirationDate = data.jsonApi.attributes.licenseExpirationDate
-      ? new Date(data.jsonApi.attributes.licenseExpirationDate)
-      : undefined;
 
     this._features = this._readIncluded<FeatureInterface>(data, "features", Modules.Feature) as FeatureInterface[];
     this._modules = this._readIncluded<ModuleInterface>(data, "modules", Modules.Module) as ModuleInterface[];

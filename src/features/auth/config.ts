@@ -6,7 +6,6 @@ export interface TokenParams {
   refreshToken?: string;
   userId?: string;
   companyId?: string;
-  licenseExpirationDate?: Date;
   roles?: string[];
   features?: string[];
   modules?: {

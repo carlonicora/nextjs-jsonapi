@@ -3,8 +3,8 @@
 import { deleteCookie, getCookie } from "cookies-next";
 import { useEffect } from "react";
 import { UserInterface } from "../../../user";
-import { UserService } from "../../../user/data/user.service";
 import { useCurrentUserContext } from "../../../user/contexts";
+import { UserService } from "../../../user/data/user.service";
 import { getTokenHandler } from "../../config";
 
 export function RefreshUser() {
@@ -18,7 +18,6 @@ export function RefreshUser() {
       const token = {
         userId: fullUser.id,
         companyId: fullUser.company?.id,
-        licenseExpirationDate: fullUser.company?.licenseExpirationDate,
         roles: fullUser.roles.map((role) => role.id),
         features: fullUser.company?.features?.map((feature) => feature.id) ?? [],
         modules: fullUser.modules.map((module) => {
