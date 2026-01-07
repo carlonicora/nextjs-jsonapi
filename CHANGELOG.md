@@ -1,3 +1,9 @@
+## [1.24.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.24.0...v1.24.1) (2026-01-07)
+
+### ♻️ Chores
+
+* update dependencies and improve Resizable components for better performance ([93d1dbf](https://github.com/carlonicora/nextjs-jsonapi/commit/93d1dbfc1617932f8941f8385287045842ce11d0))
+
 ## [1.24.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.23.0...v1.24.0) (2026-01-07)
 
 ### 🚀 Features
