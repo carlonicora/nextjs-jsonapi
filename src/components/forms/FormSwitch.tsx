@@ -1,25 +1,23 @@
 "use client";
 
-import { FormControl, FormField, FormItem, FormLabel, FormMessage, Switch } from "../../shadcnui";
+import { FieldLabel, Switch } from "../../shadcnui";
+import { FormFieldWrapper } from "./FormFieldWrapper";
 
 export function FormSwitch({ form, id, name, disabled }: { form: any; id: string; name?: string; disabled?: boolean }) {
   return (
     <div className="flex w-full flex-col">
-      <FormField
-        control={form.control}
+      <FormFieldWrapper
+        form={form}
         name={id}
-        render={({ field }) => (
-          <FormItem className={`${name ? "mb-5" : "mb-1"}`}>
-            <FormControl>
-              <div className="flex flex-row gap-x-4">
-                <Switch checked={field.value} onCheckedChange={field.onChange} />
-                {name && <FormLabel>{name}</FormLabel>}
-              </div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+        orientation="horizontal"
+      >
+        {(field) => (
+          <div className="flex flex-row gap-x-4">
+            <Switch checked={field.value} onCheckedChange={field.onChange} disabled={disabled} />
+            {name && <FieldLabel>{name}</FieldLabel>}
+          </div>
         )}
-      />
+      </FormFieldWrapper>
     </div>
   );
 }

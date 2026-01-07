@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage, Input } from "../../shadcnui";
+import { Input } from "../../shadcnui";
 import { cn } from "../../utils";
+import { FormFieldWrapper } from "./FormFieldWrapper";
 
 /**
  * FormPlaceAutocomplete component integrates Google Places API (New)
@@ -195,92 +196,66 @@ export function FormPlaceAutocomplete({
   if (loadError) {
     return (
       <div className="flex w-full flex-col">
-        <FormField
-          control={form.control}
-          name={id}
-          render={({ field }) => (
-            <FormItem className={`${name ? "mb-5" : "mb-1"}`}>
-              {name && (
-                <FormLabel className="flex items-center">
-                  {name}
-                  {isRequired && <span className="text-destructive ml-2 font-semibold">*</span>}
-                </FormLabel>
-              )}
-              <FormControl>
-                <Input
-                  {...field}
-                  placeholder={placeholder}
-                  disabled={disabled}
-                  data-testid={testId}
-                  className={cn("w-full", className)}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+        <FormFieldWrapper form={form} name={id} label={name} isRequired={isRequired}>
+          {(field) => (
+            <Input
+              {...field}
+              placeholder={placeholder}
+              disabled={disabled}
+              data-testid={testId}
+              className={cn("w-full", className)}
+            />
           )}
-        />
+        </FormFieldWrapper>
       </div>
     );
   }
 
   return (
     <div className="flex w-full flex-col" ref={containerRef}>
-      <FormField
-        control={form.control}
-        name={id}
-        render={({ field }) => (
-          <FormItem className={`${name ? "mb-5" : "mb-1"}`}>
-            {name && (
-              <FormLabel className="flex items-center">
-                {name}
-                {isRequired && <span className="text-destructive ml-2 font-semibold">*</span>}
-              </FormLabel>
-            )}
-            <FormControl>
-              <div className="relative">
-                <Input
-                  value={inputValue}
-                  onChange={(e) => handleInputChange(e.target.value)}
-                  onBlur={field.onBlur}
-                  onFocus={() => {
-                    if (suggestions.length > 0) {
-                      setShowSuggestions(true);
-                    }
-                  }}
-                  placeholder={placeholder}
-                  disabled={disabled || !apiKey}
-                  data-testid={testId}
-                  className={cn("w-full", className)}
-                />
+      <FormFieldWrapper form={form} name={id} label={name} isRequired={isRequired}>
+        {(field) => (
+          <div className="relative">
+            <Input
+              value={inputValue}
+              onChange={(e) => handleInputChange(e.target.value)}
+              onBlur={field.onBlur}
+              onFocus={() => {
+                if (suggestions.length > 0) {
+                  setShowSuggestions(true);
+                }
+              }}
+              placeholder={placeholder}
+              disabled={disabled || !apiKey}
+              data-testid={testId}
+              className={cn("w-full", className)}
+            />
 
-                {/* Loading indicator */}
-                {isLoading && (
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    <div className="border-primary h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"></div>
-                  </div>
-                )}
-
-                {/* Suggestions dropdown */}
-                {showSuggestions && suggestions.length > 0 && (
-                  <div className="bg-background absolute left-0 right-0 top-full z-50 mt-1 max-h-60 overflow-auto rounded-md border shadow-lg">
-                    {suggestions.map((suggestion, index) => (
-                      <div
-                        key={suggestion.place_id || index}
-                        className="hover:bg-muted cursor-pointer px-3 py-2 text-sm"
-                        onClick={() => handleSuggestionSelect(suggestion)}
-                      >
-                        <div className="font-medium">{suggestion.structured_formatting?.main_text}</div>
-                        <div className="text-muted-foreground">{suggestion.structured_formatting?.secondary_text}</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+            {/* Loading indicator */}
+            {isLoading && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <div className="border-primary h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"></div>
               </div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+            )}
+
+            {/* Suggestions dropdown */}
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="bg-background absolute left-0 right-0 top-full z-50 mt-1 max-h-60 overflow-auto rounded-md border shadow-lg">
+                {suggestions.map((suggestion, index) => (
+                  <div
+                    key={suggestion.place_id || index}
+                    className="hover:bg-muted cursor-pointer px-3 py-2 text-sm"
+                    onClick={() => handleSuggestionSelect(suggestion)}
+                  >
+                    <div className="font-medium">{suggestion.structured_formatting?.main_text}</div>
+                    <div className="text-muted-foreground">{suggestion.structured_formatting?.secondary_text}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         )}
-      />
+      </FormFieldWrapper>
     </div>
   );
 }

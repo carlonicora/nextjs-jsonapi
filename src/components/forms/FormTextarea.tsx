@@ -1,7 +1,8 @@
 "use client";
 
-import { FormControl, FormField, FormItem, FormLabel, FormMessage, Textarea } from "../../shadcnui";
+import { Textarea } from "../../shadcnui";
 import { cn } from "../../utils";
+import { FormFieldWrapper } from "./FormFieldWrapper";
 
 export function FormTextarea({
   form,
@@ -20,25 +21,17 @@ export function FormTextarea({
 }) {
   return (
     <div className="flex w-full flex-col">
-      <FormField
-        control={form.control}
-        name={id}
-        render={({ field }) => (
-          <FormItem className="mb-5">
-            <FormLabel>{name}</FormLabel>
-            <FormControl>
-              <Textarea
-                {...field}
-                className={cn("min-h-96 w-full", className)}
-                disabled={form.formState.isSubmitting}
-                placeholder={placeholder}
-                data-testid={testId}
-              />
-            </FormControl>
-            <FormMessage data-testid={testId ? `${testId}-error` : undefined} />
-          </FormItem>
+      <FormFieldWrapper form={form} name={id} label={name} testId={testId}>
+        {(field) => (
+          <Textarea
+            {...field}
+            className={cn("min-h-96 w-full", className)}
+            disabled={form.formState.isSubmitting}
+            placeholder={placeholder}
+            data-testid={testId}
+          />
         )}
-      />
+      </FormFieldWrapper>
     </div>
   );
 }

@@ -7,7 +7,7 @@ export * from "./DatePickerPopover";
 export * from "./DateRangeSelector";
 export * from "./FileUploader";
 export * from "./FormCheckbox";
-export * from "./FormContainerGeneric";
+export * from "./FormFieldWrapper";
 export * from "./FormDate";
 export * from "./FormDateTime";
 export * from "./FormInput";

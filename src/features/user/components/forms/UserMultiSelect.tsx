@@ -2,17 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useWatch } from "react-hook-form";
+import { FormFieldWrapper } from "../../../../components/forms";
 import { Modules } from "../../../../core";
 import { DataListRetriever, useDataListRetriever, useDebounce } from "../../../../hooks";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
   MultiSelect,
 } from "../../../../shadcnui";
 import { useCurrentUserContext } from "../../contexts";
@@ -189,31 +185,18 @@ export function UserMultiSelect({
 
   return (
     <div className="flex w-full flex-col">
-      <FormField
-        control={form.control}
-        name={id}
-        render={({ field }) => (
-          <FormItem className={`${label ? "mb-5" : "mb-1"}`}>
-            {label && (
-              <FormLabel className="flex items-center">
-                {label}
-                {isRequired && <span className="text-destructive ml-2 font-semibold">*</span>}
-              </FormLabel>
-            )}
-            <FormControl>
-              <MultiSelect
-                options={userOptions}
-                onValueChange={handleValueChange}
-                defaultValue={selectedUserIds}
-                placeholder={placeholder}
-                maxCount={maxCount}
-                animation={0}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+      <FormFieldWrapper form={form} name={id} label={label} isRequired={isRequired}>
+        {() => (
+          <MultiSelect
+            options={userOptions}
+            onValueChange={handleValueChange}
+            defaultValue={selectedUserIds}
+            placeholder={placeholder}
+            maxCount={maxCount}
+            animation={0}
+          />
         )}
-      />
+      </FormFieldWrapper>
     </div>
   );
 }

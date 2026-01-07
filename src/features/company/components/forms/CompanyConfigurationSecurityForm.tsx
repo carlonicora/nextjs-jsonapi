@@ -2,7 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { UseFormReturn } from "react-hook-form";
-import { Checkbox, FormControl, FormField, FormItem, FormLabel, FormMessage, Input } from "../../../../shadcnui";
+import { FormFieldWrapper } from "../../../../components/forms";
+import { Checkbox, Input } from "../../../../shadcnui";
 
 type SecurityConfigurationFormProps = {
   form: UseFormReturn<any>;
@@ -47,44 +48,29 @@ export function CompanyConfigurationSecurityForm({ form }: SecurityConfiguration
       }
 
       return (
-        <FormField
+        <FormFieldWrapper
           key={currentField}
-          control={form.control}
+          form={form}
           name={currentField}
-          render={({ field: formField }) =>
+          label={label}
+          description={type === "checkbox" ? placeholder : undefined}
+          isRequired={isRequired}
+          orientation={type === "checkbox" ? "horizontal" : "vertical"}
+        >
+          {(field) =>
             type === "checkbox" ? (
-              <FormItem className="flex items-start space-x-4">
-                <FormControl>
-                  <Checkbox
-                    id={currentField}
-                    checked={formField.value}
-                    onCheckedChange={(checked) => {
-                      return checked ? formField.onChange(true) : formField.onChange(false);
-                    }}
-                  />
-                </FormControl>
-                <div className="grid gap-2">
-                  <FormLabel htmlFor={currentField}>
-                    {label} {isRequired && <span className="text-destructive">*</span>}
-                  </FormLabel>
-                  <p className="text-muted-foreground text-sm">{placeholder}</p>
-                </div>
-                <FormLabel></FormLabel>
-                <FormMessage />
-              </FormItem>
+              <Checkbox
+                id={currentField}
+                checked={field.value}
+                onCheckedChange={(checked) => {
+                  return checked ? field.onChange(true) : field.onChange(false);
+                }}
+              />
             ) : (
-              <FormItem>
-                <FormLabel>
-                  {label} {isRequired && <span className="text-destructive">*</span>}
-                </FormLabel>
-                <FormControl>
-                  <Input type={type} placeholder={placeholder} {...formField} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+              <Input type={type} placeholder={placeholder} {...field} />
             )
           }
-        />
+        </FormFieldWrapper>
       );
     });
   };

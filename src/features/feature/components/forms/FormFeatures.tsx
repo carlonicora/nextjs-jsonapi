@@ -1,6 +1,6 @@
 "use client";
 
-import { Checkbox, FormLabel, FormMessage, ScrollArea } from "../../../../shadcnui";
+import { Checkbox, Label, ScrollArea } from "../../../../shadcnui";
 import { FeatureInterface } from "../../data";
 
 type FormFeaturesProps = {
@@ -44,14 +44,13 @@ export function FormFeatures({ form, name, features, featureField = "featureIds"
                     toggleFeature(feature, val === true);
                   }}
                 />
-                <FormLabel htmlFor={feature.id} className="ml-3 cursor-pointer font-normal">
+                <Label htmlFor={feature.id} className="ml-3 cursor-pointer font-normal">
                   {feature.name}
-                </FormLabel>
+                </Label>
               </div>
             ))}
         </div>
       </ScrollArea>
-      <FormMessage />
     </div>
   );
 }

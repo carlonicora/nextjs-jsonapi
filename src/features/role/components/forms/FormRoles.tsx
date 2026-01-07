@@ -1,13 +1,10 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { FormFieldWrapper } from "../../../../components/forms";
 import {
   Checkbox,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+  FieldLabel,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -29,54 +26,46 @@ export function FormRoles({ form, id, name, roles }: FormRolesProps) {
 
   return (
     <div className="flex w-full flex-col">
-      <FormField
-        control={form.control}
-        name={id}
-        render={({ field }) => (
-          <FormItem className={`${name ? "mb-5" : "mb-1"}`}>
-            <FormControl>
-              <div>
-                <div className="text-sm font-semibold">{name}</div>
-                {roles
-                  .filter((role: RoleInterface) => role.isSelectable)
-                  .sort((a: RoleInterface, b: RoleInterface) => a.name.localeCompare(b.name))
-                  .map((role: RoleInterface) => {
-                    if (role.requiredFeature && !hasAccesToFeature(role.requiredFeature.id)) return null;
+      <FormFieldWrapper form={form} name={id} label={name}>
+        {(field) => (
+          <div>
+            {roles
+              .filter((role: RoleInterface) => role.isSelectable)
+              .sort((a: RoleInterface, b: RoleInterface) => a.name.localeCompare(b.name))
+              .map((role: RoleInterface) => {
+                if (role.requiredFeature && !hasAccesToFeature(role.requiredFeature.id)) return null;
 
-                    return (
-                      <div key={role.id}>
-                        <Checkbox
-                          defaultChecked={(field.value as string[]).some((roleId: string) => roleId === role.id)}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              form.setValue(id, [...(field.value as string[]), role.id]);
-                            } else {
-                              form.setValue(
-                                id,
-                                (field.value as string[]).filter((roleId: string) => roleId !== role.id),
-                              );
-                            }
-                          }}
-                        />
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <FormLabel className="ml-3 font-normal">
-                              {t(`foundations.role.roles`, { role: role.id.replaceAll(`-`, ``) })}
-                            </FormLabel>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            {t(`foundations.role.roles_descriptions`, { role: role.id.replaceAll(`-`, ``) })}
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
-                    );
-                  })}
-              </div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+                return (
+                  <div key={role.id}>
+                    <Checkbox
+                      defaultChecked={(field.value as string[]).some((roleId: string) => roleId === role.id)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          form.setValue(id, [...(field.value as string[]), role.id]);
+                        } else {
+                          form.setValue(
+                            id,
+                            (field.value as string[]).filter((roleId: string) => roleId !== role.id),
+                          );
+                        }
+                      }}
+                    />
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <FieldLabel className="ml-3 font-normal">
+                          {t(`foundations.role.roles`, { role: role.id.replaceAll(`-`, ``) })}
+                        </FieldLabel>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {t(`foundations.role.roles_descriptions`, { role: role.id.replaceAll(`-`, ``) })}
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                );
+              })}
+          </div>
         )}
-      />
+      </FormFieldWrapper>
     </div>
   );
 }

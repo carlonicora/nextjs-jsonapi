@@ -1,17 +1,13 @@
 "use client";
 
 import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "../../shadcnui";
+import { FormFieldWrapper } from "./FormFieldWrapper";
 
 export function FormSelect({
   form,
@@ -35,38 +31,36 @@ export function FormSelect({
   testId?: string;
 }) {
   return (
-    <div className={`flex w-full flex-col`}>
-      <FormField
-        control={form.control}
+    <div className="flex w-full flex-col">
+      <FormFieldWrapper
+        form={form}
         name={id}
-        render={({ field }) => (
-          <FormItem className={`flex w-full ${useRows ? `flex-row items-center justify-between gap-x-4` : `flex-col`}`}>
-            {name && <FormLabel className={`${useRows ? `min-w-28` : ``}`}>{name}</FormLabel>}
-            <Select
-              onValueChange={(e) => {
-                field.onChange(e);
-                if (onChange) onChange(e);
-              }}
-              defaultValue={field.value}
-              data-testid={testId}
-            >
-              <FormControl className="w-full">
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {values.map((type: { id: string; text: string }) => (
-                  <SelectItem key={type.id} value={type.id}>
-                    {type.text}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
+        label={name}
+        orientation={useRows ? "horizontal" : "vertical"}
+        testId={testId}
+      >
+        {(field) => (
+          <Select
+            onValueChange={(e) => {
+              field.onChange(e);
+              if (onChange) onChange(e);
+            }}
+            defaultValue={field.value}
+            data-testid={testId}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {values.map((type: { id: string; text: string }) => (
+                <SelectItem key={type.id} value={type.id}>
+                  {type.text}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         )}
-      />
+      </FormFieldWrapper>
     </div>
   );
 }

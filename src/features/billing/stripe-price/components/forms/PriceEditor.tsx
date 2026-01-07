@@ -16,10 +16,8 @@ import {
   DialogHeader,
   DialogTitle,
   Form,
-  FormControl,
-  FormItem,
-  FormLabel,
   Input,
+  Label,
 } from "../../../../../shadcnui";
 import { StripePriceInterface, StripePriceService } from "../../data";
 
@@ -249,18 +247,16 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
             />
 
             {/* Features List */}
-            <FormItem>
-              <FormLabel>Features (optional)</FormLabel>
+            <div className="space-y-2">
+              <Label>Features (optional)</Label>
               <div className="space-y-2">
                 {form.watch("features").map((_, index) => (
                   <div key={index} className="flex gap-2">
-                    <FormControl>
-                      <Input
-                        {...form.register(`features.${index}`)}
-                        placeholder={`Feature ${index + 1}`}
-                        className="flex-1"
-                      />
-                    </FormControl>
+                    <Input
+                      {...form.register(`features.${index}`)}
+                      placeholder={`Feature ${index + 1}`}
+                      className="flex-1"
+                    />
                     <Button
                       type="button"
                       variant="outline"
@@ -291,7 +287,7 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
                   Add Feature
                 </Button>
               </div>
-            </FormItem>
+            </div>
 
             <FormCheckbox form={form} id="active" name="Active" />
 

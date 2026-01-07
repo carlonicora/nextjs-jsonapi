@@ -1,6 +1,6 @@
 "use client";
 
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../shadcnui";
+import { FormFieldWrapper } from "./FormFieldWrapper";
 import { PasswordInput } from "./PasswordInput";
 
 export function FormPassword({
@@ -24,31 +24,24 @@ export function FormPassword({
 }) {
   return (
     <div className="flex w-full flex-col">
-      <FormField
-        control={form.control}
+      <FormFieldWrapper
+        form={form}
         name={id}
-        render={({ field }) => (
-          <FormItem className={`${name ? "mb-5" : "mb-1"}`}>
-            {name && (
-              <FormLabel>
-                {name}
-                {isRequired && <span className="text-destructive ml-2 font-semibold">*</span>}
-              </FormLabel>
-            )}
-            <FormControl>
-              <PasswordInput
-                {...field}
-                className={`w-full`}
-                disabled={disabled === true || form.formState.isSubmitting}
-                placeholder={placeholder ? placeholder : ""}
-                onBlur={onBlur}
-                data-testid={testId}
-              />
-            </FormControl>
-            <FormMessage data-testid={testId ? `${testId}-error` : undefined} />
-          </FormItem>
+        label={name}
+        isRequired={isRequired}
+        testId={testId}
+      >
+        {(field) => (
+          <PasswordInput
+            {...field}
+            className="w-full"
+            disabled={disabled === true || form.formState.isSubmitting}
+            placeholder={placeholder ? placeholder : ""}
+            onBlur={onBlur}
+            data-testid={testId}
+          />
         )}
-      />
+      </FormFieldWrapper>
     </div>
   );
 }

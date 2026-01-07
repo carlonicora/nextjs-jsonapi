@@ -2,7 +2,14 @@
 
 import { useTranslations } from "next-intl";
 import React from "react";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage, Input } from "../../shadcnui";
+import {
+  Input,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
+} from "../../shadcnui";
+import { FormFieldWrapper } from "./FormFieldWrapper";
 
 export function FormInput({
   form,
@@ -35,10 +42,13 @@ export function FormInput({
 
   return (
     <div className="flex w-full flex-col">
-      <FormField
-        control={form.control}
+      <FormFieldWrapper
+        form={form}
         name={id}
-        render={({ field }) => {
+        label={name}
+        isRequired={isRequired}
+      >
+        {(field) => {
           const handleBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
             let value = e.target.value;
 
@@ -62,49 +72,51 @@ export function FormInput({
             field.onBlur();
           };
 
-          return (
-            <FormItem className={`${name ? "mb-5" : "mb-1"}`}>
-              {name && (
-                <FormLabel className="flex items-center">
-                  {name}
-                  {isRequired && <span className="text-destructive ml-2 font-semibold">*</span>}
-                </FormLabel>
-              )}
-              <FormControl>
-                <div className="relative">
-                  {type === "currency" && (
-                    <span className="text-muted-foreground absolute top-0 left-0 pt-2 pl-3">€</span>
-                  )}
-                  <Input
-                    data-testid={testId}
-                    {...field}
-                    autoFocus={autoFocus === true}
-                    type={
-                      type === "number" || type === "currency" ? "number" : type === "password" ? "password" : "text"
-                    }
-                    className={`w-full ${type === "number" || type === "currency" ? "text-end" : ""}`}
-                    disabled={disabled === true || form.formState.isSubmitting}
-                    placeholder={placeholder || ""}
-                    onBlur={handleBlur}
-                    onKeyDown={onKeyDown}
-                    onChange={(e) => {
-                      if (type === "number" || type === "currency") {
-                        const value = e.target.value.replace(/[^0-9]/g, "");
-                        field.onChange(+value);
-                        if (onChange) onChange(+value);
-                      } else {
-                        field.onChange(e.target.value);
-                        if (onChange) onChange(e.target.value);
-                      }
-                    }}
-                  />
-                </div>
-              </FormControl>
-              <FormMessage data-testid={testId ? `${testId}-error` : undefined} />
-            </FormItem>
-          );
+          const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            if (type === "number" || type === "currency") {
+              const value = e.target.value.replace(/[^0-9]/g, "");
+              field.onChange(+value);
+              if (onChange) onChange(+value);
+            } else {
+              field.onChange(e.target.value);
+              if (onChange) onChange(e.target.value);
+            }
+          };
+
+          const inputProps = {
+            ...field,
+            autoFocus: autoFocus === true,
+            type:
+              type === "number" || type === "currency"
+                ? "number"
+                : type === "password"
+                  ? "password"
+                  : "text",
+            className: `w-full ${type === "number" || type === "currency" ? "text-end" : ""}`,
+            disabled: disabled === true || form.formState.isSubmitting,
+            placeholder: placeholder || "",
+            onBlur: handleBlur,
+            onKeyDown,
+            onChange: handleChange,
+            "data-testid": testId,
+          };
+
+          // Use InputGroup for currency type to show Euro symbol
+          if (type === "currency") {
+            return (
+              <InputGroup>
+                <InputGroupAddon>
+                  <InputGroupText>{"\u20AC"}</InputGroupText>
+                </InputGroupAddon>
+                <InputGroupInput {...inputProps} />
+              </InputGroup>
+            );
+          }
+
+          // Regular input for other types
+          return <Input {...inputProps} />;
         }}
-      />
+      </FormFieldWrapper>
     </div>
   );
 }

@@ -6,12 +6,10 @@ import { useMemo, useState } from "react";
 import { useI18nDateFnsLocale, useI18nLocale } from "../../i18n";
 import {
   Calendar,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -21,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../shadcnui";
+import { FormFieldWrapper } from "./FormFieldWrapper";
 
 export function FormDate({
   form,
@@ -130,119 +129,107 @@ export function FormDate({
 
   return (
     <div className="flex w-full flex-col">
-      <FormField
-        control={form.control}
+      <FormFieldWrapper
+        form={form}
         name={id}
-        render={({ field }) => (
-          <FormItem className={`${name ? "mb-5" : "mb-1"} w-full`}>
-            {name && (
-              <FormLabel className="dlex items-center">
-                {name} {isRequired && <span className="text-destructive ml-2 font-semibold">*</span>}
-              </FormLabel>
-            )}
-            <FormControl>
-              <div className="relative">
-                <Popover open={open} onOpenChange={setOpen} modal={true}>
-                  <div className="relative">
-                    <Input
-                      value={inputValue}
-                      onChange={(e) => handleInputChange(e.target.value, field)}
-                      placeholder={datePlaceholder}
-                      className="pr-16"
-                    />
-                    <div className="absolute right-1 top-1/2 flex -translate-y-1/2 items-center space-x-1">
-                      <PopoverTrigger
-                        render={<div />}
-                        nativeButton={false}
-                        className="hover:bg-muted flex h-8 w-8 cursor-pointer items-center justify-center rounded-md"
-                      >
-                        <CalendarIcon className="h-4 w-4 opacity-50" />
-                      </PopoverTrigger>
-                      {field.value && (
-                        <button
-                          type="button"
-                          className="hover:bg-muted flex h-8 w-8 items-center justify-center rounded-md"
-                          onClick={() => {
-                            field.onChange(undefined);
-                            setInputValue("");
-                            if (onChange) onChange(undefined);
-                          }}
-                        >
-                          <CircleXIcon className="h-4 w-4 opacity-50 hover:opacity-100" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <div className="p-3">
-                      {/* Year and Month Selectors */}
-                      <div className="mb-3 flex gap-2">
-                        <Select
-                          value={displayMonth.getMonth().toString()}
-                          onValueChange={(value) => {
-                            if (!value) return;
-                            const newMonth = parseInt(value);
-                            const newDate = new Date(displayMonth.getFullYear(), newMonth, 1);
-                            setDisplayMonth(newDate);
-                          }}
-                        >
-                          <SelectTrigger className="w-[130px]">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {monthNames.map((month, index) => (
-                              <SelectItem key={index} value={index.toString()}>
-                                {month}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+        label={name}
+        isRequired={isRequired}
+      >
+        {(field) => (
+          <Popover open={open} onOpenChange={setOpen} modal={true}>
+            <InputGroup>
+              <InputGroupInput
+                value={inputValue}
+                onChange={(e) => handleInputChange(e.target.value, field)}
+                placeholder={datePlaceholder}
+              />
+              <InputGroupAddon align="inline-end">
+                <PopoverTrigger render={<div />} nativeButton={false}>
+                  <InputGroupButton variant="ghost" size="icon-xs">
+                    <CalendarIcon className="h-4 w-4 opacity-50" />
+                  </InputGroupButton>
+                </PopoverTrigger>
+                {field.value && (
+                  <InputGroupButton
+                    variant="ghost"
+                    size="icon-xs"
+                    onClick={() => {
+                      field.onChange(undefined);
+                      setInputValue("");
+                      if (onChange) onChange(undefined);
+                    }}
+                  >
+                    <CircleXIcon className="h-4 w-4 opacity-50 hover:opacity-100" />
+                  </InputGroupButton>
+                )}
+              </InputGroupAddon>
+            </InputGroup>
+            <PopoverContent className="w-auto p-0" align="start">
+              <div className="p-3">
+                {/* Year and Month Selectors */}
+                <div className="mb-3 flex gap-2">
+                  <Select
+                    value={displayMonth.getMonth().toString()}
+                    onValueChange={(value) => {
+                      if (!value) return;
+                      const newMonth = parseInt(value);
+                      const newDate = new Date(displayMonth.getFullYear(), newMonth, 1);
+                      setDisplayMonth(newDate);
+                    }}
+                  >
+                    <SelectTrigger className="w-[130px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {monthNames.map((month, index) => (
+                        <SelectItem key={index} value={index.toString()}>
+                          {month}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
-                        <Select
-                          value={displayMonth.getFullYear().toString()}
-                          onValueChange={(value) => {
-                            if (!value) return;
-                            const newYear = parseInt(value);
-                            const newDate = new Date(newYear, displayMonth.getMonth(), 1);
-                            setDisplayMonth(newDate);
-                          }}
-                        >
-                          <SelectTrigger className="w-[80px]">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {yearOptions.reverse().map((year) => (
-                              <SelectItem key={year} value={year.toString()}>
-                                {year}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                  <Select
+                    value={displayMonth.getFullYear().toString()}
+                    onValueChange={(value) => {
+                      if (!value) return;
+                      const newYear = parseInt(value);
+                      const newDate = new Date(newYear, displayMonth.getMonth(), 1);
+                      setDisplayMonth(newDate);
+                    }}
+                  >
+                    <SelectTrigger className="w-[80px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {yearOptions.reverse().map((year) => (
+                        <SelectItem key={year} value={year.toString()}>
+                          {year}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-                      {/* Calendar */}
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={(e) => {
-                          handleCalendarSelect(e, field);
-                          setOpen(false);
-                        }}
-                        disabled={(date) => (minDate && date < minDate ? true : false)}
-                        locale={dateFnsLocale}
-                        weekStartsOn={1}
-                        month={displayMonth}
-                        onMonthChange={setDisplayMonth}
-                      />
-                    </div>
-                  </PopoverContent>
-                </Popover>
+                {/* Calendar */}
+                <Calendar
+                  mode="single"
+                  selected={field.value}
+                  onSelect={(e) => {
+                    handleCalendarSelect(e, field);
+                    setOpen(false);
+                  }}
+                  disabled={(date) => (minDate && date < minDate ? true : false)}
+                  locale={dateFnsLocale}
+                  weekStartsOn={1}
+                  month={displayMonth}
+                  onMonthChange={setDisplayMonth}
+                />
               </div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+            </PopoverContent>
+          </Popover>
         )}
-      />
+      </FormFieldWrapper>
     </div>
   );
 }
