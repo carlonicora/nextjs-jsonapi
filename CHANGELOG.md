@@ -1,3 +1,11 @@
+## [1.24.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.24.1...v1.24.2) (2026-01-07)
+
+### 🐛 Bug Fixes
+
+* add autoSaveId to ResizablePanelGroup for improved state management ([53d44b9](https://github.com/carlonicora/nextjs-jsonapi/commit/53d44b9a8d24332e3d672c7f1ba288d2a32e8045))
+* correct tests ([251de17](https://github.com/carlonicora/nextjs-jsonapi/commit/251de1718a0217bc76039a81d62d96efa3ec757f))
+* update Resizable components to use correct props and improve functionality ([78861d9](https://github.com/carlonicora/nextjs-jsonapi/commit/78861d983a88f6a0cbaa0536075f04c0f8852f03))
+
 ## [1.24.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.24.0...v1.24.1) (2026-01-07)
 
 ### ♻️ Chores
