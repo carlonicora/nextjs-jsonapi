@@ -1,3 +1,9 @@
+## [1.24.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.23.0...v1.24.0) (2026-01-07)
+
+### 🚀 Features
+
+* add separate entry point for billing components to optimize loading ([ca0c500](https://github.com/carlonicora/nextjs-jsonapi/commit/ca0c50028e6cc25148b87fd454e926ac0ef670d3))
+
 ## [1.23.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.22.0...v1.23.0) (2026-01-05)
 
 ### 🚀 Features
