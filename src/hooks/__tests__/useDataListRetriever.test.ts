@@ -25,7 +25,11 @@ describe("useDataListRetriever", () => {
         })
       );
 
-      // Initially should not be loaded
+      // Wait for async operations to settle
+      await waitFor(() => {
+        expect(result.current.isLoaded).toBe(true);
+      });
+
       expect(result.current.ready).toBe(true);
       expect(result.current.isSearch).toBe(false);
     });
@@ -192,6 +196,11 @@ describe("useDataListRetriever", () => {
 
       act(() => {
         result.current.setReady(true);
+      });
+
+      // Wait for async operations triggered by setReady(true) to settle
+      await waitFor(() => {
+        expect(result.current.isLoaded).toBe(true);
       });
 
       expect(result.current.ready).toBe(true);

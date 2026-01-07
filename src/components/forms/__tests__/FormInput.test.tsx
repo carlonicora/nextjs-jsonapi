@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { FormInput } from "../FormInput";
 import { FormProvider, useForm } from "react-hook-form";
 import React from "react";
@@ -191,7 +191,9 @@ describe("FormInput", () => {
       fireEvent.focus(input);
       fireEvent.blur(input);
 
-      expect(onBlur).toHaveBeenCalled();
+      await waitFor(() => {
+        expect(onBlur).toHaveBeenCalled();
+      });
     });
 
     it("should call onKeyDown when key is pressed", () => {
