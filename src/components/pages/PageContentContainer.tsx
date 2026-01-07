@@ -31,7 +31,7 @@ export function PageContentContainer({ header, details, footer, content }: PageC
       <div className="min-h-0 flex-1">
         {details || footer ? (
           <ResizablePanelGroup
-            orientation={isMobile ? "vertical" : "horizontal"}
+            direction={isMobile ? "vertical" : "horizontal"}
             className="h-full items-stretch"
           >
             <ResizablePanel
