@@ -1,3 +1,9 @@
+## [1.28.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.27.0...v1.28.0) (2026-01-08)
+
+### 🚀 Features
+
+* add tokens to price ([f617bbf](https://github.com/carlonicora/nextjs-jsonapi/commit/f617bbfb7cb73d0ecc5765b70b9088ed1e1c7025))
+
 ## [1.27.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.26.0...v1.27.0) (2026-01-08)
 
 ### 🚀 Features
