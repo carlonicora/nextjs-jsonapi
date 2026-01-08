@@ -1,3 +1,14 @@
+## [1.26.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.25.1...v1.26.0) (2026-01-08)
+
+### 🚀 Features
+
+* add token status indicator ([ea86dd4](https://github.com/carlonicora/nextjs-jsonapi/commit/ea86dd47c6f02ad5f12b0ce3505780aa3cecc435))
+* listen for token update WebSocket events in CurrentUserContext ([a7253d1](https://github.com/carlonicora/nextjs-jsonapi/commit/a7253d1fb6994d6adf54696c96e504980e672e77))
+
+### 🐛 Bug Fixes
+
+* remove company license ([28d52ce](https://github.com/carlonicora/nextjs-jsonapi/commit/28d52ce2523a6bff116c3de40c34a962e3d8e374))
+
 ## [1.25.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.25.0...v1.25.1) (2026-01-07)
 
 ### 🐛 Bug Fixes
