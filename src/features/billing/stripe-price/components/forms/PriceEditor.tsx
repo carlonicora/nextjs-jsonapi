@@ -39,6 +39,7 @@ type PriceFormValues = {
   active: boolean;
   description?: string;
   features: string[];
+  token: string;
 };
 
 export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }: PriceEditorProps) {
@@ -60,6 +61,7 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
     active: z.boolean(),
     description: z.string().optional(),
     features: z.array(z.string()),
+    token: z.string(),
   });
 
   const isEditMode = !!price;
@@ -79,6 +81,7 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
       active: price?.active ?? true,
       description: price?.description || "",
       features: price?.features || [],
+      token: price?.token?.toString() ?? "",
     },
   });
 
@@ -93,12 +96,13 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
       const unitAmountInCents = Math.round(values.unitAmount * 100);
 
       if (isEditMode) {
-        // Update existing price (nickname, description, features can be updated - Stripe fields are limited)
+        // Update existing price (nickname, description, features, token can be updated - Stripe fields are limited)
         await StripePriceService.updatePrice({
           id: price.id,
           nickname: values.nickname || undefined,
           description: values.description || undefined,
           features: values.features.filter((f) => f.trim()) || undefined,
+          token: values.token ? parseInt(values.token, 10) : undefined,
         });
       } else {
         // Create new price
@@ -129,6 +133,10 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
         const filteredFeatures = values.features.filter((f) => f.trim());
         if (filteredFeatures.length > 0) {
           createInput.features = filteredFeatures;
+        }
+
+        if (values.token) {
+          createInput.token = parseInt(values.token, 10);
         }
 
         await StripePriceService.createPrice(createInput);
@@ -245,6 +253,8 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
               placeholder="Describe what this price tier includes..."
               className="min-h-24"
             />
+
+            <FormInput form={form} id="token" name="Token (optional)" placeholder="Enter token value" />
 
             {/* Features List */}
             <div className="space-y-2">

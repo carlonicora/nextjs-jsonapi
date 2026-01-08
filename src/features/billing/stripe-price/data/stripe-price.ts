@@ -16,6 +16,7 @@ export class StripePrice extends AbstractApiData implements StripePriceInterface
   private _metadata?: Record<string, any>;
   private _description?: string;
   private _features?: string[];
+  private _token?: number;
 
   get stripePriceId(): string {
     if (!this._stripePriceId) throw new Error("stripePriceId is not defined");
@@ -73,6 +74,10 @@ export class StripePrice extends AbstractApiData implements StripePriceInterface
     return this._features;
   }
 
+  get token(): number | undefined {
+    return this._token;
+  }
+
   rehydrate(data: JsonApiHydratedDataInterface): this {
     super.rehydrate(data);
 
@@ -107,6 +112,8 @@ export class StripePrice extends AbstractApiData implements StripePriceInterface
         ? JSON.parse(data.jsonApi.attributes.features)
         : data.jsonApi.attributes.features
       : undefined;
+
+    this._token = data.jsonApi.attributes.token;
 
     // Hydrate product relationship
     this._product = this._readIncluded(data, "product", Modules.StripeProduct) as StripeProductInterface;
@@ -149,6 +156,9 @@ export class StripePrice extends AbstractApiData implements StripePriceInterface
     }
     if ("features" in data && data.features !== undefined) {
       response.data.attributes.features = JSON.stringify(data.features);
+    }
+    if ("token" in data && data.token !== undefined) {
+      response.data.attributes.token = data.token;
     }
 
     return response;

@@ -19,6 +19,7 @@ export interface StripePriceInterface extends ApiDataInterface {
   get metadata(): Record<string, any> | undefined;
   get description(): string | undefined;
   get features(): string[] | undefined;
+  get token(): number | undefined;
 }
 
 export interface PriceRecurring {
@@ -45,4 +46,5 @@ export type StripePriceInput = {
   metadata?: Record<string, any>;
   description?: string;
   features?: string[];
+  token?: number;
 };
