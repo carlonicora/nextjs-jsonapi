@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckCircle, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { v4 } from "uuid";
 import {
   Alert,
@@ -20,7 +20,8 @@ import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.in
 import { StripeProductInterface, StripeProductService } from "../../../stripe-product";
 import { StripeSubscriptionInterface, StripeSubscriptionService } from "../../data";
 import { useConfirmSubscriptionPayment } from "../../hooks";
-import { PricesByProduct, PricingCardsGrid } from "../widgets/PricingCardsGrid";
+import { BillingInterval, IntervalToggle } from "../widgets/IntervalToggle";
+import { ProductPricingList } from "../widgets/ProductPricingList";
 import { ProrationPreview } from "../widgets/ProrationPreview";
 
 type PaymentConfirmationState = "idle" | "confirming" | "success" | "error";
@@ -43,9 +44,9 @@ export function SubscriptionEditor({
   const { confirmPayment, isConfirming } = useConfirmSubscriptionPayment();
 
   const [products, setProducts] = useState<StripeProductInterface[]>([]);
-  const [pricesByProduct, setPricesByProduct] = useState<PricesByProduct>(new Map());
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedPriceId, setSelectedPriceId] = useState<string | null>(null);
+  const [selectedInterval, setSelectedInterval] = useState<BillingInterval>("month");
   const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
   const [prorationPreview, setProrationPreview] = useState<ProrationPreviewInterface | null>(null);
   const [loadingProration, setLoadingProration] = useState<boolean>(false);
@@ -58,6 +59,43 @@ export function SubscriptionEditor({
   // Get current subscription price if editing (use internal UUID for comparison)
   const currentPriceId = subscription?.price?.id;
   const isEditMode = !!subscription;
+
+  // Compute which intervals are available across all products
+  const { hasMonthly, hasYearly } = useMemo(() => {
+    let hasMonthly = false;
+    let hasYearly = false;
+
+    for (const product of products) {
+      const prices = product.stripePrices || [];
+      for (const price of prices) {
+        if (price.priceType === "recurring") {
+          if (price.recurring?.interval === "month") hasMonthly = true;
+          if (price.recurring?.interval === "year") hasYearly = true;
+        }
+        if (hasMonthly && hasYearly) break;
+      }
+      if (hasMonthly && hasYearly) break;
+    }
+
+    return { hasMonthly, hasYearly };
+  }, [products]);
+
+  // Auto-select interval based on current subscription price in edit mode
+  useEffect(() => {
+    if (!currentPriceId || products.length === 0) return;
+
+    for (const product of products) {
+      const prices = product.stripePrices || [];
+      const currentPrice = prices.find((p) => p.id === currentPriceId);
+      if (currentPrice?.recurring?.interval) {
+        const interval = currentPrice.recurring.interval;
+        if (interval === "month" || interval === "year") {
+          setSelectedInterval(interval);
+          break;
+        }
+      }
+    }
+  }, [currentPriceId, products]);
 
   // Check payment methods on mount (only for new subscriptions)
   useEffect(() => {
@@ -93,16 +131,7 @@ export function SubscriptionEditor({
       try {
         const fetchedProducts = await StripeProductService.listProducts({ active: true });
 
-        // Build prices map from product.stripePrices
-        const grouped: PricesByProduct = new Map();
-        for (const product of fetchedProducts) {
-          if (product.stripePrices && product.stripePrices.length > 0) {
-            grouped.set(product.id, product.stripePrices);
-          }
-        }
-
         setProducts(fetchedProducts);
-        setPricesByProduct(grouped);
       } catch (error) {
         console.error("[SubscriptionEditor] Failed to load products/prices:", error);
       } finally {
@@ -294,9 +323,15 @@ export function SubscriptionEditor({
           </div>
         ) : (
           <div className="space-y-6">
-            <PricingCardsGrid
+            <IntervalToggle
+              value={selectedInterval}
+              onChange={setSelectedInterval}
+              hasMonthly={hasMonthly}
+              hasYearly={hasYearly}
+            />
+            <ProductPricingList
               products={products}
-              pricesByProduct={pricesByProduct}
+              selectedInterval={selectedInterval}
               currentPriceId={currentPriceId}
               selectedPriceId={selectedPriceId ?? undefined}
               loadingPriceId={loadingPriceId ?? undefined}
