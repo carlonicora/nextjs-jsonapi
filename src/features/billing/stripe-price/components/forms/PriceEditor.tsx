@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, PlusIcon, XIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import { z } from "zod";
@@ -84,6 +84,24 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
       token: price?.token?.toString() ?? "",
     },
   });
+
+  // Reset form when dialog opens to ensure fresh state
+  useEffect(() => {
+    if (open) {
+      form.reset({
+        unitAmount: price?.unitAmount ? price.unitAmount / 100 : 0,
+        currency: price?.currency || "usd",
+        interval: price?.priceType === "one_time" ? "one_time" : price?.recurring?.interval || "month",
+        intervalCount: price?.recurring?.intervalCount || 1,
+        usageType: price?.recurring?.usageType || "licensed",
+        nickname: price?.nickname || "",
+        active: price?.active ?? true,
+        description: price?.description || "",
+        features: price?.features || [],
+        token: price?.token?.toString() ?? "",
+      });
+    }
+  }, [open, price?.id]);
 
   const watchInterval = form.watch("interval");
   const isRecurring = watchInterval !== "one_time";

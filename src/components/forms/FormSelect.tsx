@@ -45,7 +45,8 @@ export function FormSelect({
               field.onChange(e);
               if (onChange) onChange(e);
             }}
-            defaultValue={field.value}
+            value={field.value}
+            disabled={disabled}
             data-testid={testId}
           >
             <SelectTrigger className="w-full">

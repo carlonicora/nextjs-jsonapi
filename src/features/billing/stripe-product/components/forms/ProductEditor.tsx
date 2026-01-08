@@ -23,7 +23,7 @@ export function ProductEditor({ product, open, onOpenChange, onSuccess }: Produc
 
   const formSchema = z.object({
     name: z.string().min(1, { message: "Product name is required" }),
-    description: z.string().optional(),
+    description: z.string().min(1, { message: "Description is required" }),
     active: z.boolean(),
   });
 
@@ -85,7 +85,7 @@ export function ProductEditor({ product, open, onOpenChange, onSuccess }: Produc
               form={form}
               id="description"
               name="Description"
-              placeholder="Enter product description (optional)"
+              placeholder="Enter product description"
               className="min-h-32"
             />
 
