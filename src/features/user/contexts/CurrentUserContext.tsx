@@ -4,14 +4,14 @@ import { getCookie } from "cookies-next";
 import { useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { usePathname } from "next/navigation";
-import React, { createContext, useContext, useEffect } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { Modules, rehydrate } from "../../../core";
 import { Action, checkPermissions, ModuleWithPermissions } from "../../../permissions";
 import { getRoleId } from "../../../roles";
 import { CompanyInterface } from "../../company";
 import { FeatureInterface } from "../../feature";
 import { RoleInterface } from "../../role";
-import { UserInterface } from "../data";
+import { UserInterface, UserService } from "../data";
 
 export interface CurrentUserContextType<T extends UserInterface = UserInterface> {
   currentUser: T | null;
@@ -31,6 +31,8 @@ export interface CurrentUserContextType<T extends UserInterface = UserInterface>
   hasAccesToFeature: (featureIdentifier: string) => boolean;
   matchUrlToModule: (prarms?: { path: string }) => ModuleWithPermissions | undefined;
   hasRole: (roleId: string) => boolean;
+  refreshUser: () => Promise<void>;
+  isRefreshing: boolean;
 }
 
 const userAtom = atomWithStorage("user", null);
@@ -128,6 +130,26 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
     return response;
   }
 
+  // State for tracking refresh status
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Function to refresh user data from the API
+  const refreshUser = useCallback(async (): Promise<void> => {
+    if (isRefreshing) return;
+
+    setIsRefreshing(true);
+    try {
+      const fullUser = await UserService.findFullUser();
+      if (fullUser) {
+        setDehydratedUser(fullUser.dehydrate() as any);
+      }
+    } catch (error) {
+      console.error("Failed to refresh user data:", error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [isRefreshing, setDehydratedUser]);
+
   return (
     <CurrentUserContext.Provider
       value={{
@@ -140,6 +162,8 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
         hasAccesToFeature: hasAccesToFeature,
         matchUrlToModule: matchUrlToModule,
         hasRole: hasRole,
+        refreshUser: refreshUser,
+        isRefreshing: isRefreshing,
       }}
     >
       {children}

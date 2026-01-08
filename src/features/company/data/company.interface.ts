@@ -8,8 +8,9 @@ export type CompanyInput = {
   logo?: string;
   configurations?: any;
 
-  license?: string;
-  privateKey?: string;
+  monthlyTokens?: number;
+  availableMonthlyTokens?: number;
+  availableExtraTokens?: number;
 
   featureIds?: string[];
   moduleIds?: string[];
@@ -20,6 +21,10 @@ export interface CompanyInterface extends ApiDataInterface {
   get configurations(): any;
   get logo(): string | undefined;
   get logoUrl(): string | undefined;
+
+  get monthlyTokens(): number;
+  get availableMonthlyTokens(): number;
+  get availableExtraTokens(): number;
 
   get features(): FeatureInterface[];
   get modules(): ModuleInterface[];
