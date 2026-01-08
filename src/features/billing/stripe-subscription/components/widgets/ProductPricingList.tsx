@@ -20,10 +20,7 @@ function isRecurringProduct(prices: StripePriceInterface[]): boolean {
   return prices.some((p) => p.priceType === "recurring");
 }
 
-function getFilteredPrices(
-  prices: StripePriceInterface[],
-  selectedInterval: BillingInterval
-): StripePriceInterface[] {
+function getFilteredPrices(prices: StripePriceInterface[], selectedInterval: BillingInterval): StripePriceInterface[] {
   const isRecurring = isRecurringProduct(prices);
 
   if (!isRecurring) {
@@ -31,14 +28,12 @@ function getFilteredPrices(
   }
 
   const intervalPrices = prices.filter(
-    (p) => p.priceType === "recurring" && p.recurring?.interval === selectedInterval
+    (p) => p.priceType === "recurring" && p.recurring?.interval === selectedInterval,
   );
 
   if (intervalPrices.length === 0) {
     const fallbackInterval = selectedInterval === "month" ? "year" : "month";
-    return prices.filter(
-      (p) => p.priceType === "recurring" && p.recurring?.interval === fallbackInterval
-    );
+    return prices.filter((p) => p.priceType === "recurring" && p.recurring?.interval === fallbackInterval);
   }
 
   return intervalPrices;
@@ -58,16 +53,20 @@ export function ProductPricingList({
   }
 
   if (products.length === 0) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">
-        No plans available
-      </div>
-    );
+    return <div className="text-center py-8 text-muted-foreground">No plans available</div>;
   }
+
+  const sortedProducts = [...products].sort((a, b) => {
+    const aRecurring = isRecurringProduct(a.stripePrices || []);
+    const bRecurring = isRecurringProduct(b.stripePrices || []);
+    if (aRecurring && !bRecurring) return -1;
+    if (!aRecurring && bRecurring) return 1;
+    return 0;
+  });
 
   return (
     <div className="space-y-6">
-      {products.map((product) => {
+      {sortedProducts.map((product) => {
         const allPrices = product.stripePrices || [];
         const filteredPrices = getFilteredPrices(allPrices, selectedInterval);
 
@@ -99,10 +98,7 @@ function ProductPricingListSkeleton() {
           <Skeleton className="h-6 w-32" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3].map((cardIndex) => (
-              <div
-                key={cardIndex}
-                className="p-4 rounded-lg border animate-pulse space-y-3"
-              >
+              <div key={cardIndex} className="p-4 rounded-lg border animate-pulse space-y-3">
                 <Skeleton className="h-6 w-24" />
                 <Skeleton className="h-8 w-32" />
                 <div className="space-y-2">

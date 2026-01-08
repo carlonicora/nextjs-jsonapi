@@ -6,7 +6,7 @@ import { PricingCard } from "./PricingCard";
 
 export type ProductPricingRowProps = {
   product: StripeProductInterface;
-  prices: StripePriceInterface[];  // Multiple prices for this product
+  prices: StripePriceInterface[]; // Multiple prices for this product
   currentPriceId?: string;
   selectedPriceId?: string;
   loadingPriceId?: string;
@@ -36,16 +36,18 @@ export function ProductPricingRow({
         role="radiogroup"
         aria-label={`Pricing options for ${product.name}`}
       >
-        {prices.map((price) => (
-          <PricingCard
-            key={price.id}
-            price={price}
-            isCurrentPlan={price.id === currentPriceId}
-            isSelected={price.id === selectedPriceId}
-            isLoading={price.id === loadingPriceId}
-            onSelect={onSelectPrice}
-          />
-        ))}
+        {prices
+          .sort((a, b) => (a.unitAmount ?? 0) - (b.unitAmount ?? 0))
+          .map((price) => (
+            <PricingCard
+              key={price.id}
+              price={price}
+              isCurrentPlan={price.id === currentPriceId}
+              isSelected={price.id === selectedPriceId}
+              isLoading={price.id === loadingPriceId}
+              onSelect={onSelectPrice}
+            />
+          ))}
       </div>
     </div>
   );
