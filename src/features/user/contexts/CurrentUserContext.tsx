@@ -4,7 +4,7 @@ import { getCookie } from "cookies-next";
 import { useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { usePathname } from "next/navigation";
-import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Modules, rehydrate } from "../../../core";
 import { Action, checkPermissions, ModuleWithPermissions } from "../../../permissions";
 import { getRoleId } from "../../../roles";
@@ -12,6 +12,7 @@ import { CompanyInterface } from "../../company";
 import { FeatureInterface } from "../../feature";
 import { RoleInterface } from "../../role";
 import { UserInterface, UserService } from "../data";
+import { useSocketContext } from "../../../contexts/SocketContext";
 
 export interface CurrentUserContextType<T extends UserInterface = UserInterface> {
   currentUser: T | null;
@@ -149,6 +150,36 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
       setIsRefreshing(false);
     }
   }, [isRefreshing, setDehydratedUser]);
+
+  // WebSocket integration for real-time token updates
+  const { socket, isConnected } = useSocketContext();
+
+  // Use ref for stable refreshUser reference to avoid effect re-runs
+  const refreshUserRef = useRef(refreshUser);
+  refreshUserRef.current = refreshUser;
+
+  // Track refresh in progress to prevent duplicate API calls
+  const isRefreshingRef = useRef(false);
+
+  // Listen for company:tokens_updated WebSocket events
+  useEffect(() => {
+    if (!socket || !isConnected || !currentUser?.company?.id) return;
+
+    const handleTokensUpdated = (data: { companyId: string; type: string }) => {
+      if (data.companyId === currentUser.company?.id && !isRefreshingRef.current) {
+        isRefreshingRef.current = true;
+        refreshUserRef.current().finally(() => {
+          isRefreshingRef.current = false;
+        });
+      }
+    };
+
+    socket.on("company:tokens_updated", handleTokensUpdated);
+
+    return () => {
+      socket.off("company:tokens_updated", handleTokensUpdated);
+    };
+  }, [socket, isConnected, currentUser?.company?.id]);
 
   return (
     <CurrentUserContext.Provider
