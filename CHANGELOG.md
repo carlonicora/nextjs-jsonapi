@@ -1,3 +1,9 @@
+## [1.27.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.26.0...v1.27.0) (2026-01-08)
+
+### 🚀 Features
+
+* add HeaderChildrenContext for customizable header content ([f5e1952](https://github.com/carlonicora/nextjs-jsonapi/commit/f5e1952fd7a3fc6829e35b1db1e77f02672f816c))
+
 ## [1.26.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.25.1...v1.26.0) (2026-01-08)
 
 ### 🚀 Features
