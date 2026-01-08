@@ -3,6 +3,7 @@ export * from "../features/notification/contexts/NotificationContext";
 export * from "../features/role/contexts/RoleContext";
 export * from "../features/user/contexts";
 export * from "./CommonContext";
+export * from "./HeaderChildrenContext";
 export * from "./SharedContext";
 export * from "./SocketContext";
 
