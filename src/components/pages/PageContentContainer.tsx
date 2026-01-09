@@ -50,11 +50,11 @@ export function PageContentContainer({ header, details, footer, content }: PageC
             </ResizablePanel>
             <ResizableHandle withHandle />
             <ResizablePanel id="right-panel" className={isMobile ? "pt-4" : "pl-4"}>
-              <div className="h-full overflow-y-auto p-2 pb-20">{content}</div>
+              <div className="h-full overflow-x-hidden overflow-y-auto p-2 pb-20">{content}</div>
             </ResizablePanel>
           </ResizablePanelGroup>
         ) : (
-          <div className="h-full overflow-y-auto p-2 pb-20">{content}</div>
+          <div className="h-full overflow-x-hidden overflow-y-auto p-2 pb-20">{content}</div>
         )}
       </div>
     </div>
