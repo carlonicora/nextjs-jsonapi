@@ -20,7 +20,6 @@ export function useSubscriptionStatus(): TrialSubscriptionStatus {
   return useMemo(() => {
     // Still loading user data - don't block yet
     if (currentUser === null) {
-      console.log("[useSubscriptionStatus] Loading - currentUser is null");
       return {
         status: "loading",
         trialEndsAt: null,
@@ -32,7 +31,6 @@ export function useSubscriptionStatus(): TrialSubscriptionStatus {
 
     // No company after loading = blocked
     if (!company) {
-      console.log("[useSubscriptionStatus] No company - blocked");
       return {
         status: "expired",
         trialEndsAt: null,
@@ -44,7 +42,6 @@ export function useSubscriptionStatus(): TrialSubscriptionStatus {
 
     // Has active subscription = never blocked
     if (company.isActiveSubscription) {
-      console.log("[useSubscriptionStatus] Active subscription - not blocked");
       return {
         status: "active",
         trialEndsAt: null,
@@ -62,12 +59,6 @@ export function useSubscriptionStatus(): TrialSubscriptionStatus {
     const now = new Date();
     const msRemaining = trialEndsAt.getTime() - now.getTime();
     const daysRemaining = Math.ceil(msRemaining / (1000 * 60 * 60 * 24));
-
-    console.log("[useSubscriptionStatus] company:", company.name);
-    console.log("[useSubscriptionStatus] createdAt:", company.createdAt);
-    console.log("[useSubscriptionStatus] trialEndsAt:", trialEndsAt.toISOString());
-    console.log("[useSubscriptionStatus] daysRemaining:", daysRemaining);
-    console.log("[useSubscriptionStatus] isBlocked:", daysRemaining <= 0);
 
     return {
       status: daysRemaining > 0 ? "trial" : "expired",

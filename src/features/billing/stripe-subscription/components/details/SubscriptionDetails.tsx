@@ -7,7 +7,6 @@ import { StripeCustomerService } from "../../../stripe-customer";
 import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
 import { StripeSubscriptionInterface, StripeSubscriptionService, SubscriptionStatus } from "../../data";
 import { CancelSubscriptionDialog } from "../forms/CancelSubscriptionDialog";
-import { SubscriptionEditor } from "../forms/SubscriptionEditor";
 import { SubscriptionStatusBadge } from "../widgets/SubscriptionStatusBadge";
 
 /**
@@ -53,6 +52,7 @@ type SubscriptionDetailsProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubscriptionChange: () => void;
+  onChangePlan?: (subscription: StripeSubscriptionInterface) => void;
 };
 
 export function SubscriptionDetails({
@@ -60,8 +60,8 @@ export function SubscriptionDetails({
   open,
   onOpenChange,
   onSubscriptionChange,
+  onChangePlan,
 }: SubscriptionDetailsProps) {
-  const [showEdit, setShowEdit] = useState<boolean>(false);
   const [showCancel, setShowCancel] = useState<boolean>(false);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
@@ -163,9 +163,11 @@ export function SubscriptionDetails({
 
             {/* Action Buttons */}
             <div className="flex flex-wrap gap-2 pt-4 border-t">
-              <Button variant="default" onClick={() => setShowEdit(true)}>
-                Change Plan
-              </Button>
+              {onChangePlan && (
+                <Button variant="default" onClick={() => onChangePlan(subscription)}>
+                  Change Plan
+                </Button>
+              )}
 
               {canPause && (
                 <Button variant="outline" onClick={handlePause} disabled={isProcessing}>
@@ -192,19 +194,6 @@ export function SubscriptionDetails({
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Edit Subscription Dialog */}
-      {showEdit && (
-        <SubscriptionEditor
-          subscription={subscription}
-          open={showEdit}
-          onOpenChange={setShowEdit}
-          onSuccess={() => {
-            onSubscriptionChange();
-            setShowEdit(false);
-          }}
-        />
-      )}
 
       {/* Cancel Subscription Dialog */}
       {showCancel && (

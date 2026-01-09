@@ -1,5 +1,6 @@
 export * from "./data";
 export * from "./stripe-subscription.module";
 
-// Note: hooks are not exported from barrel to avoid bundling client code into server components.
-// Import hooks directly: import { useConfirmSubscriptionPayment } from "./hooks";
+// Note: Client components (wizards, hooks) are not exported here to avoid bundling
+// client code into server contexts. Import them from the /billing entry point:
+// import { SubscriptionWizard } from "@carlonicora/nextjs-jsonapi/billing";

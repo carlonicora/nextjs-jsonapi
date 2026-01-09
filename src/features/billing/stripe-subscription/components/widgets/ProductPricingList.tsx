@@ -14,6 +14,7 @@ export type ProductPricingListProps = {
   loadingPriceId?: string;
   loading?: boolean;
   onSelectPrice: (price: StripePriceInterface) => void;
+  hideRecurringPrices?: boolean;
 };
 
 function isRecurringProduct(prices: StripePriceInterface[]): boolean {
@@ -47,6 +48,7 @@ export function ProductPricingList({
   loadingPriceId,
   loading = false,
   onSelectPrice,
+  hideRecurringPrices = false,
 }: ProductPricingListProps) {
   if (loading) {
     return <ProductPricingListSkeleton />;
@@ -64,9 +66,19 @@ export function ProductPricingList({
     return 0;
   });
 
+  // Filter products based on hideRecurringPrices
+  const filteredProducts = hideRecurringPrices
+    ? sortedProducts
+        .map((product) => ({
+          ...product,
+          stripePrices: (product.stripePrices || []).filter((price) => price.priceType !== "recurring"),
+        }))
+        .filter((product) => product.stripePrices.length > 0)
+    : sortedProducts;
+
   return (
     <div className="space-y-6">
-      {sortedProducts.map((product) => {
+      {filteredProducts.map((product) => {
         const allPrices = product.stripePrices || [];
         const filteredPrices = getFilteredPrices(allPrices, selectedInterval);
 

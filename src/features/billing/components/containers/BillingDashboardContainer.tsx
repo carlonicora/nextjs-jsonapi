@@ -2,7 +2,7 @@
 
 import { CreditCard, Loader2, Wallet } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../../shadcnui";
 import { PaymentMethodInterface, StripeCustomerInterface, StripeCustomerService } from "../../stripe-customer";
 import { PaymentMethodsContainer } from "../../stripe-customer/components";
@@ -10,6 +10,7 @@ import { StripeInvoiceInterface, StripeInvoiceService } from "../../stripe-invoi
 import { InvoicesContainer } from "../../stripe-invoice/components";
 import { StripeSubscriptionInterface, StripeSubscriptionService, SubscriptionStatus } from "../../stripe-subscription";
 import { SubscriptionsContainer } from "../../stripe-subscription/components";
+import { SubscriptionWizard } from "../../stripe-subscription/components/wizards";
 import { MeterInterface, MeterSummaryInterface, StripeUsageService } from "../../stripe-usage";
 import { UsageContainer } from "../../stripe-usage/components";
 import {
@@ -79,11 +80,23 @@ export function BillingDashboardContainer() {
   const [noCustomerExists, setNoCustomerExists] = useState(false);
   const [creatingCustomer, setCreatingCustomer] = useState(false);
   const searchParams = useSearchParams();
-  const [autoOpenEditor, setAutoOpenEditor] = useState(false);
+
+  // Wizard state - lifted from SubscriptionsContainer to avoid nested dialogs
+  const [showWizard, setShowWizard] = useState(false);
+  const [editingSubscription, setEditingSubscription] = useState<StripeSubscriptionInterface | null>(null);
 
   // Check if company has metered subscriptions
   const hasMeteredSubscriptions = useCallback((): boolean => {
     return data.subscriptions.some((sub) => sub.price?.recurring?.usageType === "metered");
+  }, [data.subscriptions]);
+
+  // Check if user has active recurring subscription (for wizard filtering)
+  const hasActiveRecurringSubscription = useMemo(() => {
+    return data.subscriptions.some(
+      (sub) =>
+        (sub.status === SubscriptionStatus.ACTIVE || sub.status === SubscriptionStatus.TRIALING) &&
+        sub.price?.priceType === "recurring",
+    );
   }, [data.subscriptions]);
 
   // Fetch all data - first check customer, then fetch rest if customer exists
@@ -245,6 +258,19 @@ export function BillingDashboardContainer() {
     await fetchAllData();
   }, [fetchAllData]);
 
+  // Handler to open wizard (can be called from SubscriptionsContainer)
+  const handleOpenWizard = useCallback((subscription?: StripeSubscriptionInterface) => {
+    setEditingSubscription(subscription || null);
+    setShowWizard(true);
+  }, []);
+
+  // Handler to close wizard
+  const handleWizardClose = useCallback(() => {
+    setShowWizard(false);
+    setEditingSubscription(null);
+    refreshData();
+  }, [refreshData]);
+
   // Initial data load
   useEffect(() => {
     fetchAllData();
@@ -254,8 +280,8 @@ export function BillingDashboardContainer() {
   useEffect(() => {
     const action = searchParams.get("action");
     if (action === "subscribe") {
-      setActiveModal("subscriptions");
-      setAutoOpenEditor(true);
+      // Open wizard directly (no wrapper modal)
+      setShowWizard(true);
       // Clear the URL param to prevent re-triggering on refresh
       window.history.replaceState({}, "", window.location.pathname);
     }
@@ -366,7 +392,15 @@ export function BillingDashboardContainer() {
               subscriptions={data.subscriptions}
               loading={loading.subscriptions}
               error={errors.subscriptions || undefined}
-              onManageClick={() => setActiveModal("subscriptions")}
+              onManageClick={() => {
+                if (data.subscriptions.length === 0) {
+                  // No subscriptions - open wizard directly
+                  setShowWizard(true);
+                } else {
+                  // Has subscriptions - open manage modal
+                  setActiveModal("subscriptions");
+                }
+              }}
             />
 
             <PaymentMethodSummaryCard
@@ -408,7 +442,7 @@ export function BillingDashboardContainer() {
             onOpenChange={handleModalClose}
             title={getModalTitle("subscriptions")}
           >
-            <SubscriptionsContainer autoOpenEditor={autoOpenEditor} />
+            <SubscriptionsContainer onOpenWizard={handleOpenWizard} />
           </BillingDetailModal>
 
           <BillingDetailModal
@@ -434,6 +468,15 @@ export function BillingDashboardContainer() {
           >
             <UsageContainer />
           </BillingDetailModal>
+
+          {/* Subscription Wizard - rendered at dashboard level to avoid nested dialogs */}
+          <SubscriptionWizard
+            open={showWizard}
+            onOpenChange={(open) => !open && handleWizardClose()}
+            onSuccess={refreshData}
+            hasActiveRecurringSubscription={hasActiveRecurringSubscription}
+            subscription={editingSubscription ?? undefined}
+          />
         </>
       )}
     </div>

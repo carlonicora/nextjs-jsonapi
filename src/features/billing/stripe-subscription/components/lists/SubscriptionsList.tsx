@@ -41,9 +41,10 @@ function formatPlanName(price: StripePriceInterface | undefined): string {
 type SubscriptionsListProps = {
   subscriptions: StripeSubscriptionInterface[];
   onSubscriptionsChange: () => void;
+  onChangePlan?: (subscription: StripeSubscriptionInterface) => void;
 };
 
-export function SubscriptionsList({ subscriptions, onSubscriptionsChange }: SubscriptionsListProps) {
+export function SubscriptionsList({ subscriptions, onSubscriptionsChange, onChangePlan }: SubscriptionsListProps) {
   const [selectedSub, setSelectedSub] = useState<StripeSubscriptionInterface | null>(null);
 
   const handleRowClick = (subscription: StripeSubscriptionInterface) => {
@@ -97,6 +98,14 @@ export function SubscriptionsList({ subscriptions, onSubscriptionsChange }: Subs
             onSubscriptionsChange();
             setSelectedSub(null);
           }}
+          onChangePlan={
+            onChangePlan
+              ? (sub) => {
+                  setSelectedSub(null); // Close details dialog first
+                  onChangePlan(sub); // Then open wizard at parent level
+                }
+              : undefined
+          }
         />
       )}
     </>
