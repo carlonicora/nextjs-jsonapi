@@ -1,6 +1,7 @@
 "use client";
 
 import { CreditCard, Loader2, Wallet } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../../shadcnui";
 import { PaymentMethodInterface, StripeCustomerInterface, StripeCustomerService } from "../../stripe-customer";
@@ -77,6 +78,8 @@ export function BillingDashboardContainer() {
   const [activeModal, setActiveModal] = useState<ModalType>(null);
   const [noCustomerExists, setNoCustomerExists] = useState(false);
   const [creatingCustomer, setCreatingCustomer] = useState(false);
+  const searchParams = useSearchParams();
+  const [autoOpenEditor, setAutoOpenEditor] = useState(false);
 
   // Check if company has metered subscriptions
   const hasMeteredSubscriptions = useCallback((): boolean => {
@@ -247,6 +250,17 @@ export function BillingDashboardContainer() {
     fetchAllData();
   }, [fetchAllData]);
 
+  // Handle URL action parameter for deep linking
+  useEffect(() => {
+    const action = searchParams.get("action");
+    if (action === "subscribe") {
+      setActiveModal("subscriptions");
+      setAutoOpenEditor(true);
+      // Clear the URL param to prevent re-triggering on refresh
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, [searchParams]);
+
   // Detect critical subscriptions for alert banners
   const criticalSubscriptions = data.subscriptions.filter(
     (sub) =>
@@ -394,7 +408,7 @@ export function BillingDashboardContainer() {
             onOpenChange={handleModalClose}
             title={getModalTitle("subscriptions")}
           >
-            <SubscriptionsContainer />
+            <SubscriptionsContainer autoOpenEditor={autoOpenEditor} />
           </BillingDetailModal>
 
           <BillingDetailModal

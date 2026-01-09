@@ -1,10 +1,11 @@
 "use client";
 
 import { Battery, BatteryFull, BatteryLow, BatteryMedium, PlusCircle } from "lucide-react";
+import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../../../../shadcnui";
+import { Button, Separator, Tooltip, TooltipContent, TooltipTrigger } from "../../../../shadcnui";
 import { useCurrentUserContext } from "../../../user/contexts";
 
 interface TokenStatusIndicatorProps {
@@ -99,14 +100,23 @@ export function TokenStatusIndicator({ className, size = "md", showExtraPages = 
           <span className="text-muted-foreground">{t("generic.tokens.available", { defaultValue: "Available" })}:</span>
           <span className={cn("font-medium", getStatusColor())}>{percentage.toFixed(0)}%</span>
         </div>
-        {showExtraPages && (
-          <div className="flex items-center justify-between gap-4 border-t pt-1 mt-1">
-            <span className="text-muted-foreground">
-              {t("generic.tokens.available_extra", { defaultValue: "Extra Pages" })}:
-            </span>
-            <span className="font-medium text-blue-500">{availableExtraTokens}</span>
-          </div>
-        )}
+        <Link href="/settings/billing?action=subscribe" className="w-full flex justify-end my-4">
+          <Button variant="outline" size="sm">
+            {t("generic.tokens.upgrade_plan", { defaultValue: "Upgrade plan" })}
+          </Button>
+        </Link>
+        <Separator />
+        <div className="flex items-center justify-between gap-4 pt-1 mt-1">
+          <span className="text-muted-foreground">
+            {t("generic.tokens.available_extra", { defaultValue: "Extra Pages" })}:
+          </span>
+          <span className="font-medium text-blue-500">{availableExtraTokens}</span>
+        </div>
+        <Link href="/settings/billing?action=subscribe" className="w-full flex justify-end my-4">
+          <Button variant="outline" size="sm">
+            {t("generic.tokens.purchase_extra", { defaultValue: "Purchase additional analysis" })}
+          </Button>
+        </Link>
       </div>
     </div>
   );

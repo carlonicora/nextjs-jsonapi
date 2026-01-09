@@ -17,7 +17,11 @@ import { PricesByProduct, PricingCardsGrid } from "../widgets/PricingCardsGrid";
 
 type PaymentConfirmationState = "idle" | "confirming" | "success" | "error";
 
-export function SubscriptionsContainer() {
+type SubscriptionsContainerProps = {
+  autoOpenEditor?: boolean;
+};
+
+export function SubscriptionsContainer({ autoOpenEditor = false }: SubscriptionsContainerProps) {
   const { confirmPayment, isConfirming } = useConfirmSubscriptionPayment();
 
   const [subscriptions, setSubscriptions] = useState<StripeSubscriptionInterface[]>([]);
@@ -167,6 +171,13 @@ export function SubscriptionsContainer() {
       checkPaymentMethod();
     }
   }, [loading, subscriptions.length]);
+
+  // Handle auto-open editor when prop is passed
+  useEffect(() => {
+    if (autoOpenEditor) {
+      setShowCreateSubscription(true);
+    }
+  }, [autoOpenEditor]);
 
   // Detect critical subscriptions
   const criticalSubscriptions = subscriptions.filter(
