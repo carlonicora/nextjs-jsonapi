@@ -1,11 +1,12 @@
 "use client";
 
 import { useCallback, useMemo, useReducer, useRef } from "react";
-import { StripeSubscriptionInterface, StripeSubscriptionService } from "../data";
-import { StripePriceInterface } from "../../stripe-price/data/stripe-price.interface";
-import { BillingInterval } from "../components/widgets/IntervalToggle";
+import { v4 } from "uuid";
 import { StripeCustomerService } from "../../stripe-customer/data/stripe-customer.service";
 import { ProrationPreviewInterface } from "../../stripe-invoice/data/stripe-invoice.interface";
+import { StripePriceInterface } from "../../stripe-price/data/stripe-price.interface";
+import { BillingInterval } from "../components/widgets/IntervalToggle";
+import { StripeSubscriptionInterface, StripeSubscriptionService } from "../data";
 
 export type WizardStep = "plan-selection" | "review" | "payment-method";
 
@@ -145,7 +146,7 @@ export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseS
       } else {
         // Create new subscription
         await StripeSubscriptionService.createSubscription({
-          id: crypto.randomUUID(),
+          id: v4(),
           priceId: state.selectedPrice.id,
         });
       }

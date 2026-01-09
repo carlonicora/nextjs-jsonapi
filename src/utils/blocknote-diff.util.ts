@@ -128,7 +128,7 @@ export class BlockNoteDiffUtil {
       if (blockId && processedNewIds.has(blockId)) continue;
 
       // This is a new block (either no ID or ID not found in original)
-      const generatedId = blockId || crypto.randomUUID();
+      const generatedId = blockId || v4();
       const addedBlock: DiffBlock = {
         ...newBlock,
         id: generatedId,
