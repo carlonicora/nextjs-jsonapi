@@ -204,7 +204,7 @@ export abstract class AbstractService {
         globalErrorHandler(apiResponse.response, apiResponse.error);
         return undefined as any;
       } else {
-        const error = new Error(`${apiResponse.error}`) as any;
+        const error = new Error(`${apiResponse.response}:${apiResponse.error}`) as any;
         error.status = apiResponse.response;
         error.digest = `HTTP_${apiResponse.response}`;
         throw error;
@@ -309,7 +309,7 @@ export abstract class AbstractService {
         globalErrorHandler(apiResponse.response, apiResponse.error);
         return { data: undefined as any, meta: undefined };
       } else {
-        const error = new Error(`${apiResponse.error}`) as any;
+        const error = new Error(`${apiResponse.response}:${apiResponse.error}`) as any;
         error.status = apiResponse.response;
         error.digest = `HTTP_${apiResponse.response}`;
         throw error;
