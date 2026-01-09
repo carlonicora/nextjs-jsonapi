@@ -23,6 +23,7 @@ import { useConfirmSubscriptionPayment } from "../../hooks";
 import { BillingInterval, IntervalToggle } from "../widgets/IntervalToggle";
 import { ProductPricingList } from "../widgets/ProductPricingList";
 import { ProrationPreview } from "../widgets/ProrationPreview";
+import { SubscriptionConfirmation } from "../widgets/SubscriptionConfirmation";
 
 type PaymentConfirmationState = "idle" | "confirming" | "success" | "error";
 
@@ -59,6 +60,16 @@ export function SubscriptionEditor({
   // Get current subscription price if editing (use internal UUID for comparison)
   const currentPriceId = subscription?.price?.id;
   const isEditMode = !!subscription;
+
+  // Derive selected price object from ID for confirmation panel
+  const selectedPrice = useMemo(() => {
+    if (!selectedPriceId) return null;
+    for (const product of products) {
+      const found = product.stripePrices?.find((p) => p.id === selectedPriceId);
+      if (found) return found;
+    }
+    return null;
+  }, [selectedPriceId, products]);
 
   // Compute which intervals are available across all products
   const { hasMonthly, hasYearly } = useMemo(() => {
@@ -177,56 +188,61 @@ export function SubscriptionEditor({
       // Edit mode: just select the price to show proration preview
       setSelectedPriceId(priceId);
     } else {
-      // Create mode: immediately create subscription
-      setLoadingPriceId(priceId);
+      // Create mode: just select the price for confirmation
       setSelectedPriceId(priceId);
-      setPaymentError(null);
-      setPaymentConfirmationState("idle");
+    }
+  };
 
-      try {
-        const result = await StripeSubscriptionService.createSubscription({
-          id: v4(),
-          priceId,
-        });
+  const handleConfirmSubscription = async () => {
+    if (!selectedPriceId) return;
 
-        // Check if payment confirmation is required (SCA flow)
-        if (result.meta.requiresAction && result.meta.clientSecret) {
-          setPaymentConfirmationState("confirming");
+    setLoadingPriceId(selectedPriceId);
+    setPaymentError(null);
+    setPaymentConfirmationState("idle");
 
-          const confirmation = await confirmPayment(result.meta.clientSecret);
+    try {
+      const result = await StripeSubscriptionService.createSubscription({
+        id: v4(),
+        priceId: selectedPriceId,
+      });
 
-          if (!confirmation.success) {
-            console.error("[SubscriptionEditor] Payment confirmation failed:", confirmation.error);
-            setPaymentConfirmationState("error");
-            setPaymentError(confirmation.error || "Payment confirmation failed");
-            setLoadingPriceId(null);
-            return;
-          }
+      // Check if payment confirmation is required (SCA flow)
+      if (result.meta.requiresAction && result.meta.clientSecret) {
+        setPaymentConfirmationState("confirming");
 
-          // Sync subscription to get updated status from Stripe
-          await StripeSubscriptionService.syncSubscription({
-            subscriptionId: result.subscription.id,
-          });
-        }
+        const confirmation = await confirmPayment(result.meta.clientSecret);
 
-        // Success - show brief success state then close
-        setPaymentConfirmationState("success");
-        setTimeout(() => {
-          onSuccess();
-          onOpenChange(false);
-        }, 1000);
-      } catch (error: any) {
-        console.error("[SubscriptionEditor] Failed to create subscription:", error);
-        // Handle 402 Payment Required error
-        if (error?.status === 402 || error?.response?.status === 402) {
-          setPaymentRequiredError(true);
-          setHasPaymentMethod(false);
-        } else {
+        if (!confirmation.success) {
+          console.error("[SubscriptionEditor] Payment confirmation failed:", confirmation.error);
           setPaymentConfirmationState("error");
-          setPaymentError(error?.message || "Failed to create subscription");
+          setPaymentError(confirmation.error || "Payment confirmation failed");
+          setLoadingPriceId(null);
+          return;
         }
-        setLoadingPriceId(null);
+
+        // Sync subscription to get updated status from Stripe
+        await StripeSubscriptionService.syncSubscription({
+          subscriptionId: result.subscription.id,
+        });
       }
+
+      // Success - show brief success state then close
+      setPaymentConfirmationState("success");
+      setTimeout(() => {
+        onSuccess();
+        onOpenChange(false);
+      }, 1000);
+    } catch (error: any) {
+      console.error("[SubscriptionEditor] Failed to create subscription:", error);
+      // Handle 402 Payment Required error
+      if (error?.status === 402 || error?.response?.status === 402) {
+        setPaymentRequiredError(true);
+        setHasPaymentMethod(false);
+      } else {
+        setPaymentConfirmationState("error");
+        setPaymentError(error?.message || "Failed to create subscription");
+      }
+      setLoadingPriceId(null);
     }
   };
 
@@ -338,6 +354,16 @@ export function SubscriptionEditor({
               loading={loading}
               onSelectPrice={handleSelectPrice}
             />
+
+            {/* Create mode: show confirmation panel when price selected */}
+            {!isEditMode && selectedPrice && (
+              <SubscriptionConfirmation
+                price={selectedPrice}
+                isLoading={!!loadingPriceId}
+                onConfirm={handleConfirmSubscription}
+                onCancel={handleCancel}
+              />
+            )}
 
             {isEditMode && loadingProration && (
               <div className="bg-muted/50 rounded-lg p-4 text-sm text-muted-foreground text-center">
