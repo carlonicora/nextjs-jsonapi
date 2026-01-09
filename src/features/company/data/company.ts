@@ -9,6 +9,8 @@ export class Company extends AbstractApiData implements CompanyInterface {
   private _logoUrl?: string;
   private _configurations?: any;
 
+  private _isActiveSubscription: boolean = false;
+
   private _monthlyTokens: number = 0;
   private _availableMonthlyTokens: number = 0;
   private _availableExtraTokens: number = 0;
@@ -27,6 +29,10 @@ export class Company extends AbstractApiData implements CompanyInterface {
 
   get logoUrl(): string | undefined {
     return this._logoUrl;
+  }
+
+  get isActiveSubscription(): boolean {
+    return this._isActiveSubscription ?? false;
   }
 
   get monthlyTokens(): number {
@@ -62,6 +68,7 @@ export class Company extends AbstractApiData implements CompanyInterface {
       : undefined;
     this._logo = data.jsonApi.attributes.logo;
     this._logoUrl = data.jsonApi.attributes.logoUrl;
+    this._isActiveSubscription = data.jsonApi.attributes.isActiveSubscription ?? false;
     this._monthlyTokens = data.jsonApi.attributes.monthlyTokens ?? 0;
     this._availableMonthlyTokens = data.jsonApi.attributes.availableMonthlyTokens ?? 0;
     this._availableExtraTokens = data.jsonApi.attributes.availableExtraTokens ?? 0;

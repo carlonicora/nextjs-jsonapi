@@ -22,6 +22,8 @@ export interface CompanyInterface extends ApiDataInterface {
   get logo(): string | undefined;
   get logoUrl(): string | undefined;
 
+  get isActiveSubscription(): boolean;
+
   get monthlyTokens(): number;
   get availableMonthlyTokens(): number;
   get availableExtraTokens(): number;
