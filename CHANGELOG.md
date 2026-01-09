@@ -1,3 +1,13 @@
+## [1.29.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.29.1...v1.29.2) (2026-01-09)
+
+### 🐛 Bug Fixes
+
+* include response status in error messages for better debugging ([91d9054](https://github.com/carlonicora/nextjs-jsonapi/commit/91d9054cb2297f5da5775a08412ac4aae0c82a37))
+
+### 📦 Code Refactoring
+
+* replace crypto.randomUUID with uuid.v4 for ID generation ([76dbaac](https://github.com/carlonicora/nextjs-jsonapi/commit/76dbaac2129a0b619415bcc2c0d76e8492534eed))
+
 ## [1.29.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.29.0...v1.29.1) (2026-01-09)
 
 ### 💎 Styles
