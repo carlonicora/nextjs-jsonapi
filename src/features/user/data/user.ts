@@ -1,5 +1,5 @@
 import { AbstractApiData, JsonApiHydratedDataInterface, Modules } from "../../../core";
-import { CompanyInterface } from "../../company";
+import { CompanyInterface } from "../../company/data/company.interface";
 import { ModuleInterface } from "../../module";
 import { RoleInterface } from "../../role";
 import { SearchResultInterface } from "../../search";

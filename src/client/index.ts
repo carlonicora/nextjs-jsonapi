@@ -25,6 +25,7 @@ export * from "../features/content/hooks";
 export * from "../features/role/hooks";
 export * from "../features/user/hooks";
 export * from "../features/oauth/hooks";
+export * from "../features/company/hooks/useSubscriptionStatus";
 
 registerTableGenerator("roles", useRoleTableStructure);
 registerTableGenerator("users", useUserTableStructure);

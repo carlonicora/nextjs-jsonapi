@@ -5,7 +5,7 @@ import { ContentListTable } from "../../../../components";
 import { useCompanyContext } from "../../../../contexts";
 import { Modules } from "../../../../core";
 import { DataListRetriever, useDataListRetriever } from "../../../../hooks";
-import { CompanyInterface } from "../../../company";
+import { CompanyInterface } from "../../../company/data/company.interface";
 import { UserFields, UserInterface } from "../../data";
 import { UserService } from "../../data/user.service";
 import { UserEditor } from "../forms";

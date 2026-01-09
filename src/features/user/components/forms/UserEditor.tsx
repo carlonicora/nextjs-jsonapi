@@ -23,7 +23,7 @@ import { useI18nRouter, usePageUrlGenerator } from "../../../../hooks";
 import { Action } from "../../../../permissions";
 import { getRoleId } from "../../../../roles";
 import { Dialog, DialogContent, DialogTrigger, Form } from "../../../../shadcnui";
-import { CompanyInterface } from "../../../company";
+import { CompanyInterface } from "../../../company/data/company.interface";
 import { RoleInterface } from "../../../role";
 import { RoleService } from "../../../role/data/role.service";
 import { S3Interface } from "../../../s3";

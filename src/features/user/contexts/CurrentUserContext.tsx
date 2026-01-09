@@ -8,7 +8,7 @@ import React, { createContext, useCallback, useContext, useEffect, useRef, useSt
 import { Modules, rehydrate } from "../../../core";
 import { Action, checkPermissions, ModuleWithPermissions } from "../../../permissions";
 import { getRoleId } from "../../../roles";
-import { CompanyInterface } from "../../company";
+import { CompanyInterface } from "../../company/data/company.interface";
 import { FeatureInterface } from "../../feature";
 import { RoleInterface } from "../../role";
 import { UserInterface, UserService } from "../data";
