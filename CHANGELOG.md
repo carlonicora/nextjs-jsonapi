@@ -1,3 +1,11 @@
+## [1.29.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.29.0...v1.29.1) (2026-01-09)
+
+### 💎 Styles
+
+* correct padding ([4ab53e4](https://github.com/carlonicora/nextjs-jsonapi/commit/4ab53e4e648b517cf8c1b0bc91acece418abb37e))
+* correct padding ([498c39f](https://github.com/carlonicora/nextjs-jsonapi/commit/498c39f94e34b6c0b2b09f257c23cd7ca74a5a0a))
+* correct padding ([3a7142c](https://github.com/carlonicora/nextjs-jsonapi/commit/3a7142ccf2c820fb720bd81c6bdbd4fecd2a7adf))
+
 ## [1.29.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.28.0...v1.29.0) (2026-01-09)
 
 ### 🚀 Features
