@@ -1,3 +1,23 @@
+## [1.29.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.28.0...v1.29.0) (2026-01-09)
+
+### 🚀 Features
+
+* add isActiveSubscription property to Company interface and implementation ([29d1d9c](https://github.com/carlonicora/nextjs-jsonapi/commit/29d1d9c3a41949c733600ffb0d746a5352e09d16))
+* add subscription confirmation step ([60cb4b0](https://github.com/carlonicora/nextjs-jsonapi/commit/60cb4b0f831737b801a6d0d1ff3e0634583a5fe9))
+* add subscription trial enforcement ([1615400](https://github.com/carlonicora/nextjs-jsonapi/commit/1615400e7d168004b06d7d7997d2085068895f4c))
+* add token status cta buttons ([0609dcb](https://github.com/carlonicora/nextjs-jsonapi/commit/0609dcbd972e75db90f2e546ff78e72851dfa837))
+
+### 🐛 Bug Fixes
+
+* correct product and pricing sorting ([25d4c3d](https://github.com/carlonicora/nextjs-jsonapi/commit/25d4c3df55d8e9296febfba7f9f221083b1eff01))
+* enhance FormSelect and PriceEditor components; enforce description requirement in ProductEditor ([ff4f299](https://github.com/carlonicora/nextjs-jsonapi/commit/ff4f2995018676eec2ca195d693e980646bdc86e))
+* remove unused attributes from Auth createJsonApi method ([b961040](https://github.com/carlonicora/nextjs-jsonapi/commit/b961040c675c8d8752d25a86c3a972a28d9a892d))
+
+### 📦 Code Refactoring
+
+* add billing subscription wizard ([661b098](https://github.com/carlonicora/nextjs-jsonapi/commit/661b0980ac4fe5782c0fd05fbe33583f5e276774))
+* update subscription pricing ui ([1e6d134](https://github.com/carlonicora/nextjs-jsonapi/commit/1e6d1345e25173c9d09c26d76a2c8cce47c80fa3))
+
 ## [1.28.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.27.0...v1.28.0) (2026-01-08)
 
 ### 🚀 Features
