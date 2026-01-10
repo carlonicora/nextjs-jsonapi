@@ -1,3 +1,9 @@
+## [1.29.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.29.2...v1.29.3) (2026-01-10)
+
+### 🐛 Bug Fixes
+
+* correct internationalisation ([f45acdb](https://github.com/carlonicora/nextjs-jsonapi/commit/f45acdb4a395d22104712dae76ae2472d30f34b6))
+
 ## [1.29.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.29.1...v1.29.2) (2026-01-09)
 
 ### 🐛 Bug Fixes
