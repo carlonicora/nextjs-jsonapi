@@ -28,8 +28,8 @@ export function ActivateAccount() {
 
         setParams(undefined);
 
-        toast.success(t("foundations.auth.account_activated"), {
-          description: t("foundations.auth.account_activated_description"),
+        toast.success(t("auth.account_activated"), {
+          description: t("auth.account_activated_description"),
         });
 
         setTimeout(() => {
@@ -37,14 +37,14 @@ export function ActivateAccount() {
         }, 2000);
       } catch (e) {
         setError(e instanceof Error ? e.message : String(e));
-        errorToast({ title: t(`generic.errors.error`), error: e });
+        errorToast({ title: t(`common.errors.error`), error: e });
       }
     }
 
     if (params && params.code) {
       ActivateAccount(params.code);
     } else {
-      setError(t(`foundations.auth.errors.invalid_invitation_code`));
+      setError(t(`auth.errors.invalid_invitation_code`));
     }
   }, []);
 
@@ -53,20 +53,20 @@ export function ActivateAccount() {
       <CardHeader>
         <CardTitle className="text-primary flex flex-col items-center pb-10 text-4xl">
           <Image src="/logo.webp" alt="Logo" width={100} height={100} priority />
-          {t("foundations.auth.accept_invitation")}
+          {t("auth.accept_invitation")}
         </CardTitle>
         <CardDescription className="text-center text-sm">
-          {error ? <>{t("foundations.auth.errors.activating_account")}</> : <> </>}
+          {error ? <>{t("auth.errors.activating_account")}</> : <> </>}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <CardDescription className="text-center text-xl">
           {showConfirmation ? (
-            <>{t("foundations.auth.activation_description")}</>
+            <>{t("auth.activation_description")}</>
           ) : error ? (
             <>{error}</>
           ) : (
-            <>{t("foundations.auth.activation_wait")}</>
+            <>{t("auth.activation_wait")}</>
           )}
         </CardDescription>
       </CardContent>

@@ -92,11 +92,7 @@ export function FormDateTime({
 
   return (
     <div className="flex w-full flex-col">
-      <FormFieldWrapper
-        form={form}
-        name={id}
-        label={name}
-      >
+      <FormFieldWrapper form={form} name={id} label={name}>
         {(field) => (
           <div className="relative flex flex-row">
             <Popover open={open} onOpenChange={setOpen} modal={true}>
@@ -109,7 +105,7 @@ export function FormDateTime({
                     />
                   }
                 >
-                  {field.value ? formatDateTime(field.value) : <span>{t(`generic.pick_date_time`)}</span>}
+                  {field.value ? formatDateTime(field.value) : <span>{t(`common.pick_date_time`)}</span>}
                   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                 </PopoverTrigger>
                 {field.value && allowEmpty !== false && (
@@ -150,7 +146,7 @@ export function FormDateTime({
                   />
                   <div className="flex flex-row items-end justify-center space-x-4">
                     <div className="flex flex-col space-y-2">
-                      <Label htmlFor="hours-select">{t(`generic.hours`)}</Label>
+                      <Label htmlFor="hours-select">{t(`common.hours`)}</Label>
                       <Select
                         value={String(field.value ? new Date(field.value).getHours() : selectedHours)}
                         onValueChange={(value) => {
@@ -179,12 +175,10 @@ export function FormDateTime({
                     </div>
                     <div className="mb-[9px] text-xl">:</div>
                     <div className="flex flex-col space-y-2">
-                      <Label htmlFor="minutes-select">{t(`generic.minutes`)}</Label>
+                      <Label htmlFor="minutes-select">{t(`common.minutes`)}</Label>
                       <Select
                         value={String(
-                          field.value
-                            ? roundToNearestFiveMinutes(new Date(field.value).getMinutes())
-                            : selectedMinutes,
+                          field.value ? roundToNearestFiveMinutes(new Date(field.value).getMinutes()) : selectedMinutes,
                         )}
                         onValueChange={(value) => {
                           if (!value) return;
@@ -212,7 +206,7 @@ export function FormDateTime({
                       setOpen(false);
                     }}
                   >
-                    {t(`generic.buttons.select_date`)}
+                    {t(`ui.buttons.select_date`)}
                   </Button>
                 </div>
               </PopoverContent>

@@ -30,19 +30,19 @@ export default function Register() {
 
   const formSchema = z.object({
     company: z.string().min(1, {
-      message: t(`generic.errors.missing_company_name`),
+      message: t(`common.errors.missing_company_name`),
     }),
     name: z.string().min(1, {
-      message: t("generic.errors.missing_name"),
+      message: t("common.errors.missing_name"),
     }),
     email: z.string().email({
-      message: t(`generic.errors.invalid_email`),
+      message: t(`common.errors.invalid_email`),
     }),
     password: z
       .string()
-      .min(8, t(`foundations.auth.errors.password_too_short`))
+      .min(8, t(`auth.errors.password_too_short`))
       .regex(/^(?=.*[0-9])(?=.*[^a-zA-Z0-9]).*$/, {
-        message: t(`foundations.auth.errors.password_invalid_format`),
+        message: t(`auth.errors.password_invalid_format`),
       }),
   });
 
@@ -78,17 +78,15 @@ export default function Register() {
       <CardHeader>
         <CardTitle className="text-primary flex flex-col items-center pb-10 text-4xl">
           <Image src="/logo.webp" alt="Logo" width={100} height={100} priority />
-          {t(`foundations.auth.register`)}
+          {t(`auth.register`)}
         </CardTitle>
         <CardDescription className="text-sm">
-          {showConfirmation ? <> </> : <>{t(`foundations.auth.register_description`)}</>}
+          {showConfirmation ? <> </> : <>{t(`auth.register_description`)}</>}
         </CardDescription>
       </CardHeader>
       {showConfirmation ? (
         <CardContent>
-          <CardDescription className="text-center text-xl">
-            {t("foundations.auth.register_confirmation")}
-          </CardDescription>
+          <CardDescription className="text-center text-xl">{t("auth.register_confirmation")}</CardDescription>
         </CardContent>
       ) : (
         <Form {...form}>
@@ -98,32 +96,32 @@ export default function Register() {
                 isRequired
                 form={form}
                 id="company"
-                name={t(`foundations.company.fields.name.label`)}
-                placeholder={t(`foundations.company.fields.name.placeholder`)}
+                name={t(`company.fields.name.label`)}
+                placeholder={t(`company.fields.name.placeholder`)}
               />
               <FormInput
                 isRequired
                 form={form}
                 id="name"
-                name={t(`foundations.user.fields.name.label`)}
-                placeholder={t(`foundations.user.fields.name.placeholder`)}
+                name={t(`user.fields.name.label`)}
+                placeholder={t(`user.fields.name.placeholder`)}
               />
               <FormInput
                 isRequired
                 form={form}
                 id="email"
-                name={t(`generic.fields.email.label`)}
-                placeholder={t(`generic.fields.email.placeholder`)}
+                name={t(`common.fields.email.label`)}
+                placeholder={t(`common.fields.email.placeholder`)}
               />
               <FormPassword
                 isRequired
                 form={form}
                 id="password"
-                name={t(`foundations.user.fields.password.label`)}
-                placeholder={t(`foundations.user.fields.password.placeholder`)}
+                name={t(`user.fields.password.label`)}
+                placeholder={t(`user.fields.password.placeholder`)}
               />
               <Button className="mt-4 w-full" type={"submit"}>
-                {t(`foundations.auth.buttons.register`)}
+                {t(`auth.buttons.register`)}
               </Button>
             </CardContent>
             <CardFooter className="flex w-full flex-row justify-between">
@@ -132,14 +130,14 @@ export default function Register() {
                 className="flex w-full justify-start"
                 onClick={() => setComponentType(AuthComponent.Login)}
               >
-                {t(`foundations.auth.buttons.login`)}
+                {t(`auth.buttons.login`)}
               </Link>
               <Link
                 href="#"
                 className="flex w-full justify-end"
                 onClick={() => setComponentType(AuthComponent.ForgotPassword)}
               >
-                {t(`foundations.auth.buttons.forgot_password`)}
+                {t(`auth.buttons.forgot_password`)}
               </Link>
             </CardFooter>
           </form>

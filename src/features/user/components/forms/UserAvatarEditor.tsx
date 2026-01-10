@@ -49,7 +49,7 @@ export function UserAvatarEditor({ user, file, setFile, resetImage, setResetImag
           {!resetImage && (file || user?.avatar) ? (
             <Image
               src={file ? URL.createObjectURL(file) : user?.avatar || ""}
-              alt={t(`generic.avatar`)}
+              alt={t(`common.avatar`)}
               width={200}
               height={200}
             />
@@ -70,7 +70,7 @@ export function UserAvatarEditor({ user, file, setFile, resetImage, setResetImag
             setResetImage(true);
           }}
         >
-          {t(`generic.buttons.remove`)}
+          {t(`ui.buttons.remove`)}
         </Button>
       )}
     </div>

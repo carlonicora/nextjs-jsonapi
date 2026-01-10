@@ -34,9 +34,9 @@ export function Login() {
 
   const formSchema = z.object({
     email: z.string().email({
-      message: t(`generic.errors.invalid_email`),
+      message: t(`common.errors.invalid_email`),
     }),
-    password: z.string().min(3, { message: t(`foundations.auth.errors.password_too_short`) }),
+    password: z.string().min(3, { message: t(`auth.errors.password_too_short`) }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -58,7 +58,7 @@ export function Login() {
       router.replace(generateUrl({ page: `/` }));
     } catch (e) {
       errorToast({
-        title: t(`generic.errors.error`),
+        title: t(`common.errors.error`),
         error: e,
       });
     }
@@ -69,10 +69,10 @@ export function Login() {
       <CardHeader data-testid="page-login-container">
         <CardTitle className="text-primary flex flex-col items-center pb-10 text-4xl">
           <Image src="/logo.webp" alt="Logo" width={100} height={100} priority />
-          {t("foundations.auth.login")}
+          {t("auth.login")}
         </CardTitle>
 
-        <CardDescription className="text-sm">{t(`foundations.auth.login_description`)}</CardDescription>
+        <CardDescription className="text-sm">{t(`auth.login_description`)}</CardDescription>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -83,19 +83,19 @@ export function Login() {
                   autoFocus
                   form={form}
                   id="email"
-                  name={t(`generic.fields.email.label`)}
-                  placeholder={t(`generic.fields.email.placeholder`)}
+                  name={t(`common.fields.email.label`)}
+                  placeholder={t(`common.fields.email.placeholder`)}
                   testId="form-login-input-email"
                 />
                 <FormPassword
                   form={form}
                   id="password"
-                  name={t(`foundations.user.fields.password.label`)}
-                  placeholder={t(`foundations.user.fields.password.placeholder`)}
+                  name={t(`user.fields.password.label`)}
+                  placeholder={t(`user.fields.password.placeholder`)}
                   testId="form-login-input-password"
                 />
                 <Button className="mt-4 w-full" type={"submit"} data-testid="form-login-button-submit">
-                  {t(`foundations.auth.login`)}
+                  {t(`auth.login`)}
                 </Button>
               </>
             )}
@@ -114,7 +114,7 @@ export function Login() {
                 className="flex w-full justify-start"
                 onClick={() => setComponentType(AuthComponent.Register)}
               >
-                {t(`foundations.auth.register`)}
+                {t(`auth.register`)}
               </Link>
               <Link
                 href="#"
@@ -122,7 +122,7 @@ export function Login() {
                 onClick={() => setComponentType(AuthComponent.ForgotPassword)}
                 data-testid="form-login-link-forgot-password"
               >
-                {t(`foundations.auth.forgot_password`)}
+                {t(`auth.forgot_password`)}
               </Link>
             </div>
           </CardFooter>

@@ -3,8 +3,8 @@
 import { useTranslations } from "next-intl";
 
 import { createContext, ReactNode, useContext } from "react";
-import { UserInterface } from "../features/user/data";
 import { useCurrentUserContext } from "../features/user/contexts";
+import { UserInterface } from "../features/user/data";
 import { BreadcrumbItemData } from "../interfaces";
 import { SharedProvider } from "./SharedContext";
 
@@ -28,7 +28,7 @@ export const CommonProvider = ({ children }: CommonProviderProps) => {
 
   const title = () => {
     const response: any = {
-      type: t(`generic.title`),
+      type: t(`common.title`),
     };
 
     if (company) response.element = company.name;

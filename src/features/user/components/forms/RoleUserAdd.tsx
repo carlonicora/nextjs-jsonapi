@@ -47,10 +47,10 @@ function AddUserToRoleInternal({ role, refresh }: AddUserToRoleProps) {
 
     triggerAssociationToast({
       t: t,
-      source: t(`types.users`, { count: 1 }),
-      destination: t(`types.roles`, { count: 1 }),
+      source: t(`entities.users`, { count: 1 }),
+      destination: t(`entities.roles`, { count: 1 }),
       source_name: user.name,
-      destination_name: t(`foundations.role.roles`, { role: role.id.replaceAll(`-`, ``) }),
+      destination_name: t(`role.roles`, { role: role.id.replaceAll(`-`, ``) }),
     });
 
     refresh();
@@ -72,17 +72,17 @@ function AddUserToRoleInternal({ role, refresh }: AddUserToRoleProps) {
   return (
     <>
       <CommonAssociationTrigger
-        sourceType={t(`types.users`, { count: 1 })}
-        destinationType={t(`types.roles`, { count: 1 })}
+        sourceType={t(`entities.users`, { count: 1 })}
+        destinationType={t(`entities.roles`, { count: 1 })}
         onTrigger={() => setShow(true)}
       />
       <CommonAssociationCommandDialog
         show={show}
         setShow={setShow}
         data={data}
-        source={t(`types.users`, { count: 1 })}
-        destination={t(`types.roles`, { count: 1 })}
-        destinationName={t(`foundations.role.roles`, { role: role.id.replaceAll(`-`, ``) })}
+        source={t(`entities.users`, { count: 1 })}
+        destination={t(`entities.roles`, { count: 1 })}
+        destinationName={t(`role.roles`, { role: role.id.replaceAll(`-`, ``) })}
       >
         <UserListInAdd data={data} existingUsers={existingUsers} setSelectedUser={addUserToRole} />
       </CommonAssociationCommandDialog>

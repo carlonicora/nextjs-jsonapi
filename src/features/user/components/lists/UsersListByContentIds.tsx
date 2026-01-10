@@ -25,7 +25,7 @@ export function UsersListByContentIds({ contentIds }: UsersListByContentIdsProps
       data={data}
       fields={[UserFields.name, UserFields.email]}
       tableGeneratorType={Modules.User}
-      title={t(`generic.relevant_users`)}
+      title={t(`common.relevant_users`)}
     />
   );
 }

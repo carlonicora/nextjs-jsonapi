@@ -2,13 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import React from "react";
-import {
-  Input,
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-  InputGroupText,
-} from "../../shadcnui";
+import { Input, InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "../../shadcnui";
 import { FormFieldWrapper } from "./FormFieldWrapper";
 
 export function FormInput({
@@ -42,12 +36,7 @@ export function FormInput({
 
   return (
     <div className="flex w-full flex-col">
-      <FormFieldWrapper
-        form={form}
-        name={id}
-        label={name}
-        isRequired={isRequired}
-      >
+      <FormFieldWrapper form={form} name={id} label={name} isRequired={isRequired}>
         {(field) => {
           const handleBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
             let value = e.target.value;
@@ -63,7 +52,7 @@ export function FormInput({
               } catch (error) {
                 form.setError(id, {
                   type: "validate",
-                  message: t(`generic.errors.valid_url`),
+                  message: t(`common.errors.valid_url`),
                 });
               }
             }
@@ -86,12 +75,7 @@ export function FormInput({
           const inputProps = {
             ...field,
             autoFocus: autoFocus === true,
-            type:
-              type === "number" || type === "currency"
-                ? "number"
-                : type === "password"
-                  ? "password"
-                  : "text",
+            type: type === "number" || type === "currency" ? "number" : type === "password" ? "password" : "text",
             className: `w-full ${type === "number" || type === "currency" ? "text-end" : ""}`,
             disabled: disabled === true || form.formState.isSubmitting,
             placeholder: placeholder || "",

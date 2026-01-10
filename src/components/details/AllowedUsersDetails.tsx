@@ -14,7 +14,7 @@ export function AllowedUsersDetails({ showTitle, content }: AllowedUsersDetailsP
 
   return (
     <div className="mb-2 flex w-full flex-col gap-y-2">
-      {showTitle && <h3 className="text-xs font-semibold">{t("generic.permissions")}</h3>}
+      {showTitle && <h3 className="text-xs font-semibold">{t("common.permissions")}</h3>}
       <div className="flex w-full items-center justify-start gap-x-4">
         <ContributorsList content={content} />
       </div>

@@ -9,8 +9,8 @@ import { useTranslations } from "next-intl";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useCurrentUserContext } from "../../contexts";
 import { S3Interface } from "../../features/s3/data";
-import { UserInterface } from "../../features/user/data";
 import { S3Service } from "../../features/s3/data/s3.service";
+import { UserInterface } from "../../features/user/data";
 import { Button } from "../../shadcnui";
 import { BlockNoteDiffUtil, BlockNoteWordDiffRendererUtil, cn } from "../../utils";
 import { errorToast } from "../errors";
@@ -135,10 +135,10 @@ export default function BlockNoteEditor({
     async (file: File): Promise<string> => {
       if (!company) {
         errorToast({
-          title: t(`generic.errors.upload`),
-          error: t(`generic.errors.upload_description`),
+          title: t(`common.errors.upload`),
+          error: t(`common.errors.upload_description`),
         });
-        throw new Error(t(`generic.errors.upload`));
+        throw new Error(t(`common.errors.upload`));
       }
 
       const fileType = file.type;
@@ -253,7 +253,7 @@ export default function BlockNoteEditor({
     useMemo(
       () => ({
         placeholders: {
-          emptyDocument: placeholder || t(`generic.blocknote.placeholder`),
+          emptyDocument: placeholder || t(`common.blocknote.placeholder`),
         },
         schema,
         initialContent: validatedInitialContent,

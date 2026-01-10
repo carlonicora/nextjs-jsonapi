@@ -29,7 +29,7 @@ export function UserDetails({ user }: UserDetailsProps) {
           {user.roles.map((role: RoleInterface, index: number) => (
             <Link key={role.id} href={generateUrl({ page: Modules.Role, id: role.id })}>
               <Badge className="mr-2" variant={`default`}>
-                {t(`foundations.role.roles`, { role: role.id.replaceAll(`-`, ``) })}
+                {t(`role.roles`, { role: role.id.replaceAll(`-`, ``) })}
               </Badge>
             </Link>
           ))}
@@ -54,21 +54,21 @@ export function UserDetails({ user }: UserDetailsProps) {
       <ContentTitle module={Modules.User} type={title.type} element={title.element} functions={title.functions} />
       {user.isDeleted ? (
         <div>
-          <Badge variant="destructive">{t(`foundations.user.errors.deleted`)}</Badge>
+          <Badge variant="destructive">{t(`user.errors.deleted`)}</Badge>
         </div>
       ) : (
         <>
           {!user.isActivated && (
             <div>
-              <Badge variant="destructive">{t(`foundations.user.errors.inactive`)}</Badge>
+              <Badge variant="destructive">{t(`user.errors.inactive`)}</Badge>
             </div>
           )}
         </>
       )}
       {roles}
-      <AttributeElement inline={true} title={t(`foundations.user.fields.title.label`)} value={user.title} />
-      <AttributeElement inline={true} title={t(`generic.fields.email.label`)} value={user.email} />
-      <AttributeElement inline={false} title={t(`foundations.user.fields.bio.label`)} value={user.bio} />
+      <AttributeElement inline={true} title={t(`user.fields.title.label`)} value={user.title} />
+      <AttributeElement inline={true} title={t(`common.fields.email.label`)} value={user.email} />
+      <AttributeElement inline={false} title={t(`user.fields.bio.label`)} value={user.bio} />
     </div>
   );
 }

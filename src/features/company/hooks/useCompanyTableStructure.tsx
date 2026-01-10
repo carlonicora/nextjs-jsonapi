@@ -41,7 +41,7 @@ export const useCompanyTableStructure: UseTableStructureHook<CompanyInterface, C
     [CompanyFields.name]: () => ({
       id: "name",
       accessorKey: "name",
-      header: t(`foundations.user.fields.name.label`),
+      header: t(`user.fields.name.label`),
       cell: ({ row }: { row: Row<TableContent<CompanyInterface>> }) => {
         const company = row.original.jsonApiData as CompanyInterface;
         return (
@@ -66,7 +66,7 @@ export const useCompanyTableStructure: UseTableStructureHook<CompanyInterface, C
     [CompanyFields.createdAt]: () =>
       cellDate({
         name: "createdAt",
-        title: t(`generic.date.create`),
+        title: t(`common.date.create`),
       }),
   };
 

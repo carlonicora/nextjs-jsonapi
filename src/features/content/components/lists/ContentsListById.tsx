@@ -25,7 +25,7 @@ export function ContentsListById({ contentIds }: ContentsListByIdProps) {
       data={data}
       fields={[ContentFields.name, ContentFields.authors, ContentFields.updatedAt]}
       tableGeneratorType={Modules.Content}
-      title={t(`generic.relevant`)}
+      title={t(`common.relevant`)}
     />
   );
 }

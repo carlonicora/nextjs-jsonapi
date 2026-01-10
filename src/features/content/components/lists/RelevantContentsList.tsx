@@ -25,7 +25,7 @@ export function RelevantContentsList({ id }: RelevantContentsListProps) {
       data={data}
       fields={[ContentFields.name, ContentFields.authors, ContentFields.relevance, ContentFields.updatedAt]}
       tableGeneratorType={Modules.Content}
-      title={t(`generic.relevant`)}
+      title={t(`common.relevant`)}
     />
   );
 }

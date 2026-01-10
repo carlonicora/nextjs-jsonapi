@@ -15,18 +15,18 @@ export function CommonEditorHeader({ type, name }: CommonEditorHeaderProps) {
     <DialogHeader>
       <DialogTitle>
         {name
-          ? t(`generic.edit.update.title`, {
+          ? t(`common.edit.update.title`, {
               type: type,
             })
-          : t(`generic.edit.create.title`, { type: type })}
+          : t(`common.edit.create.title`, { type: type })}
       </DialogTitle>
       <DialogDescription>
         {name
-          ? t(`generic.edit.update.description`, {
+          ? t(`common.edit.update.description`, {
               type: type,
               name: name,
             })
-          : t(`generic.edit.create.description`, {
+          : t(`common.edit.create.description`, {
               type: type,
             })}
       </DialogDescription>

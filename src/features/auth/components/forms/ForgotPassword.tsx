@@ -29,7 +29,7 @@ export function ForgotPassword() {
 
   const formSchema = z.object({
     email: z.string().email({
-      message: t(`generic.errors.invalid_email`),
+      message: t(`common.errors.invalid_email`),
     }),
   });
 
@@ -58,15 +58,15 @@ export function ForgotPassword() {
       <CardHeader data-testid="page-forgot-password-container">
         <CardTitle className="text-primary flex flex-col items-center pb-10 text-4xl">
           <Image src="/logo.webp" alt="Logo" width={100} height={100} priority />
-          {t("foundations.auth.forgot_password")}
+          {t("auth.forgot_password")}
         </CardTitle>
         <CardDescription className="text-sm">
-          {showConfirmation ? <> </> : <>{t(`foundations.auth.add_email_to_reset`)}</>}
+          {showConfirmation ? <> </> : <>{t(`auth.add_email_to_reset`)}</>}
         </CardDescription>
       </CardHeader>
       {showConfirmation ? (
         <CardContent>
-          <CardDescription className="text-center text-xl">{t(`foundations.auth.reset_confirmation`)}</CardDescription>
+          <CardDescription className="text-center text-xl">{t(`auth.reset_confirmation`)}</CardDescription>
         </CardContent>
       ) : (
         <Form {...form}>
@@ -75,12 +75,12 @@ export function ForgotPassword() {
               <FormInput
                 form={form}
                 id="email"
-                name={t(`generic.fields.email.label`)}
-                placeholder={t(`generic.fields.email.placeholder`)}
+                name={t(`common.fields.email.label`)}
+                placeholder={t(`common.fields.email.placeholder`)}
                 testId="form-forgot-password-input-email"
               />
               <Button className="mt-4 w-full" type={"submit"} data-testid="form-forgot-password-button-reset">
-                {t(`foundations.auth.buttons.reset_password`)}
+                {t(`auth.buttons.reset_password`)}
               </Button>
             </CardContent>
             <CardFooter className="flex w-full flex-row justify-between">
@@ -89,7 +89,7 @@ export function ForgotPassword() {
                 className="flex w-full justify-start"
                 onClick={() => setComponentType(AuthComponent.Register)}
               >
-                {t("foundations.auth.buttons.register")}
+                {t("auth.buttons.register")}
               </Link> */}
               <Link
                 href="#"
@@ -97,7 +97,7 @@ export function ForgotPassword() {
                 onClick={() => setComponentType(AuthComponent.Login)}
                 data-testid="form-forgot-password-link-login"
               >
-                {t(`foundations.auth.buttons.login`)}
+                {t(`auth.buttons.login`)}
               </Link>
             </CardFooter>
           </form>

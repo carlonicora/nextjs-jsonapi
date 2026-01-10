@@ -15,13 +15,13 @@ function UsersListContainerInternal() {
 
   const tabs: Tab[] = [
     {
-      label: t(`types.users`, { count: 2 }),
+      label: t(`entities.users`, { count: 2 }),
       content: <CompanyUsersList />,
       modules: [Modules.Company],
       action: Action.Read,
     },
     {
-      label: t(`foundations.user.deleted`),
+      label: t(`user.deleted`),
       content: <CompanyUsersList isDeleted={true} />,
       modules: [Modules.Company],
       action: Action.Update,

@@ -53,11 +53,11 @@ export function FormRoles({ form, id, name, roles }: FormRolesProps) {
                     <Tooltip>
                       <TooltipTrigger>
                         <FieldLabel className="ml-3 font-normal">
-                          {t(`foundations.role.roles`, { role: role.id.replaceAll(`-`, ``) })}
+                          {t(`role.roles`, { role: role.id.replaceAll(`-`, ``) })}
                         </FieldLabel>
                       </TooltipTrigger>
                       <TooltipContent>
-                        {t(`foundations.role.roles_descriptions`, { role: role.id.replaceAll(`-`, ``) })}
+                        {t(`role.roles_descriptions`, { role: role.id.replaceAll(`-`, ``) })}
                       </TooltipContent>
                     </Tooltip>
                   </div>

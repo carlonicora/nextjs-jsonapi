@@ -40,14 +40,14 @@ export function UserRoleAdd({ user, refresh }: UserRoleAddProps) {
     setRoles(roles.filter((u) => u.id !== role.id));
 
     toast.message(
-      t(`generic.association.label`, {
-        source: t(`types.roles`, { count: 1 }),
-        destination: t(`types.users`, { count: 1 }),
+      t(`common.association.label`, {
+        source: t(`entities.roles`, { count: 1 }),
+        destination: t(`entities.users`, { count: 1 }),
       }),
       {
-        description: t(`generic.association.success`, {
-          source: t(`types.roles`, { count: 1 }),
-          destination: t(`types.users`, { count: 1 }),
+        description: t(`common.association.success`, {
+          source: t(`entities.roles`, { count: 1 }),
+          destination: t(`entities.users`, { count: 1 }),
           source_name: role.name,
           destination_name: user.name,
         }),
@@ -83,34 +83,34 @@ export function UserRoleAdd({ user, refresh }: UserRoleAddProps) {
     <>
       <Button size="sm" onClick={() => setOpen(true)}>
         <PlusCircle className="mr-3 h-3.5 w-3.5" />
-        {t(`generic.association.label`, {
-          source: t(`types.roles`, { count: 1 }),
-          destination: t(`types.users`, { count: 1 }),
+        {t(`common.association.label`, {
+          source: t(`entities.roles`, { count: 1 }),
+          destination: t(`entities.users`, { count: 1 }),
         })}
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
         <DialogTitle>
-          {t(`generic.association.label`, {
-            source: t(`types.roles`, { count: 1 }),
-            destination: t(`types.users`, { count: 1 }),
+          {t(`common.association.label`, {
+            source: t(`entities.roles`, { count: 1 }),
+            destination: t(`entities.users`, { count: 1 }),
           })}
         </DialogTitle>
         <DialogDescription>
-          {t(`generic.association.description`, {
-            source: t(`types.roles`, { count: 1 }),
-            destination: t(`types.users`, { count: 1 }),
+          {t(`common.association.description`, {
+            source: t(`entities.roles`, { count: 1 }),
+            destination: t(`entities.users`, { count: 1 }),
             destination_name: user.name,
           })}
         </DialogDescription>
         <Command shouldFilter={false}>
           <CommandInput
-            placeholder={t(`generic.search.placeholder`, { type: t(`types.roles`, { count: 1 }) })}
+            placeholder={t(`ui.search.placeholder`, { type: t(`entities.roles`, { count: 1 }) })}
             value={searchTerm}
             onValueChange={setSearchTerm}
             ref={inputRef}
           />
           <CommandList className="mt-3 h-auto max-h-96 min-h-96 max-w-full overflow-x-hidden overflow-y-auto">
-            <CommandEmpty>{t(`generic.search.no_results`, { type: t(`types.roles`, { count: 1 }) })}</CommandEmpty>
+            <CommandEmpty>{t(`ui.search.no_results`, { type: t(`entities.roles`, { count: 1 }) })}</CommandEmpty>
             {roles.map((role: RoleInterface) => (
               <CommandItem
                 className="cursor-pointer hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent"
@@ -118,7 +118,7 @@ export function UserRoleAdd({ user, refresh }: UserRoleAddProps) {
                 onSelect={() => addUserToRole(role)}
                 onClick={() => addUserToRole(role)}
               >
-                {t(`foundations.role.roles`, { role: role.id.replaceAll(`-`, ``) })}
+                {t(`role.roles`, { role: role.id.replaceAll(`-`, ``) })}
               </CommandItem>
             ))}
           </CommandList>

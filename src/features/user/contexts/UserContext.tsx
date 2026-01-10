@@ -37,19 +37,19 @@ export const UserProvider = ({ children, dehydratedUser }: UserProviderProps) =>
 
     if (hasPermissionToModule({ module: Modules.User, action: Action.Update })) {
       response.push({
-        name: t(`generic.settings`),
+        name: t(`common.settings`),
         href: generateUrl({ page: `/settings` }),
       });
 
       response.push({
-        name: t(`types.users`, { count: 2 }),
+        name: t(`entities.users`, { count: 2 }),
         href: generateUrl({ page: `/settings`, id: Modules.User.pageUrl }),
       });
     }
 
     if (user)
       response.push({
-        name: `${user.name}${user.isDeleted ? ` (${t(`foundations.user.deleted`)})` : ""}`,
+        name: `${user.name}${user.isDeleted ? ` (${t(`user.deleted`)})` : ""}`,
         href: generateUrl({ page: Modules.User, id: user.id }),
       });
 
@@ -58,13 +58,13 @@ export const UserProvider = ({ children, dehydratedUser }: UserProviderProps) =>
 
   const title = () => {
     const response: any = {
-      type: t(`types.users`, { count: user ? 1 : 2 }),
+      type: t(`entities.users`, { count: user ? 1 : 2 }),
     };
 
     const functions: ReactNode[] = [];
 
     if (user) {
-      response.element = `${user.name}${user.isDeleted ? ` (${t(`foundations.user.deleted`)})` : ""}`;
+      response.element = `${user.name}${user.isDeleted ? ` (${t(`user.deleted`)})` : ""}`;
 
       if (user.isDeleted) {
         functions.push(<UserReactivator key={`UserReactivator`} user={user} propagateChanges={setUser} />);

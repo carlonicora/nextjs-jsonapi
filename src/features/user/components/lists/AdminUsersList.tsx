@@ -25,7 +25,7 @@ function AdminUsersListInternal({ company }: AdminUsersListProps) {
 
   return (
     <ContentListTable
-      title={t(`types.users`, { count: 2 })}
+      title={t(`entities.users`, { count: 2 })}
       data={data}
       fields={[UserFields.name, UserFields.email, UserFields.createdAt]}
       tableGeneratorType={Modules.User}

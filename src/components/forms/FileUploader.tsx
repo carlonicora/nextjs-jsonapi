@@ -14,11 +14,11 @@ import {
   useState,
 } from "react";
 import { DropzoneOptions, DropzoneState, FileRejection, useDropzone } from "react-dropzone";
-
-export type { DropzoneOptions } from "react-dropzone";
 import { toast } from "sonner";
 import { buttonVariants, Input } from "../../shadcnui";
 import { cn } from "../../utils";
+
+export type { DropzoneOptions } from "react-dropzone";
 
 type DirectionOptions = "rtl" | "ltr" | undefined;
 
@@ -124,8 +124,8 @@ export const FileUploader = forwardRef<HTMLDivElement, FileUploaderProps & React
         const files = acceptedFiles;
 
         if (!files) {
-          toast.error(t("generic.errors.file"), {
-            description: t("generic.errors.file_large"),
+          toast.error(t("common.errors.file"), {
+            description: t("common.errors.file_large"),
           });
           return;
         }
@@ -147,13 +147,13 @@ export const FileUploader = forwardRef<HTMLDivElement, FileUploaderProps & React
         if (rejectedFiles.length > 0) {
           for (let i = 0; i < rejectedFiles.length; i++) {
             if (rejectedFiles[i].errors[0]?.code === "file-too-large") {
-              toast.error(t("generic.errors.file"), {
-                description: t(`generic.errors.file_max`, { size: maxSize / 1024 / 1024 }),
+              toast.error(t("common.errors.file"), {
+                description: t(`common.errors.file_max`, { size: maxSize / 1024 / 1024 }),
               });
               break;
             }
             if (rejectedFiles[i].errors[0]?.message) {
-              toast.error(t(`generic.errors.file`), {
+              toast.error(t(`common.errors.file`), {
                 description: rejectedFiles[i].errors[0].message,
               });
               break;
@@ -271,7 +271,7 @@ export const FileUploaderItem = forwardRef<HTMLDivElement, { index: number } & R
           className={cn("absolute", direction === "rtl" ? "top-1 left-1" : "top-1 right-1")}
           onClick={() => removeFileFromSet(index)}
         >
-          <span className="sr-only">{t(`generic.remove_item`, { index: index })}</span>
+          <span className="sr-only">{t(`common.remove_item`, { index: index })}</span>
           <RemoveIcon className="hover:stroke-destructive h-4 w-4 duration-200 ease-in-out" />
         </button>
       </div>

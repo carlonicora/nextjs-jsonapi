@@ -47,7 +47,7 @@ export const UserSearchPopover = ({ children, onSelect, align = "start", classNa
           <div className="relative mb-2 w-full">
             <SearchIcon className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
             <Input
-              placeholder={t(`generic.search.placeholder`, { type: t(`types.users`, { count: 1 }) })}
+              placeholder={t(`ui.search.placeholder`, { type: t(`entities.users`, { count: 1 }) })}
               type="text"
               className="w-full pr-8 pl-8"
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -81,8 +81,8 @@ export const UserSearchPopover = ({ children, onSelect, align = "start", classNa
             ) : (
               <div className="text-muted-foreground py-6 text-center text-sm">
                 {isLoading
-                  ? t(`generic.loading`)
-                  : t(`generic.search.no_results`, { type: t(`types.users`, { count: 1 }) })}
+                  ? t(`common.loading`)
+                  : t(`ui.search.no_results`, { type: t(`entities.users`, { count: 1 }) })}
               </div>
             )}
           </CommandList>

@@ -35,7 +35,7 @@ function UserReactivatorInterface({ user, propagateChanges }: UserReactivatorPro
       setOpen(false);
       propagateChanges(updatedUser);
     } catch (error) {
-      errorToast({ title: t(`generic.errors.error`), error: error });
+      errorToast({ title: t(`common.errors.error`), error: error });
     }
   };
 
@@ -44,18 +44,18 @@ function UserReactivatorInterface({ user, propagateChanges }: UserReactivatorPro
       <DialogTrigger>
         <Button size="sm">
           <UserCheckIcon className="mr-3 h-3.5 w-3.5" />
-          {t(`foundations.user.buttons.reactivate`)}
+          {t(`user.buttons.reactivate`)}
         </Button>
       </DialogTrigger>
       <DialogContent className={`flex max-h-[70vh] max-w-3xl flex-col overflow-y-auto`}>
         <DialogHeader>
-          <DialogTitle>{t(`foundations.user.reactivate.title`)}</DialogTitle>
-          <DialogDescription>{t(`foundations.user.reactivate.subtitle`)}</DialogDescription>
+          <DialogTitle>{t(`user.reactivate.title`)}</DialogTitle>
+          <DialogDescription>{t(`user.reactivate.subtitle`)}</DialogDescription>
         </DialogHeader>
-        {t(`foundations.user.reactivate.description`, { name: user.name })}
+        {t(`user.reactivate.description`, { name: user.name })}
         <div className="flex justify-end">
           <Button className="mr-2" variant={"outline"} type={`button`} onClick={() => setOpen(false)}>
-            {t(`generic.buttons.cancel`)}
+            {t(`ui.buttons.cancel`)}
           </Button>
           <Button
             type="submit"
@@ -64,7 +64,7 @@ function UserReactivatorInterface({ user, propagateChanges }: UserReactivatorPro
               reactivateUser();
             }}
           >
-            {t(`foundations.user.buttons.reactivate`)}
+            {t(`user.buttons.reactivate`)}
           </Button>
         </div>
       </DialogContent>

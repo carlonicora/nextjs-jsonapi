@@ -56,11 +56,11 @@ export function RemoveUserFromRole({ role, user, refresh }: RemoveUserFromRolePr
       setOpen(false);
       refresh();
     } catch (error) {
-      errorToast({ title: t(`generic.errors.error`), error: error });
+      errorToast({ title: t(`common.errors.error`), error: error });
     }
   };
 
-  const roleName = t(`foundations.role.roles`, { role: role.id.replaceAll(`-`, ``) });
+  const roleName = t(`role.roles`, { role: role.id.replaceAll(`-`, ``) });
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -71,23 +71,21 @@ export function RemoveUserFromRole({ role, user, refresh }: RemoveUserFromRolePr
           setOpen(true);
         }}
       >
-        <span className="hover:text-destructive cursor-pointer">{t(`foundations.role.remove_user.title`)}</span>
+        <span className="hover:text-destructive cursor-pointer">{t(`role.remove_user.title`)}</span>
       </DialogTrigger>
       <DialogContent className={`flex max-h-[70vh] max-w-3xl flex-col overflow-y-auto`}>
         <DialogHeader>
-          <DialogTitle>{t(`foundations.role.remove_user.title`)}</DialogTitle>
+          <DialogTitle>{t(`role.remove_user.title`)}</DialogTitle>
           <DialogDescription>
-            {canRemove
-              ? t(`foundations.role.remove_user.subtitle_allowed`)
-              : t(`foundations.role.remove_user.subtitle_not_allowed`)}
+            {canRemove ? t(`role.remove_user.subtitle_allowed`) : t(`role.remove_user.subtitle_not_allowed`)}
           </DialogDescription>
         </DialogHeader>
         {canRemove ? (
           <>
-            {t(`foundations.role.remove_user.description_allowed`, { role: roleName, user: user.name })}
+            {t(`role.remove_user.description_allowed`, { role: roleName, user: user.name })}
             <div className="flex justify-end">
               <Button className="mr-2" variant={"outline"} type={`button`} onClick={() => setOpen(false)}>
-                {t(`generic.buttons.cancel`)}
+                {t(`ui.buttons.cancel`)}
               </Button>
               <Button
                 type="submit"
@@ -97,12 +95,12 @@ export function RemoveUserFromRole({ role, user, refresh }: RemoveUserFromRolePr
                 }}
                 variant={"destructive"}
               >
-                {t(`generic.buttons.confirm_delete`)}
+                {t(`ui.buttons.confirm_delete`)}
               </Button>
             </div>
           </>
         ) : (
-          <>{t(`foundations.role.remove_user.description_not_allowed`, { role: roleName, user: user.name })}</>
+          <>{t(`role.remove_user.description_not_allowed`, { role: roleName, user: user.name })}</>
         )}
       </DialogContent>
     </Dialog>

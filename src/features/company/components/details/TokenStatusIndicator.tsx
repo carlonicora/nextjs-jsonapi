@@ -86,35 +86,35 @@ export function TokenStatusIndicator({ className, size = "md", showExtraPages = 
 
   const tooltipContent = (
     <div className="flex flex-col gap-2 p-1">
-      <div className="font-semibold text-sm">{t("generic.tokens.status", { defaultValue: "Page Status" })}</div>
+      <div className="font-semibold text-sm">{t("billing.tokens.status", { defaultValue: "Page Status" })}</div>
       <div className="flex flex-col gap-1 text-xs">
         <div className="flex items-center justify-between gap-4">
           <span className="text-muted-foreground">
-            {t("generic.tokens.monthly", { defaultValue: "Monthly Pages" })}:
+            {t("billing.tokens.monthly", { defaultValue: "Monthly Pages" })}:
           </span>
           <span className={cn("font-medium", getStatusColor())}>
             {availableMonthlyTokens} / {monthlyTokens}
           </span>
         </div>
         <div className="flex items-center justify-between gap-4">
-          <span className="text-muted-foreground">{t("generic.tokens.available", { defaultValue: "Available" })}:</span>
+          <span className="text-muted-foreground">{t("billing.tokens.available", { defaultValue: "Available" })}:</span>
           <span className={cn("font-medium", getStatusColor())}>{percentage.toFixed(0)}%</span>
         </div>
         <Link href="/settings/billing?action=subscribe" className="w-full flex justify-end my-4">
           <Button variant="outline" size="sm">
-            {t("generic.tokens.upgrade_plan", { defaultValue: "Upgrade plan" })}
+            {t("billing.tokens.upgrade_plan", { defaultValue: "Upgrade plan" })}
           </Button>
         </Link>
         <Separator />
         <div className="flex items-center justify-between gap-4 pt-1 mt-1">
           <span className="text-muted-foreground">
-            {t("generic.tokens.available_extra", { defaultValue: "Extra Pages" })}:
+            {t("billing.tokens.available_extra", { defaultValue: "Extra Pages" })}:
           </span>
           <span className="font-medium text-blue-500">{availableExtraTokens}</span>
         </div>
         <Link href="/settings/billing?action=subscribe" className="w-full flex justify-end my-4">
           <Button variant="outline" size="sm">
-            {t("generic.tokens.purchase_extra", { defaultValue: "Purchase additional analysis" })}
+            {t("billing.tokens.purchase_extra", { defaultValue: "Purchase additional analysis" })}
           </Button>
         </Link>
       </div>
@@ -126,7 +126,7 @@ export function TokenStatusIndicator({ className, size = "md", showExtraPages = 
       <TooltipTrigger>
         <div
           className={cn("inline-flex items-center gap-1.5 cursor-default", className)}
-          aria-label={t("generic.tokens.status", { defaultValue: "Page Status" })}
+          aria-label={t("billing.tokens.status", { defaultValue: "Page Status" })}
         >
           {getBatteryIcon()}
           <span className={cn(textSize, "text-muted-foreground font-medium")}>{availableMonthlyTokens}</span>

@@ -40,7 +40,7 @@ export function CommonAssociationTrigger({
 
   return (
     <Button variant={`outline`} size={`sm`} onClick={onTrigger}>
-      {t(`generic.association.label`, {
+      {t(`common.association.label`, {
         source: sourceType,
         destination: destinationType,
       })}
@@ -91,13 +91,13 @@ export function CommonAssociationCommandDialog({
     <CommandDialog open={show} onOpenChange={setShow}>
       <DialogHeader className="flex flex-col items-start p-4 pb-0">
         <DialogTitle>
-          {t(`generic.association.label`, {
+          {t(`common.association.label`, {
             source: source,
             destination: destination,
           })}
         </DialogTitle>
         <DialogDescription>
-          {t(`generic.association.description`, {
+          {t(`common.association.description`, {
             source: source,
             destination: destination,
             destination_name: destinationName,
@@ -106,12 +106,12 @@ export function CommonAssociationCommandDialog({
       </DialogHeader>
       <Command shouldFilter={false} className="p-4">
         <CommandInput
-          placeholder={t(`generic.search.placeholder`, { type: source })}
+          placeholder={t(`ui.search.placeholder`, { type: source })}
           value={searchTerm}
           onValueChange={setSearchTerm}
         />
         <CommandList className="mt-3 h-auto max-h-96 min-h-96 max-w-full overflow-y-auto overflow-x-hidden">
-          <CommandEmpty>{t(`generic.search.no_results`, { type: source })}</CommandEmpty>
+          <CommandEmpty>{t(`ui.search.no_results`, { type: source })}</CommandEmpty>
           {children}
         </CommandList>
       </Command>
@@ -129,12 +129,12 @@ export const triggerAssociationToast = (params: {
 }) => {
   if (params.level) {
     toast.message(
-      params.t(`generic.association.label`, {
+      params.t(`common.association.label`, {
         source: params.source,
         destination: params.destination,
       }),
       {
-        description: params.t(`generic.association.success_level`, {
+        description: params.t(`common.association.success_level`, {
           source: params.source,
           destination: params.destination,
           source_name: params.source_name,
@@ -145,12 +145,12 @@ export const triggerAssociationToast = (params: {
     );
   } else {
     toast.message(
-      params.t(`generic.association.label`, {
+      params.t(`common.association.label`, {
         source: params.source,
         destination: params.destination,
       }),
       {
-        description: params.t(`generic.association.success`, {
+        description: params.t(`common.association.success`, {
           source: params.source,
           destination: params.destination,
           source_name: params.source_name,

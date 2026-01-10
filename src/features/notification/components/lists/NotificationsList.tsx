@@ -78,7 +78,7 @@ export function NotificationsList({ archived }: NotificationsListProps) {
                   )}
                   <div className="flex w-full flex-col">
                     <p className="text-sm">
-                      {t.rich(`foundations.notification.${notification.notificationType}.description` as any, {
+                      {t.rich(`notification.${notification.notificationType}.description` as any, {
                         strong: (chunks: any) => <strong>{chunks}</strong>,
                         actor: notificationData.actor?.name ?? "",
                         title: notificationData.title,
@@ -92,7 +92,7 @@ export function NotificationsList({ archived }: NotificationsListProps) {
                     {notificationData.url ? (
                       <Link href={notificationData.url}>
                         <Button variant={`outline`} size={`sm`} onClick={(e) => e.stopPropagation()}>
-                          {t(`foundations.notification.${notification.notificationType}.buttons.action` as any)}
+                          {t(`notification.${notification.notificationType}.buttons.action` as any)}
                         </Button>
                       </Link>
                     ) : (
@@ -113,7 +113,7 @@ export function NotificationsList({ archived }: NotificationsListProps) {
                             <ArchiveIcon className="h-4 w-4 cursor-pointer" />
                           </Button>
                         </TooltipTrigger>
-                        <TooltipContent>{t(`foundations.notification.buttons.archive`)}</TooltipContent>
+                        <TooltipContent>{t(`notification.buttons.archive`)}</TooltipContent>
                       </Tooltip>
                     )}
                   </div>

@@ -26,7 +26,7 @@ export function CompaniesList() {
       fields={[CompanyFields.name, CompanyFields.createdAt]}
       tableGeneratorType={Modules.Company}
       functions={functions}
-      title={t(`types.companies`, { count: 2 })}
+      title={t(`entities.companies`, { count: 2 })}
     />
   );
 }

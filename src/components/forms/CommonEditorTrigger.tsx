@@ -18,7 +18,7 @@ export function CommonEditorTrigger({ isEdit, edit, create }: CommonEditorTrigge
         </Button>
       ) : (
         <Button render={<div />} nativeButton={false} size="sm" variant={`outline`}>
-          {create ? create : t(`generic.buttons.create`)}
+          {create ? create : t(`ui.buttons.create`)}
         </Button>
       )}
     </DialogTrigger>

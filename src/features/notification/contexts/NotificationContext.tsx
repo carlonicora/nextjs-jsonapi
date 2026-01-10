@@ -141,7 +141,7 @@ export const NotificationContextProvider = ({ children }: NotificationContextPro
     const response: BreadcrumbItemData[] = [];
 
     response.push({
-      name: t(`types.notifications`, { count: 2 }),
+      name: t(`entities.notifications`, { count: 2 }),
     });
 
     return response;
@@ -149,7 +149,7 @@ export const NotificationContextProvider = ({ children }: NotificationContextPro
 
   const title = () => {
     const response: any = {
-      type: t(`types.notifications`, { count: 2 }),
+      type: t(`entities.notifications`, { count: 2 }),
     };
 
     return response;

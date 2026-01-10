@@ -53,7 +53,7 @@ export const CompanyProvider = ({ children, dehydratedCompany }: CompanyProvider
 
   const title = () => {
     const response: any = {
-      type: t(`types.companies`, { count: company ? 1 : 2 }),
+      type: t(`entities.companies`, { count: company ? 1 : 2 }),
     };
 
     if (company) response.element = company.name;

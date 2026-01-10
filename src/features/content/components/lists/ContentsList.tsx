@@ -17,7 +17,7 @@ export function ContentsList({ contentList }: ContentsListProps) {
 
   return (
     <div className="flex min-h-0 w-full flex-col overflow-y-auto">
-      <h2 className="text-xl font-semibold">{t(`foundations.content.news`)}</h2>
+      <h2 className="text-xl font-semibold">{t(`content.news`)}</h2>
       <div className="flex flex-col">
         {contentList.map((content) => (
           <ContentsListElement content={content} key={content.id} />

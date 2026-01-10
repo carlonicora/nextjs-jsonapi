@@ -29,28 +29,28 @@ export function AcceptInvitation() {
         await AuthService.validateCode(payload);
       } catch (e) {
         setError(e instanceof Error ? e.message : String(e));
-        errorToast({ title: t(`generic.errors.error`), error: e });
+        errorToast({ title: t(`common.errors.error`), error: e });
       }
     }
 
     if (params && params.code) {
       validateCode(params.code);
     } else {
-      setError(t(`foundations.auth.errors.invalid_invitation_code`));
+      setError(t(`auth.errors.invalid_invitation_code`));
     }
   }, []);
 
   const formSchema = z
     .object({
       password: z.string().min(1, {
-        message: t(`foundations.user.fields.password.error`),
+        message: t(`user.fields.password.error`),
       }),
       passwordRetype: z.string().min(1, {
-        message: t("foundations.auth.errors.password_retype_required"),
+        message: t("auth.errors.password_retype_required"),
       }),
     })
     .refine((data) => data.password === data.passwordRetype, {
-      message: t("foundations.auth.fields.retype_password.error_not_match"),
+      message: t("auth.fields.retype_password.error_not_match"),
       path: ["passwordRetype"],
     });
 
@@ -74,8 +74,8 @@ export function AcceptInvitation() {
       await AuthService.acceptInvitation(payload);
       setShowConfirmation(true);
 
-      toast.success(t("foundations.auth.account_activated"), {
-        description: t("foundations.auth.account_activated_description"),
+      toast.success(t("auth.account_activated"), {
+        description: t("auth.account_activated_description"),
       });
 
       setTimeout(() => {
@@ -83,7 +83,7 @@ export function AcceptInvitation() {
         setParams(undefined);
       }, 2000);
     } catch (e) {
-      errorToast({ title: t(`generic.errors.error`), error });
+      errorToast({ title: t(`common.errors.error`), error });
     }
   };
 
@@ -92,21 +92,15 @@ export function AcceptInvitation() {
       <CardHeader>
         <CardTitle className="text-primary flex flex-col items-center pb-10 text-4xl">
           <Image src="/logo.webp" alt="Logo" width={100} height={100} priority />
-          {t("foundations.auth.accept_invitation")}
+          {t("auth.accept_invitation")}
         </CardTitle>
         <CardDescription className="text-center text-sm">
-          {error ? (
-            <>{t("foundations.auth.errors.activating_account")}</>
-          ) : (
-            <>{t("foundations.auth.select_password")}</>
-          )}
+          {error ? <>{t("auth.errors.activating_account")}</> : <>{t("auth.select_password")}</>}
         </CardDescription>
       </CardHeader>
       <CardContent>
         {showConfirmation ? (
-          <CardDescription className="text-center text-xl">
-            {t("foundations.auth.activation_description")}
-          </CardDescription>
+          <CardDescription className="text-center text-xl">{t("auth.activation_description")}</CardDescription>
         ) : error ? (
           <CardDescription className="text-center text-xl">{error}</CardDescription>
         ) : (
@@ -115,17 +109,17 @@ export function AcceptInvitation() {
               <FormPassword
                 form={form}
                 id="password"
-                name={t(`foundations.user.fields.password.label`)}
-                placeholder={t(`foundations.user.fields.password.placeholder`)}
+                name={t(`user.fields.password.label`)}
+                placeholder={t(`user.fields.password.placeholder`)}
               />
               <FormPassword
                 form={form}
                 id="passwordRetype"
-                name={t("foundations.auth.fields.retype_password.label")}
-                placeholder={t(`foundations.auth.fields.retype_password.placeholder`)}
+                name={t("auth.fields.retype_password.label")}
+                placeholder={t(`auth.fields.retype_password.placeholder`)}
               />
               <Button className="mt-4 w-full" type={"submit"}>
-                {t("foundations.auth.accept_invitation")}
+                {t("auth.accept_invitation")}
               </Button>
             </form>
           </Form>

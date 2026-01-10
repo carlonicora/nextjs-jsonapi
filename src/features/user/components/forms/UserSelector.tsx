@@ -3,9 +3,9 @@
 import { CircleX, RefreshCwIcon, SearchIcon, XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { FormFieldWrapper } from "../../../../components/forms";
 import { Modules } from "../../../../core";
 import { DataListRetriever, useDataListRetriever, useDebounce } from "../../../../hooks";
-import { FormFieldWrapper } from "../../../../components/forms";
 import {
   Avatar,
   AvatarFallback,
@@ -88,12 +88,7 @@ export function UserSelector({ id, form, label, placeholder, onChange, isRequire
 
   return (
     <div className="flex w-full flex-col">
-      <FormFieldWrapper
-        form={form}
-        name={id}
-        label={label}
-        isRequired={isRequired}
-      >
+      <FormFieldWrapper form={form} name={id} label={label} isRequired={isRequired}>
         {(field) => (
           <Popover open={open} onOpenChange={setOpen} modal={true}>
             <div className="flex w-full flex-row items-center justify-between">
@@ -117,7 +112,7 @@ export function UserSelector({ id, form, label, placeholder, onChange, isRequire
                     </>
                   ) : (
                     <div className="text-muted-foreground mr-7 flex h-10 w-full flex-row items-center justify-start rounded-md border p-2 text-sm">
-                      {placeholder ?? t(`generic.search.placeholder`, { type: t(`types.users`, { count: 1 }) })}
+                      {placeholder ?? t(`ui.search.placeholder`, { type: t(`entities.users`, { count: 1 }) })}
                     </div>
                   )}
                 </div>
@@ -134,7 +129,7 @@ export function UserSelector({ id, form, label, placeholder, onChange, isRequire
                 <div className="relative mb-2 w-full">
                   <SearchIcon className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
                   <Input
-                    placeholder={t(`generic.search.placeholder`, { type: t(`types.users`, { count: 1 }) })}
+                    placeholder={t(`ui.search.placeholder`, { type: t(`entities.users`, { count: 1 }) })}
                     type="text"
                     className="w-full pr-8 pl-8"
                     onChange={(e) => setSearchTerm(e.target.value)}

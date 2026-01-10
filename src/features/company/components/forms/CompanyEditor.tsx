@@ -54,7 +54,7 @@ function CompanyEditorInternal({ company, propagateChanges, onRevalidate }: Comp
   const formSchema = z.object({
     id: z.uuidv4(),
     name: z.string().min(1, {
-      message: t(`foundations.company.fields.name.error`),
+      message: t(`company.fields.name.error`),
     }),
     featureIds: z.array(z.string()).optional(),
     moduleIds: z.array(z.string()).optional(),
@@ -110,7 +110,7 @@ function CompanyEditorInternal({ company, propagateChanges, onRevalidate }: Comp
       }
     } catch (error) {
       errorToast({
-        title: company ? t(`generic.errors.update`) : t(`generic.errors.create`),
+        title: company ? t(`common.errors.update`) : t(`common.errors.create`),
         error,
       });
     }
@@ -186,7 +186,7 @@ function CompanyEditorInternal({ company, propagateChanges, onRevalidate }: Comp
       <DialogContent
         className={`flex max-h-[70vh] w-full ${isAdministrator || canAccessFeatures ? `max-w-5xl` : `max-w-4xl`} flex-col overflow-y-auto`}
       >
-        <CommonEditorHeader type={t(`types.companies`, { count: 1 })} name={company?.name} />
+        <CommonEditorHeader type={t(`entities.companies`, { count: 1 })} name={company?.name} />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className={`flex w-full flex-col gap-y-4`}>
             <div className="flex w-full items-start justify-between gap-x-4">
@@ -205,9 +205,7 @@ function CompanyEditorInternal({ company, propagateChanges, onRevalidate }: Comp
                         ) : (
                           <>
                             <UploadIcon className="my-4 h-8 w-8" />
-                            <p className="mb-1 flex w-full text-center text-sm">
-                              {t(`foundations.company.click_drag_logo`)}
-                            </p>
+                            <p className="mb-1 flex w-full text-center text-sm">{t(`company.click_drag_logo`)}</p>
                           </>
                         )}
                       </div>
@@ -219,18 +217,14 @@ function CompanyEditorInternal({ company, propagateChanges, onRevalidate }: Comp
                 <FormInput
                   form={form}
                   id="name"
-                  name={t(`foundations.company.fields.name.label`)}
-                  placeholder={t(`foundations.company.fields.name.placeholder`)}
+                  name={t(`company.fields.name.label`)}
+                  placeholder={t(`company.fields.name.placeholder`)}
                 />
               </div>
               {canAccessFeatures && (
                 <div className={`flex w-96 flex-col justify-start gap-y-4`}>
                   <ScrollArea className="h-max">
-                    <FormFeatures
-                      form={form}
-                      name={t(`foundations.company.features_and_modules`)}
-                      features={features}
-                    />
+                    <FormFeatures form={form} name={t(`company.features_and_modules`)} features={features} />
                   </ScrollArea>
                 </div>
               )}

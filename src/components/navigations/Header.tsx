@@ -40,13 +40,13 @@ export function Header({ children }: HeaderProps) {
                         className="h-6 w-6"
                         onClick={() => refreshUser()}
                         disabled={isRefreshing}
-                        aria-label={t("generic.refresh", { defaultValue: "Refresh" })}
+                        aria-label={t("common.refresh", { defaultValue: "Refresh" })}
                       />
                     }
                   >
                     <RefreshCwIcon className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
                   </TooltipTrigger>
-                  <TooltipContent side="bottom">{t("generic.refresh", { defaultValue: "Refresh" })}</TooltipContent>
+                  <TooltipContent side="bottom">{t("common.refresh", { defaultValue: "Refresh" })}</TooltipContent>
                 </Tooltip>
               </div>
             )}

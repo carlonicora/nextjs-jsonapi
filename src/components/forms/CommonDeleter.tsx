@@ -35,7 +35,7 @@ export function CommonDeleter({ deleteFunction, redirectTo, type, forceShow }: C
       setOpen(false);
       if (redirectTo) router.push(redirectTo);
     } catch (error) {
-      errorToast({ title: t(`generic.errors.delete`), error: error });
+      errorToast({ title: t(`common.errors.delete`), error: error });
     }
     setIsDeleting(false);
   };
@@ -44,20 +44,26 @@ export function CommonDeleter({ deleteFunction, redirectTo, type, forceShow }: C
     <AlertDialog open={open} onOpenChange={setOpen}>
       {forceShow ? null : (
         <AlertDialogTrigger>
-          <Button render={<div />} nativeButton={false} size="sm" variant={"ghost"} className="text-muted-foreground hover:text-destructive">
+          <Button
+            render={<div />}
+            nativeButton={false}
+            size="sm"
+            variant={"ghost"}
+            className="text-muted-foreground hover:text-destructive"
+          >
             <Trash2Icon />
           </Button>
         </AlertDialogTrigger>
       )}
       <AlertDialogContent className={`flex max-h-[70vh] max-w-3xl flex-col overflow-y-auto`}>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t(`generic.delete.title`, { type: t(`types.${type}`, { count: 1 }) })}</AlertDialogTitle>
+          <AlertDialogTitle>{t(`common.delete.title`, { type: t(`entities.${type}`, { count: 1 }) })}</AlertDialogTitle>
           <AlertDialogDescription>
-            {t(`generic.delete.subtitle`, { type: t(`types.${type}`, { count: 1 }) })}
+            {t(`common.delete.subtitle`, { type: t(`entities.${type}`, { count: 1 }) })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="text-destructive p-4 text-sm">
-          {t(`generic.delete.description`, { type: t(`types.${type}`, { count: 1 }) })}
+          {t(`common.delete.description`, { type: t(`entities.${type}`, { count: 1 }) })}
         </div>
         <div className="flex justify-end">
           <Button
@@ -67,7 +73,7 @@ export function CommonDeleter({ deleteFunction, redirectTo, type, forceShow }: C
             onClick={() => setOpen(false)}
             disabled={isDeleting}
           >
-            {t(`generic.buttons.cancel`)}
+            {t(`ui.buttons.cancel`)}
           </Button>
           <Button
             type="submit"
@@ -80,11 +86,11 @@ export function CommonDeleter({ deleteFunction, redirectTo, type, forceShow }: C
           >
             {isDeleting ? (
               <>
-                {t(`generic.buttons.is_deleting`)}
+                {t(`ui.buttons.is_deleting`)}
                 <LoaderCircleIcon className="animate-spin-slow h-5 w-5" />
               </>
             ) : (
-              t(`generic.buttons.delete`)
+              t(`ui.buttons.delete`)
             )}
           </Button>
         </div>

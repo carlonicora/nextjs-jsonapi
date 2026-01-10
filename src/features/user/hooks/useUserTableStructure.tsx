@@ -39,7 +39,7 @@ export const useUserTableStructure: UseTableStructureHook<UserInterface, UserFie
     [UserFields.name]: () => ({
       id: "name",
       accessorKey: "name",
-      header: t(`foundations.user.fields.name.label`),
+      header: t(`user.fields.name.label`),
       cell: ({ row }: { row: Row<TableContent<UserInterface>> }) => {
         const user = row.original.jsonApiData as UserInterface;
         return (
@@ -52,8 +52,8 @@ export const useUserTableStructure: UseTableStructureHook<UserInterface, UserFie
           >
             <UserAvatar user={user} />
             {user.name}
-            {user.isDeleted ? ` - ${t("foundations.user.errors.deleted")}` : ""}
-            {!user.isActivated ? ` - ${t("foundations.user.errors.inactive")}` : ""}
+            {user.isDeleted ? ` - ${t("user.errors.deleted")}` : ""}
+            {!user.isActivated ? ` - ${t("user.errors.inactive")}` : ""}
           </Link>
         );
       },
@@ -63,7 +63,7 @@ export const useUserTableStructure: UseTableStructureHook<UserInterface, UserFie
     [UserFields.email]: () => ({
       id: "email",
       accessorKey: "email",
-      header: t(`generic.fields.email.label`),
+      header: t(`common.fields.email.label`),
       cell: ({ row }: { row: Row<TableContent<UserInterface>> }) => <>{row.getValue("email")}</>,
       enableSorting: false,
       enableHiding: false,
@@ -71,7 +71,7 @@ export const useUserTableStructure: UseTableStructureHook<UserInterface, UserFie
     [UserFields.relevance]: () => ({
       id: "relevance",
       accessorKey: "relevance",
-      header: t(`generic.relevance`),
+      header: t(`common.relevance`),
       cell: ({ row }: { row: TableContent<UserInterface> }) => {
         const user: UserInterface = row.original.jsonApiData;
 
@@ -99,7 +99,7 @@ export const useUserTableStructure: UseTableStructureHook<UserInterface, UserFie
     [UserFields.createdAt]: () =>
       cellDate({
         name: "createdAt",
-        title: t(`generic.date.create`),
+        title: t(`common.date.create`),
       }),
   };
 

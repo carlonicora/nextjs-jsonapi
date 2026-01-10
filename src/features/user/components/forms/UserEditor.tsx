@@ -67,8 +67,8 @@ function UserEditorInternal({ user, propagateChanges, adminCreated, trigger, onR
 
   const formSchema = z.object({
     id: z.uuidv4(),
-    name: z.string().min(1, { message: t(`foundations.user.fields.name.error`) }),
-    email: z.string().min(1, { message: t(`generic.fields.email.error`) }),
+    name: z.string().min(1, { message: t(`user.fields.name.error`) }),
+    email: z.string().min(1, { message: t(`common.fields.email.error`) }),
     password: z.string().optional(),
     title: z.string().optional(),
     bio: z.string().optional(),
@@ -101,9 +101,9 @@ function UserEditorInternal({ user, propagateChanges, adminCreated, trigger, onR
         if (existingUser) {
           form.setError("email", {
             type: "manual",
-            message: t(`foundations.user.errors.email_exists`),
+            message: t(`user.errors.email_exists`),
           });
-          errorToast({ title: t(`foundations.user.errors.email_exists`), error: "" });
+          errorToast({ title: t(`user.errors.email_exists`), error: "" });
           return;
         }
       } catch (error) {
@@ -157,7 +157,7 @@ function UserEditorInternal({ user, propagateChanges, adminCreated, trigger, onR
         router.push(generateUrl({ page: Modules.User, id: updatedUser.id }));
       }
     } catch (error) {
-      errorToast({ title: user ? t(`generic.errors.update`) : t(`generic.errors.create`), error });
+      errorToast({ title: user ? t(`common.errors.update`) : t(`common.errors.create`), error });
     }
   };
 
@@ -216,7 +216,7 @@ function UserEditorInternal({ user, propagateChanges, adminCreated, trigger, onR
       <DialogContent
         className={`flex max-h-[70vh] ${canChangeRoles ? `max-w-[90vw]` : `max-w-3xl`} min-h-3xl max-h-[90vh] flex-col overflow-y-auto`}
       >
-        <CommonEditorHeader type={t(`types.users`, { count: 1 })} name={user?.name} />
+        <CommonEditorHeader type={t(`entities.users`, { count: 1 })} name={user?.name} />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className={`flex w-full flex-col gap-y-4`}>
             <div className={`flex flex-row gap-x-4`}>
@@ -233,54 +233,50 @@ function UserEditorInternal({ user, propagateChanges, adminCreated, trigger, onR
                 <FormInput
                   form={form}
                   id="name"
-                  name={t(`foundations.user.fields.name.label`)}
-                  placeholder={t(`foundations.user.fields.name.placeholder`)}
+                  name={t(`user.fields.name.label`)}
+                  placeholder={t(`user.fields.name.placeholder`)}
                 />
                 <FormInput
                   form={form}
                   id="email"
-                  name={t(`generic.fields.email.label`)}
-                  placeholder={t(`generic.fields.email.placeholder`)}
+                  name={t(`common.fields.email.label`)}
+                  placeholder={t(`common.fields.email.placeholder`)}
                 />
                 <FormInput
                   form={form}
                   id="phone"
-                  name={t(`foundations.user.fields.phone.label`)}
-                  placeholder={t(`foundations.user.fields.phone.placeholder`)}
+                  name={t(`user.fields.phone.label`)}
+                  placeholder={t(`user.fields.phone.placeholder`)}
                 />
                 <FormPassword
                   form={form}
                   id="password"
-                  name={t(`foundations.user.fields.password.label`)}
-                  placeholder={t(`foundations.user.fields.password.placeholder`)}
+                  name={t(`user.fields.password.label`)}
+                  placeholder={t(`user.fields.password.placeholder`)}
                 />
                 <FormInput
                   form={form}
                   id="title"
-                  name={t(`foundations.user.fields.title.label`)}
-                  placeholder={t(`foundations.user.fields.title.placeholder`)}
+                  name={t(`user.fields.title.label`)}
+                  placeholder={t(`user.fields.title.placeholder`)}
                 />
                 <FormTextarea
                   form={form}
                   id="bio"
-                  name={t(`foundations.user.fields.bio.label`)}
-                  placeholder={t(`foundations.user.fields.bio.placeholder`)}
+                  name={t(`user.fields.bio.label`)}
+                  placeholder={t(`user.fields.bio.placeholder`)}
                   className="min-h-40"
                 />
               </div>
               {canChangeRoles && (
                 <div className="flex w-1/3 flex-col">
                   {canChangeRoles && (
-                    <FormRoles form={form} id="roleIds" name={t(`types.roles`, { count: 2 })} roles={roles} />
+                    <FormRoles form={form} id="roleIds" name={t(`entities.roles`, { count: 2 })} roles={roles} />
                   )}
                   {!user && (
                     <div className="flex flex-col gap-y-4">
-                      <div className="text-sm font-semibold">{t(`foundations.user.send_activation_email`)}</div>
-                      <FormCheckbox
-                        form={form}
-                        id="sendInvitationEmail"
-                        name={t(`foundations.user.send_activation_email`)}
-                      />
+                      <div className="text-sm font-semibold">{t(`user.send_activation_email`)}</div>
+                      <FormCheckbox form={form} id="sendInvitationEmail" name={t(`user.send_activation_email`)} />
                     </div>
                   )}
                 </div>

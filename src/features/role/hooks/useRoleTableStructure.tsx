@@ -37,7 +37,7 @@ export const useRoleTableStructure: UseTableStructureHook<RoleInterface, RoleFie
     [RoleFields.name]: () => ({
       id: "name",
       accessorKey: "name",
-      header: t(`foundations.role.fields.name.label`),
+      header: t(`role.fields.name.label`),
       cell: ({ row }: { row: Row<TableContent<RoleInterface>> }) => {
         const role = row.original.jsonApiData as RoleInterface;
         return <Link href={generateUrl({ page: Modules.Role, id: role.id })}>{row.getValue("name")}</Link>;
@@ -48,7 +48,7 @@ export const useRoleTableStructure: UseTableStructureHook<RoleInterface, RoleFie
     [RoleFields.description]: () => ({
       id: "description",
       accessorKey: "description",
-      header: t(`foundations.role.fields.description.label`),
+      header: t(`role.fields.description.label`),
       cell: ({ row }: { row: Row<TableContent<RoleInterface>> }) => <>{row.getValue("description")}</>,
       enableSorting: false,
       enableHiding: false,
@@ -56,7 +56,7 @@ export const useRoleTableStructure: UseTableStructureHook<RoleInterface, RoleFie
     [RoleFields.createdAt]: () =>
       cellDate({
         name: "createdAt",
-        title: t(`generic.date.create`),
+        title: t(`common.date.create`),
       }),
   };
 

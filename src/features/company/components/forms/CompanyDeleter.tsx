@@ -41,7 +41,7 @@ function CompanyDeleterInternal({ company }: CompanyDeleterProps) {
       await CompanyService.delete({ companyId: company.id });
       router.push("/");
     } catch (error) {
-      errorToast({ title: t(`generic.errors.delete`), error: error });
+      errorToast({ title: t(`common.errors.delete`), error: error });
     }
     setIsDeleting(false);
   };
@@ -51,29 +51,31 @@ function CompanyDeleterInternal({ company }: CompanyDeleterProps) {
       <AlertDialogTrigger>
         <Button size="sm" variant={"destructive"}>
           <Trash2Icon className="mr-3 h-3.5 w-3.5" />
-          {t(`generic.buttons.delete`)}
+          {t(`ui.buttons.delete`)}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent className={`flex max-h-[70vh] max-w-3xl flex-col overflow-y-auto`}>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t(`generic.delete.title`, { type: t(`types.companies`, { count: 1 }) })}</AlertDialogTitle>
+          <AlertDialogTitle>
+            {t(`common.delete.title`, { type: t(`entities.companies`, { count: 1 }) })}
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            {t(`generic.delete.subtitle`, { type: t(`types.companies`, { count: 1 }) })}
+            {t(`common.delete.subtitle`, { type: t(`entities.companies`, { count: 1 }) })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="text-destructive p-4 text-sm">
-          {t(`generic.delete.description`, { type: t(`types.companies`, { count: 1 }) })}
+          {t(`common.delete.description`, { type: t(`entities.companies`, { count: 1 }) })}
         </div>
         <div className="flex w-full flex-col gap-y-2">
-          <div>{t(`generic.delete.confirmation`, { type: t(`types.companies`, { count: 1 }) })}</div>
+          <div>{t(`common.delete.confirmation`, { type: t(`entities.companies`, { count: 1 }) })}</div>
           <div className="flex w-full flex-col">
             <Label className="flex items-center">
-              {t(`foundations.company.fields.name.label`)}
+              {t(`company.fields.name.label`)}
               <span className="text-destructive ml-2 font-semibold">*</span>
             </Label>
             <Input
               className={`w-full`}
-              placeholder={t(`foundations.company.fields.name.placeholder`)}
+              placeholder={t(`company.fields.name.placeholder`)}
               onChange={(e) => setCompanyName(e.target.value)}
             />
           </div>
@@ -86,7 +88,7 @@ function CompanyDeleterInternal({ company }: CompanyDeleterProps) {
             onClick={() => setOpen(false)}
             disabled={isDeleting}
           >
-            {t(`generic.buttons.cancel`)}
+            {t(`ui.buttons.cancel`)}
           </Button>
           <Button
             type="submit"
@@ -99,11 +101,11 @@ function CompanyDeleterInternal({ company }: CompanyDeleterProps) {
           >
             {isDeleting ? (
               <>
-                {t(`generic.buttons.is_deleting`)}
+                {t(`ui.buttons.is_deleting`)}
                 <LoaderCircleIcon className="animate-spin-slow h-5 w-5" />
               </>
             ) : (
-              t(`generic.buttons.delete`)
+              t(`ui.buttons.delete`)
             )}
           </Button>
         </div>

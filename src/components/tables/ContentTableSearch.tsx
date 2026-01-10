@@ -84,7 +84,7 @@ export function ContentTableSearch({ data }: ContentTableSearchProps) {
           }}
           onFocus={() => setIsFocused(true)}
           onBlur={handleBlur}
-          placeholder={t(`generic.search.placeholder_global`)}
+          placeholder={t(`ui.search.placeholder_global`)}
           type="text"
           className="border-border/50 focus-visible:border-border h-10 w-full pr-8 pl-8 text-xs shadow-none focus-visible:ring-0"
           onChange={(e) => setSearchTerm(e.target.value)}

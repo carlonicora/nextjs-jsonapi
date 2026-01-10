@@ -31,7 +31,7 @@ export function BreadcrumbNavigation({ items }: BreadcrumbProps) {
     <UIBreadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
-          <Link href={generateUrl({ page: `/` })}>{t(`generic.home`)}</Link>
+          <Link href={generateUrl({ page: `/` })}>{t(`common.home`)}</Link>
         </BreadcrumbItem>
         {items.length > 0 && <BreadcrumbSeparator />}
 

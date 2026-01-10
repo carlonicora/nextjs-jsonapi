@@ -39,7 +39,7 @@ export const useContentTableStructure = <U extends string = ContentFields>(
     [ContentFields.name]: () => ({
       id: "name",
       accessorKey: "name",
-      header: t(`foundations.content.fields.name.label`),
+      header: t(`content.fields.name.label`),
       cell: ({ row }: { row: TableContent<ContentInterface> }) => {
         const content: ContentInterface = row.original.jsonApiData;
 
@@ -64,7 +64,7 @@ export const useContentTableStructure = <U extends string = ContentFields>(
     [ContentFields.relevance]: () => ({
       id: "relevance",
       accessorKey: "relevance",
-      header: t(`generic.relevance`),
+      header: t(`common.relevance`),
       cell: ({ row }: { row: TableContent<ContentInterface> }) => {
         const content: ContentInterface = row.original.jsonApiData;
 
@@ -92,7 +92,7 @@ export const useContentTableStructure = <U extends string = ContentFields>(
     [ContentFields.authors]: () => ({
       id: "authors",
       accessorKey: "authors",
-      header: t(`generic.relationships.author.label`),
+      header: t(`common.relationships.author.label`),
       cell: ({ row }: { row: TableContent<ContentInterface> }) => {
         const content: ContentInterface = row.original.jsonApiData;
         return <ContributorsList content={content} />;
@@ -103,12 +103,12 @@ export const useContentTableStructure = <U extends string = ContentFields>(
     [ContentFields.createdAt]: () =>
       cellDate({
         name: "createdAt",
-        title: t(`generic.date.create`),
+        title: t(`common.date.create`),
       }),
     [ContentFields.updatedAt]: () =>
       cellDate({
         name: "updatedAt",
-        title: t(`generic.date.update`),
+        title: t(`common.date.update`),
       }),
   };
 

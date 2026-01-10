@@ -36,11 +36,11 @@ function UserResentInvitationEmailInternal({ user }: UserResentInvitationEmailPr
       await UserService.sendInvitation({ userId: user.id, companyId: user.company!.id });
 
       setOpen(false);
-      toast.message(t(`foundations.user.resend_activation.email_sent`), {
-        description: t(`foundations.user.resend_activation.email_sent_description`, { email: user.email }),
+      toast.message(t(`user.resend_activation.email_sent`), {
+        description: t(`user.resend_activation.email_sent_description`, { email: user.email }),
       });
     } catch (error) {
-      errorToast({ title: t(`generic.errors.error`), error: error });
+      errorToast({ title: t(`common.errors.error`), error: error });
     }
   };
 
@@ -54,17 +54,17 @@ function UserResentInvitationEmailInternal({ user }: UserResentInvitationEmailPr
             </Button>
           </DialogTrigger>
         </TooltipTrigger>
-        <TooltipContent>{t(`foundations.user.buttons.resend_activation`)}</TooltipContent>
+        <TooltipContent>{t(`user.buttons.resend_activation`)}</TooltipContent>
       </Tooltip>
       <DialogContent className={`flex max-h-[70vh] max-w-3xl flex-col overflow-y-auto`}>
         <DialogHeader>
-          <DialogTitle>{t(`foundations.user.resend_activation.title`)}</DialogTitle>
-          <DialogDescription>{t(`foundations.user.resend_activation.subtitle`)}</DialogDescription>
+          <DialogTitle>{t(`user.resend_activation.title`)}</DialogTitle>
+          <DialogDescription>{t(`user.resend_activation.subtitle`)}</DialogDescription>
         </DialogHeader>
-        {t(`foundations.user.resend_activation.description`, { email: user.email })}
+        {t(`user.resend_activation.description`, { email: user.email })}
         <div className="flex justify-end">
           <Button className="mr-2" variant={"outline"} type={`button`} onClick={() => setOpen(false)}>
-            {t(`generic.buttons.cancel`)}
+            {t(`ui.buttons.cancel`)}
           </Button>
           <Button
             type="submit"
@@ -73,7 +73,7 @@ function UserResentInvitationEmailInternal({ user }: UserResentInvitationEmailPr
               sendInvitationEmail();
             }}
           >
-            {t(`foundations.user.buttons.resend_activation`)}
+            {t(`user.buttons.resend_activation`)}
           </Button>
         </div>
       </DialogContent>

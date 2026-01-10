@@ -29,28 +29,28 @@ export function ResetPassword() {
         await AuthService.validateCode(payload);
       } catch (e) {
         setError(e instanceof Error ? e.message : String(e));
-        errorToast({ title: t(`generic.errors.error`), error: e });
+        errorToast({ title: t(`common.errors.error`), error: e });
       }
     }
 
     if (params && params.code) {
       validateResetPasswordCode(params.code);
     } else {
-      setError(t(`foundations.auth.errors.invalid_password_reset_code`));
+      setError(t(`auth.errors.invalid_password_reset_code`));
     }
   }, []);
 
   const formSchema = z
     .object({
       password: z.string().min(1, {
-        message: t(`foundations.user.fields.password.error`),
+        message: t(`user.fields.password.error`),
       }),
       passwordRetype: z.string().min(1, {
-        message: t(`foundations.auth.fields.retype_password.error`),
+        message: t(`auth.fields.retype_password.error`),
       }),
     })
     .refine((data) => data.password === data.passwordRetype, {
-      message: t(`foundations.auth.fields.retype_password.error_not_match`),
+      message: t(`auth.fields.retype_password.error_not_match`),
       path: ["passwordRetype"],
     });
 
@@ -74,8 +74,8 @@ export function ResetPassword() {
       await AuthService.resetPassword(payload);
       setShowConfirmation(true);
 
-      toast.success(t(`foundations.auth.reset_success`), {
-        description: t(`foundations.auth.reset_success_description`),
+      toast.success(t(`auth.reset_success`), {
+        description: t(`auth.reset_success_description`),
       });
 
       setTimeout(() => {
@@ -83,7 +83,7 @@ export function ResetPassword() {
         setParams(undefined);
       }, 2000);
     } catch (e) {
-      errorToast({ title: t(`generic.errors.error`), error });
+      errorToast({ title: t(`common.errors.error`), error });
     }
   };
 
@@ -92,21 +92,15 @@ export function ResetPassword() {
       <CardHeader>
         <CardTitle className="text-primary flex flex-col items-center pb-10 text-4xl">
           <Image src="/logo.webp" alt="Logo" width={100} height={100} priority />
-          {t(`foundations.auth.password_reset`)}
+          {t(`auth.password_reset`)}
         </CardTitle>
         <CardDescription className="text-center text-sm">
-          {error ? (
-            <>{t(`foundations.auth.errors.password_reset_error`)}</>
-          ) : (
-            <>{t(`foundations.auth.reset_password`)}</>
-          )}
+          {error ? <>{t(`auth.errors.password_reset_error`)}</> : <>{t(`auth.reset_password`)}</>}
         </CardDescription>
       </CardHeader>
       <CardContent>
         {showConfirmation ? (
-          <CardDescription className="text-center text-xl">
-            {t(`foundations.auth.reset_success_description`)}
-          </CardDescription>
+          <CardDescription className="text-center text-xl">{t(`auth.reset_success_description`)}</CardDescription>
         ) : error ? (
           <CardDescription className="text-center text-xl">{error}</CardDescription>
         ) : (
@@ -115,7 +109,7 @@ export function ResetPassword() {
               <FormPassword form={form} id="password" name={"Password"} />
               <FormPassword form={form} id="passwordRetype" name={"Retype Password"} />
               <Button className="mt-4 w-full" type={"submit"}>
-                {t(`foundations.auth.buttons.reset_password`)}
+                {t(`auth.buttons.reset_password`)}
               </Button>
             </form>
           </Form>

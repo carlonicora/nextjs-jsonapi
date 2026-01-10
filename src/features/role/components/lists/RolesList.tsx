@@ -22,7 +22,7 @@ export function RolesList() {
       data={data}
       fields={[RoleFields.name, RoleFields.description]}
       tableGeneratorType={Modules.Role}
-      title={t(`types.roles`, { count: 2 })}
+      title={t(`entities.roles`, { count: 2 })}
     />
   );
 }

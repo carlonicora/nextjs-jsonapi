@@ -32,7 +32,7 @@ export const RoleProvider = ({ children, dehydratedRole }: RoleProviderProps) =>
     const response: BreadcrumbItemData[] = [];
 
     response.push({
-      name: t(`types.roles`, { count: 2 }),
+      name: t(`entities.roles`, { count: 2 }),
       href: generateUrl({ page: Modules.Role }),
     });
 
@@ -47,7 +47,7 @@ export const RoleProvider = ({ children, dehydratedRole }: RoleProviderProps) =>
 
   const title = () => {
     const response: any = {
-      type: t(`types.roles`, { count: role ? 1 : 2 }),
+      type: t(`entities.roles`, { count: role ? 1 : 2 }),
     };
 
     const functions: ReactNode[] = [];

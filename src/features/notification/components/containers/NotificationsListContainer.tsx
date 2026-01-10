@@ -23,11 +23,11 @@ function NotificationsListContainerContent() {
 
   const tabs: Tab[] = [
     {
-      label: t(`foundations.notification.inbox`),
+      label: t(`notification.inbox`),
       content: <NotificationsList archived={false} />,
     },
     {
-      label: t(`foundations.notification.archived`),
+      label: t(`notification.archived`),
       content: <NotificationsList archived={true} />,
     },
   ];

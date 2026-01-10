@@ -45,7 +45,7 @@ export function NotificationToast(
   const data = generateNotificationData({ notification: notification, generateUrl: generateUrl });
 
   return {
-    title: t(`foundations.notification.${notification.notificationType}.title`),
+    title: t(`notification.${notification.notificationType}.title`),
     description: (
       <div className={`flex w-full flex-row items-center p-2`}>
         {data.actor ? (
@@ -57,7 +57,7 @@ export function NotificationToast(
         )}
         <div className="flex w-full flex-col">
           <p className="text-sm">
-            {t.rich(`foundations.notification.${notification.notificationType}.description`, {
+            {t.rich(`notification.${notification.notificationType}.description`, {
               strong: (chunks: any) => <strong>{chunks}</strong>,
               actor: data.actor?.name ?? "",
               title: data.title,
@@ -72,7 +72,7 @@ export function NotificationToast(
     ),
     action: data.url
       ? {
-          label: t(`foundations.notification.${notification.notificationType}.buttons.action`),
+          label: t(`notification.${notification.notificationType}.buttons.action`),
           onClick: () => {
             reouter.push(data.url!);
           },
@@ -103,7 +103,7 @@ export function NotificationMenuItem({ notification, closePopover }: TaskComment
       )}
       <div className="flex w-full flex-col">
         <p className="text-sm">
-          {t.rich(`foundations.notification.${notification.notificationType}.description` as any, {
+          {t.rich(`notification.${notification.notificationType}.description` as any, {
             strong: (chunks: any) => <strong>{chunks}</strong>,
             actor: data.actor?.name ?? "",
             title: data.title,

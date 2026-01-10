@@ -39,7 +39,7 @@ export function CompanyUsersList({ isDeleted }: CompanyUsersListProps) {
       fields={[UserFields.name, UserFields.email]}
       tableGeneratorType={Modules.User}
       functions={functions}
-      title={t(`types.users`, { count: 2 })}
+      title={t(`entities.users`, { count: 2 })}
     />
   );
 }

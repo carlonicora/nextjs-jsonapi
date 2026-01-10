@@ -14,7 +14,7 @@ export function RoleDetails() {
   return (
     <Card className="w-full">
       <CardContent className="p-4">
-        <AttributeElement title={t(`foundations.role.fields.description.label`)} value={role.description} />
+        <AttributeElement title={t(`role.fields.description.label`)} value={role.description} />
       </CardContent>
     </Card>
   );

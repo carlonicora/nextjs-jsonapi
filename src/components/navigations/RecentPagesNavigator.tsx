@@ -28,11 +28,11 @@ export function RecentPagesNavigator() {
     <DropdownMenu>
       <DropdownMenuTrigger>
         <div className="flex w-full cursor-pointer items-center gap-2">
-          {state === "collapsed" ? <HistoryIcon className="h-4 w-4" /> : <span>{t(`generic.recent_pages`)}</span>}
+          {state === "collapsed" ? <HistoryIcon className="h-4 w-4" /> : <span>{t(`common.recent_pages`)}</span>}
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-96">
-        <DropdownMenuLabel>{t(`generic.recent_pages`)}</DropdownMenuLabel>
+        <DropdownMenuLabel>{t(`common.recent_pages`)}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {recentPages.map((page, index) => (
           <DropdownMenuItem key={`${page.url}-${index}`}>
@@ -40,7 +40,7 @@ export function RecentPagesNavigator() {
               <div className="flex flex-col">
                 <div className="truncate text-sm">{page.title}</div>
                 <div className="text-muted-foreground text-xs font-normal">
-                  {t(`types.${page.moduleType}`, { count: 1 })}
+                  {t(`entities.${page.moduleType}`, { count: 1 })}
                 </div>
               </div>
             </Link>

@@ -196,13 +196,13 @@ function NotificationModalContent({ isOpen, setIsOpen }: NotificationModalProps)
           <BellIcon
             className={`h-5 w-5 cursor-pointer ${unreadNotifications ? "text-destructive" : ""} ${isLoading ? "animate-pulse" : ""}`}
           />
-          {t(`types.notifications`, { count: 2 })}
+          {t(`entities.notifications`, { count: 2 })}
         </SidebarMenuButton>
       </PopoverTrigger>
       <PopoverContent className="relative left-10 w-80 border-0 p-0 shadow-none">
         <Card>
           <CardHeader className="p-4">
-            <CardTitle>{t(`types.notifications`, { count: 2 })}</CardTitle>
+            <CardTitle>{t(`entities.notifications`, { count: 2 })}</CardTitle>
             {isLoading && <div className="text-muted-foreground text-xs">Loading...</div>}
             {error && <div className="text-destructive text-xs">Error: {error}</div>}
           </CardHeader>
@@ -213,9 +213,7 @@ function NotificationModalContent({ isOpen, setIsOpen }: NotificationModalProps)
                 <Fragment key={notification.id}>{generateNotification(notification, () => setIsOpen(false))}</Fragment>
               ))
             ) : (
-              <div className="p-4 text-center text-sm text-gray-500">
-                {t(`foundations.notification.empty`, { count: 2 })}
-              </div>
+              <div className="p-4 text-center text-sm text-gray-500">{t(`notification.empty`)}</div>
             )}
           </ScrollArea>
         </Card>

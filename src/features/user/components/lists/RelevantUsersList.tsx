@@ -25,7 +25,7 @@ export function RelevantUsersList({ id }: RelevantUsersListProps) {
       data={data}
       fields={[UserFields.name, UserFields.email, UserFields.relevance]}
       tableGeneratorType={Modules.User}
-      title={t(`generic.relevant_users`)}
+      title={t(`common.relevant_users`)}
     />
   );
 }

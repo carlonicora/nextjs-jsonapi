@@ -19,11 +19,11 @@ export function CommonEditorButtons({ isEdit, form, disabled, setOpen }: CommonE
         onClick={() => setOpen(false)}
         data-testid={`modal-button-cancel`}
       >
-        {t(`generic.buttons.cancel`)}
+        {t(`ui.buttons.cancel`)}
       </Button>
 
       <Button type="submit" disabled={form.formState.isSubmitting || disabled} data-testid={`modal-button-create`}>
-        {isEdit ? t(`generic.buttons.confirm_update`) : t(`generic.buttons.confirm_create`)}
+        {isEdit ? t(`ui.buttons.confirm_update`) : t(`ui.buttons.confirm_create`)}
       </Button>
     </div>
   );

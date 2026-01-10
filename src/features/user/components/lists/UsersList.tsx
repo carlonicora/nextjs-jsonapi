@@ -24,7 +24,7 @@ export function UsersList({ data, optionComponents, removeFunction, hideOptions,
       data={data}
       fields={[UserFields.name, UserFields.email]}
       tableGeneratorType={Modules.User}
-      title={t(`types.users`, { count: 2 })}
+      title={t(`entities.users`, { count: 2 })}
     />
   );
 }
