@@ -1,12 +1,15 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import React, { createContext, ReactElement, useCallback, useContext, useState } from "react";
+import React, { createContext, ReactElement, useCallback, useContext, useEffect, useState } from "react";
 import { SharedProvider } from "../../../contexts";
 import { Modules } from "../../../core";
 import { useI18nRouter } from "../../../i18n";
 import { BreadcrumbItemData } from "../../../interfaces";
 import { NotificationMenuItem, NotificationToast } from "../components/notifications/Notification";
+import { getRoleId, isRolesConfigured } from "../../../roles";
+import { RoleInterface } from "../../role";
+import { useCurrentUserContext } from "../../user/contexts/CurrentUserContext";
 import { NotificationInterface } from "../data";
 import { NotificationService } from "../data/notification.service";
 
@@ -50,6 +53,10 @@ export const NotificationContextProvider = ({ children }: NotificationContextPro
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastLoaded, setLastLoaded] = useState(0);
+  const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
+
+  // Access current user for initial load check
+  const { currentUser } = useCurrentUserContext();
 
   // Calculate shouldRefresh (5 minute cache)
   const shouldRefresh = Date.now() - lastLoaded > 5 * 60 * 1000;
@@ -87,6 +94,25 @@ export const NotificationContextProvider = ({ children }: NotificationContextPro
       setIsLoading(false);
     }
   }, []);
+
+  // Initial load - runs once per session when user is available and not admin
+  useEffect(() => {
+    if (hasInitiallyLoaded || !currentUser) return;
+
+    // Skip for admin users
+    if (isRolesConfigured()) {
+      const isAdmin = currentUser.roles?.some(
+        (role: RoleInterface) => role.id === getRoleId().Administrator,
+      );
+      if (isAdmin) {
+        setHasInitiallyLoaded(true);
+        return;
+      }
+    }
+
+    loadNotifications();
+    setHasInitiallyLoaded(true);
+  }, [currentUser, hasInitiallyLoaded, loadNotifications]);
 
   const markNotificationsAsRead = useCallback(async (ids: string[]) => {
     setIsLoading(true);
