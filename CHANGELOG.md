@@ -1,3 +1,9 @@
+## [1.29.5](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.29.4...v1.29.5) (2026-01-11)
+
+### 🐛 Bug Fixes
+
+* correct recurring notification loading ([4273477](https://github.com/carlonicora/nextjs-jsonapi/commit/4273477e5a27e2f4ee3fd31158e3339dfc999475))
+
 ## [1.29.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.29.3...v1.29.4) (2026-01-11)
 
 ### 🐛 Bug Fixes
