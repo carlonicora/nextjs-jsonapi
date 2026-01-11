@@ -1,3 +1,9 @@
+## [1.29.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.29.3...v1.29.4) (2026-01-11)
+
+### 🐛 Bug Fixes
+
+* prevent concurrent pagination calls in useDataListRetriever ([4c8ecee](https://github.com/carlonicora/nextjs-jsonapi/commit/4c8ecee753193803a073ef96d1784c40a60c4180))
+
 ## [1.29.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.29.2...v1.29.3) (2026-01-10)
 
 ### 🐛 Bug Fixes
