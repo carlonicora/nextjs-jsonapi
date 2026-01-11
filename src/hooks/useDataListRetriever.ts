@@ -45,6 +45,7 @@ export function useDataListRetriever<T>(params: {
   const requestIdRef = useRef(0);
   const abortControllerRef = useRef<AbortController | null>(null);
   const isFetchingRef = useRef(false);
+  const isPaginatingRef = useRef(false);
 
   const resolvedType = params.module;
   const resolvedService = ClientAbstractService; // We'll just use ClientAbstractService directly for pagination
@@ -118,8 +119,18 @@ export function useDataListRetriever<T>(params: {
     async (fetchParams?: { isRefine?: boolean; isRefresh?: boolean; callNext?: boolean; callPrevious?: boolean }) => {
       if (ready === false) return;
 
+      // Prevent concurrent pagination calls
+      if ((fetchParams?.callNext || fetchParams?.callPrevious) && isPaginatingRef.current) {
+        return;
+      }
+
       // Prevent concurrent fetches (unless it's a pagination call)
       if (isFetchingRef.current && !fetchParams?.callNext && !fetchParams?.callPrevious) return;
+
+      // Mark pagination in progress
+      if (fetchParams?.callNext || fetchParams?.callPrevious) {
+        isPaginatingRef.current = true;
+      }
 
       const thisRequestId = ++requestIdRef.current;
       isFetchingRef.current = true;
@@ -204,6 +215,7 @@ export function useDataListRetriever<T>(params: {
       } finally {
         if (thisRequestId === requestIdRef.current) {
           isFetchingRef.current = false;
+          isPaginatingRef.current = false;
         }
       }
     },
