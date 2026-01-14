@@ -1,7 +1,7 @@
 import { BellIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { toast } from "sonner";
+import { showToast } from "../../../../utils/toast";
 import { useSocketContext } from "../../../../contexts";
 import { usePageUrlGenerator } from "../../../../hooks";
 import {
@@ -116,7 +116,7 @@ function NotificationModalContent({ isOpen, setIsOpen }: NotificationModalProps)
           addNotification(notification);
           const toastNotification = generateToastNotification(notification, t, generateUrl);
 
-          toast.message(toastNotification.title, {
+          showToast(toastNotification.title, {
             description: toastNotification.description,
             action: toastNotification.action,
           });

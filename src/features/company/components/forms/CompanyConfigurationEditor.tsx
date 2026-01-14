@@ -5,7 +5,7 @@ import { Settings2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { showToast } from "../../../../utils/toast";
 import z from "zod";
 import { CommonEditorButtons, errorToast } from "../../../../components";
 import { getRoleId } from "../../../../roles";
@@ -89,7 +89,7 @@ function CompanyConfigurationEditorInternal({ company }: CompanyConfigurationEdi
         setUser(fullUser);
       }
 
-      toast.message("Configurations Updated", {
+      showToast("Configurations Updated", {
         description: `The system configurations have been updated successfully.`,
       });
       close();

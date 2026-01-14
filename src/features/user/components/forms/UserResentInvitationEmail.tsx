@@ -3,7 +3,7 @@
 import { MailIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { toast } from "sonner";
+import { showToast } from "../../../../utils/toast";
 import { errorToast } from "../../../../components";
 import { Modules } from "../../../../core";
 import { Action } from "../../../../permissions";
@@ -36,7 +36,7 @@ function UserResentInvitationEmailInternal({ user }: UserResentInvitationEmailPr
       await UserService.sendInvitation({ userId: user.id, companyId: user.company!.id });
 
       setOpen(false);
-      toast.message(t(`user.resend_activation.email_sent`), {
+      showToast(t(`user.resend_activation.email_sent`), {
         description: t(`user.resend_activation.email_sent_description`, { email: user.email }),
       });
     } catch (error) {

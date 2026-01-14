@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { showToast } from "../../../../utils/toast";
 import { errorToast } from "../../../../components";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "../../../../shadcnui";
 import { useAuthContext } from "../../contexts";
@@ -28,7 +28,7 @@ export function ActivateAccount() {
 
         setParams(undefined);
 
-        toast.success(t("auth.account_activated"), {
+        showToast(t("auth.account_activated"), {
           description: t("auth.account_activated_description"),
         });
 

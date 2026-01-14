@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
+import { showToast } from "../../utils/toast";
 import { DataListRetriever, useDebounce } from "../../hooks";
 import {
   Button,
@@ -128,7 +128,7 @@ export const triggerAssociationToast = (params: {
   level?: string;
 }) => {
   if (params.level) {
-    toast.message(
+    showToast(
       params.t(`common.association.label`, {
         source: params.source,
         destination: params.destination,
@@ -144,7 +144,7 @@ export const triggerAssociationToast = (params: {
       },
     );
   } else {
-    toast.message(
+    showToast(
       params.t(`common.association.label`, {
         source: params.source,
         destination: params.destination,

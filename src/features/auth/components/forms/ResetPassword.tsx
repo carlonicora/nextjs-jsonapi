@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { showToast } from "../../../../utils/toast";
 import { z } from "zod";
 import { errorToast, FormPassword } from "../../../../components";
 import { Button, CardContent, CardDescription, CardHeader, CardTitle, Form } from "../../../../shadcnui";
@@ -74,7 +74,7 @@ export function ResetPassword() {
       await AuthService.resetPassword(payload);
       setShowConfirmation(true);
 
-      toast.success(t(`auth.reset_success`), {
+      showToast(t(`auth.reset_success`), {
         description: t(`auth.reset_success_description`),
       });
 

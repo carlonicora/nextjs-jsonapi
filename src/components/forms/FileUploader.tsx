@@ -14,7 +14,7 @@ import {
   useState,
 } from "react";
 import { DropzoneOptions, DropzoneState, FileRejection, useDropzone } from "react-dropzone";
-import { toast } from "sonner";
+import { showError } from "../../utils/toast";
 import { buttonVariants, Input } from "../../shadcnui";
 import { cn } from "../../utils";
 
@@ -124,7 +124,7 @@ export const FileUploader = forwardRef<HTMLDivElement, FileUploaderProps & React
         const files = acceptedFiles;
 
         if (!files) {
-          toast.error(t("common.errors.file"), {
+          showError(t("common.errors.file"), {
             description: t("common.errors.file_large"),
           });
           return;
@@ -147,13 +147,13 @@ export const FileUploader = forwardRef<HTMLDivElement, FileUploaderProps & React
         if (rejectedFiles.length > 0) {
           for (let i = 0; i < rejectedFiles.length; i++) {
             if (rejectedFiles[i].errors[0]?.code === "file-too-large") {
-              toast.error(t("common.errors.file"), {
+              showError(t("common.errors.file"), {
                 description: t(`common.errors.file_max`, { size: maxSize / 1024 / 1024 }),
               });
               break;
             }
             if (rejectedFiles[i].errors[0]?.message) {
-              toast.error(t(`common.errors.file`), {
+              showError(t(`common.errors.file`), {
                 description: rejectedFiles[i].errors[0].message,
               });
               break;

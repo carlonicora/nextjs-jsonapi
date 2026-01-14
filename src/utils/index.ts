@@ -14,3 +14,6 @@ export { entityObjectSchema, userObjectSchema, type EntityObject, type UserObjec
 export * from "./blocknote-diff.util";
 export * from "./blocknote-word-diff-renderer.util";
 export * from "./icons";
+
+// Toast utilities
+export { showToast, showError, dismissToast, showCustomToast, type ToastOptions } from "./toast";

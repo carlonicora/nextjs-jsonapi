@@ -3,7 +3,7 @@
 import { PlusCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
+import { showToast } from "../../../../utils/toast";
 import { useDebounce } from "../../../../hooks";
 import {
   Button,
@@ -39,7 +39,7 @@ export function UserRoleAdd({ user, refresh }: UserRoleAddProps) {
     });
     setRoles(roles.filter((u) => u.id !== role.id));
 
-    toast.message(
+    showToast(
       t(`common.association.label`, {
         source: t(`entities.roles`, { count: 1 }),
         destination: t(`entities.users`, { count: 1 }),
