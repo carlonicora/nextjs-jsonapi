@@ -1,3 +1,13 @@
+## [1.30.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.29.6...v1.30.0) (2026-01-14)
+
+### 🚀 Features
+
+* add mdx support ([5be6548](https://github.com/carlonicora/nextjs-jsonapi/commit/5be654810afda644d705e4485988648698f4a0f6))
+
+### 🐛 Bug Fixes
+
+* correct internationalisation ([7d97005](https://github.com/carlonicora/nextjs-jsonapi/commit/7d97005f44a9b7325041c8623fa51300cf9a09d5))
+
 ## [1.29.6](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.29.5...v1.29.6) (2026-01-14)
 
 ### 📦 Code Refactoring
