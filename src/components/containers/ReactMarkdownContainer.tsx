@@ -19,7 +19,7 @@ export function ReactMarkdownContainer({
   initialLines = 4,
   size = "normal",
 }: ReactMarkdownContainerProps) {
-  const t = useTranslations("generic.buttons");
+  const t = useTranslations("ui.buttons");
   const [isExpanded, setIsExpanded] = useState(false);
   const [showExpandButton, setShowExpandButton] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
