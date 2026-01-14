@@ -154,4 +154,24 @@ export class AuthService extends AbstractService {
       });
     }
   }
+
+  static async completeOAuthRegistration(params: {
+    pendingId: string;
+    termsAcceptedAt: string;
+    marketingConsent: boolean;
+    marketingConsentAt: string | null;
+  }): Promise<{ code: string }> {
+    const endpoint = new EndpointCreator({ endpoint: Modules.Auth, id: "oauth", childEndpoint: "complete" });
+
+    const response: ApiResponseInterface = await JsonApiPost({
+      classKey: Modules.Auth,
+      endpoint: endpoint.generate(),
+      body: params,
+      language: "en",
+    });
+
+    if (!response.ok) throw new Error(response.error);
+
+    return response.data as unknown as { code: string };
+  }
 }

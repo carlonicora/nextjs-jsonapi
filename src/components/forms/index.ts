@@ -17,6 +17,7 @@ export * from "./FormSelect";
 export * from "./FormSlider";
 export * from "./FormSwitch";
 export * from "./FormTextarea";
+export * from "./GdprConsentCheckbox";
 export * from "./MultiFileUploader";
 export * from "./PasswordInput";
 export { FormFeatures } from "../../features/feature/components/forms/FormFeatures";

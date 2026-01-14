@@ -8,6 +8,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import { z } from "zod";
 import { errorToast, FormInput, FormPassword } from "../../../../components";
+import { GdprConsentSection } from "../GdprConsentSection";
 import {
   Button,
   CardContent,
@@ -44,6 +45,10 @@ export default function Register() {
       .regex(/^(?=.*[0-9])(?=.*[^a-zA-Z0-9]).*$/, {
         message: t(`auth.errors.password_invalid_format`),
       }),
+    termsAccepted: z.literal(true, {
+      message: t("auth.gdpr.terms_required"),
+    }),
+    marketingConsent: z.boolean().optional(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -53,6 +58,8 @@ export default function Register() {
       name: "",
       email: "",
       password: "",
+      termsAccepted: false as unknown as true,
+      marketingConsent: false,
     },
   });
 
@@ -64,6 +71,9 @@ export default function Register() {
         name: values.name,
         email: values.email,
         password: values.password,
+        termsAcceptedAt: new Date().toISOString(),
+        marketingConsent: values.marketingConsent ?? false,
+        marketingConsentAt: values.marketingConsent ? new Date().toISOString() : null,
       };
 
       await AuthService.register(payload);
@@ -120,6 +130,7 @@ export default function Register() {
                 name={t(`user.fields.password.label`)}
                 placeholder={t(`user.fields.password.placeholder`)}
               />
+              <GdprConsentSection form={form} />
               <Button className="mt-4 w-full" type={"submit"}>
                 {t(`auth.buttons.register`)}
               </Button>
