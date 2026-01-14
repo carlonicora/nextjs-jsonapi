@@ -3,10 +3,11 @@
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { getApiUrl } from "../../../../client/config";
-import { isDiscordAuthEnabled, isInternalAuthEnabled, isRegistrationAllowed } from "../../../../login";
+import { isDiscordAuthEnabled, isGoogleAuthEnabled, isInternalAuthEnabled, isRegistrationAllowed } from "../../../../login";
 import { Button, CardDescription, CardFooter, CardHeader, CardTitle, Link } from "../../../../shadcnui";
 import { useAuthContext } from "../../contexts";
 import { AuthComponent } from "../../enums";
+import { GoogleSignInButton } from "../buttons/GoogleSignInButton";
 
 export function LandingComponent() {
   const t = useTranslations();
@@ -45,6 +46,7 @@ export function LandingComponent() {
             </Link>
           </>
         )}
+        {isGoogleAuthEnabled() && <GoogleSignInButton />}
         {isDiscordAuthEnabled() && (
           <Link href={`${getApiUrl()}auth/discord`} className="flex w-full justify-end">
             <Button className="w-full" variant={`outline`} data-testid="page-login-button-initial-login">

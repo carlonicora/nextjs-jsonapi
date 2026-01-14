@@ -8,7 +8,7 @@ import { z } from "zod";
 import { getApiUrl } from "../../../../client/config";
 import { errorToast, FormInput, FormPassword } from "../../../../components";
 import { useI18nRouter, usePageUrlGenerator } from "../../../../hooks";
-import { isDiscordAuthEnabled, isInternalAuthEnabled } from "../../../../login";
+import { isDiscordAuthEnabled, isGoogleAuthEnabled, isInternalAuthEnabled } from "../../../../login";
 import {
   Button,
   CardContent,
@@ -24,6 +24,7 @@ import { useCurrentUserContext } from "../../../user/contexts";
 import { useAuthContext } from "../../contexts";
 import { AuthService } from "../../data/auth.service";
 import { AuthComponent } from "../../enums";
+import { GoogleSignInButton } from "../buttons/GoogleSignInButton";
 
 export function Login() {
   const t = useTranslations();
@@ -101,6 +102,7 @@ export function Login() {
             )}
           </CardContent>
           <CardFooter className="flex w-full flex-col gap-y-4 mt-4">
+            {isGoogleAuthEnabled() && <GoogleSignInButton />}
             {isDiscordAuthEnabled() && (
               <Link href={`${getApiUrl()}auth/discord`} className="flex w-full justify-end">
                 <Button className="w-full" variant={`outline`} data-testid="page-login-button-initial-login">
