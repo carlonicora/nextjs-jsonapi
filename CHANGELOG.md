@@ -1,3 +1,9 @@
+## [1.31.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.31.0...v1.31.1) (2026-01-14)
+
+### 🐛 Bug Fixes
+
+* correct GDPR ([5a49c8b](https://github.com/carlonicora/nextjs-jsonapi/commit/5a49c8b8861df8a92a181dd7f4659aee5f913eed))
+
 ## [1.31.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.30.0...v1.31.0) (2026-01-14)
 
 ### 🚀 Features
