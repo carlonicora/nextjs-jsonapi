@@ -1,3 +1,9 @@
+## [1.32.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.31.1...v1.32.0) (2026-01-14)
+
+### 🚀 Features
+
+* add google oauth ([c95a903](https://github.com/carlonicora/nextjs-jsonapi/commit/c95a903482501b80ad115790ec48369654dd41c3))
+
 ## [1.31.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.31.0...v1.31.1) (2026-01-14)
 
 ### 🐛 Bug Fixes
