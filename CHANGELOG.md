@@ -1,3 +1,9 @@
+## [1.29.6](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.29.5...v1.29.6) (2026-01-14)
+
+### 📦 Code Refactoring
+
+* refactor toast system ([e86f97b](https://github.com/carlonicora/nextjs-jsonapi/commit/e86f97b117c6f707ee150a9367c5484dfa90c4c5))
+
 ## [1.29.5](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.29.4...v1.29.5) (2026-01-11)
 
 ### 🐛 Bug Fixes
