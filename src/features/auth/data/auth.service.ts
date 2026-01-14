@@ -167,6 +167,7 @@ export class AuthService extends AbstractService {
       classKey: Modules.Auth,
       endpoint: endpoint.generate(),
       body: params,
+      overridesJsonApiCreation: true,
       language: "en",
     });
 

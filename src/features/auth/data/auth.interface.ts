@@ -9,6 +9,9 @@ export type AuthInput = {
   companyName?: string;
   partitaIva?: string;
   codiceFiscale?: string;
+  termsAcceptedAt?: string;
+  marketingConsent?: boolean;
+  marketingConsentAt?: string | null;
 };
 
 export type AuthQuery = {

@@ -46,6 +46,9 @@ export class Auth extends AbstractApiData implements AuthInterface {
     if (data.name !== undefined) response.data.attributes.name = data.name;
     if (data.companyName !== undefined) response.data.attributes.companyName = data.companyName;
     if (data.password !== undefined) response.data.attributes.password = data.password;
+    if (data.termsAcceptedAt !== undefined) response.data.attributes.termsAcceptedAt = data.termsAcceptedAt;
+    if (data.marketingConsent !== undefined) response.data.attributes.marketingConsent = data.marketingConsent;
+    if (data.marketingConsentAt !== undefined) response.data.attributes.marketingConsentAt = data.marketingConsentAt;
 
     return response;
   }
