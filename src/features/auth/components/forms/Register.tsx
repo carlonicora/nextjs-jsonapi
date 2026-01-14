@@ -78,7 +78,7 @@ export default function Register() {
       <CardHeader>
         <CardTitle className="text-primary flex flex-col items-center pb-10 text-4xl">
           <Image src="/logo.webp" alt="Logo" width={100} height={100} priority />
-          {t(`auth.register`)}
+          {t(`auth.buttons.register`)}
         </CardTitle>
         <CardDescription className="text-sm">
           {showConfirmation ? <> </> : <>{t(`auth.register_description`)}</>}

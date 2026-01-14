@@ -69,7 +69,7 @@ export function Login() {
       <CardHeader data-testid="page-login-container">
         <CardTitle className="text-primary flex flex-col items-center pb-10 text-4xl">
           <Image src="/logo.webp" alt="Logo" width={100} height={100} priority />
-          {t("auth.login")}
+          {t("auth.buttons.login")}
         </CardTitle>
 
         <CardDescription className="text-sm">{t(`auth.login_description`)}</CardDescription>
@@ -95,7 +95,7 @@ export function Login() {
                   testId="form-login-input-password"
                 />
                 <Button className="mt-4 w-full" type={"submit"} data-testid="form-login-button-submit">
-                  {t(`auth.login`)}
+                  {t(`auth.buttons.login`)}
                 </Button>
               </>
             )}
@@ -114,7 +114,7 @@ export function Login() {
                 className="flex w-full justify-start"
                 onClick={() => setComponentType(AuthComponent.Register)}
               >
-                {t(`auth.register`)}
+                {t(`auth.buttons.register`)}
               </Link>
               <Link
                 href="#"
@@ -122,7 +122,7 @@ export function Login() {
                 onClick={() => setComponentType(AuthComponent.ForgotPassword)}
                 data-testid="form-login-link-forgot-password"
               >
-                {t(`auth.forgot_password`)}
+                {t(`auth.buttons.forgot_password`)}
               </Link>
             </div>
           </CardFooter>

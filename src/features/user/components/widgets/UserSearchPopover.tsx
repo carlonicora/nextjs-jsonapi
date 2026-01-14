@@ -81,7 +81,7 @@ export const UserSearchPopover = ({ children, onSelect, align = "start", classNa
             ) : (
               <div className="text-muted-foreground py-6 text-center text-sm">
                 {isLoading
-                  ? t(`common.loading`)
+                  ? t(`ui.buttons.loading`)
                   : t(`ui.search.no_results`, { type: t(`entities.users`, { count: 1 }) })}
               </div>
             )}

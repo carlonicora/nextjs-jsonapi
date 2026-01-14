@@ -101,7 +101,7 @@ function CompanyDeleterInternal({ company }: CompanyDeleterProps) {
           >
             {isDeleting ? (
               <>
-                {t(`ui.buttons.is_deleting`)}
+                {t(`ui.buttons.deleting`)}
                 <LoaderCircleIcon className="animate-spin-slow h-5 w-5" />
               </>
             ) : (

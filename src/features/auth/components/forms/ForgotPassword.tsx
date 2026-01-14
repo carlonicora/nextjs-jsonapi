@@ -58,7 +58,7 @@ export function ForgotPassword() {
       <CardHeader data-testid="page-forgot-password-container">
         <CardTitle className="text-primary flex flex-col items-center pb-10 text-4xl">
           <Image src="/logo.webp" alt="Logo" width={100} height={100} priority />
-          {t("auth.forgot_password")}
+          {t("auth.buttons.forgot_password")}
         </CardTitle>
         <CardDescription className="text-sm">
           {showConfirmation ? <> </> : <>{t(`auth.add_email_to_reset`)}</>}

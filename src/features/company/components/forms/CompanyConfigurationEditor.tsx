@@ -110,7 +110,7 @@ function CompanyConfigurationEditorInternal({ company }: CompanyConfigurationEdi
       </DialogTrigger>
       <DialogContent className={`flex max-h-[70vh] max-w-4xl flex-col overflow-y-auto`}>
         <DialogHeader>
-          <DialogTitle>{t(`entities.configuration`, { count: 2 })}</DialogTitle>
+          <DialogTitle>{t(`entities.configurations`, { count: 2 })}</DialogTitle>
           <DialogDescription className="text-destructive">
             {t(`features.configuration.warning_description`)}
           </DialogDescription>
