@@ -1,3 +1,9 @@
+## [1.31.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.30.0...v1.31.0) (2026-01-14)
+
+### 🚀 Features
+
+* **auth:** add GDPR consent components and registration updates ([1f6b199](https://github.com/carlonicora/nextjs-jsonapi/commit/1f6b1997d048137b8300dad7389ad2fbf6895651))
+
 ## [1.30.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.29.6...v1.30.0) (2026-01-14)
 
 ### 🚀 Features
