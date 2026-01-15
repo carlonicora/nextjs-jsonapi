@@ -1,3 +1,9 @@
+## [1.32.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.32.1...v1.32.2) (2026-01-15)
+
+### 🐛 Bug Fixes
+
+* update third party login configuration ([1987af0](https://github.com/carlonicora/nextjs-jsonapi/commit/1987af06ac49ce5ebc5b993906b884a893f0047e))
+
 ## [1.32.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.32.0...v1.32.1) (2026-01-15)
 
 ### 🐛 Bug Fixes
