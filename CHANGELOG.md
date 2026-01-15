@@ -1,3 +1,9 @@
+## [1.32.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.32.0...v1.32.1) (2026-01-15)
+
+### 🐛 Bug Fixes
+
+* correct base-ui requirement ([fd705a2](https://github.com/carlonicora/nextjs-jsonapi/commit/fd705a2555524ede7777174ed24aaab6868d4be2))
+
 ## [1.32.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.31.1...v1.32.0) (2026-01-14)
 
 ### 🚀 Features
