@@ -4,16 +4,16 @@ let _useInternalAuth: boolean = true;
 let _allowRegistration: boolean = true;
 
 export interface LoginConfig {
-  useDiscordAuth: boolean;
-  useGoogleAuth: boolean;
-  useInternalAuth: boolean;
+  discordClientId?: string;
+  googleClientId?: string;
+  useInternalAuth?: boolean;
   allowRegistration?: boolean;
 }
 
 export function configureLogin(params: LoginConfig): void {
-  _useDiscordAuth = params.useDiscordAuth;
-  _useGoogleAuth = params.useGoogleAuth;
-  _useInternalAuth = params.useInternalAuth;
+  _useDiscordAuth = !!params.discordClientId;
+  _useGoogleAuth = !!params.googleClientId;
+  _useInternalAuth = params.useInternalAuth ?? true;
   _allowRegistration = params.allowRegistration ?? true;
 }
 
