@@ -21,6 +21,21 @@ export interface SelfRef {
   self?: string;
 }
 
+export interface TotalRef {
+  total?: number;
+}
+
+// Store the last total from any API call - accessible by hooks
+let lastApiTotal: number | undefined = undefined;
+
+export function getLastApiTotal(): number | undefined {
+  return lastApiTotal;
+}
+
+export function clearLastApiTotal(): void {
+  lastApiTotal = undefined;
+}
+
 let globalErrorHandler: ((status: number, message: string) => void) | null = null;
 
 /**
@@ -79,6 +94,7 @@ export abstract class AbstractService {
     next?: NextRef;
     previous?: PreviousRef;
     self?: SelfRef;
+    total?: TotalRef;
   }): Promise<T> {
     return await this.callApi<T>({
       method: HttpMethod.GET,
@@ -87,6 +103,7 @@ export abstract class AbstractService {
       next: params.next,
       previous: params.previous,
       self: params.self,
+      total: params.total,
     });
   }
 
@@ -99,6 +116,7 @@ export abstract class AbstractService {
     next?: NextRef;
     previous?: PreviousRef;
     self?: SelfRef;
+    total?: TotalRef;
   }): Promise<T> {
     return await this.callApi<T>({
       method: HttpMethod.GET,
@@ -107,6 +125,7 @@ export abstract class AbstractService {
       next: params.next,
       previous: params.previous,
       self: params.self,
+      total: params.total,
     });
   }
 
@@ -123,6 +142,7 @@ export abstract class AbstractService {
     next?: NextRef;
     previous?: PreviousRef;
     self?: SelfRef;
+    total?: TotalRef;
     responseType?: ApiRequestDataTypeInterface;
     files?: { [key: string]: File | Blob } | File | Blob;
   }): Promise<T> {
@@ -214,6 +234,11 @@ export abstract class AbstractService {
     if (apiResponse.next && params.next) params.next.next = apiResponse.next;
     if (apiResponse.prev && params.previous) params.previous.previous = apiResponse.prev;
     if (apiResponse.self && params.self) params.self.self = apiResponse.self;
+    // Always store total for hooks to access, and also populate ref if provided
+    if (apiResponse.meta?.total !== undefined) {
+      lastApiTotal = apiResponse.meta.total;
+      if (params.total) params.total.total = apiResponse.meta.total;
+    }
 
     return apiResponse.data as T;
   }

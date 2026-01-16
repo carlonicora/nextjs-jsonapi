@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ClientAbstractService } from "../core/abstracts/ClientAbstractService";
+import { getLastApiTotal } from "../core/abstracts/AbstractService";
 
 export type PageInfo = {
   startItem: number;
@@ -14,6 +15,7 @@ export type DataListRetriever<T> = {
   setReady: (state: boolean) => void;
   isLoaded: boolean;
   data: T[] | undefined;
+  total?: number;
   next?: (onlyNewRecords?: boolean) => Promise<void>;
   previous?: (onlyNewRecords?: boolean) => Promise<void>;
   search: (search: string) => Promise<void>;
@@ -36,6 +38,7 @@ export function useDataListRetriever<T>(params: {
   module: any;
 }): DataListRetriever<T> {
   const [data, setData] = useState<T[] | undefined>(undefined);
+  const [total, setTotal] = useState<number | undefined>(undefined);
   const [nextPage, setNextPage] = useState<string | undefined>(undefined);
   const [previousPage, setPreviousPage] = useState<string | undefined>(undefined);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -159,6 +162,7 @@ export function useDataListRetriever<T>(params: {
         const nextRef = { next: undefined };
         const previousRef = { previous: undefined };
         const selfRef = { self: undefined };
+        const totalRef = { total: undefined as number | undefined };
 
         if (nextPage && fetchParams?.callNext && fetchParams?.isRefine !== true) {
           const ServiceClass = stableParams.service as typeof ClientAbstractService;
@@ -169,6 +173,7 @@ export function useDataListRetriever<T>(params: {
             next: nextRef,
             previous: previousRef,
             self: selfRef,
+            total: totalRef,
           });
         } else if (previousPage && fetchParams?.callPrevious && fetchParams?.isRefine !== true) {
           const ServiceClass = stableParams.service as typeof ClientAbstractService;
@@ -179,6 +184,7 @@ export function useDataListRetriever<T>(params: {
             next: nextRef,
             previous: previousRef,
             self: selfRef,
+            total: totalRef,
           });
         } else {
           let retrieverParams = stableParams.retrieverParams ? { ...stableParams.retrieverParams } : {};
@@ -192,6 +198,7 @@ export function useDataListRetriever<T>(params: {
           retrieverParams.next = nextRef;
           retrieverParams.previous = previousRef;
           retrieverParams.self = selfRef;
+          retrieverParams.total = totalRef;
 
           response = await stableParams.retriever(retrieverParams);
         }
@@ -206,6 +213,11 @@ export function useDataListRetriever<T>(params: {
           setIsLoaded(true);
           setNextPage(nextRef.next ? nextRef.next : undefined);
           setPreviousPage(previousRef.previous ? previousRef.previous : undefined);
+          // Get total from ref (if service forwarded it) or from lastApiTotal (automatic)
+          const apiTotal = totalRef.total ?? getLastApiTotal();
+          if (apiTotal !== undefined) {
+            setTotal(apiTotal);
+          }
         }
       } catch (error) {
         if (thisRequestId === requestIdRef.current) {
@@ -346,6 +358,7 @@ export function useDataListRetriever<T>(params: {
     setReady,
     isLoaded: isLoaded,
     data: data as T[],
+    total,
     next: nextPage ? loadNext : undefined,
     previous: previousPage ? loadPrevious : undefined,
     search: search,

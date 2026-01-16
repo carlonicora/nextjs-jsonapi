@@ -140,7 +140,7 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                     </Button>
                     {data.pageInfo && (
                       <span className="text-muted-foreground text-xs">
-                        {data.pageInfo.startItem}-{data.pageInfo.endItem}
+                        {`${data.pageInfo.startItem}-${data.pageInfo.endItem}${data.total ? ` of ${data.total}` : ""}`}
                       </span>
                     )}
                     <Button

@@ -31,6 +31,10 @@ export interface ClientSelfRef {
   self?: string;
 }
 
+export interface ClientTotalRef {
+  total?: number;
+}
+
 let globalErrorHandler: ((status: number, message: string) => void) | null = null;
 
 /**
@@ -92,6 +96,7 @@ export abstract class ClientAbstractService {
     next?: ClientNextRef;
     previous?: ClientPreviousRef;
     self?: ClientSelfRef;
+    total?: ClientTotalRef;
   }): Promise<T> {
     return await this.callApi<T>({
       method: ClientHttpMethod.GET,
@@ -100,6 +105,7 @@ export abstract class ClientAbstractService {
       next: params.next,
       previous: params.previous,
       self: params.self,
+      total: params.total,
     });
   }
 
@@ -112,6 +118,7 @@ export abstract class ClientAbstractService {
     next?: ClientNextRef;
     previous?: ClientPreviousRef;
     self?: ClientSelfRef;
+    total?: ClientTotalRef;
   }): Promise<T> {
     return await this.callApi<T>({
       method: ClientHttpMethod.GET,
@@ -120,6 +127,7 @@ export abstract class ClientAbstractService {
       next: params.next,
       previous: params.previous,
       self: params.self,
+      total: params.total,
     });
   }
 
@@ -136,6 +144,7 @@ export abstract class ClientAbstractService {
     next?: ClientNextRef;
     previous?: ClientPreviousRef;
     self?: ClientSelfRef;
+    total?: ClientTotalRef;
     responseType?: ApiRequestDataTypeInterface;
     files?: { [key: string]: File | Blob } | File | Blob;
   }): Promise<T> {
@@ -216,6 +225,7 @@ export abstract class ClientAbstractService {
     if (apiResponse.next && params.next) params.next.next = apiResponse.next;
     if (apiResponse.prev && params.previous) params.previous.previous = apiResponse.prev;
     if (apiResponse.self && params.self) params.self.self = apiResponse.self;
+    if (apiResponse.meta?.total !== undefined && params.total) params.total.total = apiResponse.meta.total;
 
     return apiResponse.data as T;
   }
