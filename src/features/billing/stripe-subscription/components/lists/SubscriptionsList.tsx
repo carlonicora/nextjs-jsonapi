@@ -53,7 +53,7 @@ export function SubscriptionsList({ subscriptions, onSubscriptionsChange, onChan
 
   return (
     <>
-      <div className="border rounded-lg overflow-hidden">
+      <div className="border rounded-lg overflow-clip">
         <Table>
           <TableHeader className="bg-muted">
             <TableRow>

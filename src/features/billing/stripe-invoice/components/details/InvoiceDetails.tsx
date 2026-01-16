@@ -86,7 +86,7 @@ export function InvoiceDetails({ invoice, open, onOpenChange, onInvoiceChange }:
           {/* Line Items */}
           <div>
             <h4 className="text-sm font-medium text-muted-foreground mb-2">Line Items</h4>
-            <div className="border rounded-lg overflow-hidden">
+            <div className="border rounded-lg overflow-clip">
               <table className="w-full">
                 <thead className="bg-muted">
                   <tr>

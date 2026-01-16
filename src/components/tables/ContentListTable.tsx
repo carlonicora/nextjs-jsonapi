@@ -74,7 +74,7 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
 
   return (
     <div className="flex w-full flex-col">
-      <div className="overflow-hidden rounded-md border">
+      <div className="overflow-clip rounded-md border">
         <Table>
           <TableHeader className="bg-muted font-semibold">
             {props.title && (

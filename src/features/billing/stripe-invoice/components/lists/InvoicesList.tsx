@@ -29,7 +29,7 @@ export function InvoicesList({ invoices, onInvoicesChange }: InvoicesListProps) 
 
   return (
     <>
-      <div className="border rounded-lg overflow-hidden">
+      <div className="border rounded-lg overflow-clip">
         <Table>
           <TableHeader className="bg-muted">
             <TableRow>

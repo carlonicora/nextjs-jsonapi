@@ -40,7 +40,7 @@ export function UsageHistoryTable({ usageRecords }: UsageHistoryTableProps) {
   return (
     <div className="flex w-full flex-col gap-y-4">
       <h2 className="text-xl font-semibold">Usage History</h2>
-      <div className="overflow-hidden rounded-lg border">
+      <div className="overflow-clip rounded-lg border">
         <Table>
           <TableHeader className="bg-muted">
             <TableRow>

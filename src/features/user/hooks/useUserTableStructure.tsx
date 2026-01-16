@@ -80,7 +80,7 @@ export const useUserTableStructure: UseTableStructureHook<UserInterface, UserFie
         const response = `${user.relevance.toFixed(0)}%`;
 
         return (
-          <div className="relative flex h-5 w-20 items-center justify-center overflow-hidden rounded border text-center">
+          <div className="relative flex h-5 w-20 items-center justify-center overflow-clip rounded border text-center">
             <div
               className={`bg-accent absolute top-0 left-0 h-full opacity-${Math.round(user.relevance)}`}
               style={{ width: `${user.relevance}%` }}

@@ -127,7 +127,7 @@ export const DatePickerPopover = ({
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger>{children}</PopoverTrigger>
-      <PopoverContent className={cn("w-auto p-0", className)} align={align} onClick={(e) => e.stopPropagation()}>
+      <PopoverContent className={cn("p-0", className)} align={align} onClick={(e) => e.stopPropagation()}>
         <div className="p-3">
           {/* Manual Input */}
           <div className="relative mb-3">
@@ -169,8 +169,8 @@ export const DatePickerPopover = ({
                 setDisplayMonth(newDate);
               }}
             >
-              <SelectTrigger className="w-[130px]">
-                <SelectValue />
+              <SelectTrigger className="flex-1">
+                <SelectValue>{monthNames[displayMonth.getMonth()]}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {monthNames.map((month, index) => (
@@ -190,8 +190,8 @@ export const DatePickerPopover = ({
                 setDisplayMonth(newDate);
               }}
             >
-              <SelectTrigger className="w-[80px]">
-                <SelectValue />
+              <SelectTrigger className="flex-1">
+                <SelectValue>{displayMonth.getFullYear()}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {yearOptions.reverse().map((year) => (
@@ -204,16 +204,18 @@ export const DatePickerPopover = ({
           </div>
 
           {/* Calendar */}
-          <Calendar
-            mode="single"
-            selected={value}
-            onSelect={handleCalendarSelect}
-            disabled={(date) => (minDate && date < minDate ? true : false)}
-            locale={dateFnsLocale}
-            weekStartsOn={1}
-            month={displayMonth}
-            onMonthChange={setDisplayMonth}
-          />
+          <div className="flex justify-center">
+            <Calendar
+              mode="single"
+              selected={value}
+              onSelect={handleCalendarSelect}
+              disabled={(date) => (minDate && date < minDate ? true : false)}
+              locale={dateFnsLocale}
+              weekStartsOn={1}
+              month={displayMonth}
+              onMonthChange={setDisplayMonth}
+            />
+          </div>
         </div>
       </PopoverContent>
     </Popover>
