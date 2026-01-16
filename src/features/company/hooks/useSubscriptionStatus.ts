@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { useCurrentUserContext } from "../../user/contexts/CurrentUserContext";
+import { getRoleId, isRolesConfigured } from "../../../roles";
 
 export interface TrialSubscriptionStatus {
   status: "loading" | "trial" | "active" | "expired";
@@ -14,6 +15,12 @@ export interface TrialSubscriptionStatus {
 const TRIAL_DAYS = 14;
 const GRACE_DAYS = 3;
 
+const isAdministrator = (currentUser: any): boolean => {
+  if (!currentUser || !isRolesConfigured()) return false;
+  const adminRoleId = getRoleId().Administrator;
+  return !!currentUser.roles?.some((role: any) => role.id === adminRoleId);
+};
+
 export function useSubscriptionStatus(): TrialSubscriptionStatus {
   const { company, currentUser } = useCurrentUserContext();
 
@@ -22,6 +29,17 @@ export function useSubscriptionStatus(): TrialSubscriptionStatus {
     if (currentUser === null) {
       return {
         status: "loading",
+        trialEndsAt: null,
+        daysRemaining: 0,
+        isGracePeriod: false,
+        isBlocked: false,
+      };
+    }
+
+    // Administrator users are never blocked by trial
+    if (isAdministrator(currentUser)) {
+      return {
+        status: "active",
         trialEndsAt: null,
         daysRemaining: 0,
         isGracePeriod: false,
