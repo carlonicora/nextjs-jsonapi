@@ -15,6 +15,7 @@ export * from "../features/company/components";
 export * from "../features/content/components";
 export * from "../features/feature/components";
 export * from "../features/notification/components";
+export * from "../features/onboarding/components";
 export * from "../features/role/components";
 export * from "../features/user/components";
 export * from "../features/oauth/components";

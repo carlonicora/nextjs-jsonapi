@@ -1,0 +1,38 @@
+/* Shepherd Modal Overlay */
+.shepherd-modal-overlay-container.shepherd-modal-is-visible {
+  opacity: 1 !important;
+}
+
+.shepherd-modal-overlay-container path {
+  fill: rgba(0, 0, 0, 0.75) !important;
+}
+
+/* Remove default shepherd styling - we use custom React card */
+.shepherd-element {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  max-width: none !important;
+}
+
+.shepherd-content,
+.shepherd-text {
+  padding: 0 !important;
+}
+
+/* Arrow styling to match card background */
+.shepherd-arrow::before {
+  background: hsl(var(--card)) !important;
+}
+
+/* Hide default Shepherd header and footer - we render custom ones */
+.shepherd-header,
+.shepherd-footer {
+  display: none !important;
+}
+
+/* Dark mode support */
+.dark .shepherd-arrow::before {
+  background: hsl(var(--card)) !important;
+}
