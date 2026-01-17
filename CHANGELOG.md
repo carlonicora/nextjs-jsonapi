@@ -1,3 +1,18 @@
+## [1.33.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.32.2...v1.33.0) (2026-01-17)
+
+### 🚀 Features
+
+* add price feature selection ([254f5e4](https://github.com/carlonicora/nextjs-jsonapi/commit/254f5e48a67f1c47254a6d51824fd2a614973b99))
+* add total to jsonapi list ([e6d7c71](https://github.com/carlonicora/nextjs-jsonapi/commit/e6d7c71f0d4b8fdd4819597d5c15769f54dd61e1))
+* add-feature-sync-subscription-lifecycle ([9eee718](https://github.com/carlonicora/nextjs-jsonapi/commit/9eee7181bb705ded84604512e8b2d1840e633ec6))
+
+### 🐛 Bug Fixes
+
+* add administrator role check to subscription status ([4180c40](https://github.com/carlonicora/nextjs-jsonapi/commit/4180c40ac7ff87b0f549d4b4c00c8cd013761450))
+* correct checkPermission with async call ([e66deaf](https://github.com/carlonicora/nextjs-jsonapi/commit/e66deafb146f69718796ee99730b43998320fe55))
+* correct overflow ([08cffdc](https://github.com/carlonicora/nextjs-jsonapi/commit/08cffdc1d95ac0a92c01869b1b8b84b5f2e989b8))
+* persist user in local storage on user refresh ([7f722a0](https://github.com/carlonicora/nextjs-jsonapi/commit/7f722a08f312ec9855be41e5781ef36425ebc18d))
+
 ## [1.32.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.32.1...v1.32.2) (2026-01-15)
 
 ### 🐛 Bug Fixes
