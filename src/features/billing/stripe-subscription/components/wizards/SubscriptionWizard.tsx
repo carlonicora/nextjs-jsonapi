@@ -59,10 +59,20 @@ export function SubscriptionWizard({
     }
   }, [open, actions.reset]);
 
-  const dialogTitle = subscription ? "Change Subscription Plan" : "Subscribe to a Plan";
+  const isPurchasingAddons = hasActiveRecurringSubscription && !subscription;
+  const isChangePlanMode = !!subscription;
+
+  const dialogTitle = subscription
+    ? "Change Subscription Plan"
+    : isPurchasingAddons
+      ? "Purchase Add-ons"
+      : "Subscribe to a Plan";
+
   const dialogDescription = subscription
     ? "Select a new plan for your subscription"
-    : "Choose a subscription plan to get started";
+    : isPurchasingAddons
+      ? "Select one-time products to purchase"
+      : "Choose a subscription plan to get started";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -79,7 +89,8 @@ export function SubscriptionWizard({
             selectedPrice={state.selectedPrice}
             selectedInterval={state.selectedInterval}
             currentPriceId={subscription?.price?.id}
-            hideRecurringPrices={hasActiveRecurringSubscription && !subscription}
+            hideRecurringPrices={isPurchasingAddons}
+            hideOneTimePrices={isChangePlanMode}
             onSelectPrice={actions.selectPrice}
             onIntervalChange={actions.setInterval}
             onNext={actions.goToReview}

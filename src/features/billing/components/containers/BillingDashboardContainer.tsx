@@ -442,7 +442,10 @@ export function BillingDashboardContainer() {
             onOpenChange={handleModalClose}
             title={getModalTitle("subscriptions")}
           >
-            <SubscriptionsContainer onOpenWizard={handleOpenWizard} />
+            <SubscriptionsContainer
+              onOpenWizard={handleOpenWizard}
+              hasActiveRecurringSubscription={hasActiveRecurringSubscription}
+            />
           </BillingDetailModal>
 
           <BillingDetailModal

@@ -89,7 +89,7 @@ export class StripeSubscriptionService extends AbstractService {
 
     return this.callApi<StripeSubscriptionInterface>({
       type: Modules.StripeSubscription,
-      method: HttpMethod.PUT,
+      method: HttpMethod.POST,
       endpoint: endpoint.generate(),
       input: params,
     });
@@ -109,7 +109,7 @@ export class StripeSubscriptionService extends AbstractService {
       childEndpoint: "proration-preview",
     });
 
-    endpoint.addAdditionalParam("newPriceId", params.newPriceId);
+    endpoint.addAdditionalParam("priceId", params.newPriceId);
     if (params.quantity) {
       endpoint.addAdditionalParam("quantity", params.quantity.toString());
     }

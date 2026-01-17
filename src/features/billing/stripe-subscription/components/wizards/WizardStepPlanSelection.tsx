@@ -12,6 +12,7 @@ type WizardStepPlanSelectionProps = {
   selectedInterval: BillingInterval;
   currentPriceId?: string;
   hideRecurringPrices: boolean;
+  hideOneTimePrices: boolean;
   onSelectPrice: (price: StripePriceInterface) => void;
   onIntervalChange: (interval: BillingInterval) => void;
   onNext: () => void;
@@ -23,6 +24,7 @@ export function WizardStepPlanSelection({
   selectedInterval,
   currentPriceId,
   hideRecurringPrices,
+  hideOneTimePrices,
   onSelectPrice,
   onIntervalChange,
   onNext,
@@ -71,15 +73,17 @@ export function WizardStepPlanSelection({
 
   return (
     <div className="space-y-6">
-      {/* Interval Toggle */}
-      <div className="flex justify-center">
-        <IntervalToggle
-          value={selectedInterval}
-          onChange={onIntervalChange}
-          hasMonthly={hasMonthly}
-          hasYearly={hasYearly}
-        />
-      </div>
+      {/* Interval Toggle - only show for recurring products */}
+      {!hideRecurringPrices && (
+        <div className="flex justify-center">
+          <IntervalToggle
+            value={selectedInterval}
+            onChange={onIntervalChange}
+            hasMonthly={hasMonthly}
+            hasYearly={hasYearly}
+          />
+        </div>
+      )}
 
       {/* Product Pricing List */}
       <ProductPricingList
@@ -89,6 +93,7 @@ export function WizardStepPlanSelection({
         selectedPriceId={selectedPrice?.id}
         loading={loading}
         hideRecurringPrices={hideRecurringPrices}
+        hideOneTimePrices={hideOneTimePrices}
         onSelectPrice={handleSelectPrice}
       />
 

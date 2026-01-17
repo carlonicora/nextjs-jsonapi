@@ -77,7 +77,7 @@ export function WizardStepReview({
           <div className="flex justify-between text-sm">
             <span className="text-blue-600">Amount due now:</span>
             <span className="font-medium text-blue-800">
-              {formatCurrency(prorationPreview.amountDue, prorationPreview.currency)}
+              {formatCurrency(prorationPreview.immediateCharge, prorationPreview.currency)}
             </span>
           </div>
         </div>

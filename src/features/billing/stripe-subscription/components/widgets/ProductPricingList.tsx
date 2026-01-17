@@ -15,6 +15,7 @@ export type ProductPricingListProps = {
   loading?: boolean;
   onSelectPrice: (price: StripePriceInterface) => void;
   hideRecurringPrices?: boolean;
+  hideOneTimePrices?: boolean;
 };
 
 function isRecurringProduct(prices: StripePriceInterface[]): boolean {
@@ -49,6 +50,7 @@ export function ProductPricingList({
   loading = false,
   onSelectPrice,
   hideRecurringPrices = false,
+  hideOneTimePrices = false,
 }: ProductPricingListProps) {
   if (loading) {
     return <ProductPricingListSkeleton />;
@@ -66,21 +68,23 @@ export function ProductPricingList({
     return 0;
   });
 
-  // Filter products based on hideRecurringPrices
-  const filteredProducts = hideRecurringPrices
-    ? sortedProducts
-        .map((product) => ({
-          ...product,
-          stripePrices: (product.stripePrices || []).filter((price) => price.priceType !== "recurring"),
-        }))
-        .filter((product) => product.stripePrices.length > 0)
-    : sortedProducts;
-
   return (
     <div className="space-y-6">
-      {filteredProducts.map((product) => {
+      {sortedProducts.map((product) => {
         const allPrices = product.stripePrices || [];
-        const filteredPrices = getFilteredPrices(allPrices, selectedInterval);
+
+        // Filter prices based on hideRecurringPrices and hideOneTimePrices flags
+        let pricesToFilter = allPrices;
+
+        if (hideRecurringPrices) {
+          pricesToFilter = pricesToFilter.filter((price) => price.priceType !== "recurring");
+        }
+
+        if (hideOneTimePrices) {
+          pricesToFilter = pricesToFilter.filter((price) => price.priceType !== "one_time");
+        }
+
+        const filteredPrices = getFilteredPrices(pricesToFilter, selectedInterval);
 
         if (filteredPrices.length === 0) {
           return null;

@@ -9,9 +9,10 @@ import { SubscriptionsList } from "../lists";
 
 type SubscriptionsContainerProps = {
   onOpenWizard?: (subscription?: StripeSubscriptionInterface) => void;
+  hasActiveRecurringSubscription?: boolean;
 };
 
-export function SubscriptionsContainer({ onOpenWizard }: SubscriptionsContainerProps) {
+export function SubscriptionsContainer({ onOpenWizard, hasActiveRecurringSubscription }: SubscriptionsContainerProps) {
   const [subscriptions, setSubscriptions] = useState<StripeSubscriptionInterface[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -57,7 +58,9 @@ export function SubscriptionsContainer({ onOpenWizard }: SubscriptionsContainerP
           <h1 className="text-3xl font-bold">Subscriptions</h1>
         </div>
         {subscriptions.length > 0 && (
-          <Button onClick={() => onOpenWizard?.()}>Subscribe to a Plan</Button>
+          <Button onClick={() => onOpenWizard?.()}>
+            {hasActiveRecurringSubscription ? "Purchase Add-ons" : "Subscribe to a Plan"}
+          </Button>
         )}
       </div>
 
