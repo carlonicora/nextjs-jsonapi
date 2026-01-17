@@ -51,7 +51,7 @@ export default async function ${names.pascalCase}Page(props: { params: Promise<{
   const params = await props.params;
   const ${names.camelCase}: ${names.pascalCase}Interface = await getCached${names.pascalCase}(params.id);
 
-  ServerSession.checkPermission({ module: Modules.${names.pascalCase}, action: Action.Read, data: ${names.camelCase} });
+  await ServerSession.checkPermission({ module: Modules.${names.pascalCase}, action: Action.Read, data: ${names.camelCase} });
 
   return (
     <${names.pascalCase}Provider dehydrated${names.pascalCase}={${names.camelCase}.dehydrate()}>

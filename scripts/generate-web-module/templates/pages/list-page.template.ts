@@ -23,7 +23,7 @@ import { Action } from "@carlonicora/nextjs-jsonapi/core";
 import { ServerSession } from "@carlonicora/nextjs-jsonapi/server";
 
 export default async function ${names.pluralPascal}ListPage() {
-  ServerSession.checkPermission({ module: Modules.${names.pascalCase}, action: Action.Read });
+  await ServerSession.checkPermission({ module: Modules.${names.pascalCase}, action: Action.Read });
 
   return (
     <${names.pascalCase}Provider>
