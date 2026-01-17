@@ -1,5 +1,6 @@
 import { AbstractApiData, JsonApiHydratedDataInterface, Modules } from "../../../../core";
 import { StripeProductInterface } from "../../stripe-product";
+import { FeatureInterface } from "../../../feature";
 import { PriceRecurring, StripePriceInput, StripePriceInterface } from "./stripe-price.interface";
 
 export class StripePrice extends AbstractApiData implements StripePriceInterface {
@@ -17,6 +18,7 @@ export class StripePrice extends AbstractApiData implements StripePriceInterface
   private _description?: string;
   private _features?: string[];
   private _token?: number;
+  private _priceFeatures: FeatureInterface[] = []; // Platform Feature entities
 
   get stripePriceId(): string {
     if (!this._stripePriceId) throw new Error("stripePriceId is not defined");
@@ -78,6 +80,10 @@ export class StripePrice extends AbstractApiData implements StripePriceInterface
     return this._token;
   }
 
+  get priceFeatures(): FeatureInterface[] {
+    return this._priceFeatures;
+  }
+
   rehydrate(data: JsonApiHydratedDataInterface): this {
     super.rehydrate(data);
 
@@ -117,6 +123,9 @@ export class StripePrice extends AbstractApiData implements StripePriceInterface
 
     // Hydrate product relationship
     this._product = this._readIncluded(data, "product", Modules.StripeProduct) as StripeProductInterface;
+
+    // Hydrate feature relationship (JSON:API key is "features")
+    this._priceFeatures = this._readIncluded(data, "features", Modules.Feature) as FeatureInterface[];
 
     return this;
   }
@@ -159,6 +168,15 @@ export class StripePrice extends AbstractApiData implements StripePriceInterface
     }
     if ("token" in data && data.token !== undefined) {
       response.data.attributes.token = data.token;
+    }
+
+    // Convert featureIds to JSON:API relationships format
+    if (data.featureIds && data.featureIds.length > 0) {
+      response.data.relationships = response.data.relationships || {};
+      response.data.relationships.features = data.featureIds.map((id) => ({
+        type: Modules.Feature.name,
+        id,
+      }));
     }
 
     return response;

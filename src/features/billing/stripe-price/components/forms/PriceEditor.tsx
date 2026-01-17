@@ -19,6 +19,7 @@ import {
   Input,
   Label,
 } from "../../../../../shadcnui";
+import { FeatureInterface, FeatureService } from "../../../../feature";
 import { StripePriceInterface, StripePriceService } from "../../data";
 
 type PriceEditorProps = {
@@ -40,10 +41,25 @@ type PriceFormValues = {
   description?: string;
   features: string[];
   token: string;
+  featureIds: string[]; // Platform Feature entity IDs
 };
 
 export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }: PriceEditorProps) {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [allFeatures, setAllFeatures] = useState<FeatureInterface[]>([]);
+
+  // Fetch all platform features on mount
+  useEffect(() => {
+    const fetchFeatures = async () => {
+      try {
+        const features = await FeatureService.findMany({});
+        setAllFeatures(features);
+      } catch (error) {
+        console.error("[PriceEditor] Failed to fetch features:", error);
+      }
+    };
+    fetchFeatures();
+  }, []);
 
   const formSchema = z.object({
     unitAmount: z.preprocess(
@@ -62,12 +78,19 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
     description: z.string().optional(),
     features: z.array(z.string()),
     token: z.string(),
+    featureIds: z.array(z.string()),
   });
 
   const isEditMode = !!price;
 
   // Convert cents to dollars for display
   const defaultUnitAmount = price?.unitAmount ? price.unitAmount / 100 : 0;
+
+  // Get core feature IDs that should always be selected
+  const coreFeatureIds = allFeatures.filter((f) => f.isCore).map((f) => f.id);
+
+  // Combine existing price features with core features (ensure no duplicates)
+  const defaultFeatureIds = [...new Set([...(price?.priceFeatures?.map((f) => f.id) ?? []), ...coreFeatureIds])];
 
   const form = useForm<PriceFormValues>({
     resolver: zodResolver(formSchema) as any,
@@ -82,12 +105,19 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
       description: price?.description || "",
       features: price?.features || [],
       token: price?.token?.toString() ?? "",
+      featureIds: defaultFeatureIds,
     },
   });
 
   // Reset form when dialog opens to ensure fresh state
   useEffect(() => {
     if (open) {
+      // Recalculate core feature IDs with current allFeatures
+      const currentCoreFeatureIds = allFeatures.filter((f) => f.isCore).map((f) => f.id);
+      const resetFeatureIds = [
+        ...new Set([...(price?.priceFeatures?.map((f) => f.id) ?? []), ...currentCoreFeatureIds]),
+      ];
+
       form.reset({
         unitAmount: price?.unitAmount ? price.unitAmount / 100 : 0,
         currency: price?.currency || "usd",
@@ -99,9 +129,10 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
         description: price?.description || "",
         features: price?.features || [],
         token: price?.token?.toString() ?? "",
+        featureIds: resetFeatureIds,
       });
     }
-  }, [open, price?.id]);
+  }, [open, price?.id, allFeatures]);
 
   const watchInterval = form.watch("interval");
   const isRecurring = watchInterval !== "one_time";
@@ -121,6 +152,8 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
           description: values.description || undefined,
           features: values.features.filter((f) => f.trim()) || undefined,
           token: values.token ? parseInt(values.token, 10) : undefined,
+          // Only include featureIds for recurring prices (one-time prices don't support platform features)
+          ...(price?.priceType === "recurring" ? { featureIds: values.featureIds } : {}),
         });
       } else {
         // Create new price
@@ -155,6 +188,11 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
 
         if (values.token) {
           createInput.token = parseInt(values.token, 10);
+        }
+
+        // Add platform feature IDs only for recurring prices (Neo4j only, not sent to Stripe)
+        if (isRecurring && values.featureIds.length > 0) {
+          createInput.featureIds = values.featureIds;
         }
 
         await StripePriceService.createPrice(createInput);
@@ -316,6 +354,52 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
                 </Button>
               </div>
             </div>
+
+            {/* Platform Features Checkbox List - Only show for recurring prices */}
+            {isRecurring && allFeatures.length > 0 && (
+              <div className="space-y-2">
+                <Label>Platform Features</Label>
+                <div className="border rounded-md p-4 space-y-2 max-h-48 overflow-y-auto">
+                  {allFeatures.map((feature) => {
+                    const isCore = feature.isCore;
+                    const isChecked = form.watch("featureIds").includes(feature.id);
+
+                    return (
+                      <div key={feature.id} className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id={`feature-${feature.id}`}
+                          checked={isChecked}
+                          disabled={isCore}
+                          onChange={(e) => {
+                            const currentIds = form.getValues("featureIds");
+                            if (e.target.checked) {
+                              form.setValue("featureIds", [...currentIds, feature.id]);
+                            } else {
+                              // Don't allow unchecking core features
+                              if (!isCore) {
+                                form.setValue(
+                                  "featureIds",
+                                  currentIds.filter((id) => id !== feature.id),
+                                );
+                              }
+                            }
+                          }}
+                          className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary disabled:opacity-50"
+                        />
+                        <label
+                          htmlFor={`feature-${feature.id}`}
+                          className={`text-sm ${isCore ? "text-muted-foreground" : ""}`}
+                        >
+                          {feature.name}
+                          {isCore && <span className="ml-2 text-xs text-muted-foreground">(Core - Required)</span>}
+                        </label>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             <FormCheckbox form={form} id="active" name="Active" />
 

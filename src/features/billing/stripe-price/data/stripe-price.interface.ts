@@ -1,5 +1,6 @@
 import { ApiDataInterface } from "../../../../core";
 import { StripeProductInterface } from "../../stripe-product";
+import { FeatureInterface } from "../../../feature";
 
 // ============================================================================
 // Stripe Price Interfaces
@@ -20,6 +21,7 @@ export interface StripePriceInterface extends ApiDataInterface {
   get description(): string | undefined;
   get features(): string[] | undefined;
   get token(): number | undefined;
+  get priceFeatures(): FeatureInterface[]; // Platform Feature entities linked to this price
 }
 
 export interface PriceRecurring {
@@ -47,4 +49,5 @@ export type StripePriceInput = {
   description?: string;
   features?: string[];
   token?: number;
+  featureIds?: string[]; // Feature entity IDs to link (Neo4j only, NOT sent to Stripe)
 };
