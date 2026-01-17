@@ -9,6 +9,7 @@ import { useSocketContext } from "../../../contexts/SocketContext";
 import { Modules, rehydrate } from "../../../core";
 import { Action, checkPermissions, ModuleWithPermissions } from "../../../permissions";
 import { getRoleId } from "../../../roles";
+import { getTokenHandler } from "../../auth/config";
 import { CompanyInterface } from "../../company/data/company.interface";
 import { FeatureInterface } from "../../feature";
 import { RoleInterface } from "../../role";
@@ -144,6 +145,18 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
       if (fullUser) {
         setDehydratedUser(fullUser.dehydrate() as any);
         setUser(fullUser);
+
+        // Update authentication cookies with fresh user data
+        await getTokenHandler()?.updateToken({
+          userId: fullUser.id,
+          companyId: fullUser.company?.id,
+          roles: fullUser.roles.map((role) => role.id),
+          features: fullUser.company?.features?.map((feature) => feature.id) ?? [],
+          modules: fullUser.modules.map((module) => ({
+            id: module.id,
+            permissions: module.permissions,
+          })),
+        });
       }
     } catch (error) {
       console.error("Failed to refresh user data:", error);
