@@ -5,6 +5,7 @@ import { useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { usePathname } from "next/navigation";
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useSocketContext } from "../../../contexts/SocketContext";
 import { Modules, rehydrate } from "../../../core";
 import { Action, checkPermissions, ModuleWithPermissions } from "../../../permissions";
 import { getRoleId } from "../../../roles";
@@ -12,7 +13,6 @@ import { CompanyInterface } from "../../company/data/company.interface";
 import { FeatureInterface } from "../../feature";
 import { RoleInterface } from "../../role";
 import { UserInterface, UserService } from "../data";
-import { useSocketContext } from "../../../contexts/SocketContext";
 
 export interface CurrentUserContextType<T extends UserInterface = UserInterface> {
   currentUser: T | null;
@@ -143,6 +143,7 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
       const fullUser = await UserService.findFullUser();
       if (fullUser) {
         setDehydratedUser(fullUser.dehydrate() as any);
+        setUser(fullUser);
       }
     } catch (error) {
       console.error("Failed to refresh user data:", error);
