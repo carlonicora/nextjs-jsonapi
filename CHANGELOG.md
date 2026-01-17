@@ -1,3 +1,9 @@
+## [1.34.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.33.0...v1.34.0) (2026-01-17)
+
+### 🚀 Features
+
+* update authentication cookies with fresh user data on user refresh ([27ff52f](https://github.com/carlonicora/nextjs-jsonapi/commit/27ff52f03fb1dec09a2d7de357aeb5fb10874749))
+
 ## [1.33.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.32.2...v1.33.0) (2026-01-17)
 
 ### 🚀 Features
