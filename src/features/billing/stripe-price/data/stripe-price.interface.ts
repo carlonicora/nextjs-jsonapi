@@ -21,6 +21,7 @@ export interface StripePriceInterface extends ApiDataInterface {
   get description(): string | undefined;
   get features(): string[] | undefined;
   get token(): number | undefined;
+  get isTrial(): boolean | undefined;
   get priceFeatures(): FeatureInterface[]; // Platform Feature entities linked to this price
 }
 
@@ -49,5 +50,6 @@ export type StripePriceInput = {
   description?: string;
   features?: string[];
   token?: number;
+  isTrial?: boolean;
   featureIds?: string[]; // Feature entity IDs to link (Neo4j only, NOT sent to Stripe)
 };

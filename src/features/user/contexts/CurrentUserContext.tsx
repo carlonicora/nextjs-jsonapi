@@ -175,11 +175,11 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
   // Track refresh in progress to prevent duplicate API calls
   const isRefreshingRef = useRef(false);
 
-  // Listen for company:tokens_updated WebSocket events
+  // Listen for company WebSocket events that trigger user refresh
   useEffect(() => {
     if (!socket || !isConnected || !currentUser?.company?.id) return;
 
-    const handleTokensUpdated = (data: { companyId: string; type: string }) => {
+    const handleCompanyUpdate = (data: { companyId: string; type: string }) => {
       if (data.companyId === currentUser.company?.id && !isRefreshingRef.current) {
         isRefreshingRef.current = true;
         refreshUserRef.current().finally(() => {
@@ -188,10 +188,13 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
       }
     };
 
-    socket.on("company:tokens_updated", handleTokensUpdated);
+    // Both events trigger the same refresh behavior
+    socket.on("company:tokens_updated", handleCompanyUpdate);
+    socket.on("company:subscription_updated", handleCompanyUpdate);
 
     return () => {
-      socket.off("company:tokens_updated", handleTokensUpdated);
+      socket.off("company:tokens_updated", handleCompanyUpdate);
+      socket.off("company:subscription_updated", handleCompanyUpdate);
     };
   }, [socket, isConnected, currentUser?.company?.id]);
 

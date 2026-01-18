@@ -38,6 +38,7 @@ type PriceFormValues = {
   usageType?: "licensed" | "metered";
   nickname?: string;
   active: boolean;
+  isTrial: boolean;
   description?: string;
   features: string[];
   token: string;
@@ -75,6 +76,7 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
     usageType: z.enum(["licensed", "metered"]).optional(),
     nickname: z.string().optional(),
     active: z.boolean(),
+    isTrial: z.boolean(),
     description: z.string().optional(),
     features: z.array(z.string()),
     token: z.string(),
@@ -102,6 +104,7 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
       usageType: price?.recurring?.usageType || "licensed",
       nickname: price?.nickname || "",
       active: price?.active ?? true,
+      isTrial: price?.isTrial ?? false,
       description: price?.description || "",
       features: price?.features || [],
       token: price?.token?.toString() ?? "",
@@ -126,6 +129,7 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
         usageType: price?.recurring?.usageType || "licensed",
         nickname: price?.nickname || "",
         active: price?.active ?? true,
+        isTrial: price?.isTrial ?? false,
         description: price?.description || "",
         features: price?.features || [],
         token: price?.token?.toString() ?? "",
@@ -145,15 +149,15 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
       const unitAmountInCents = Math.round(values.unitAmount * 100);
 
       if (isEditMode) {
-        // Update existing price (nickname, description, features, token can be updated - Stripe fields are limited)
+        // Update existing price (nickname, description, features, token, isTrial can be updated - Stripe fields are limited)
         await StripePriceService.updatePrice({
           id: price.id,
           nickname: values.nickname || undefined,
           description: values.description || undefined,
           features: values.features.filter((f) => f.trim()) || undefined,
           token: values.token ? parseInt(values.token, 10) : undefined,
-          // Only include featureIds for recurring prices (one-time prices don't support platform features)
-          ...(price?.priceType === "recurring" ? { featureIds: values.featureIds } : {}),
+          // Only include isTrial and featureIds for recurring prices
+          ...(price?.priceType === "recurring" ? { isTrial: values.isTrial, featureIds: values.featureIds } : {}),
         });
       } else {
         // Create new price
@@ -190,9 +194,12 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
           createInput.token = parseInt(values.token, 10);
         }
 
-        // Add platform feature IDs only for recurring prices (Neo4j only, not sent to Stripe)
-        if (isRecurring && values.featureIds.length > 0) {
-          createInput.featureIds = values.featureIds;
+        // Add isTrial and platform feature IDs only for recurring prices (Neo4j only, not sent to Stripe)
+        if (isRecurring) {
+          createInput.isTrial = values.isTrial;
+          if (values.featureIds.length > 0) {
+            createInput.featureIds = values.featureIds;
+          }
         }
 
         await StripePriceService.createPrice(createInput);
@@ -402,6 +409,15 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
             )}
 
             <FormCheckbox form={form} id="active" name="Active" />
+
+            {isRecurring && (
+              <FormCheckbox
+                form={form}
+                id="isTrial"
+                name="Trial Price"
+                description="Mark this as the trial subscription plan (only one price should be marked as trial)"
+              />
+            )}
 
             <CommonEditorButtons isEdit={isEditMode} form={form} disabled={isSubmitting} setOpen={onOpenChange} />
           </form>

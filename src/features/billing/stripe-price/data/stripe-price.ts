@@ -18,6 +18,7 @@ export class StripePrice extends AbstractApiData implements StripePriceInterface
   private _description?: string;
   private _features?: string[];
   private _token?: number;
+  private _isTrial?: boolean;
   private _priceFeatures: FeatureInterface[] = []; // Platform Feature entities
 
   get stripePriceId(): string {
@@ -80,6 +81,10 @@ export class StripePrice extends AbstractApiData implements StripePriceInterface
     return this._token;
   }
 
+  get isTrial(): boolean | undefined {
+    return this._isTrial;
+  }
+
   get priceFeatures(): FeatureInterface[] {
     return this._priceFeatures;
   }
@@ -120,6 +125,7 @@ export class StripePrice extends AbstractApiData implements StripePriceInterface
       : undefined;
 
     this._token = data.jsonApi.attributes.token;
+    this._isTrial = data.jsonApi.attributes.isTrial;
 
     // Hydrate product relationship
     this._product = this._readIncluded(data, "product", Modules.StripeProduct) as StripeProductInterface;
@@ -168,6 +174,9 @@ export class StripePrice extends AbstractApiData implements StripePriceInterface
     }
     if ("token" in data && data.token !== undefined) {
       response.data.attributes.token = data.token;
+    }
+    if ("isTrial" in data && data.isTrial !== undefined) {
+      response.data.attributes.isTrial = data.isTrial;
     }
 
     // Convert featureIds to JSON:API relationships format

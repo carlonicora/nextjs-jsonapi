@@ -84,6 +84,9 @@ export function ProductPricingList({
           pricesToFilter = pricesToFilter.filter((price) => price.priceType !== "one_time");
         }
 
+        // Filter out trial prices - users shouldn't manually select trial plans
+        pricesToFilter = pricesToFilter.filter((price) => !price.isTrial);
+
         const filteredPrices = getFilteredPrices(pricesToFilter, selectedInterval);
 
         if (filteredPrices.length === 0) {
