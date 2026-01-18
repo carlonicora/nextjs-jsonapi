@@ -1,3 +1,17 @@
+## [1.35.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.34.0...v1.35.0) (2026-01-18)
+
+### 🚀 Features
+
+* add shepherdjs onboarding ([faea314](https://github.com/carlonicora/nextjs-jsonapi/commit/faea314b4ff133111f71213875bee6ed8b3d28eb))
+* add stripe trial subscription ([125b3f8](https://github.com/carlonicora/nextjs-jsonapi/commit/125b3f8454ce61e7aba9de6131c161d7de6247b2))
+
+### 🐛 Bug Fixes
+
+* correct overflow on cards ([40170c5](https://github.com/carlonicora/nextjs-jsonapi/commit/40170c5a563752e7ab173dcedddb6243272c4247))
+* correct vitest output ([fd3afb7](https://github.com/carlonicora/nextjs-jsonapi/commit/fd3afb7ec330796a1a01ebd6a446fcda667da903))
+* improve user refresh logic and handle early returns ([8d5b56c](https://github.com/carlonicora/nextjs-jsonapi/commit/8d5b56c3563188cf1e9df0bed752f247ceefe52f))
+* remove token visualiser from generic header ([99d5e10](https://github.com/carlonicora/nextjs-jsonapi/commit/99d5e10d8f29e9e666f984d2af52692d5780fc0d))
+
 ## [1.34.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.33.0...v1.34.0) (2026-01-17)
 
 ### 🚀 Features
