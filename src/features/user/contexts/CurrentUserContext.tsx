@@ -137,13 +137,17 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
 
   // Function to refresh user data from the API
   const refreshUser = useCallback(async (): Promise<void> => {
-    if (isRefreshing) return;
+    if (isRefreshing) {
+      return;
+    }
 
     setIsRefreshing(true);
     try {
       const fullUser = await UserService.findFullUser();
       if (fullUser) {
-        setDehydratedUser(fullUser.dehydrate() as any);
+        const dehydrated = fullUser.dehydrate();
+
+        setDehydratedUser(dehydrated as any);
         setUser(fullUser);
 
         // Update authentication cookies with fresh user data
@@ -177,7 +181,9 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
 
   // Listen for company WebSocket events that trigger user refresh
   useEffect(() => {
-    if (!socket || !isConnected || !currentUser?.company?.id) return;
+    if (!socket || !isConnected || !currentUser?.company?.id) {
+      return;
+    }
 
     const handleCompanyUpdate = (data: { companyId: string; type: string }) => {
       if (data.companyId === currentUser.company?.id && !isRefreshingRef.current) {
