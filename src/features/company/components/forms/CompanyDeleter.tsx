@@ -42,34 +42,21 @@ function CompanyDeleterInternal({ company, isAdministrator }: CompanyDeleterInte
   const [companyName, setCompanyName] = useState<string>("");
 
   const handleProceedToFinalWarning = () => {
-    console.log("[CompanyDeleter] Proceeding to final warning dialog");
-    console.log("[CompanyDeleter] Company name entered:", companyName);
-    console.log("[CompanyDeleter] Expected company name:", company.name);
     setOpen(false);
     setFinalWarningOpen(true);
   };
 
   const handleFinalDelete = async () => {
-    console.log("[CompanyDeleter] handleFinalDelete called");
-    console.log("[CompanyDeleter] isAdministrator:", isAdministrator);
-    console.log("[CompanyDeleter] company.id:", company.id);
-    console.log("[CompanyDeleter] company.name:", company.name);
-
     setIsDeleting(true);
     try {
       if (isAdministrator) {
-        console.log("[CompanyDeleter] Using Administrator delete endpoint");
         await CompanyService.delete({ companyId: company.id });
       } else {
-        console.log("[CompanyDeleter] Using CompanyAdministrator self-delete endpoint");
         await CompanyService.selfDelete({ companyId: company.id });
       }
-      console.log("[CompanyDeleter] Delete successful, logging out user");
       await AuthService.logout();
       window.location.href = generateUrl({ page: `/` });
     } catch (error) {
-      console.error("[CompanyDeleter] Delete failed with error:", error);
-      console.error("[CompanyDeleter] Error details:", JSON.stringify(error, null, 2));
       errorToast({ title: t(`common.errors.delete`), error: error });
       setIsDeleting(false);
     }
@@ -193,19 +180,9 @@ export function CompanyDeleter({ company }: CompanyDeleterProps) {
   const isCompanyAdministrator = hasRole(getRoleId().CompanyAdministrator);
   const hasDeletePermission = hasPermissionToModule({ module: Modules.Company, action: Action.Delete });
 
-  console.log("[CompanyDeleter] Role check:", {
-    isAdministrator,
-    isCompanyAdministrator,
-    hasDeletePermission,
-    companyId: company.id,
-    companyName: company.name,
-  });
-
   if (!isAdministrator && !isCompanyAdministrator && !hasDeletePermission) {
-    console.log("[CompanyDeleter] Access denied - no delete permissions");
     return null;
   }
 
-  console.log("[CompanyDeleter] Access granted, rendering with isAdministrator:", isAdministrator);
   return <CompanyDeleterInternal company={company} isAdministrator={isAdministrator} />;
 }

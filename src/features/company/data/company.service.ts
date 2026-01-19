@@ -32,26 +32,15 @@ export class CompanyService extends AbstractService {
   }
 
   static async selfDelete(params: { companyId: string }): Promise<void> {
-    const endpoint = new EndpointCreator({
-      endpoint: Modules.Company,
-      id: params.companyId,
-      childEndpoint: "self-delete",
-    }).generate();
-
-    console.log("[CompanyService.selfDelete] Called with companyId:", params.companyId);
-    console.log("[CompanyService.selfDelete] Generated endpoint:", endpoint);
-
-    try {
-      await this.callApi({
-        type: Modules.Company,
-        method: HttpMethod.DELETE,
-        endpoint: endpoint,
-      });
-      console.log("[CompanyService.selfDelete] API call successful");
-    } catch (error) {
-      console.error("[CompanyService.selfDelete] API call failed:", error);
-      throw error;
-    }
+    await this.callApi({
+      type: Modules.Company,
+      method: HttpMethod.DELETE,
+      endpoint: new EndpointCreator({
+        endpoint: Modules.Company,
+        id: params.companyId,
+        childEndpoint: "self-delete",
+      }).generate(),
+    });
   }
 
   static async create(params: CompanyInput): Promise<CompanyInterface> {
