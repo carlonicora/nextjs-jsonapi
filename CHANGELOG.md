@@ -1,3 +1,9 @@
+## [1.38.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.37.0...v1.38.0) (2026-01-19)
+
+### 🚀 Features
+
+* add stripe discount code ([f6e43c7](https://github.com/carlonicora/nextjs-jsonapi/commit/f6e43c7e4a9de2610b41ad8ea34b70ed99f41a03))
+
 ## [1.37.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.36.1...v1.37.0) (2026-01-19)
 
 ### 🚀 Features
