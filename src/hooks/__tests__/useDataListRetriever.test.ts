@@ -22,7 +22,7 @@ describe("useDataListRetriever", () => {
         useDataListRetriever({
           retriever,
           module: mockModule,
-        })
+        }),
       );
 
       // Wait for async operations to settle
@@ -42,7 +42,7 @@ describe("useDataListRetriever", () => {
           retriever,
           module: mockModule,
           ready: false,
-        })
+        }),
       );
 
       expect(result.current.ready).toBe(false);
@@ -63,7 +63,7 @@ describe("useDataListRetriever", () => {
         useDataListRetriever({
           retriever,
           module: mockModule,
-        })
+        }),
       );
 
       await waitFor(() => {
@@ -82,7 +82,7 @@ describe("useDataListRetriever", () => {
         useDataListRetriever({
           retriever,
           module: mockModule,
-        })
+        }),
       );
 
       await waitFor(() => {
@@ -96,16 +96,14 @@ describe("useDataListRetriever", () => {
 
   describe("search", () => {
     it("should search and call retriever with search term", async () => {
-      const mockData = [
-        createMockApiData({ type: "articles", id: "1", attributes: { title: "Search Result" } }),
-      ];
+      const mockData = [createMockApiData({ type: "articles", id: "1", attributes: { title: "Search Result" } })];
       const retriever = vi.fn().mockResolvedValue(mockData);
 
       const { result } = renderHook(() =>
         useDataListRetriever({
           retriever,
           module: mockModule,
-        })
+        }),
       );
 
       await waitFor(() => {
@@ -133,7 +131,7 @@ describe("useDataListRetriever", () => {
         useDataListRetriever({
           retriever,
           module: mockModule,
-        })
+        }),
       );
 
       await waitFor(() => {
@@ -161,7 +159,7 @@ describe("useDataListRetriever", () => {
         useDataListRetriever({
           retriever,
           module: mockModule,
-        })
+        }),
       );
 
       await waitFor(() => {
@@ -189,7 +187,7 @@ describe("useDataListRetriever", () => {
           retriever,
           module: mockModule,
           ready: false,
-        })
+        }),
       );
 
       expect(result.current.ready).toBe(false);
@@ -209,16 +207,14 @@ describe("useDataListRetriever", () => {
 
   describe("element management", () => {
     it("should update element with setRefreshedElement", async () => {
-      const mockData = [
-        createMockApiData({ type: "articles", id: "1", attributes: { title: "Original" } }),
-      ];
+      const mockData = [createMockApiData({ type: "articles", id: "1", attributes: { title: "Original" } })];
       const retriever = vi.fn().mockResolvedValue(mockData);
 
       const { result } = renderHook(() =>
         useDataListRetriever({
           retriever,
           module: mockModule,
-        })
+        }),
       );
 
       await waitFor(() => {
@@ -250,7 +246,7 @@ describe("useDataListRetriever", () => {
         useDataListRetriever({
           retriever,
           module: mockModule,
-        })
+        }),
       );
 
       await waitFor(() => {
@@ -276,7 +272,7 @@ describe("useDataListRetriever", () => {
         useDataListRetriever({
           retriever,
           module: mockModule,
-        })
+        }),
       );
 
       await waitFor(() => {
@@ -288,9 +284,7 @@ describe("useDataListRetriever", () => {
       });
 
       await waitFor(() => {
-        expect(retriever).toHaveBeenCalledWith(
-          expect.objectContaining({ filter: "active" })
-        );
+        expect(retriever).toHaveBeenCalledWith(expect.objectContaining({ filter: "active" }));
       });
     });
 
@@ -301,7 +295,7 @@ describe("useDataListRetriever", () => {
         useDataListRetriever({
           retriever,
           module: mockModule,
-        })
+        }),
       );
 
       await waitFor(() => {

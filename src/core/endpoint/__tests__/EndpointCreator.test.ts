@@ -74,10 +74,7 @@ describe("EndpointCreator", () => {
     });
 
     it("should support full fluent chain", () => {
-      const creator = new EndpointCreator({ endpoint: "articles" })
-        .id("123")
-        .childEndpoint("comments")
-        .childId("456");
+      const creator = new EndpointCreator({ endpoint: "articles" }).id("123").childEndpoint("comments").childId("456");
       expect(creator.generate()).toBe("articles/123/comments/456");
     });
   });
@@ -141,9 +138,7 @@ describe("EndpointCreator", () => {
         { type: "articles", fields: ["title", "body"] },
         { type: "authors", fields: ["name", "email"] },
       ]);
-      expect(creator.generate()).toBe(
-        "articles?fields[articles]=title,body&fields[authors]=name,email"
-      );
+      expect(creator.generate()).toBe("articles?fields[articles]=title,body&fields[authors]=name,email");
     });
 
     it("should handle empty selectors array", () => {

@@ -79,7 +79,7 @@ export function OAuthRedirectUriInput({
       // Keep at least one empty input
       onChange(newUris.length > 0 ? newUris : [""]);
     },
-    [value, onChange]
+    [value, onChange],
   );
 
   const handleChange = useCallback(
@@ -88,15 +88,15 @@ export function OAuthRedirectUriInput({
       newUris[index] = newValue;
       onChange(newUris);
     },
-    [value, onChange]
+    [value, onChange],
   );
 
   return (
     <div className="space-y-2">
       <Label>{label} *</Label>
       <p className="text-sm text-muted-foreground">
-        Enter the URIs where users will be redirected after authorization.
-        Use https:// for production, or custom schemes for mobile apps.
+        Enter the URIs where users will be redirected after authorization. Use https:// for production, or custom
+        schemes for mobile apps.
       </p>
 
       <div className="space-y-2">
@@ -134,14 +134,7 @@ export function OAuthRedirectUriInput({
         })}
       </div>
 
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        onClick={handleAdd}
-        disabled={disabled}
-        className="mt-2"
-      >
+      <Button type="button" variant="outline" size="sm" onClick={handleAdd} disabled={disabled} className="mt-2">
         <Plus className="h-4 w-4 mr-2" />
         Add Redirect URI
       </Button>

@@ -14,26 +14,13 @@ export interface OAuthConsentActionsProps {
 /**
  * Action buttons for OAuth consent screen
  */
-export function OAuthConsentActions({
-  onApprove,
-  onDeny,
-  isLoading = false,
-}: OAuthConsentActionsProps) {
+export function OAuthConsentActions({ onApprove, onDeny, isLoading = false }: OAuthConsentActionsProps) {
   return (
     <div className="flex flex-col sm:flex-row gap-3">
-      <Button
-        variant="outline"
-        onClick={onDeny}
-        disabled={isLoading}
-        className="flex-1"
-      >
+      <Button variant="outline" onClick={onDeny} disabled={isLoading} className="flex-1">
         Deny
       </Button>
-      <Button
-        onClick={onApprove}
-        disabled={isLoading}
-        className="flex-1"
-      >
+      <Button onClick={onApprove} disabled={isLoading} className="flex-1">
         {isLoading ? "Authorizing..." : "Authorize"}
       </Button>
     </div>

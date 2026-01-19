@@ -31,16 +31,10 @@ export interface OAuthClientCardProps {
 /**
  * Card component for displaying an OAuth client in a list
  */
-export function OAuthClientCard({
-  client,
-  onClick,
-  onEdit,
-  onDelete,
-}: OAuthClientCardProps) {
+export function OAuthClientCard({ client, onClick, onEdit, onDelete }: OAuthClientCardProps) {
   // Truncate client ID for display
-  const truncatedId = client.clientId.length > 12
-    ? `${client.clientId.slice(0, 8)}...${client.clientId.slice(-4)}`
-    : client.clientId;
+  const truncatedId =
+    client.clientId.length > 12 ? `${client.clientId.slice(0, 8)}...${client.clientId.slice(-4)}` : client.clientId;
 
   const createdAgo = client.createdAt
     ? formatDistanceToNow(new Date(client.createdAt), { addSuffix: true })
@@ -58,9 +52,7 @@ export function OAuthClientCard({
             <CardTitle className="text-lg">{client.name}</CardTitle>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant={client.isActive ? "default" : "secondary"}>
-              {client.isActive ? "Active" : "Inactive"}
-            </Badge>
+            <Badge variant={client.isActive ? "default" : "secondary"}>{client.isActive ? "Active" : "Inactive"}</Badge>
             {(onEdit || onDelete) && (
               <DropdownMenu>
                 <DropdownMenuTrigger onClick={(e) => e.stopPropagation()}>
@@ -70,14 +62,22 @@ export function OAuthClientCard({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   {onEdit && (
-                    <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit(); }}>
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit();
+                      }}
+                    >
                       <Pencil className="h-4 w-4 mr-2" />
                       Edit
                     </DropdownMenuItem>
                   )}
                   {onDelete && (
                     <DropdownMenuItem
-                      onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete();
+                      }}
                       className="text-destructive"
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
@@ -89,9 +89,7 @@ export function OAuthClientCard({
             )}
           </div>
         </div>
-        {client.description && (
-          <CardDescription className="line-clamp-2">{client.description}</CardDescription>
-        )}
+        {client.description && <CardDescription className="line-clamp-2">{client.description}</CardDescription>}
       </CardHeader>
       <CardContent>
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">

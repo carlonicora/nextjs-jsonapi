@@ -8,7 +8,7 @@ export function UserContainer() {
   const { user } = useUserContext();
   if (!user) return null;
 
-  const t = useTranslations();
+  const _t = useTranslations();
 
   return (
     <div className="flex w-full gap-x-4">

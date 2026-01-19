@@ -22,11 +22,7 @@ export function FormSlider({
 
   return (
     <div className="flex w-full flex-col">
-      <FormFieldWrapper
-        form={form}
-        name={id}
-        label={name}
-      >
+      <FormFieldWrapper form={form} name={id} label={name}>
         {() => (
           <div>
             {showPercentage && (

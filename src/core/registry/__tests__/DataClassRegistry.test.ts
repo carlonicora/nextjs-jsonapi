@@ -67,9 +67,7 @@ describe("DataClassRegistry", () => {
 
     it("should throw for unregistered class", () => {
       const module = createMockModule({ name: "unknown" });
-      expect(() => DataClassRegistry.get(module)).toThrow(
-        "Class not registered for key: unknown"
-      );
+      expect(() => DataClassRegistry.get(module)).toThrow("Class not registered for key: unknown");
     });
   });
 
@@ -88,12 +86,8 @@ describe("DataClassRegistry", () => {
 
       DataClassRegistry.bootstrap(modules as any);
 
-      expect(() =>
-        DataClassRegistry.get({ name: "articles", model: MockArticle } as any)
-      ).not.toThrow();
-      expect(() =>
-        DataClassRegistry.get({ name: "users", model: MockArticle } as any)
-      ).not.toThrow();
+      expect(() => DataClassRegistry.get({ name: "articles", model: MockArticle } as any)).not.toThrow();
+      expect(() => DataClassRegistry.get({ name: "users", model: MockArticle } as any)).not.toThrow();
     });
 
     it("should skip modules without model", () => {
@@ -110,12 +104,8 @@ describe("DataClassRegistry", () => {
 
       DataClassRegistry.bootstrap(modules as any);
 
-      expect(() =>
-        DataClassRegistry.get({ name: "articles", model: MockArticle } as any)
-      ).not.toThrow();
-      expect(() =>
-        DataClassRegistry.get({ name: "invalid", model: null } as any)
-      ).toThrow();
+      expect(() => DataClassRegistry.get({ name: "articles", model: MockArticle } as any)).not.toThrow();
+      expect(() => DataClassRegistry.get({ name: "invalid", model: null } as any)).toThrow();
     });
   });
 

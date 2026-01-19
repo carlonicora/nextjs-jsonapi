@@ -101,7 +101,14 @@ export function PaymentMethodCard({ paymentMethod, onUpdate }: PaymentMethodCard
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger>
-              <Button render={<div />} nativeButton={false} variant="ghost" size="sm" disabled={loading} className="h-8 w-8 p-0">
+              <Button
+                render={<div />}
+                nativeButton={false}
+                variant="ghost"
+                size="sm"
+                disabled={loading}
+                className="h-8 w-8 p-0"
+              >
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>

@@ -82,7 +82,7 @@ export function ResetPassword() {
         setComponentType(AuthComponent.Login);
         setParams(undefined);
       }, 2000);
-    } catch (e) {
+    } catch (_e) {
       errorToast({ title: t(`common.errors.error`), error });
     }
   };

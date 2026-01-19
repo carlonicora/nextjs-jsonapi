@@ -26,7 +26,7 @@ export function UserDetails({ user }: UserDetailsProps) {
     roles = (
       <div className="mb-4 w-full">
         <div className="flex flex-wrap gap-2">
-          {user.roles.map((role: RoleInterface, index: number) => (
+          {user.roles.map((role: RoleInterface, _index: number) => (
             <Link key={role.id} href={generateUrl({ page: Modules.Role, id: role.id })}>
               <Badge className="mr-2" variant={`default`}>
                 {t(`role.roles`, { role: role.id.replaceAll(`-`, ``) })}

@@ -9,9 +9,9 @@ import { usePageUrlGenerator } from "../../../../hooks";
 import { useCompanyContext } from "../../contexts/CompanyContext";
 
 export function CompanyDetails() {
-  const t = useTranslations();
+  const _t = useTranslations();
   const { title } = useSharedContext();
-  const generateUrl = usePageUrlGenerator();
+  const _generateUrl = usePageUrlGenerator();
 
   const { company } = useCompanyContext();
   if (!company) return null;

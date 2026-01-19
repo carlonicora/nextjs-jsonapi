@@ -33,12 +33,7 @@ export function GdprConsentSection<T extends FieldValues>({
 
   return (
     <div className="space-y-4 py-4">
-      <GdprConsentCheckbox
-        form={form}
-        id={termsCheckboxId}
-        label={termsLabel}
-        required
-      />
+      <GdprConsentCheckbox form={form} id={termsCheckboxId} label={termsLabel} required />
       <GdprConsentCheckbox
         form={form}
         id={marketingCheckboxId}

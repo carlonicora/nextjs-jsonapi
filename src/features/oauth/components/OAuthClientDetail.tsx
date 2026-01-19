@@ -86,9 +86,7 @@ export function OAuthClientDetail({
     }
   }, [onRegenerateSecret]);
 
-  const createdDate = client.createdAt
-    ? format(new Date(client.createdAt), "MMMM d, yyyy")
-    : "Unknown";
+  const createdDate = client.createdAt ? format(new Date(client.createdAt), "MMMM d, yyyy") : "Unknown";
 
   return (
     <>
@@ -97,17 +95,13 @@ export function OAuthClientDetail({
           <div className="flex items-start justify-between">
             <div>
               <CardTitle className="text-2xl">{client.name}</CardTitle>
-              {client.description && (
-                <CardDescription className="mt-1">{client.description}</CardDescription>
-              )}
+              {client.description && <CardDescription className="mt-1">{client.description}</CardDescription>}
             </div>
             <div className="flex items-center gap-2">
               <Badge variant={client.isActive ? "default" : "secondary"}>
                 {client.isActive ? "Active" : "Inactive"}
               </Badge>
-              <Badge variant="outline">
-                {client.isConfidential ? "Confidential" : "Public"}
-              </Badge>
+              <Badge variant="outline">{client.isConfidential ? "Confidential" : "Public"}</Badge>
             </div>
           </div>
         </CardHeader>
@@ -209,11 +203,7 @@ export function OAuthClientDetail({
               </Button>
             )}
             {onDelete && (
-              <Button
-                variant="destructive"
-                onClick={() => setShowDeleteConfirm(true)}
-                disabled={isLoading}
-              >
+              <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)} disabled={isLoading}>
                 <Trash2 className="h-4 w-4 mr-2" />
                 Delete
               </Button>
@@ -228,8 +218,7 @@ export function OAuthClientDetail({
           <AlertDialogHeader>
             <AlertDialogTitle>Delete OAuth Application?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete "{client.name}" and revoke all access tokens.
-              This action cannot be undone.
+              This will permanently delete "{client.name}" and revoke all access tokens. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -251,9 +240,8 @@ export function OAuthClientDetail({
           <AlertDialogHeader>
             <AlertDialogTitle>Regenerate Client Secret?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will generate a new client secret and invalidate the old one.
-              All existing tokens will be revoked. You will need to update your application
-              with the new secret.
+              This will generate a new client secret and invalidate the old one. All existing tokens will be revoked.
+              You will need to update your application with the new secret.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

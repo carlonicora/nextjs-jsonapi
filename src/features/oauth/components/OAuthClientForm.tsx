@@ -47,12 +47,7 @@ interface FormErrors {
 /**
  * Form for creating or editing an OAuth client
  */
-export function OAuthClientForm({
-  client,
-  onSubmit,
-  onCancel,
-  isLoading = false,
-}: OAuthClientFormProps) {
+export function OAuthClientForm({ client, onSubmit, onCancel, isLoading = false }: OAuthClientFormProps) {
   const isEditMode = !!client;
 
   const [formState, setFormState] = useState<FormState>({
@@ -102,7 +97,7 @@ export function OAuthClientForm({
 
       await onSubmit(data);
     },
-    [formState, validate, onSubmit]
+    [formState, validate, onSubmit],
   );
 
   return (
@@ -111,9 +106,7 @@ export function OAuthClientForm({
         <CardHeader>
           <CardTitle>{isEditMode ? "Edit Application" : "Create OAuth Application"}</CardTitle>
           <CardDescription>
-            {isEditMode
-              ? "Update your OAuth application settings."
-              : "Register a new application to access the API."}
+            {isEditMode ? "Update your OAuth application settings." : "Register a new application to access the API."}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -192,9 +185,7 @@ export function OAuthClientForm({
               </div>
             </RadioGroup>
             {isEditMode && (
-              <p className="text-sm text-muted-foreground">
-                Client type cannot be changed after creation.
-              </p>
+              <p className="text-sm text-muted-foreground">Client type cannot be changed after creation.</p>
             )}
           </div>
         </CardContent>

@@ -41,12 +41,7 @@ export interface OAuthClientSecretDisplayProps {
  * />
  * ```
  */
-export function OAuthClientSecretDisplay({
-  secret,
-  onDismiss,
-  open,
-  clientName,
-}: OAuthClientSecretDisplayProps) {
+export function OAuthClientSecretDisplay({ secret, onDismiss, open, clientName }: OAuthClientSecretDisplayProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(async () => {
@@ -90,12 +85,7 @@ export function OAuthClientSecretDisplay({
 
         <div className="flex items-center space-x-2">
           <div className="flex-1">
-            <Input
-              value={secret}
-              readOnly
-              className="font-mono text-sm"
-              onClick={(e) => e.currentTarget.select()}
-            />
+            <Input value={secret} readOnly className="font-mono text-sm" onClick={(e) => e.currentTarget.select()} />
           </div>
           <Button
             type="button"
@@ -104,17 +94,11 @@ export function OAuthClientSecretDisplay({
             onClick={handleCopy}
             title={copied ? "Copied!" : "Copy to clipboard"}
           >
-            {copied ? (
-              <Check className="h-4 w-4 text-green-600" />
-            ) : (
-              <Copy className="h-4 w-4" />
-            )}
+            {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
           </Button>
         </div>
 
-        {copied && (
-          <p className="text-sm text-green-600 text-center">Copied to clipboard!</p>
-        )}
+        {copied && <p className="text-sm text-green-600 text-center">Copied to clipboard!</p>}
 
         <DialogFooter className="mt-4">
           <Button onClick={handleDismiss} className="w-full">

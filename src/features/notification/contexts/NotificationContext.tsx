@@ -101,9 +101,7 @@ export const NotificationContextProvider = ({ children }: NotificationContextPro
 
     // Skip for admin users
     if (isRolesConfigured()) {
-      const isAdmin = currentUser.roles?.some(
-        (role: RoleInterface) => role.id === getRoleId().Administrator,
-      );
+      const isAdmin = currentUser.roles?.some((role: RoleInterface) => role.id === getRoleId().Administrator);
       if (isAdmin) {
         setHasInitiallyLoaded(true);
         return;

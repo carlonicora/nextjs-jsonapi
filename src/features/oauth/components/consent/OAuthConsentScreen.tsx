@@ -1,14 +1,7 @@
 "use client";
 
 import { ExternalLink, AlertTriangle, Loader2 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  Separator,
-  Alert,
-  AlertDescription,
-} from "../../../../shadcnui";
+import { Card, CardContent, CardFooter, Separator, Alert, AlertDescription } from "../../../../shadcnui";
 import { OAuthConsentHeader } from "./OAuthConsentHeader";
 import { OAuthScopeList } from "./OAuthScopeList";
 import { OAuthConsentActions } from "./OAuthConsentActions";
@@ -92,11 +85,7 @@ export function OAuthConsentScreen({
       <Card className="w-full max-w-md">
         <CardContent className="pt-6 space-y-6">
           {/* Header */}
-          <OAuthConsentHeader
-            client={client}
-            logoUrl={logoUrl}
-            appName={appName}
-          />
+          <OAuthConsentHeader client={client} logoUrl={logoUrl} appName={appName} />
 
           <Separator />
 
@@ -115,11 +104,7 @@ export function OAuthConsentScreen({
           </div>
 
           {/* Actions */}
-          <OAuthConsentActions
-            onApprove={approve}
-            onDeny={deny}
-            isLoading={isSubmitting}
-          />
+          <OAuthConsentActions onApprove={approve} onDeny={deny} isLoading={isSubmitting} />
         </CardContent>
 
         {/* Footer */}
@@ -128,8 +113,8 @@ export function OAuthConsentScreen({
             By authorizing, you agree to the app's{" "}
             <a href={termsUrl} className="underline hover:text-foreground" target="_blank" rel="noopener">
               Terms of Service
-            </a>
-            {" "}and{" "}
+            </a>{" "}
+            and{" "}
             <a href={privacyUrl} className="underline hover:text-foreground" target="_blank" rel="noopener">
               Privacy Policy
             </a>

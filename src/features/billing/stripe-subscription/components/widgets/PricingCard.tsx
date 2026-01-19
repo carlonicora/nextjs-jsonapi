@@ -16,7 +16,14 @@ export type PricingCardProps = {
   onSelect: (price: StripePriceInterface) => void;
 };
 
-export function PricingCard({ price, isCurrentPlan = false, isSelected = false, isDisabled = false, isLoading = false, onSelect }: PricingCardProps) {
+export function PricingCard({
+  price,
+  isCurrentPlan = false,
+  isSelected = false,
+  isDisabled = false,
+  isLoading = false,
+  onSelect,
+}: PricingCardProps) {
   const description = price.description || price.nickname || "Standard";
   const features = price.features || [];
   const formattedPrice = formatCurrency(price.unitAmount, price.currency);
@@ -50,7 +57,7 @@ export function PricingCard({ price, isCurrentPlan = false, isSelected = false, 
         isSelected && !isCurrentPlan && "ring-2 ring-primary",
         !isDisabled && !isCurrentPlan && "hover:shadow-md hover:border-primary/50",
         isDisabled && "opacity-50 pointer-events-none",
-        isLoading && "pointer-events-none"
+        isLoading && "pointer-events-none",
       )}
     >
       {isCurrentPlan && (

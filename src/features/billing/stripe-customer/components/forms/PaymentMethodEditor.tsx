@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "../../../../../shadcnui";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../../../../../shadcnui";
 import { PaymentMethodForm } from "./PaymentMethodForm";
 
 type PaymentMethodEditorProps = {
@@ -34,12 +28,7 @@ export function PaymentMethodEditor({ open, onOpenChange, onSuccess }: PaymentMe
             Add a new payment method to your account. Your card information is securely processed by Stripe.
           </DialogDescription>
         </DialogHeader>
-        {open && (
-          <PaymentMethodForm
-            onSuccess={handleSuccess}
-            onCancel={handleCancel}
-          />
-        )}
+        {open && <PaymentMethodForm onSuccess={handleSuccess} onCancel={handleCancel} />}
       </DialogContent>
     </Dialog>
   );

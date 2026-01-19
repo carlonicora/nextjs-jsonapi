@@ -75,13 +75,7 @@ describe("ContentListTable", () => {
         ],
       });
 
-      render(
-        <ContentListTable
-          data={dataRetriever}
-          tableGeneratorType={mockModule as any}
-          fields={["id", "title"]}
-        />
-      );
+      render(<ContentListTable data={dataRetriever} tableGeneratorType={mockModule as any} fields={["id", "title"]} />);
 
       expect(screen.getByRole("table")).toBeInTheDocument();
     });
@@ -97,7 +91,7 @@ describe("ContentListTable", () => {
           tableGeneratorType={mockModule as any}
           fields={["id", "title"]}
           title="Articles"
-        />
+        />,
       );
 
       expect(screen.getByText("Articles")).toBeInTheDocument();
@@ -108,13 +102,7 @@ describe("ContentListTable", () => {
         data: [{ id: "1", title: "Article 1" }],
       });
 
-      render(
-        <ContentListTable
-          data={dataRetriever}
-          tableGeneratorType={mockModule as any}
-          fields={["id", "title"]}
-        />
-      );
+      render(<ContentListTable data={dataRetriever} tableGeneratorType={mockModule as any} fields={["id", "title"]} />);
 
       expect(screen.getByText("ID")).toBeInTheDocument();
       expect(screen.getByText("Title")).toBeInTheDocument();
@@ -128,13 +116,7 @@ describe("ContentListTable", () => {
         ],
       });
 
-      render(
-        <ContentListTable
-          data={dataRetriever}
-          tableGeneratorType={mockModule as any}
-          fields={["id", "title"]}
-        />
-      );
+      render(<ContentListTable data={dataRetriever} tableGeneratorType={mockModule as any} fields={["id", "title"]} />);
 
       expect(screen.getByText("1")).toBeInTheDocument();
       expect(screen.getByText("First Article")).toBeInTheDocument();
@@ -147,13 +129,7 @@ describe("ContentListTable", () => {
         data: [],
       });
 
-      render(
-        <ContentListTable
-          data={dataRetriever}
-          tableGeneratorType={mockModule as any}
-          fields={["id", "title"]}
-        />
-      );
+      render(<ContentListTable data={dataRetriever} tableGeneratorType={mockModule as any} fields={["id", "title"]} />);
 
       expect(screen.getByText("No results.")).toBeInTheDocument();
     });
@@ -172,7 +148,7 @@ describe("ContentListTable", () => {
           fields={["id", "title"]}
           title="Articles"
           allowSearch={true}
-        />
+        />,
       );
 
       expect(screen.getByTestId("content-table-search")).toBeInTheDocument();
@@ -187,13 +163,7 @@ describe("ContentListTable", () => {
         previous: vi.fn(),
       });
 
-      render(
-        <ContentListTable
-          data={dataRetriever}
-          tableGeneratorType={mockModule as any}
-          fields={["id", "title"]}
-        />
-      );
+      render(<ContentListTable data={dataRetriever} tableGeneratorType={mockModule as any} fields={["id", "title"]} />);
 
       // Should have navigation buttons
       const buttons = screen.getAllByRole("button");
@@ -207,13 +177,7 @@ describe("ContentListTable", () => {
         previous: undefined,
       });
 
-      render(
-        <ContentListTable
-          data={dataRetriever}
-          tableGeneratorType={mockModule as any}
-          fields={["id", "title"]}
-        />
-      );
+      render(<ContentListTable data={dataRetriever} tableGeneratorType={mockModule as any} fields={["id", "title"]} />);
 
       const buttons = screen.getAllByRole("button");
       const previousButton = buttons[0];
@@ -227,13 +191,7 @@ describe("ContentListTable", () => {
         previous: vi.fn(),
       });
 
-      render(
-        <ContentListTable
-          data={dataRetriever}
-          tableGeneratorType={mockModule as any}
-          fields={["id", "title"]}
-        />
-      );
+      render(<ContentListTable data={dataRetriever} tableGeneratorType={mockModule as any} fields={["id", "title"]} />);
 
       const buttons = screen.getAllByRole("button");
       const nextButton = buttons[buttons.length - 1];
@@ -249,13 +207,7 @@ describe("ContentListTable", () => {
         next: nextFn,
       });
 
-      render(
-        <ContentListTable
-          data={dataRetriever}
-          tableGeneratorType={mockModule as any}
-          fields={["id", "title"]}
-        />
-      );
+      render(<ContentListTable data={dataRetriever} tableGeneratorType={mockModule as any} fields={["id", "title"]} />);
 
       const buttons = screen.getAllByRole("button");
       const nextButton = buttons[buttons.length - 1];
@@ -274,13 +226,7 @@ describe("ContentListTable", () => {
         next: vi.fn(), // Need both to show footer
       });
 
-      render(
-        <ContentListTable
-          data={dataRetriever}
-          tableGeneratorType={mockModule as any}
-          fields={["id", "title"]}
-        />
-      );
+      render(<ContentListTable data={dataRetriever} tableGeneratorType={mockModule as any} fields={["id", "title"]} />);
 
       const buttons = screen.getAllByRole("button");
       const previousButton = buttons[0];
@@ -300,13 +246,7 @@ describe("ContentListTable", () => {
         },
       });
 
-      render(
-        <ContentListTable
-          data={dataRetriever}
-          tableGeneratorType={mockModule as any}
-          fields={["id", "title"]}
-        />
-      );
+      render(<ContentListTable data={dataRetriever} tableGeneratorType={mockModule as any} fields={["id", "title"]} />);
 
       expect(screen.getByText("1-25")).toBeInTheDocument();
     });
@@ -325,7 +265,7 @@ describe("ContentListTable", () => {
           fields={["id", "title"]}
           title="Articles"
           functions={<button data-testid="custom-function">Custom</button>}
-        />
+        />,
       );
 
       expect(screen.getByTestId("custom-function")).toBeInTheDocument();
@@ -343,7 +283,7 @@ describe("ContentListTable", () => {
           fields={["id", "title"]}
           title="Articles"
           filters={<div data-testid="custom-filter">Filter</div>}
-        />
+        />,
       );
 
       expect(screen.getByTestId("custom-filter")).toBeInTheDocument();
@@ -362,7 +302,7 @@ describe("ContentListTable", () => {
           tableGeneratorType={mockModule as any}
           fields={["id", "title"]}
           functions={<button>Action</button>}
-        />
+        />,
       );
 
       // Footer should be present with buttons
@@ -376,13 +316,7 @@ describe("ContentListTable", () => {
         next: vi.fn(),
       });
 
-      render(
-        <ContentListTable
-          data={dataRetriever}
-          tableGeneratorType={mockModule as any}
-          fields={["id", "title"]}
-        />
-      );
+      render(<ContentListTable data={dataRetriever} tableGeneratorType={mockModule as any} fields={["id", "title"]} />);
 
       // Should have navigation buttons in footer
       const buttons = screen.getAllByRole("button");
@@ -395,13 +329,7 @@ describe("ContentListTable", () => {
         previous: vi.fn(),
       });
 
-      render(
-        <ContentListTable
-          data={dataRetriever}
-          tableGeneratorType={mockModule as any}
-          fields={["id", "title"]}
-        />
-      );
+      render(<ContentListTable data={dataRetriever} tableGeneratorType={mockModule as any} fields={["id", "title"]} />);
 
       // Should have navigation buttons in footer
       const buttons = screen.getAllByRole("button");

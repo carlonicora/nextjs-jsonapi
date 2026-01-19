@@ -184,13 +184,19 @@ export function PricesList({ productId, onPricesChange }: PricesListProps) {
 
                 <div className="flex flex-wrap gap-2">
                   {price.active ? (
-                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">Active</span>
+                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
+                      Active
+                    </span>
                   ) : (
-                    <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full font-medium">Inactive</span>
+                    <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full font-medium">
+                      Inactive
+                    </span>
                   )}
 
                   {price.recurring?.usageType === "metered" && (
-                    <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">Metered</span>
+                    <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">
+                      Metered
+                    </span>
                   )}
 
                   <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full font-medium uppercase">
@@ -238,7 +244,8 @@ export function PricesList({ productId, onPricesChange }: PricesListProps) {
             <AlertDialogTitle>Archive Price</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to archive the price for{" "}
-              {priceToArchive && `${formatCurrency(priceToArchive.unitAmount, priceToArchive.currency)} ${formatInterval(priceToArchive)}`}
+              {priceToArchive &&
+                `${formatCurrency(priceToArchive.unitAmount, priceToArchive.currency)} ${formatInterval(priceToArchive)}`}
               ? This will prevent new subscriptions but existing ones will continue.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -262,7 +269,8 @@ export function PricesList({ productId, onPricesChange }: PricesListProps) {
             <AlertDialogTitle>Reactivate Price</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to reactivate the price for{" "}
-              {priceToReactivate && `${formatCurrency(priceToReactivate.unitAmount, priceToReactivate.currency)} ${formatInterval(priceToReactivate)}`}
+              {priceToReactivate &&
+                `${formatCurrency(priceToReactivate.unitAmount, priceToReactivate.currency)} ${formatInterval(priceToReactivate)}`}
               ? This will allow new subscriptions again.
             </AlertDialogDescription>
           </AlertDialogHeader>

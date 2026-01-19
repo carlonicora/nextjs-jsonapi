@@ -5,12 +5,7 @@ import { useWatch } from "react-hook-form";
 import { FormFieldWrapper } from "../../../../components/forms";
 import { Modules } from "../../../../core";
 import { DataListRetriever, useDataListRetriever, useDebounce } from "../../../../hooks";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-  MultiSelect,
-} from "../../../../shadcnui";
+import { Avatar, AvatarFallback, AvatarImage, MultiSelect } from "../../../../shadcnui";
 import { useCurrentUserContext } from "../../contexts";
 import { UserInterface } from "../../data";
 import { UserService } from "../../data/user.service";
@@ -62,8 +57,8 @@ export function UserMultiSelect({
   const { company } = useCurrentUserContext<UserInterface>();
 
   const searchTermRef = useRef<string>("");
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [_searchTerm, _setSearchTerm] = useState<string>("");
+  const [_isSearching, _setIsSearching] = useState<boolean>(false);
   const [userOptions, setUserOptions] = useState<any[]>([]);
 
   // Get the current selected users from the form

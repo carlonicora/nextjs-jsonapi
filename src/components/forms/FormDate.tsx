@@ -129,12 +129,7 @@ export function FormDate({
 
   return (
     <div className="flex w-full flex-col">
-      <FormFieldWrapper
-        form={form}
-        name={id}
-        label={name}
-        isRequired={isRequired}
-      >
+      <FormFieldWrapper form={form} name={id} label={name} isRequired={isRequired}>
         {(field) => (
           <Popover open={open} onOpenChange={setOpen} modal={true}>
             <InputGroup>

@@ -16,7 +16,13 @@ type UsersListProps = {
   restrictToJoinRequests?: boolean;
 };
 
-export function UsersList({ data, optionComponents, removeFunction, hideOptions, showRelevance }: UsersListProps) {
+export function UsersList({
+  data,
+  optionComponents: _optionComponents,
+  removeFunction: _removeFunction,
+  hideOptions: _hideOptions,
+  showRelevance: _showRelevance,
+}: UsersListProps) {
   const t = useTranslations();
 
   return (

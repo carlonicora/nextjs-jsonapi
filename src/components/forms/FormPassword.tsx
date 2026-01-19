@@ -24,13 +24,7 @@ export function FormPassword({
 }) {
   return (
     <div className="flex w-full flex-col">
-      <FormFieldWrapper
-        form={form}
-        name={id}
-        label={name}
-        isRequired={isRequired}
-        testId={testId}
-      >
+      <FormFieldWrapper form={form} name={id} label={name} isRequired={isRequired} testId={testId}>
         {(field) => (
           <PasswordInput
             {...field}

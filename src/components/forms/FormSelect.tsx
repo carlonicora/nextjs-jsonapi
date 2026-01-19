@@ -1,19 +1,13 @@
 "use client";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../shadcnui";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../shadcnui";
 import { FormFieldWrapper } from "./FormFieldWrapper";
 
 export function FormSelect({
   form,
   id,
   name,
-  placeholder,
+  placeholder: _placeholder,
   disabled,
   values,
   onChange,

@@ -32,9 +32,7 @@ export function WizardStepReview({
 }: WizardStepReviewProps) {
   if (!selectedPrice) {
     return (
-      <div className="text-center py-8 text-muted-foreground">
-        No plan selected. Please go back and select a plan.
-      </div>
+      <div className="text-center py-8 text-muted-foreground">No plan selected. Please go back and select a plan.</div>
     );
   }
 
@@ -54,9 +52,7 @@ export function WizardStepReview({
         <div className="flex justify-between items-center">
           <div>
             <p className="font-medium">{selectedPrice.product?.name}</p>
-            {selectedPrice.nickname && (
-              <p className="text-sm text-muted-foreground">{selectedPrice.nickname}</p>
-            )}
+            {selectedPrice.nickname && <p className="text-sm text-muted-foreground">{selectedPrice.nickname}</p>}
           </div>
           <div className="text-right">
             <p className="font-semibold text-lg">
@@ -71,9 +67,7 @@ export function WizardStepReview({
       {isChangingPlan && prorationPreview && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
           <h4 className="font-medium text-blue-800">Proration Summary</h4>
-          <p className="text-sm text-blue-700">
-            Your next charge will be adjusted to account for the plan change.
-          </p>
+          <p className="text-sm text-blue-700">Your next charge will be adjusted to account for the plan change.</p>
           <div className="flex justify-between text-sm">
             <span className="text-blue-600">Amount due now:</span>
             <span className="font-medium text-blue-800">
@@ -89,9 +83,7 @@ export function WizardStepReview({
           <div>
             <h4 className="font-medium">Payment Method</h4>
             <p className="text-sm text-muted-foreground">
-              {hasPaymentMethod
-                ? "A payment method is on file"
-                : "No payment method on file"}
+              {hasPaymentMethod ? "A payment method is on file" : "No payment method on file"}
             </p>
           </div>
           {!hasPaymentMethod && (
@@ -115,10 +107,7 @@ export function WizardStepReview({
         <Button variant="outline" onClick={onBack} disabled={isProcessing}>
           Back
         </Button>
-        <Button
-          onClick={hasPaymentMethod ? onConfirm : onAddPaymentMethod}
-          disabled={isProcessing}
-        >
+        <Button onClick={hasPaymentMethod ? onConfirm : onAddPaymentMethod} disabled={isProcessing}>
           {isProcessing
             ? "Processing..."
             : hasPaymentMethod

@@ -1,13 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "../../../../../shadcnui";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../../../../../shadcnui";
 import { StripeSubscriptionInterface } from "../../data";
 import { useSubscriptionWizard } from "../../hooks/useSubscriptionWizard";
 import { WizardProgressIndicator } from "./WizardProgressIndicator";

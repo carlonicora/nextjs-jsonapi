@@ -41,7 +41,7 @@ describe("useJsonApiMutation", () => {
             method: "POST",
             classKey: mockModule,
           }),
-        { wrapper }
+        { wrapper },
       );
 
       expect(result.current.loading).toBe(false);
@@ -61,7 +61,7 @@ describe("useJsonApiMutation", () => {
             method: "POST",
             classKey: mockModule,
           }),
-        { wrapper }
+        { wrapper },
       );
 
       let mutationResult: any;
@@ -93,7 +93,7 @@ describe("useJsonApiMutation", () => {
             method: "POST",
             classKey: mockModule,
           }),
-        { wrapper }
+        { wrapper },
       );
 
       let mutationResult: any;
@@ -122,7 +122,7 @@ describe("useJsonApiMutation", () => {
             classKey: mockModule,
             onSuccess,
           }),
-        { wrapper }
+        { wrapper },
       );
 
       await act(async () => {
@@ -151,7 +151,7 @@ describe("useJsonApiMutation", () => {
             classKey: mockModule,
             onError,
           }),
-        { wrapper }
+        { wrapper },
       );
 
       await act(async () => {
@@ -177,7 +177,7 @@ describe("useJsonApiMutation", () => {
             method: "PUT",
             classKey: mockModule,
           }),
-        { wrapper }
+        { wrapper },
       );
 
       await act(async () => {
@@ -204,7 +204,7 @@ describe("useJsonApiMutation", () => {
             method: "PATCH",
             classKey: mockModule,
           }),
-        { wrapper }
+        { wrapper },
       );
 
       await act(async () => {
@@ -231,7 +231,7 @@ describe("useJsonApiMutation", () => {
             method: "DELETE",
             classKey: mockModule,
           }),
-        { wrapper }
+        { wrapper },
       );
 
       await act(async () => {
@@ -256,7 +256,7 @@ describe("useJsonApiMutation", () => {
             method: "POST",
             classKey: mockModule,
           }),
-        { wrapper }
+        { wrapper },
       );
 
       await act(async () => {
@@ -294,7 +294,7 @@ describe("useJsonApiMutation", () => {
             method: "POST",
             classKey: mockModule,
           }),
-        { wrapper }
+        { wrapper },
       );
 
       // Start mutation without awaiting
@@ -331,7 +331,7 @@ describe("useJsonApiMutation", () => {
             method: "POST",
             classKey: mockModule,
           }),
-        { wrapper }
+        { wrapper },
       );
 
       await act(async () => {

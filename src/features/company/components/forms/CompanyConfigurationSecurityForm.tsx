@@ -20,7 +20,7 @@ const providerConfig: Fields = {
 };
 
 export function CompanyConfigurationSecurityForm({ form }: SecurityConfigurationFormProps) {
-  const t = useTranslations();
+  const _t = useTranslations();
 
   const renderProviderFields = () => {
     const config = providerConfig;

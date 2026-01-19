@@ -36,7 +36,7 @@ describe("useJsonApiGet", () => {
           classKey: mockModule,
           endpoint: "/articles/1",
         }),
-      { wrapper }
+      { wrapper },
     );
 
     expect(result.current.loading).toBe(true);
@@ -55,7 +55,7 @@ describe("useJsonApiGet", () => {
           classKey: mockModule,
           endpoint: "/articles/1",
         }),
-      { wrapper }
+      { wrapper },
     );
 
     await waitFor(() => {
@@ -78,7 +78,7 @@ describe("useJsonApiGet", () => {
           endpoint: "/articles/1",
           options: { enabled: false },
         }),
-      { wrapper }
+      { wrapper },
     );
 
     // Wait a bit to ensure no fetch happens
@@ -104,7 +104,7 @@ describe("useJsonApiGet", () => {
           classKey: mockModule,
           endpoint: "/articles/999",
         }),
-      { wrapper }
+      { wrapper },
     );
 
     await waitFor(() => {
@@ -125,7 +125,7 @@ describe("useJsonApiGet", () => {
           classKey: mockModule,
           endpoint: "/articles/1",
         }),
-      { wrapper }
+      { wrapper },
     );
 
     await waitFor(() => {
@@ -148,7 +148,7 @@ describe("useJsonApiGet", () => {
             attributes: { title: `Article ${callCount}` },
           }),
           ok: true,
-        })
+        }),
       );
     });
 
@@ -158,7 +158,7 @@ describe("useJsonApiGet", () => {
           classKey: mockModule,
           endpoint: "/articles/1",
         }),
-      { wrapper }
+      { wrapper },
     );
 
     await waitFor(() => {
@@ -191,7 +191,7 @@ describe("useJsonApiGet", () => {
           classKey: mockModule,
           endpoint: "/articles",
         }),
-      { wrapper }
+      { wrapper },
     );
 
     await waitFor(() => {
@@ -216,7 +216,7 @@ describe("useJsonApiGet", () => {
           classKey: mockModule,
           endpoint: "/articles/1",
         }),
-      { wrapper }
+      { wrapper },
     );
 
     await waitFor(() => {

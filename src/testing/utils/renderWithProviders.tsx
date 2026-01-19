@@ -2,7 +2,10 @@
 
 import React, { ReactElement } from "react";
 import { render, RenderOptions, RenderResult } from "@testing-library/react";
-import { MockJsonApiProvider, MockJsonApiProviderProps } from "../providers/MockJsonApiProvider";
+import {
+  MockJsonApiProvider,
+  MockJsonApiProviderProps as _MockJsonApiProviderProps,
+} from "../providers/MockJsonApiProvider";
 import { JsonApiConfig } from "../../client/context/JsonApiContext";
 
 export interface RenderWithProvidersOptions extends Omit<RenderOptions, "wrapper"> {
@@ -46,18 +49,11 @@ export interface RenderWithProvidersOptions extends Omit<RenderOptions, "wrapper
  * });
  * ```
  */
-export function renderWithProviders(
-  ui: ReactElement,
-  options: RenderWithProvidersOptions = {}
-): RenderResult {
+export function renderWithProviders(ui: ReactElement, options: RenderWithProvidersOptions = {}): RenderResult {
   const { jsonApiConfig, wrapper: AdditionalWrapper, ...renderOptions } = options;
 
   function AllProviders({ children }: { children: React.ReactNode }) {
-    const content = (
-      <MockJsonApiProvider config={jsonApiConfig}>
-        {children}
-      </MockJsonApiProvider>
-    );
+    const content = <MockJsonApiProvider config={jsonApiConfig}>{children}</MockJsonApiProvider>;
 
     if (AdditionalWrapper) {
       return <AdditionalWrapper>{content}</AdditionalWrapper>;

@@ -56,26 +56,20 @@ describe("useRehydration", () => {
       included: [],
     };
 
-    const { result } = renderHook(() =>
-      useRehydration<MockArticle>(mockModule as any, hydratedData)
-    );
+    const { result } = renderHook(() => useRehydration<MockArticle>(mockModule as any, hydratedData));
 
     expect(result.current).toBeInstanceOf(MockArticle);
     expect(result.current?.rehydratedData).toBe(hydratedData);
   });
 
   it("should return null for null data", () => {
-    const { result } = renderHook(() =>
-      useRehydration<MockArticle>(mockModule as any, null)
-    );
+    const { result } = renderHook(() => useRehydration<MockArticle>(mockModule as any, null));
 
     expect(result.current).toBeNull();
   });
 
   it("should return null for undefined data", () => {
-    const { result } = renderHook(() =>
-      useRehydration<MockArticle>(mockModule as any, undefined)
-    );
+    const { result } = renderHook(() => useRehydration<MockArticle>(mockModule as any, undefined));
 
     expect(result.current).toBeNull();
   });
@@ -86,9 +80,7 @@ describe("useRehydration", () => {
       included: [],
     };
 
-    const { result, rerender } = renderHook(() =>
-      useRehydration<MockArticle>(mockModule as any, hydratedData)
-    );
+    const { result, rerender } = renderHook(() => useRehydration<MockArticle>(mockModule as any, hydratedData));
 
     const firstResult = result.current;
     rerender();
@@ -108,10 +100,9 @@ describe("useRehydration", () => {
       included: [],
     };
 
-    const { result, rerender } = renderHook(
-      ({ data }) => useRehydration<MockArticle>(mockModule as any, data),
-      { initialProps: { data: hydratedData1 } }
-    );
+    const { result, rerender } = renderHook(({ data }) => useRehydration<MockArticle>(mockModule as any, data), {
+      initialProps: { data: hydratedData1 },
+    });
 
     const firstResult = result.current;
     rerender({ data: hydratedData2 });
@@ -135,9 +126,7 @@ describe("useRehydrationList", () => {
       { jsonApi: { type: "articles", id: "3" }, included: [] },
     ];
 
-    const { result } = renderHook(() =>
-      useRehydrationList<MockArticle>(mockModule as any, hydratedDataList)
-    );
+    const { result } = renderHook(() => useRehydrationList<MockArticle>(mockModule as any, hydratedDataList));
 
     expect(result.current).toHaveLength(3);
     result.current.forEach((item, index) => {
@@ -147,37 +136,27 @@ describe("useRehydrationList", () => {
   });
 
   it("should return empty array for null data", () => {
-    const { result } = renderHook(() =>
-      useRehydrationList<MockArticle>(mockModule as any, null)
-    );
+    const { result } = renderHook(() => useRehydrationList<MockArticle>(mockModule as any, null));
 
     expect(result.current).toEqual([]);
   });
 
   it("should return empty array for undefined data", () => {
-    const { result } = renderHook(() =>
-      useRehydrationList<MockArticle>(mockModule as any, undefined)
-    );
+    const { result } = renderHook(() => useRehydrationList<MockArticle>(mockModule as any, undefined));
 
     expect(result.current).toEqual([]);
   });
 
   it("should return empty array for empty array input", () => {
-    const { result } = renderHook(() =>
-      useRehydrationList<MockArticle>(mockModule as any, [])
-    );
+    const { result } = renderHook(() => useRehydrationList<MockArticle>(mockModule as any, []));
 
     expect(result.current).toEqual([]);
   });
 
   it("should memoize result for same data", () => {
-    const hydratedDataList: JsonApiHydratedDataInterface[] = [
-      { jsonApi: { type: "articles", id: "1" }, included: [] },
-    ];
+    const hydratedDataList: JsonApiHydratedDataInterface[] = [{ jsonApi: { type: "articles", id: "1" }, included: [] }];
 
-    const { result, rerender } = renderHook(() =>
-      useRehydrationList<MockArticle>(mockModule as any, hydratedDataList)
-    );
+    const { result, rerender } = renderHook(() => useRehydrationList<MockArticle>(mockModule as any, hydratedDataList));
 
     const firstResult = result.current;
     rerender();

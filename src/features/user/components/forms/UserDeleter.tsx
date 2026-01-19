@@ -20,7 +20,7 @@ function UserDeleterInternal({ user, onDeleted, companyId }: UserDeleterProps) {
   const { currentUser, company } = useCurrentUserContext<UserInterface>();
   const generateUrl = usePageUrlGenerator();
   const router = useI18nRouter();
-  const t = useTranslations();
+  const _t = useTranslations();
 
   let cId;
   if (currentUser?.roles.find((role) => role.id === getRoleId().Administrator) && companyId) {

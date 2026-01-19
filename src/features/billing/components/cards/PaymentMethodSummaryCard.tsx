@@ -1,14 +1,7 @@
 "use client";
 
 import { Wallet, ChevronRight } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Button,
-  Skeleton,
-} from "../../../../shadcnui";
+import { Card, CardContent, CardHeader, CardTitle, Button, Skeleton } from "../../../../shadcnui";
 import { PaymentMethodInterface } from "../../stripe-customer";
 
 type PaymentMethodSummaryCardProps = {
@@ -81,10 +74,16 @@ export function PaymentMethodSummaryCard({
         {paymentMethods.length === 0 ? (
           <div className="space-y-2">
             <p className="text-xl font-bold text-muted-foreground">No payment method</p>
-            <p className="text-xs text-muted-foreground">
-              Add a card to enable subscriptions
-            </p>
-            <Button variant="outline" size="sm" className="mt-2" onClick={(e) => { e.stopPropagation(); onManageClick(); }}>
+            <p className="text-xs text-muted-foreground">Add a card to enable subscriptions</p>
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-2"
+              onClick={(e) => {
+                e.stopPropagation();
+                onManageClick();
+              }}
+            >
               Add Card
               <ChevronRight className="h-4 w-4 ml-1" />
             </Button>
@@ -98,18 +97,14 @@ export function PaymentMethodSummaryCard({
               Expires {String(defaultMethod.card.expMonth).padStart(2, "0")}/{defaultMethod.card.expYear}
             </p>
             {paymentMethods.length > 1 && (
-              <p className="text-xs text-muted-foreground">
-                +{paymentMethods.length - 1} more card(s)
-              </p>
+              <p className="text-xs text-muted-foreground">+{paymentMethods.length - 1} more card(s)</p>
             )}
           </div>
         ) : (
           <div className="space-y-2">
             <p className="text-xl font-bold">{defaultMethod?.type || "Payment Method"}</p>
             {paymentMethods.length > 1 && (
-              <p className="text-xs text-muted-foreground">
-                +{paymentMethods.length - 1} more method(s)
-              </p>
+              <p className="text-xs text-muted-foreground">+{paymentMethods.length - 1} more method(s)</p>
             )}
           </div>
         )}

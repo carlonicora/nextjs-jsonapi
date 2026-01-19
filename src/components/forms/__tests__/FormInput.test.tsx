@@ -28,11 +28,7 @@ describe("FormInput", () => {
 
   describe("rendering", () => {
     it("should render input without label", () => {
-      render(
-        <FormWrapper defaultValues={{ title: "" }}>
-          {(form) => <FormInput form={form} id="title" />}
-        </FormWrapper>
-      );
+      render(<FormWrapper defaultValues={{ title: "" }}>{(form) => <FormInput form={form} id="title" />}</FormWrapper>);
 
       expect(screen.getByRole("textbox")).toBeInTheDocument();
     });
@@ -41,7 +37,7 @@ describe("FormInput", () => {
       render(
         <FormWrapper defaultValues={{ title: "" }}>
           {(form) => <FormInput form={form} id="title" name="Title" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       expect(screen.getByText("Title")).toBeInTheDocument();
@@ -52,7 +48,7 @@ describe("FormInput", () => {
       render(
         <FormWrapper defaultValues={{ title: "" }}>
           {(form) => <FormInput form={form} id="title" name="Title" isRequired={true} />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       expect(screen.getByText("*")).toBeInTheDocument();
@@ -62,7 +58,7 @@ describe("FormInput", () => {
       render(
         <FormWrapper defaultValues={{ title: "" }}>
           {(form) => <FormInput form={form} id="title" placeholder="Enter title" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       expect(screen.getByPlaceholderText("Enter title")).toBeInTheDocument();
@@ -72,7 +68,7 @@ describe("FormInput", () => {
       render(
         <FormWrapper defaultValues={{ title: "" }}>
           {(form) => <FormInput form={form} id="title" testId="title-input" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       expect(screen.getByTestId("title-input")).toBeInTheDocument();
@@ -81,11 +77,7 @@ describe("FormInput", () => {
 
   describe("input types", () => {
     it("should render text input by default", () => {
-      render(
-        <FormWrapper defaultValues={{ title: "" }}>
-          {(form) => <FormInput form={form} id="title" />}
-        </FormWrapper>
-      );
+      render(<FormWrapper defaultValues={{ title: "" }}>{(form) => <FormInput form={form} id="title" />}</FormWrapper>);
 
       const input = screen.getByRole("textbox");
       expect(input).toHaveAttribute("type", "text");
@@ -95,7 +87,7 @@ describe("FormInput", () => {
       render(
         <FormWrapper defaultValues={{ count: 0 }}>
           {(form) => <FormInput form={form} id="count" type="number" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const input = screen.getByRole("spinbutton");
@@ -106,7 +98,7 @@ describe("FormInput", () => {
       render(
         <FormWrapper defaultValues={{ price: 0 }}>
           {(form) => <FormInput form={form} id="price" type="currency" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       expect(screen.getByText("€")).toBeInTheDocument();
@@ -118,7 +110,7 @@ describe("FormInput", () => {
       render(
         <FormWrapper defaultValues={{ password: "" }}>
           {(form) => <FormInput form={form} id="password" type="password" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const input = document.querySelector('input[type="password"]');
@@ -129,7 +121,7 @@ describe("FormInput", () => {
       render(
         <FormWrapper defaultValues={{ url: "" }}>
           {(form) => <FormInput form={form} id="url" type="link" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const input = screen.getByRole("textbox");
@@ -139,11 +131,7 @@ describe("FormInput", () => {
 
   describe("user interaction", () => {
     it("should update value on change for text input", () => {
-      render(
-        <FormWrapper defaultValues={{ title: "" }}>
-          {(form) => <FormInput form={form} id="title" />}
-        </FormWrapper>
-      );
+      render(<FormWrapper defaultValues={{ title: "" }}>{(form) => <FormInput form={form} id="title" />}</FormWrapper>);
 
       const input = screen.getByRole("textbox");
       fireEvent.change(input, { target: { value: "New Title" } });
@@ -155,7 +143,7 @@ describe("FormInput", () => {
       render(
         <FormWrapper defaultValues={{ count: 0 }}>
           {(form) => <FormInput form={form} id="count" type="number" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const input = screen.getByRole("spinbutton");
@@ -170,7 +158,7 @@ describe("FormInput", () => {
       render(
         <FormWrapper defaultValues={{ title: "" }}>
           {(form) => <FormInput form={form} id="title" onChange={onChange} />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const input = screen.getByRole("textbox");
@@ -184,7 +172,7 @@ describe("FormInput", () => {
       render(
         <FormWrapper defaultValues={{ title: "" }}>
           {(form) => <FormInput form={form} id="title" onBlur={onBlur} />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const input = screen.getByRole("textbox");
@@ -201,7 +189,7 @@ describe("FormInput", () => {
       render(
         <FormWrapper defaultValues={{ title: "" }}>
           {(form) => <FormInput form={form} id="title" onKeyDown={onKeyDown} />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const input = screen.getByRole("textbox");
@@ -216,7 +204,7 @@ describe("FormInput", () => {
       render(
         <FormWrapper defaultValues={{ title: "" }}>
           {(form) => <FormInput form={form} id="title" disabled={true} />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const input = screen.getByRole("textbox");
@@ -224,11 +212,7 @@ describe("FormInput", () => {
     });
 
     it("should not be disabled by default", () => {
-      render(
-        <FormWrapper defaultValues={{ title: "" }}>
-          {(form) => <FormInput form={form} id="title" />}
-        </FormWrapper>
-      );
+      render(<FormWrapper defaultValues={{ title: "" }}>{(form) => <FormInput form={form} id="title" />}</FormWrapper>);
 
       const input = screen.getByRole("textbox");
       expect(input).not.toBeDisabled();
@@ -240,7 +224,7 @@ describe("FormInput", () => {
       render(
         <FormWrapper defaultValues={{ url: "" }}>
           {(form) => <FormInput form={form} id="url" type="link" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const input = screen.getByRole("textbox");
@@ -254,7 +238,7 @@ describe("FormInput", () => {
       render(
         <FormWrapper defaultValues={{ url: "" }}>
           {(form) => <FormInput form={form} id="url" type="link" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const input = screen.getByRole("textbox");
@@ -268,7 +252,7 @@ describe("FormInput", () => {
       render(
         <FormWrapper defaultValues={{ url: "" }}>
           {(form) => <FormInput form={form} id="url" type="link" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const input = screen.getByRole("textbox");
@@ -284,7 +268,7 @@ describe("FormInput", () => {
       render(
         <FormWrapper defaultValues={{ title: "" }}>
           {(form) => <FormInput form={form} id="title" autoFocus={true} />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const input = screen.getByRole("textbox");

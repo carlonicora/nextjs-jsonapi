@@ -13,7 +13,12 @@ type InvoiceDetailsProps = {
   onInvoiceChange: () => void;
 };
 
-export function InvoiceDetails({ invoice, open, onOpenChange, onInvoiceChange }: InvoiceDetailsProps) {
+export function InvoiceDetails({
+  invoice,
+  open,
+  onOpenChange,
+  onInvoiceChange: _onInvoiceChange,
+}: InvoiceDetailsProps) {
   const handleDownloadPDF = () => {
     if (invoice.stripePdfUrl) {
       window.open(invoice.stripePdfUrl, "_blank");

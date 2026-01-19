@@ -36,7 +36,7 @@ describe.skip("FormSelect", () => {
       render(
         <FormWrapper defaultValues={{ status: "" }}>
           {(form) => <FormSelect form={form} id="status" values={mockValues} />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       expect(screen.getByRole("combobox")).toBeInTheDocument();
@@ -46,7 +46,7 @@ describe.skip("FormSelect", () => {
       render(
         <FormWrapper defaultValues={{ status: "" }}>
           {(form) => <FormSelect form={form} id="status" name="Status" values={mockValues} />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       expect(screen.getByText("Status")).toBeInTheDocument();
@@ -56,10 +56,8 @@ describe.skip("FormSelect", () => {
     it("should render placeholder", () => {
       render(
         <FormWrapper defaultValues={{ status: "" }}>
-          {(form) => (
-            <FormSelect form={form} id="status" values={mockValues} placeholder="Select an option" />
-          )}
-        </FormWrapper>
+          {(form) => <FormSelect form={form} id="status" values={mockValues} placeholder="Select an option" />}
+        </FormWrapper>,
       );
 
       expect(screen.getByText("Select an option")).toBeInTheDocument();
@@ -69,7 +67,7 @@ describe.skip("FormSelect", () => {
       render(
         <FormWrapper defaultValues={{ status: "option2" }}>
           {(form) => <FormSelect form={form} id="status" values={mockValues} />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       expect(screen.getByRole("combobox")).toHaveTextContent("Option 2");
@@ -81,10 +79,8 @@ describe.skip("FormSelect", () => {
       // Just verify it renders without error with useRows
       render(
         <FormWrapper defaultValues={{ status: "" }}>
-          {(form) => (
-            <FormSelect form={form} id="status" name="Status" values={mockValues} useRows={true} />
-          )}
-        </FormWrapper>
+          {(form) => <FormSelect form={form} id="status" name="Status" values={mockValues} useRows={true} />}
+        </FormWrapper>,
       );
 
       expect(screen.getByRole("combobox")).toBeInTheDocument();
@@ -94,10 +90,8 @@ describe.skip("FormSelect", () => {
     it("should render label with row layout styling when useRows is true", () => {
       const { container } = render(
         <FormWrapper defaultValues={{ status: "" }}>
-          {(form) => (
-            <FormSelect form={form} id="status" name="Status" values={mockValues} useRows={true} />
-          )}
-        </FormWrapper>
+          {(form) => <FormSelect form={form} id="status" name="Status" values={mockValues} useRows={true} />}
+        </FormWrapper>,
       );
 
       // The label should have min-w-28 class when useRows is true
@@ -111,7 +105,7 @@ describe.skip("FormSelect", () => {
       render(
         <FormWrapper defaultValues={{ status: "" }}>
           {(form) => <FormSelect form={form} id="status" values={mockValues} />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const trigger = screen.getByRole("combobox");
@@ -124,7 +118,7 @@ describe.skip("FormSelect", () => {
       render(
         <FormWrapper defaultValues={{ status: "" }}>
           {(form) => <FormSelect form={form} id="status" values={[]} placeholder="Select" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       expect(screen.getByRole("combobox")).toBeInTheDocument();
@@ -134,7 +128,7 @@ describe.skip("FormSelect", () => {
       render(
         <FormWrapper defaultValues={{ status: "" }}>
           {(form) => <FormSelect form={form} id="status" values={mockValues} />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const combobox = screen.getByRole("combobox");
@@ -145,7 +139,7 @@ describe.skip("FormSelect", () => {
       render(
         <FormWrapper defaultValues={{ status: "option1" }}>
           {(form) => <FormSelect form={form} id="status" values={mockValues} />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       expect(screen.getByRole("combobox")).toHaveTextContent("Option 1");
@@ -155,7 +149,7 @@ describe.skip("FormSelect", () => {
       render(
         <FormWrapper defaultValues={{ status: "option3" }}>
           {(form) => <FormSelect form={form} id="status" values={mockValues} />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       expect(screen.getByRole("combobox")).toHaveTextContent("Option 3");
@@ -167,7 +161,7 @@ describe.skip("FormSelect", () => {
       render(
         <FormWrapper defaultValues={{ status: "" }}>
           {(form) => <FormSelect form={form} id="status" values={mockValues} />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const combobox = screen.getByRole("combobox");

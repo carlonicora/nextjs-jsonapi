@@ -43,7 +43,7 @@ export function CancelSubscriptionDialog({
     },
   });
 
-  const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (values) => {
+  const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (_values) => {
     setIsSubmitting(true);
 
     try {

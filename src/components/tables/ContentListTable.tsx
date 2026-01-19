@@ -33,7 +33,7 @@ type ContentListTableProps = {
 };
 
 export const ContentListTable = memo(function ContentListTable(props: ContentListTableProps) {
-  const { data, fields, checkedIds, toggleId, allowSearch, filters } = props;
+  const { data, fields, checkedIds, toggleId, allowSearch, filters: _filters } = props;
 
   const { data: tableData, columns: tableColumns } = useTableGenerator(props.tableGeneratorType, {
     data: data?.data ?? EMPTY_ARRAY,

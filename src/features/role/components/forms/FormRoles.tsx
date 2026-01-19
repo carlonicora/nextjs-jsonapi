@@ -2,13 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { FormFieldWrapper } from "../../../../components/forms";
-import {
-  Checkbox,
-  FieldLabel,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "../../../../shadcnui";
+import { Checkbox, FieldLabel, Tooltip, TooltipContent, TooltipTrigger } from "../../../../shadcnui";
 import { UserInterface } from "../../../user";
 import { useCurrentUserContext } from "../../../user/contexts";
 import { RoleInterface } from "../../data";

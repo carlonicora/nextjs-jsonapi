@@ -106,7 +106,7 @@ function UserEditorInternal({ user, propagateChanges, adminCreated, trigger, onR
           errorToast({ title: t(`user.errors.email_exists`), error: "" });
           return;
         }
-      } catch (error) {
+      } catch (_error) {
         // User does not exist, proceed
       }
     }

@@ -54,7 +54,9 @@ const cancelingConfig: StatusConfig = {
 
 export function SubscriptionStatusBadge({ status, cancelAtPeriodEnd }: SubscriptionStatusBadgeProps) {
   // Show "Canceling" when subscription is set to cancel at period end
-  const config = cancelAtPeriodEnd ? cancelingConfig : statusConfig[status] || statusConfig[SubscriptionStatus.CANCELED];
+  const config = cancelAtPeriodEnd
+    ? cancelingConfig
+    : statusConfig[status] || statusConfig[SubscriptionStatus.CANCELED];
 
   return <span className={`${config.color} text-xs px-2 py-1 rounded-full font-medium`}>{config.label}</span>;
 }

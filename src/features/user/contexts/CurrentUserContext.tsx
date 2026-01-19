@@ -51,7 +51,7 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
     if (!token && dehydratedUser) setDehydratedUser(null);
   }, [dehydratedUser, setDehydratedUser]);
 
-  const matchUrlToModule = (params?: { path: string }): ModuleWithPermissions | undefined => {
+  const matchUrlToModule = (_params?: { path: string }): ModuleWithPermissions | undefined => {
     const moduleKeys = Object.getOwnPropertyNames(Modules).filter(
       (key) => key !== "prototype" && key !== "_factory" && key !== "length" && key !== "name",
     );
@@ -138,41 +138,44 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
   // Function to refresh user data from the API
   // skipCookieUpdate: When true, only updates React state without calling the Server Action
   // This prevents page reloads when refresh is triggered by WebSocket events
-  const refreshUser = useCallback(async (options?: { skipCookieUpdate?: boolean }): Promise<void> => {
-    if (isRefreshing) {
-      return;
-    }
-
-    setIsRefreshing(true);
-    try {
-      const fullUser = await UserService.findFullUser();
-      if (fullUser) {
-        const dehydrated = fullUser.dehydrate();
-
-        setDehydratedUser(dehydrated as any);
-        setUser(fullUser);
-
-        // Update authentication cookies with fresh user data
-        // Skip when triggered by WebSocket to prevent page reload (Server Actions modify cookies)
-        if (!options?.skipCookieUpdate) {
-          await getTokenHandler()?.updateToken({
-            userId: fullUser.id,
-            companyId: fullUser.company?.id,
-            roles: fullUser.roles.map((role) => role.id),
-            features: fullUser.company?.features?.map((feature) => feature.id) ?? [],
-            modules: fullUser.modules.map((module) => ({
-              id: module.id,
-              permissions: module.permissions,
-            })),
-          });
-        }
+  const refreshUser = useCallback(
+    async (options?: { skipCookieUpdate?: boolean }): Promise<void> => {
+      if (isRefreshing) {
+        return;
       }
-    } catch (error) {
-      console.error("Failed to refresh user data:", error);
-    } finally {
-      setIsRefreshing(false);
-    }
-  }, [isRefreshing, setDehydratedUser]);
+
+      setIsRefreshing(true);
+      try {
+        const fullUser = await UserService.findFullUser();
+        if (fullUser) {
+          const dehydrated = fullUser.dehydrate();
+
+          setDehydratedUser(dehydrated as any);
+          setUser(fullUser);
+
+          // Update authentication cookies with fresh user data
+          // Skip when triggered by WebSocket to prevent page reload (Server Actions modify cookies)
+          if (!options?.skipCookieUpdate) {
+            await getTokenHandler()?.updateToken({
+              userId: fullUser.id,
+              companyId: fullUser.company?.id,
+              roles: fullUser.roles.map((role) => role.id),
+              features: fullUser.company?.features?.map((feature) => feature.id) ?? [],
+              modules: fullUser.modules.map((module) => ({
+                id: module.id,
+                permissions: module.permissions,
+              })),
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Failed to refresh user data:", error);
+      } finally {
+        setIsRefreshing(false);
+      }
+    },
+    [isRefreshing, setDehydratedUser],
+  );
 
   // WebSocket integration for real-time token updates
   const { socket, isConnected } = useSocketContext();

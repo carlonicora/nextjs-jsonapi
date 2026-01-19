@@ -75,9 +75,7 @@ export function SubscriptionsContainer({ onOpenWizard, hasActiveRecurringSubscri
           <CreditCard className="h-16 w-16 text-muted-foreground" />
           <div className="text-center">
             <h3 className="text-xl font-semibold mb-2">No Active Subscriptions</h3>
-            <p className="text-muted-foreground mb-6">
-              Choose a subscription plan to get started with our services.
-            </p>
+            <p className="text-muted-foreground mb-6">Choose a subscription plan to get started with our services.</p>
             <Button onClick={() => onOpenWizard?.()}>Subscribe to a Plan</Button>
           </div>
         </div>

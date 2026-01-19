@@ -25,7 +25,7 @@ interface NotificationModalProps {
 }
 
 function NotificationModalContent({ isOpen, setIsOpen }: NotificationModalProps) {
-  const instanceId = useRef(Math.random().toString(36).substr(2, 9));
+  const _instanceId = useRef(Math.random().toString(36).substr(2, 9));
   const {
     notifications,
     addNotification,
@@ -38,7 +38,11 @@ function NotificationModalContent({ isOpen, setIsOpen }: NotificationModalProps)
     shouldRefresh,
     lastLoaded,
   } = useNotificationContext();
-  const { socketNotifications, removeSocketNotification, clearSocketNotifications } = useSocketContext();
+  const {
+    socketNotifications,
+    removeSocketNotification: _removeSocketNotification,
+    clearSocketNotifications,
+  } = useSocketContext();
   const t = useTranslations();
   const generateUrl = usePageUrlGenerator();
   const [newNotifications, setNewNotifications] = useState<boolean>(false);

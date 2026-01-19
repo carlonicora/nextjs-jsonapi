@@ -18,10 +18,10 @@ const OnboardingContext = createContext<OnboardingContextValue | null>(null);
 export function OnboardingProvider({
   children,
   tours = [],
-  tourPaths = {},
+  tourPaths: _tourPaths = {},
   labels = DEFAULT_ONBOARDING_LABELS,
   renderCard,
-  zIndex = 9999,
+  zIndex: _zIndex = 9999,
 }: OnboardingProviderProps) {
   const [isTourActive, setIsTourActive] = useState(false);
   const [activeTourId, setActiveTourId] = useState<string | null>(null);
@@ -35,7 +35,7 @@ export function OnboardingProvider({
     rootsRef.current.forEach((root) => {
       try {
         root.unmount();
-      } catch (e) {
+      } catch (_e) {
         // Root may already be unmounted
       }
     });

@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Checkbox,
-  FieldLabel,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "../../shadcnui";
+import { Checkbox, FieldLabel, Tooltip, TooltipContent, TooltipTrigger } from "../../shadcnui";
 import { FormFieldWrapper } from "./FormFieldWrapper";
 
 type FormCheckboxProps = {
@@ -40,11 +34,7 @@ export function FormCheckbox({ form, id, name, labelBefore, description, isRequi
 
   return (
     <div className="flex w-full flex-col">
-      <FormFieldWrapper
-        form={form}
-        name={id}
-        orientation="horizontal"
-      >
+      <FormFieldWrapper form={form} name={id} orientation="horizontal">
         {(field) => (
           <div className="flex gap-x-4">
             {labelBefore && label()}

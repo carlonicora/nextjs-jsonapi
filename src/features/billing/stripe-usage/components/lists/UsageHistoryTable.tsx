@@ -23,7 +23,7 @@ function formatDateTime(date: Date | string | undefined): string {
       hour: "numeric",
       minute: "2-digit",
     }).format(dateObj);
-  } catch (error) {
+  } catch (_error) {
     return "Invalid Date";
   }
 }

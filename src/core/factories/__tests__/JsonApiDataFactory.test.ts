@@ -74,9 +74,9 @@ describe("JsonApiDataFactory", () => {
     it("should throw for unregistered module", () => {
       const unregisteredModule = { name: "unknown", model: MockDataClass };
 
-      expect(() =>
-        JsonApiDataFactory.create(unregisteredModule as any, { data: "test" })
-      ).toThrow("Class not registered for key: unknown");
+      expect(() => JsonApiDataFactory.create(unregisteredModule as any, { data: "test" })).toThrow(
+        "Class not registered for key: unknown",
+      );
     });
 
     it("should handle empty data", () => {

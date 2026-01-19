@@ -35,9 +35,7 @@ describe.skip("FormDate", () => {
   describe("rendering", () => {
     it("should render date input without label", () => {
       render(
-        <FormWrapper defaultValues={{ date: undefined }}>
-          {(form) => <FormDate form={form} id="date" />}
-        </FormWrapper>
+        <FormWrapper defaultValues={{ date: undefined }}>{(form) => <FormDate form={form} id="date" />}</FormWrapper>,
       );
 
       expect(screen.getByRole("textbox")).toBeInTheDocument();
@@ -47,7 +45,7 @@ describe.skip("FormDate", () => {
       render(
         <FormWrapper defaultValues={{ date: undefined }}>
           {(form) => <FormDate form={form} id="date" name="Date" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       expect(screen.getByText("Date")).toBeInTheDocument();
@@ -58,7 +56,7 @@ describe.skip("FormDate", () => {
       render(
         <FormWrapper defaultValues={{ date: undefined }}>
           {(form) => <FormDate form={form} id="date" name="Date" isRequired={true} />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       expect(screen.getByText("*")).toBeInTheDocument();
@@ -66,9 +64,7 @@ describe.skip("FormDate", () => {
 
     it("should render calendar icon button", () => {
       render(
-        <FormWrapper defaultValues={{ date: undefined }}>
-          {(form) => <FormDate form={form} id="date" />}
-        </FormWrapper>
+        <FormWrapper defaultValues={{ date: undefined }}>{(form) => <FormDate form={form} id="date" />}</FormWrapper>,
       );
 
       // Look for the calendar icon button
@@ -80,9 +76,7 @@ describe.skip("FormDate", () => {
       const testDate = new Date(2024, 0, 15); // January 15, 2024
 
       render(
-        <FormWrapper defaultValues={{ date: testDate }}>
-          {(form) => <FormDate form={form} id="date" />}
-        </FormWrapper>
+        <FormWrapper defaultValues={{ date: testDate }}>{(form) => <FormDate form={form} id="date" />}</FormWrapper>,
       );
 
       const input = screen.getByRole("textbox");
@@ -92,9 +86,7 @@ describe.skip("FormDate", () => {
 
     it("should show placeholder based on locale format", () => {
       render(
-        <FormWrapper defaultValues={{ date: undefined }}>
-          {(form) => <FormDate form={form} id="date" />}
-        </FormWrapper>
+        <FormWrapper defaultValues={{ date: undefined }}>{(form) => <FormDate form={form} id="date" />}</FormWrapper>,
       );
 
       const input = screen.getByRole("textbox");
@@ -108,9 +100,7 @@ describe.skip("FormDate", () => {
       const testDate = new Date(2024, 0, 15);
 
       render(
-        <FormWrapper defaultValues={{ date: testDate }}>
-          {(form) => <FormDate form={form} id="date" />}
-        </FormWrapper>
+        <FormWrapper defaultValues={{ date: testDate }}>{(form) => <FormDate form={form} id="date" />}</FormWrapper>,
       );
 
       // Should have at least 2 buttons (calendar + clear)
@@ -120,9 +110,7 @@ describe.skip("FormDate", () => {
 
     it("should not show clear button when value is empty", () => {
       render(
-        <FormWrapper defaultValues={{ date: undefined }}>
-          {(form) => <FormDate form={form} id="date" />}
-        </FormWrapper>
+        <FormWrapper defaultValues={{ date: undefined }}>{(form) => <FormDate form={form} id="date" />}</FormWrapper>,
       );
 
       // Should only have calendar button
@@ -134,9 +122,7 @@ describe.skip("FormDate", () => {
   describe("text input", () => {
     it("should accept text input", () => {
       render(
-        <FormWrapper defaultValues={{ date: undefined }}>
-          {(form) => <FormDate form={form} id="date" />}
-        </FormWrapper>
+        <FormWrapper defaultValues={{ date: undefined }}>{(form) => <FormDate form={form} id="date" />}</FormWrapper>,
       );
 
       const input = screen.getByRole("textbox");
@@ -149,9 +135,7 @@ describe.skip("FormDate", () => {
       const testDate = new Date(2024, 0, 15);
 
       render(
-        <FormWrapper defaultValues={{ date: testDate }}>
-          {(form) => <FormDate form={form} id="date" />}
-        </FormWrapper>
+        <FormWrapper defaultValues={{ date: testDate }}>{(form) => <FormDate form={form} id="date" />}</FormWrapper>,
       );
 
       const input = screen.getByRole("textbox");
@@ -168,7 +152,7 @@ describe.skip("FormDate", () => {
       render(
         <FormWrapper defaultValues={{ date: undefined }}>
           {(form) => <FormDate form={form} id="date" minDate={minDate} />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       // Component should render without errors
@@ -183,7 +167,7 @@ describe.skip("FormDate", () => {
       render(
         <FormWrapper defaultValues={{ birthDate: testDate }}>
           {(form) => <FormDate form={form} id="birthDate" name="Birth Date" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const input = screen.getByRole("textbox");
@@ -196,7 +180,7 @@ describe.skip("FormDate", () => {
       render(
         <FormWrapper defaultValues={{ date: undefined }}>
           {(form) => <FormDate form={form} id="date" name="Date" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const input = screen.getByRole("textbox");
@@ -207,7 +191,7 @@ describe.skip("FormDate", () => {
       render(
         <FormWrapper defaultValues={{ date: undefined }}>
           {(form) => <FormDate form={form} id="date" name="Appointment Date" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       expect(screen.getByText("Appointment Date")).toBeInTheDocument();

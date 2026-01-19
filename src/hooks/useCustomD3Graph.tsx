@@ -269,7 +269,7 @@ export function useCustomD3Graph(
       }
     });
 
-    for (const [nodeId, node] of nodeHierarchy.entries()) {
+    for (const [_nodeId, node] of nodeHierarchy.entries()) {
       if (node.depth === 1 && node.angle !== undefined && node.x !== undefined && node.y !== undefined) {
         const childAngle = node.angle;
         const childX = node.x;
@@ -527,7 +527,7 @@ export function useCustomD3Graph(
         const Icon = d.icon as React.FC<{ size: number; color: string }>;
         const iconSvg = renderToStaticMarkup(<Icon size={nodeRadius / 2} color="white" />);
 
-        const iconGroup = d3
+        const _iconGroup = d3
           .select(this)
           .append("g")
           .html(iconSvg)

@@ -2,13 +2,7 @@
 
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { useEffect, useState } from "react";
-import {
-  Alert,
-  AlertDescription,
-  Button,
-  Checkbox,
-  Label,
-} from "../../../../../shadcnui";
+import { Alert, AlertDescription, Button, Checkbox, Label } from "../../../../../shadcnui";
 import { StripeCustomerService } from "../../data";
 
 type PaymentMethodFormProps = {
@@ -137,11 +131,7 @@ export function PaymentMethodForm({ onSuccess, onCancel, isLoading = false }: Pa
 
       {/* Set as Default Checkbox */}
       <div className="flex items-center gap-x-2">
-        <Checkbox
-          id="setAsDefault"
-          checked={setAsDefault}
-          onCheckedChange={(checked) => setSetAsDefault(!!checked)}
-        />
+        <Checkbox id="setAsDefault" checked={setAsDefault} onCheckedChange={(checked) => setSetAsDefault(!!checked)} />
         <Label htmlFor="setAsDefault" className="text-sm font-normal">
           Set as default payment method
         </Label>

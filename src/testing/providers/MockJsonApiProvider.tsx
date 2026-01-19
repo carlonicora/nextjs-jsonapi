@@ -48,11 +48,7 @@ export function MockJsonApiProvider({ children, config }: MockJsonApiProviderPro
     ...config,
   };
 
-  return (
-    <JsonApiContext.Provider value={mergedConfig}>
-      {children}
-    </JsonApiContext.Provider>
-  );
+  return <JsonApiContext.Provider value={mergedConfig}>{children}</JsonApiContext.Provider>;
 }
 
 export { defaultMockConfig };

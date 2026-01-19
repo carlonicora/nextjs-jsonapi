@@ -11,7 +11,7 @@ export const cellComponent = (params: {
     id: params.name,
     accessorKey: params.name,
     header: params.title,
-    cell: ({ row }) => params.component,
+    cell: ({ row: _row }) => params.component,
     enableSorting: false,
     enableHiding: false,
   };

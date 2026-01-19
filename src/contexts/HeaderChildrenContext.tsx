@@ -20,7 +20,9 @@ interface HeaderChildrenProviderProps {
  * Wrap your layout with this provider and pass the content you want in the header.
  */
 export function HeaderChildrenProvider({ children, content }: HeaderChildrenProviderProps) {
-  return <HeaderChildrenContext.Provider value={{ headerChildren: content }}>{children}</HeaderChildrenContext.Provider>;
+  return (
+    <HeaderChildrenContext.Provider value={{ headerChildren: content }}>{children}</HeaderChildrenContext.Provider>
+  );
 }
 
 /**

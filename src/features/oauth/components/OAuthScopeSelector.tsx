@@ -49,28 +49,29 @@ export function OAuthScopeSelector({
         onChange(value.filter((s) => s !== scope));
       }
     },
-    [value, onChange]
+    [value, onChange],
   );
 
   // Group scopes by category (before the colon)
-  const groupedScopes = availableScopes.reduce((acc, scope) => {
-    const [category] = scope.scope.split(":");
-    const groupName = category === scope.scope ? "General" : category;
+  const groupedScopes = availableScopes.reduce(
+    (acc, scope) => {
+      const [category] = scope.scope.split(":");
+      const groupName = category === scope.scope ? "General" : category;
 
-    if (!acc[groupName]) {
-      acc[groupName] = [];
-    }
-    acc[groupName].push(scope);
-    return acc;
-  }, {} as Record<string, OAuthScopeInfo[]>);
+      if (!acc[groupName]) {
+        acc[groupName] = [];
+      }
+      acc[groupName].push(scope);
+      return acc;
+    },
+    {} as Record<string, OAuthScopeInfo[]>,
+  );
 
   return (
     <div className="space-y-4">
       <div>
         <Label>{label} *</Label>
-        <p className="text-sm text-muted-foreground">
-          Select the permissions your application needs.
-        </p>
+        <p className="text-sm text-muted-foreground">Select the permissions your application needs.</p>
       </div>
 
       <div className="space-y-4">
@@ -92,20 +93,13 @@ export function OAuthScopeSelector({
                     <Checkbox
                       id={`scope-${scopeInfo.scope}`}
                       checked={isChecked}
-                      onCheckedChange={(checked) =>
-                        handleToggle(scopeInfo.scope, checked === true)
-                      }
+                      onCheckedChange={(checked) => handleToggle(scopeInfo.scope, checked === true)}
                       disabled={disabled}
                     />
                     <div className="flex-1">
-                      <Label
-                        htmlFor={`scope-${scopeInfo.scope}`}
-                        className="text-sm font-medium cursor-pointer"
-                      >
+                      <Label htmlFor={`scope-${scopeInfo.scope}`} className="text-sm font-medium cursor-pointer">
                         {scopeInfo.name}
-                        {isAdmin && (
-                          <span className="ml-2 text-xs text-destructive">(Dangerous)</span>
-                        )}
+                        {isAdmin && <span className="ml-2 text-xs text-destructive">(Dangerous)</span>}
                       </Label>
                       <p className="text-xs text-muted-foreground">{scopeInfo.description}</p>
                     </div>

@@ -8,7 +8,7 @@ import { NotificationsList } from "../lists/NotificationsList";
 
 function NotificationsListContainerContent() {
   const t = useTranslations();
-  const { notifications, isLoading, error } = useNotificationContext();
+  const { notifications: _notifications, isLoading: _isLoading, error } = useNotificationContext();
 
   if (error) {
     return (

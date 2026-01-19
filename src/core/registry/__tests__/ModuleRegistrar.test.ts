@@ -98,12 +98,8 @@ describe("ModuleRegistrar", () => {
       ModuleRegistrar.bootstrap(MockModules);
 
       // Should be able to get registered classes
-      expect(() =>
-        DataClassRegistry.get({ name: "users", model: MockUser } as any)
-      ).not.toThrow();
-      expect(() =>
-        DataClassRegistry.get({ name: "articles", model: MockArticle } as any)
-      ).not.toThrow();
+      expect(() => DataClassRegistry.get({ name: "users", model: MockUser } as any)).not.toThrow();
+      expect(() => DataClassRegistry.get({ name: "articles", model: MockArticle } as any)).not.toThrow();
     });
 
     it("should only bootstrap once", () => {
@@ -114,9 +110,7 @@ describe("ModuleRegistrar", () => {
       ModuleRegistrar.bootstrap(MockModules);
 
       // Registry should still be empty because second bootstrap was skipped
-      expect(() =>
-        DataClassRegistry.get({ name: "users", model: MockUser } as any)
-      ).toThrow();
+      expect(() => DataClassRegistry.get({ name: "users", model: MockUser } as any)).toThrow();
     });
 
     it("should handle class without model property", () => {
@@ -141,9 +135,7 @@ describe("ModuleRegistrar", () => {
       // Can bootstrap again after reset
       ModuleRegistrar.bootstrap(MockModules);
 
-      expect(() =>
-        DataClassRegistry.get({ name: "users", model: MockUser } as any)
-      ).not.toThrow();
+      expect(() => DataClassRegistry.get({ name: "users", model: MockUser } as any)).not.toThrow();
     });
 
     it("should clear the registry", () => {
@@ -151,9 +143,7 @@ describe("ModuleRegistrar", () => {
       ModuleRegistrar.reset();
 
       // Registry should be cleared
-      expect(() =>
-        DataClassRegistry.get({ name: "users", model: MockUser } as any)
-      ).toThrow();
+      expect(() => DataClassRegistry.get({ name: "users", model: MockUser } as any)).toThrow();
     });
   });
 });

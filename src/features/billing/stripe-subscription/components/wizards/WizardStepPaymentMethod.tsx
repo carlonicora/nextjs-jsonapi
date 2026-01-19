@@ -8,25 +8,15 @@ type WizardStepPaymentMethodProps = {
   isProcessing: boolean;
 };
 
-export function WizardStepPaymentMethod({
-  onBack,
-  onSuccess,
-  isProcessing,
-}: WizardStepPaymentMethodProps) {
+export function WizardStepPaymentMethod({ onBack, onSuccess, isProcessing }: WizardStepPaymentMethodProps) {
   return (
     <div className="space-y-6">
       <div className="text-center">
         <h3 className="font-semibold text-lg">Add Payment Method</h3>
-        <p className="text-sm text-muted-foreground">
-          Enter your card details to complete your subscription
-        </p>
+        <p className="text-sm text-muted-foreground">Enter your card details to complete your subscription</p>
       </div>
 
-      <PaymentMethodForm
-        onSuccess={onSuccess}
-        onCancel={onBack}
-        isLoading={isProcessing}
-      />
+      <PaymentMethodForm onSuccess={onSuccess} onCancel={onBack} isLoading={isProcessing} />
     </div>
   );
 }

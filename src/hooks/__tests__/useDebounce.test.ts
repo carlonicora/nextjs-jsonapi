@@ -92,9 +92,7 @@ describe("useDebounce", () => {
 
   it("should pass multiple arguments to callback", () => {
     const callback = vi.fn();
-    const { result } = renderHook(() =>
-      useDebounce((a: string, b: number, c: boolean) => callback(a, b, c), 500)
-    );
+    const { result } = renderHook(() => useDebounce((a: string, b: number, c: boolean) => callback(a, b, c), 500));
 
     act(() => {
       result.current("hello", 42, true);
@@ -111,10 +109,7 @@ describe("useDebounce", () => {
     const callback1 = vi.fn();
     const callback2 = vi.fn();
 
-    const { result, rerender } = renderHook(
-      ({ cb }) => useDebounce(cb, 500),
-      { initialProps: { cb: callback1 } }
-    );
+    const { result, rerender } = renderHook(({ cb }) => useDebounce(cb, 500), { initialProps: { cb: callback1 } });
 
     act(() => {
       result.current("test");

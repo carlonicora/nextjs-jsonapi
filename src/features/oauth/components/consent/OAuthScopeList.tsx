@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  Eye,
-  Pencil,
-  Image,
-  Upload,
-  Film,
-  FolderPlus,
-  User,
-  Shield,
-  LucideIcon,
-} from "lucide-react";
+import { Eye, Pencil, Image, Upload, Film, FolderPlus, User, Shield, LucideIcon } from "lucide-react";
 import { OAuthScopeInfo } from "../../interfaces/oauth.interface";
 
 export interface OAuthScopeListProps {
@@ -48,15 +38,10 @@ export function OAuthScopeList({ scopes }: OAuthScopeListProps) {
           const IconComponent = scope.icon ? SCOPE_ICONS[scope.icon] : Eye;
 
           return (
-            <li
-              key={scope.scope}
-              className="flex items-start gap-3 p-3 rounded-lg bg-muted/50"
-            >
+            <li key={scope.scope} className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
               <div className="flex-shrink-0 mt-0.5">
                 <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  {IconComponent && (
-                    <IconComponent className="h-4 w-4 text-primary" />
-                  )}
+                  {IconComponent && <IconComponent className="h-4 w-4 text-primary" />}
                 </div>
               </div>
               <div className="flex-1">

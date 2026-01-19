@@ -72,9 +72,9 @@ describe("RehydrationFactory", () => {
         included: [],
       };
 
-      expect(() =>
-        RehydrationFactory.rehydrate(unregisteredModule as any, hydratedData)
-      ).toThrow("Class not registered for key: unknown");
+      expect(() => RehydrationFactory.rehydrate(unregisteredModule as any, hydratedData)).toThrow(
+        "Class not registered for key: unknown",
+      );
     });
 
     it("should create a new instance for rehydration", () => {
@@ -128,9 +128,7 @@ describe("RehydrationFactory", () => {
       const unregisteredModule = { name: "unknown", model: MockDataClass };
 
       expect(() =>
-        RehydrationFactory.rehydrateList(unregisteredModule as any, [
-          { jsonApi: {}, included: [] },
-        ])
+        RehydrationFactory.rehydrateList(unregisteredModule as any, [{ jsonApi: {}, included: [] }]),
       ).toThrow("Class not registered for key: unknown");
     });
 

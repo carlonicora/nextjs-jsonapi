@@ -7,31 +7,32 @@ import { cn } from "../../utils";
 
 export interface PasswordInputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
 
-const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(({ className, type, ...props }, ref) => {
-  const [showPassword, setShowPassword] = React.useState(false);
-  const disabled = props.value === "" || props.value === undefined || props.disabled;
-  const t = useTranslations();
+const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
+  ({ className, type: _type, ...props }, ref) => {
+    const [showPassword, setShowPassword] = React.useState(false);
+    const disabled = props.value === "" || props.value === undefined || props.disabled;
+    const t = useTranslations();
 
-  return (
-    <div className="relative">
-      <Input type={showPassword ? "text" : "password"} className={cn("", className)} ref={ref} {...props} />
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-        onClick={() => setShowPassword((prev) => !prev)}
-        disabled={disabled}
-      >
-        {showPassword && !disabled ? (
-          <EyeIcon className="h-4 w-4" aria-hidden="true" />
-        ) : (
-          <EyeOffIcon className="h-4 w-4" aria-hidden="true" />
-        )}
-        <span className="sr-only">{showPassword ? t(`common.hide_password`) : t(`common.show_password`)}</span>
-      </Button>
+    return (
+      <div className="relative">
+        <Input type={showPassword ? "text" : "password"} className={cn("", className)} ref={ref} {...props} />
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+          onClick={() => setShowPassword((prev) => !prev)}
+          disabled={disabled}
+        >
+          {showPassword && !disabled ? (
+            <EyeIcon className="h-4 w-4" aria-hidden="true" />
+          ) : (
+            <EyeOffIcon className="h-4 w-4" aria-hidden="true" />
+          )}
+          <span className="sr-only">{showPassword ? t(`common.hide_password`) : t(`common.show_password`)}</span>
+        </Button>
 
-      <style>{`
+        <style>{`
 					.hide-password-toggle::-ms-reveal,
 					.hide-password-toggle::-ms-clear {
 						visibility: hidden;
@@ -39,9 +40,10 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(({ 
 						display: none;
 					}
 				`}</style>
-    </div>
-  );
-});
+      </div>
+    );
+  },
+);
 PasswordInput.displayName = "PasswordInput";
 
 export { PasswordInput };

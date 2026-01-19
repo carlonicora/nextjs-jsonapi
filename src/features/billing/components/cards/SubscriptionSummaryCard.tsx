@@ -122,7 +122,13 @@ export function SubscriptionSummaryCard({
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <p className="text-xl font-bold">{formatPlanName(primarySubscription)}</p>
-              <Badge variant={primarySubscription.cancelAtPeriodEnd ? "secondary" : getStatusBadgeVariant(primarySubscription.status)}>
+              <Badge
+                variant={
+                  primarySubscription.cancelAtPeriodEnd
+                    ? "secondary"
+                    : getStatusBadgeVariant(primarySubscription.status)
+                }
+              >
                 {primarySubscription.cancelAtPeriodEnd ? "Canceling" : primarySubscription.status}
               </Badge>
             </div>

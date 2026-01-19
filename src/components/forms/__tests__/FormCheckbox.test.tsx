@@ -36,7 +36,7 @@ describe.skip("FormCheckbox", () => {
       render(
         <FormWrapper defaultValues={{ active: false }}>
           {(form) => <FormCheckbox form={form} id="active" name="Active" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       expect(screen.getByText("Active")).toBeInTheDocument();
@@ -47,7 +47,7 @@ describe.skip("FormCheckbox", () => {
       render(
         <FormWrapper defaultValues={{ active: false }}>
           {(form) => <FormCheckbox form={form} id="active" name="Active" isRequired={true} />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       expect(screen.getByText("*")).toBeInTheDocument();
@@ -57,7 +57,7 @@ describe.skip("FormCheckbox", () => {
       render(
         <FormWrapper defaultValues={{ active: true }}>
           {(form) => <FormCheckbox form={form} id="active" name="Active" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const checkbox = screen.getByRole("checkbox");
@@ -68,7 +68,7 @@ describe.skip("FormCheckbox", () => {
       render(
         <FormWrapper defaultValues={{ active: false }}>
           {(form) => <FormCheckbox form={form} id="active" name="Active" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const checkbox = screen.getByRole("checkbox");
@@ -81,7 +81,7 @@ describe.skip("FormCheckbox", () => {
       render(
         <FormWrapper defaultValues={{ active: false }}>
           {(form) => <FormCheckbox form={form} id="active" name="Active" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const container = screen.getByRole("checkbox").parentElement;
@@ -96,7 +96,7 @@ describe.skip("FormCheckbox", () => {
       render(
         <FormWrapper defaultValues={{ active: false }}>
           {(form) => <FormCheckbox form={form} id="active" name="Active" labelBefore={true} />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const container = screen.getByRole("checkbox").parentElement;
@@ -111,7 +111,7 @@ describe.skip("FormCheckbox", () => {
       render(
         <FormWrapper defaultValues={{ active: false }}>
           {(form) => <FormCheckbox form={form} id="active" name="Active" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const label = screen.getByText("Active");
@@ -122,7 +122,7 @@ describe.skip("FormCheckbox", () => {
       render(
         <FormWrapper defaultValues={{ active: false }}>
           {(form) => <FormCheckbox form={form} id="active" name="Active" labelBefore={true} />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const label = screen.getByText("Active");
@@ -137,7 +137,7 @@ describe.skip("FormCheckbox", () => {
       render(
         <FormWrapper defaultValues={{ active: false }}>
           {(form) => <FormCheckbox form={form} id="active" name="Active" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const checkbox = screen.getByRole("checkbox");
@@ -154,7 +154,7 @@ describe.skip("FormCheckbox", () => {
       render(
         <FormWrapper defaultValues={{ active: true }}>
           {(form) => <FormCheckbox form={form} id="active" name="Active" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const checkbox = screen.getByRole("checkbox");
@@ -171,7 +171,7 @@ describe.skip("FormCheckbox", () => {
       render(
         <FormWrapper defaultValues={{ active: false }}>
           {(form) => <FormCheckbox form={form} id="active" name="Active" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const label = screen.getByText("Active");
@@ -190,7 +190,7 @@ describe.skip("FormCheckbox", () => {
       render(
         <FormWrapper defaultValues={{ active: false }}>
           {(form) => <FormCheckbox form={form} id="active" name="Active" isRequired={true} />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const label = screen.getByText("Active");
@@ -206,10 +206,8 @@ describe.skip("FormCheckbox", () => {
     it("should render required indicator after label when labelBefore is true", () => {
       render(
         <FormWrapper defaultValues={{ active: false }}>
-          {(form) => (
-            <FormCheckbox form={form} id="active" name="Active" isRequired={true} labelBefore={true} />
-          )}
-        </FormWrapper>
+          {(form) => <FormCheckbox form={form} id="active" name="Active" isRequired={true} labelBefore={true} />}
+        </FormWrapper>,
       );
 
       expect(screen.getByText("*")).toBeInTheDocument();
@@ -221,7 +219,7 @@ describe.skip("FormCheckbox", () => {
       render(
         <FormWrapper defaultValues={{ active: false }}>
           {(form) => <FormCheckbox form={form} id="active" name="Active" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const label = screen.getByText("Active");
@@ -232,7 +230,7 @@ describe.skip("FormCheckbox", () => {
       render(
         <FormWrapper defaultValues={{ active: false }}>
           {(form) => <FormCheckbox form={form} id="active" name="Active" />}
-        </FormWrapper>
+        </FormWrapper>,
       );
 
       const checkbox = screen.getByRole("checkbox");

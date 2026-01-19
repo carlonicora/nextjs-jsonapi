@@ -30,7 +30,7 @@ function formatDate(date: Date | undefined): string {
       month: "short",
       day: "numeric",
     }).format(new Date(date));
-  } catch (error) {
+  } catch (_error) {
     return "Invalid Date";
   }
 }

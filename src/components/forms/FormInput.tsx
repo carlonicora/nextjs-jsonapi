@@ -49,7 +49,7 @@ export function FormInput({
               try {
                 new URL(value);
                 form.clearErrors(id);
-              } catch (error) {
+              } catch (_error) {
                 form.setError(id, {
                   type: "validate",
                   message: t(`common.errors.valid_url`),

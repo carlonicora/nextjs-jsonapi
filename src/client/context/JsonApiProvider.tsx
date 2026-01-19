@@ -19,9 +19,5 @@ export function JsonApiProvider({ config, children }: JsonApiProviderProps) {
   // Memoize config to prevent unnecessary re-renders
   const memoizedConfig = useMemo(() => config, [config]);
 
-  return (
-    <JsonApiContext.Provider value={memoizedConfig}>
-      {children}
-    </JsonApiContext.Provider>
-  );
+  return <JsonApiContext.Provider value={memoizedConfig}>{children}</JsonApiContext.Provider>;
 }

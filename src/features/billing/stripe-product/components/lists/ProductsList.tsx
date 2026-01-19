@@ -38,11 +38,11 @@ export function ProductsList({ products, onProductsChange }: ProductsListProps) 
 
     setArchivingProductId(productToArchive.id);
     try {
-      const archivedProduct = await StripeProductService.archiveProduct({ id: productToArchive.id });
+      const _archivedProduct = await StripeProductService.archiveProduct({ id: productToArchive.id });
       setProductToArchive(null); // Close dialog on success
       onProductsChange();
-    } catch (error) {
-      console.error("[ProductsList] Failed to archive product:", error);
+    } catch (_error) {
+      console.error("[ProductsList] Failed to archive product:", _error);
       // Keep dialog open on error so user can retry or cancel
     } finally {
       setArchivingProductId(null);
@@ -56,10 +56,10 @@ export function ProductsList({ products, onProductsChange }: ProductsListProps) 
 
     setReactivatingProductId(productToReactivate.id);
     try {
-      const reactivatedProduct = await StripeProductService.reactivateProduct({ id: productToReactivate.id });
+      const _reactivatedProduct = await StripeProductService.reactivateProduct({ id: productToReactivate.id });
       setProductToReactivate(null); // Close dialog on success
       onProductsChange();
-    } catch (error) {
+    } catch (_error) {
       // Keep dialog open on error so user can retry or cancel
     } finally {
       setReactivatingProductId(null);

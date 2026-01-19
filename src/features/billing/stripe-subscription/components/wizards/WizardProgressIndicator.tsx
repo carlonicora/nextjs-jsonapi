@@ -42,21 +42,13 @@ export function WizardProgressIndicator({ currentStep }: WizardProgressIndicator
             </div>
 
             {/* Step Label */}
-            <span
-              className={`text-sm ${
-                isCurrent ? "font-medium text-foreground" : "text-muted-foreground"
-              }`}
-            >
+            <span className={`text-sm ${isCurrent ? "font-medium text-foreground" : "text-muted-foreground"}`}>
               {step.label}
             </span>
 
             {/* Connector */}
             {index < STEPS.length - 1 && (
-              <div
-                className={`h-0.5 w-8 ${
-                  index < currentIndex ? "bg-primary" : "bg-muted"
-                }`}
-              />
+              <div className={`h-0.5 w-8 ${index < currentIndex ? "bg-primary" : "bg-muted"}`} />
             )}
           </div>
         );

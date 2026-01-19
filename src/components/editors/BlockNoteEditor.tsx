@@ -211,7 +211,7 @@ export default function BlockNoteEditor({
           rejectedChanges,
         );
         return removeTrailingEmptyBlocks(renderedDiff);
-      } catch (error) {
+      } catch (_error) {
         return initialContent && Array.isArray(initialContent) && initialContent.length > 0
           ? removeTrailingEmptyBlocks(initialContent)
           : [];
@@ -360,7 +360,7 @@ export default function BlockNoteEditor({
   }, [processedContent, editor]);
 
   // Handle audio received from whisper transcription
-  const handleAudioReceived = useCallback(
+  const _handleAudioReceived = useCallback(
     (message: string) => {
       try {
         // Ensure the editor has focus

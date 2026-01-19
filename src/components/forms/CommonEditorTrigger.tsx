@@ -7,7 +7,7 @@ import { Button, DialogTrigger } from "../../shadcnui";
 
 type CommonEditorTriggerProps = { isEdit: boolean; edit?: string; create?: string };
 
-export function CommonEditorTrigger({ isEdit, edit, create }: CommonEditorTriggerProps) {
+export function CommonEditorTrigger({ isEdit, edit: _edit, create }: CommonEditorTriggerProps) {
   const t = useTranslations();
 
   return (

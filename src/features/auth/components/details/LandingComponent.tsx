@@ -3,7 +3,12 @@
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { getApiUrl } from "../../../../client/config";
-import { isDiscordAuthEnabled, isGoogleAuthEnabled, isInternalAuthEnabled, isRegistrationAllowed } from "../../../../login";
+import {
+  isDiscordAuthEnabled,
+  isGoogleAuthEnabled,
+  isInternalAuthEnabled,
+  isRegistrationAllowed,
+} from "../../../../login";
 import { Button, CardDescription, CardFooter, CardHeader, CardTitle, Link } from "../../../../shadcnui";
 import { useAuthContext } from "../../contexts";
 import { AuthComponent } from "../../enums";

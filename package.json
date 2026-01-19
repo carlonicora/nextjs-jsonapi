@@ -58,7 +58,7 @@
     "build": "NODE_OPTIONS='--max-old-space-size=8192' tsup && tsc -p scripts/generate-web-module/tsconfig.json",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
-    "lint": "eslint \"src/**/*.ts\" --fix",
+    "lint": "eslint \"src/**/*.ts\" \"src/**/*.tsx\" --fix",
     "format": "prettier --write \"src/**/*.ts\"",
     "prepublishOnly": "pnpm build",
     "generate-web-module": "node dist/scripts/generate-web-module/index.js",
