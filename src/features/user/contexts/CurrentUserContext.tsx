@@ -33,7 +33,7 @@ export interface CurrentUserContextType<T extends UserInterface = UserInterface>
   hasAccesToFeature: (featureIdentifier: string) => boolean;
   matchUrlToModule: (prarms?: { path: string }) => ModuleWithPermissions | undefined;
   hasRole: (roleId: string) => boolean;
-  refreshUser: () => Promise<void>;
+  refreshUser: (options?: { skipCookieUpdate?: boolean }) => Promise<void>;
   isRefreshing: boolean;
 }
 
@@ -136,7 +136,9 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Function to refresh user data from the API
-  const refreshUser = useCallback(async (): Promise<void> => {
+  // skipCookieUpdate: When true, only updates React state without calling the Server Action
+  // This prevents page reloads when refresh is triggered by WebSocket events
+  const refreshUser = useCallback(async (options?: { skipCookieUpdate?: boolean }): Promise<void> => {
     if (isRefreshing) {
       return;
     }
@@ -151,16 +153,19 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
         setUser(fullUser);
 
         // Update authentication cookies with fresh user data
-        await getTokenHandler()?.updateToken({
-          userId: fullUser.id,
-          companyId: fullUser.company?.id,
-          roles: fullUser.roles.map((role) => role.id),
-          features: fullUser.company?.features?.map((feature) => feature.id) ?? [],
-          modules: fullUser.modules.map((module) => ({
-            id: module.id,
-            permissions: module.permissions,
-          })),
-        });
+        // Skip when triggered by WebSocket to prevent page reload (Server Actions modify cookies)
+        if (!options?.skipCookieUpdate) {
+          await getTokenHandler()?.updateToken({
+            userId: fullUser.id,
+            companyId: fullUser.company?.id,
+            roles: fullUser.roles.map((role) => role.id),
+            features: fullUser.company?.features?.map((feature) => feature.id) ?? [],
+            modules: fullUser.modules.map((module) => ({
+              id: module.id,
+              permissions: module.permissions,
+            })),
+          });
+        }
       }
     } catch (error) {
       console.error("Failed to refresh user data:", error);
@@ -188,7 +193,8 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
     const handleCompanyUpdate = (data: { companyId: string; type: string }) => {
       if (data.companyId === currentUser.company?.id && !isRefreshingRef.current) {
         isRefreshingRef.current = true;
-        refreshUserRef.current().finally(() => {
+        // Skip cookie update to prevent page reload - only update React state
+        refreshUserRef.current({ skipCookieUpdate: true }).finally(() => {
           isRefreshingRef.current = false;
         });
       }
