@@ -1,3 +1,13 @@
+## [1.37.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.36.1...v1.37.0) (2026-01-19)
+
+### 🚀 Features
+
+* add loading state to MultiSelect component and update UserMultiSelect to utilize it ([88bf0e2](https://github.com/carlonicora/nextjs-jsonapi/commit/88bf0e22c310cfa53754bedc7bf4ac6a021b2ad7))
+
+### 🚨 Tests
+
+* add linting and test validation ([db61ec6](https://github.com/carlonicora/nextjs-jsonapi/commit/db61ec6a4fe474411216895cc40545a451ae383f))
+
 ## [1.36.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.36.0...v1.36.1) (2026-01-19)
 
 ### 🐛 Bug Fixes
