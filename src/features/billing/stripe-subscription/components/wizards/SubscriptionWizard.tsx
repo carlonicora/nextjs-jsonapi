@@ -103,6 +103,12 @@ export function SubscriptionWizard({
             onBack={() => actions.goToStep("plan-selection")}
             onAddPaymentMethod={() => actions.goToStep("payment-method")}
             onConfirm={actions.confirmSubscription}
+            promotionCode={state.promotionCode}
+            isValidatingPromoCode={state.isValidatingPromoCode}
+            promoCodeError={state.promoCodeError}
+            onApplyPromoCode={actions.validatePromoCode}
+            onRemovePromoCode={actions.clearPromoCode}
+            isTrialUpgrade={state.isTrialSubscription}
           />
         )}
 

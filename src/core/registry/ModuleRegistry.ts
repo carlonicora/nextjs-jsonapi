@@ -26,6 +26,7 @@ export interface FoundationModuleDefinitions {
   StripeProduct: ModuleWithPermissions;
   StripePrice: ModuleWithPermissions;
   StripeUsage: ModuleWithPermissions;
+  StripePromotionCode: ModuleWithPermissions;
   // OAuth modules
   OAuth: ModuleWithPermissions;
 }

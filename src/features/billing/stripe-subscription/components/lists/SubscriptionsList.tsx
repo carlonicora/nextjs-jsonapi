@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../shadcnui";
+import { Button, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../shadcnui";
 import { formatCurrency, formatDate } from "../../../components/utils";
 import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
-import { StripeSubscriptionInterface } from "../../data";
+import { StripeSubscriptionInterface, SubscriptionStatus } from "../../data";
 import { SubscriptionDetails } from "../details/SubscriptionDetails";
 import { SubscriptionStatusBadge } from "../widgets/SubscriptionStatusBadge";
 
@@ -61,12 +61,13 @@ export function SubscriptionsList({ subscriptions, onSubscriptionsChange, onChan
               <TableHead>Plan</TableHead>
               <TableHead>Period</TableHead>
               <TableHead className="text-right">Amount</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {subscriptions.map((subscription) => {
               const price = subscription.price;
-              const amount = price?.unitAmount ? formatCurrency(price.unitAmount, price.currency) : "N/A";
+              const amount = price?.unitAmount ? formatCurrency(price.unitAmount, price.currency) : "0";
               const period = `${formatDate(subscription.currentPeriodStart)} - ${formatDate(subscription.currentPeriodEnd)}`;
 
               return (
@@ -84,6 +85,22 @@ export function SubscriptionsList({ subscriptions, onSubscriptionsChange, onChan
                   <TableCell className="font-medium">{formatPlanName(price)}</TableCell>
                   <TableCell className="text-muted-foreground text-sm">{period}</TableCell>
                   <TableCell className="text-right font-medium">{amount}</TableCell>
+                  <TableCell className="text-right">
+                    {(subscription.status === SubscriptionStatus.ACTIVE ||
+                      subscription.status === SubscriptionStatus.TRIALING) &&
+                      onChangePlan && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onChangePlan(subscription);
+                          }}
+                        >
+                          Upgrade
+                        </Button>
+                      )}
+                  </TableCell>
                 </TableRow>
               );
             })}

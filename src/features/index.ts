@@ -7,6 +7,7 @@ export * from "./billing/stripe-price";
 export * from "./billing/stripe-product";
 export * from "./billing/stripe-subscription";
 export * from "./billing/stripe-usage";
+export * from "./billing/stripe-promotion-code";
 export * from "./company";
 export * from "./content";
 export * from "./feature";

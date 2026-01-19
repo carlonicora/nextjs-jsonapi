@@ -40,6 +40,7 @@ export * from "../features/billing/stripe-price";
 export * from "../features/billing/stripe-product";
 export * from "../features/billing/stripe-subscription";
 export * from "../features/billing/stripe-usage";
+export * from "../features/billing/stripe-promotion-code";
 export * from "../features/company/company.module";
 export * from "../features/company/data";
 export * from "../features/content/content.module";

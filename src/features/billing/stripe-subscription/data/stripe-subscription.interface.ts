@@ -48,6 +48,8 @@ export type StripeSubscriptionInput = {
   trialPeriodDays?: number;
   paymentMethodId?: string;
   metadata?: Record<string, any>;
+  // For CREATE and CHANGE-PLAN - optional promotion code
+  promotionCode?: string;
 };
 
 // ============================================================================

@@ -83,6 +83,9 @@ export class StripeSubscription extends AbstractApiData implements StripeSubscri
   }
 
   createJsonApi(data: StripeSubscriptionInput): any {
+    console.log("[StripeSubscription.createJsonApi] Input data:", JSON.stringify(data, null, 2));
+    console.log("[StripeSubscription.createJsonApi] promotionCode in input:", data.promotionCode);
+
     const response: any = {
       data: {
         type: Modules.StripeSubscription.name,
@@ -130,6 +133,11 @@ export class StripeSubscription extends AbstractApiData implements StripeSubscri
       response.data.attributes.metadata = data.metadata;
     }
 
+    if (data.promotionCode) {
+      response.data.attributes.promotionCode = data.promotionCode;
+    }
+
+    console.log("[StripeSubscription.createJsonApi] Final response:", JSON.stringify(response, null, 2));
     return response;
   }
 }

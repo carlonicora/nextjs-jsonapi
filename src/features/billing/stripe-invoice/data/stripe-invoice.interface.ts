@@ -52,6 +52,7 @@ export interface ProrationPreviewInterface {
   immediateCharge: number;
   prorationDate: Date;
   lineItems: ProrationLineItem[];
+  isTrialUpgrade?: boolean;
 }
 
 export interface ProrationLineItem {

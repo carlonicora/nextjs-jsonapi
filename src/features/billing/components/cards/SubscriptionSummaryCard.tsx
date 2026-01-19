@@ -34,15 +34,6 @@ function formatDate(date: Date): string {
   });
 }
 
-function formatPrice(amount: number | undefined, currency: string | undefined): string {
-  if (amount === undefined) return "N/A";
-  const currencyCode = currency?.toUpperCase() || "USD";
-  return new Intl.NumberFormat(undefined, {
-    style: "currency",
-    currency: currencyCode,
-  }).format(amount / 100);
-}
-
 function formatPlanName(subscription: StripeSubscriptionInterface): string {
   const productName = subscription.price?.product?.name || "";
   const nickname = subscription.price?.nickname || "";
@@ -132,14 +123,12 @@ export function SubscriptionSummaryCard({
                 {primarySubscription.cancelAtPeriodEnd ? "Canceling" : primarySubscription.status}
               </Badge>
             </div>
-            <p className="text-sm text-muted-foreground">
-              {formatPrice(primarySubscription.price?.unitAmount, primarySubscription.price?.currency)}
-              {primarySubscription.price?.recurring && <span>/{primarySubscription.price.recurring.interval}</span>}
-            </p>
             <p className="text-xs text-muted-foreground">
-              {primarySubscription.cancelAtPeriodEnd
-                ? `Cancels on ${formatDate(primarySubscription.currentPeriodEnd)}`
-                : `Renews on ${formatDate(primarySubscription.currentPeriodEnd)}`}
+              {!primarySubscription.price?.isTrial
+                ? `Ends on ${formatDate(primarySubscription.currentPeriodEnd)}`
+                : primarySubscription.cancelAtPeriodEnd
+                  ? `Cancels on ${formatDate(primarySubscription.currentPeriodEnd)}`
+                  : `Renews on ${formatDate(primarySubscription.currentPeriodEnd)}`}
             </p>
             {activeSubscriptions.length > 1 && (
               <p className="text-xs text-muted-foreground">+{activeSubscriptions.length - 1} more subscription(s)</p>

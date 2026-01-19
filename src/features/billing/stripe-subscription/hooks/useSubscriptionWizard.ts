@@ -5,8 +5,9 @@ import { v4 } from "uuid";
 import { StripeCustomerService } from "../../stripe-customer/data/stripe-customer.service";
 import { ProrationPreviewInterface } from "../../stripe-invoice/data/stripe-invoice.interface";
 import { StripePriceInterface } from "../../stripe-price/data/stripe-price.interface";
+import { PromotionCodeValidationResult, StripePromotionCodeService } from "../../stripe-promotion-code";
 import { BillingInterval } from "../components/widgets/IntervalToggle";
-import { StripeSubscriptionInterface, StripeSubscriptionService } from "../data";
+import { StripeSubscriptionInterface, StripeSubscriptionService, SubscriptionStatus } from "../data";
 
 export type WizardStep = "plan-selection" | "review" | "payment-method";
 
@@ -18,6 +19,12 @@ export type WizardState = {
   isProcessing: boolean;
   error: string | null;
   prorationPreview: ProrationPreviewInterface | null;
+  // Promotion code state
+  promotionCode: PromotionCodeValidationResult | null;
+  isValidatingPromoCode: boolean;
+  promoCodeError: string | null;
+  // Trial state
+  isTrialSubscription: boolean;
 };
 
 type WizardAction =
@@ -28,6 +35,10 @@ type WizardAction =
   | { type: "SET_PROCESSING"; isProcessing: boolean }
   | { type: "SET_ERROR"; error: string | null }
   | { type: "SET_PRORATION_PREVIEW"; preview: ProrationPreviewInterface | null }
+  | { type: "SET_PROMOTION_CODE"; code: PromotionCodeValidationResult | null }
+  | { type: "SET_VALIDATING_PROMO_CODE"; isValidating: boolean }
+  | { type: "SET_PROMO_CODE_ERROR"; error: string | null }
+  | { type: "SET_IS_TRIAL_SUBSCRIPTION"; isTrial: boolean }
   | { type: "RESET" };
 
 const initialState: WizardState = {
@@ -38,6 +49,10 @@ const initialState: WizardState = {
   isProcessing: false,
   error: null,
   prorationPreview: null,
+  promotionCode: null,
+  isValidatingPromoCode: false,
+  promoCodeError: null,
+  isTrialSubscription: false,
 };
 
 function wizardReducer(state: WizardState, action: WizardAction): WizardState {
@@ -56,6 +71,14 @@ function wizardReducer(state: WizardState, action: WizardAction): WizardState {
       return { ...state, error: action.error };
     case "SET_PRORATION_PREVIEW":
       return { ...state, prorationPreview: action.preview };
+    case "SET_PROMOTION_CODE":
+      return { ...state, promotionCode: action.code, promoCodeError: null };
+    case "SET_VALIDATING_PROMO_CODE":
+      return { ...state, isValidatingPromoCode: action.isValidating };
+    case "SET_PROMO_CODE_ERROR":
+      return { ...state, promoCodeError: action.error };
+    case "SET_IS_TRIAL_SUBSCRIPTION":
+      return { ...state, isTrialSubscription: action.isTrial };
     case "RESET":
       return initialState;
     default:
@@ -112,6 +135,23 @@ export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseS
       // Check payment method first
       await checkPaymentMethod();
 
+      // Check if current subscription is trial
+      const isTrialUpgrade = subscription?.status === SubscriptionStatus.TRIALING;
+      dispatch({ type: "SET_IS_TRIAL_SUBSCRIPTION", isTrial: isTrialUpgrade });
+
+      // For trial upgrades, require payment method before review
+      if (isTrialUpgrade && !state.hasPaymentMethod) {
+        const methods = await StripeCustomerService.listPaymentMethods();
+        if (methods.length === 0) {
+          dispatch({ type: "SET_STEP", step: "payment-method" });
+          dispatch({
+            type: "SET_ERROR",
+            error: "A payment method is required to upgrade from your trial.",
+          });
+          return;
+        }
+      }
+
       // If editing subscription, get proration preview
       if (subscription && state.selectedPrice.id !== subscription.price?.id) {
         const preview = await StripeSubscriptionService.getProrationPreview({
@@ -128,10 +168,14 @@ export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseS
     } finally {
       dispatch({ type: "SET_PROCESSING", isProcessing: false });
     }
-  }, [state.selectedPrice, subscription, checkPaymentMethod]);
+  }, [state.selectedPrice, state.hasPaymentMethod, subscription, checkPaymentMethod]);
 
   const confirmSubscription = useCallback(async () => {
     if (!state.selectedPrice) return;
+
+    console.log("[useSubscriptionWizard] confirmSubscription called");
+    console.log("[useSubscriptionWizard] state.promotionCode:", JSON.stringify(state.promotionCode, null, 2));
+    console.log("[useSubscriptionWizard] promotionCodeId to send:", state.promotionCode?.promotionCodeId);
 
     dispatch({ type: "SET_PROCESSING", isProcessing: true });
     dispatch({ type: "SET_ERROR", error: null });
@@ -139,16 +183,22 @@ export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseS
     try {
       if (subscription) {
         // Change existing subscription
-        await StripeSubscriptionService.changePlan({
+        const changePlanParams = {
           id: subscription.id,
           newPriceId: state.selectedPrice.id,
-        });
+          promotionCode: state.promotionCode?.promotionCodeId,
+        };
+        console.log("[useSubscriptionWizard] changePlan params:", JSON.stringify(changePlanParams, null, 2));
+        await StripeSubscriptionService.changePlan(changePlanParams);
       } else {
         // Create new subscription
-        await StripeSubscriptionService.createSubscription({
+        const createParams = {
           id: v4(),
           priceId: state.selectedPrice.id,
-        });
+          promotionCode: state.promotionCode?.promotionCodeId,
+        };
+        console.log("[useSubscriptionWizard] createSubscription params:", JSON.stringify(createParams, null, 2));
+        await StripeSubscriptionService.createSubscription(createParams);
       }
 
       onSuccessRef.current();
@@ -176,7 +226,7 @@ export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseS
     } finally {
       dispatch({ type: "SET_PROCESSING", isProcessing: false });
     }
-  }, [state.selectedPrice, subscription]);
+  }, [state.selectedPrice, state.promotionCode, subscription]);
 
   const handlePaymentMethodSuccess = useCallback(async () => {
     dispatch({ type: "SET_HAS_PAYMENT_METHOD", hasMethod: true });
@@ -186,6 +236,38 @@ export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseS
 
   const reset = useCallback(() => {
     dispatch({ type: "RESET" });
+  }, []);
+
+  const validatePromoCode = useCallback(
+    async (code: string) => {
+      dispatch({ type: "SET_VALIDATING_PROMO_CODE", isValidating: true });
+      dispatch({ type: "SET_PROMO_CODE_ERROR", error: null });
+
+      try {
+        const result = await StripePromotionCodeService.validatePromotionCode({
+          code,
+          stripePriceId: state.selectedPrice?.id,
+        });
+
+        if (result.valid) {
+          dispatch({ type: "SET_PROMOTION_CODE", code: result });
+        } else {
+          dispatch({ type: "SET_PROMO_CODE_ERROR", error: result.errorMessage || "Invalid promotion code" });
+        }
+      } catch (error: any) {
+        console.error("[useSubscriptionWizard] Promo code validation error:", error);
+        dispatch({ type: "SET_PROMO_CODE_ERROR", error: error?.message || "Failed to validate promotion code" });
+      } finally {
+        dispatch({ type: "SET_VALIDATING_PROMO_CODE", isValidating: false });
+      }
+    },
+    [state.selectedPrice?.id],
+  );
+
+  const clearPromoCode = useCallback(() => {
+    dispatch({ type: "SET_PROMOTION_CODE", code: null });
+    dispatch({ type: "SET_PROMO_CODE_ERROR", error: null });
+    dispatch({ type: "SET_ERROR", error: null });
   }, []);
 
   const actions = useMemo(
@@ -198,6 +280,8 @@ export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseS
       handlePaymentMethodSuccess,
       checkPaymentMethod,
       reset,
+      validatePromoCode,
+      clearPromoCode,
     }),
     [
       selectPrice,
@@ -208,6 +292,8 @@ export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseS
       handlePaymentMethodSuccess,
       checkPaymentMethod,
       reset,
+      validatePromoCode,
+      clearPromoCode,
     ],
   );
 
