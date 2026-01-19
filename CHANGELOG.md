@@ -1,3 +1,9 @@
+## [1.36.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.36.0...v1.36.1) (2026-01-19)
+
+### 🐛 Bug Fixes
+
+* remove console logs ([630cadc](https://github.com/carlonicora/nextjs-jsonapi/commit/630cadc1aaa460cdeb7c4d593aaf57572a42fdfc))
+
 ## [1.36.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.35.0...v1.36.0) (2026-01-19)
 
 ### 🚀 Features
