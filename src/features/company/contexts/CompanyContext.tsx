@@ -62,7 +62,7 @@ export const CompanyProvider = ({ children, dehydratedCompany }: CompanyProvider
 
     if (
       company &&
-      hasRole(getRoleId().Administrator) &&
+      (hasRole(getRoleId().Administrator) || hasRole(getRoleId().CompanyAdministrator)) &&
       hasPermissionToModule({ module: Modules.Company, action: Action.Delete })
     )
       functions.push(<CompanyDeleter key="companyDeleter" company={company} />);
