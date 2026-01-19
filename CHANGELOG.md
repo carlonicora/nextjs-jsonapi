@@ -1,3 +1,13 @@
+## [1.36.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.35.0...v1.36.0) (2026-01-19)
+
+### 🚀 Features
+
+* add company deletion ([8994015](https://github.com/carlonicora/nextjs-jsonapi/commit/8994015c7ecad706e9f219cbf2726e4682fee969))
+
+### 🐛 Bug Fixes
+
+* extend user refresh ([dc1d971](https://github.com/carlonicora/nextjs-jsonapi/commit/dc1d9717c01da227f489f80ab86308521c95b882))
+
 ## [1.35.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.34.0...v1.35.0) (2026-01-18)
 
 ### 🚀 Features
