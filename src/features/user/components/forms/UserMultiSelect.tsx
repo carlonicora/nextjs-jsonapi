@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useWatch } from "react-hook-form";
 import { FormFieldWrapper } from "../../../../components/forms";
@@ -54,11 +55,12 @@ export function UserMultiSelect({
   maxCount = 3,
   isRequired = false,
 }: UserMultiSelectProps) {
+  const t = useTranslations();
   const { company } = useCurrentUserContext<UserInterface>();
 
   const searchTermRef = useRef<string>("");
-  const [_searchTerm, _setSearchTerm] = useState<string>("");
-  const [_isSearching, _setIsSearching] = useState<boolean>(false);
+  const [searchTerm, _setSearchTerm] = useState<string>("");
+  const [isSearching, setIsSearching] = useState<boolean>(false);
   const [userOptions, setUserOptions] = useState<any[]>([]);
 
   // Get the current selected users from the form
@@ -189,6 +191,9 @@ export function UserMultiSelect({
             placeholder={placeholder}
             maxCount={maxCount}
             animation={0}
+            loading={isSearching}
+            loadingText={t("ui.search.button")}
+            emptyText={t("ui.search.no_results", { type: t("entities.users", { count: 2 }) })}
           />
         )}
       </FormFieldWrapper>

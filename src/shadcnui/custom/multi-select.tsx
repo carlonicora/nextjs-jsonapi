@@ -1,7 +1,7 @@
 "use client";
 
 import { cva, type VariantProps } from "class-variance-authority";
-import { CheckIcon, ChevronDown, WandSparkles, XCircle, XIcon } from "lucide-react";
+import { CheckIcon, ChevronDown, Loader2, WandSparkles, XCircle, XIcon } from "lucide-react";
 import * as React from "react";
 
 import { cn } from "../../utils/cn";
@@ -108,6 +108,24 @@ interface MultiSelectProps
    * Optional, receives the search string.
    */
   onSearchChange?: (search: string) => void;
+
+  /**
+   * Whether the component is in a loading state (e.g., during search).
+   * Optional, defaults to false.
+   */
+  loading?: boolean;
+
+  /**
+   * Text to display when loading.
+   * Optional, defaults to "Searching...".
+   */
+  loadingText?: string;
+
+  /**
+   * Text to display when no results are found.
+   * Optional, defaults to "No results found.".
+   */
+  emptyText?: string;
 }
 
 export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
@@ -124,6 +142,9 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
       modalPopover = false,
       className,
       onSearchChange,
+      loading = false,
+      loadingText = "Searching...",
+      emptyText = "No results found.",
       ...props
     },
     _ref,
@@ -293,8 +314,13 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
               onKeyDown={handleInputKeyDown}
               onValueChange={onSearchChange}
             />
+            {loading && (
+              <div className="flex items-center justify-center py-2">
+                <Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />
+              </div>
+            )}
             <CommandList>
-              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandEmpty>{loading ? loadingText : emptyText}</CommandEmpty>
               <CommandGroup>
                 <CommandItem
                   key="all"
