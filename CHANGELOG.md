@@ -1,3 +1,9 @@
+## [1.38.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.38.0...v1.38.1) (2026-01-20)
+
+### 🐛 Bug Fixes
+
+* correct redirection on login ([1308de0](https://github.com/carlonicora/nextjs-jsonapi/commit/1308de0ad24ee4c8292ed0a6981137eb16ed9546))
+
 ## [1.38.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.37.0...v1.38.0) (2026-01-19)
 
 ### 🚀 Features
