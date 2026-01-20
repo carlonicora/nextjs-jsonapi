@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { getApiUrl } from "../../../../client/config";
@@ -31,7 +32,10 @@ export function Login() {
   const { setUser } = useCurrentUserContext<UserInterface>();
   const { setComponentType } = useAuthContext();
   const generateUrl = usePageUrlGenerator();
-  const router = useI18nRouter();
+  const i18nRouter = useI18nRouter();
+  const nativeRouter = useRouter(); // For URLs that already include locale
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
 
   const formSchema = z.object({
     email: z.string().email({
@@ -56,7 +60,15 @@ export function Login() {
       })) as UserInterface;
 
       setUser(user);
-      router.replace(generateUrl({ page: `/` }));
+
+      // Redirect to callback URL if present, otherwise go to home
+      // Use native router for callbackUrl since it already includes the locale prefix
+      // Use i18n router for normal navigation which adds locale automatically
+      if (callbackUrl) {
+        nativeRouter.replace(callbackUrl);
+      } else {
+        i18nRouter.replace(generateUrl({ page: `/` }));
+      }
     } catch (e) {
       errorToast({
         title: t(`common.errors.error`),
