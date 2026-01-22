@@ -1,3 +1,9 @@
+## [1.38.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.38.1...v1.38.2) (2026-01-22)
+
+### 🐛 Bug Fixes
+
+* correct generate-web-modules ([d13b739](https://github.com/carlonicora/nextjs-jsonapi/commit/d13b7392709a8cb457d25590d3eecaaed3ea9917))
+
 ## [1.38.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.38.0...v1.38.1) (2026-01-20)
 
 ### 🐛 Bug Fixes
