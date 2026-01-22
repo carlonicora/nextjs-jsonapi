@@ -22,11 +22,15 @@ export function generateTableHookTemplate(data: FrontendTemplateData): string {
 
   return `"use client";
 
-import { ${names.pascalCase}Fields } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Fields";
-import { ${names.pascalCase}Interface } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
+import { ${names.pascalCase}Fields } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Fields";
+import { ${names.pascalCase}Interface } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
 import { cellDate, cellId${hasAuthors ? ", ContributorsList" : ""} } from "@carlonicora/nextjs-jsonapi/components";
-import { Modules } from "@carlonicora/nextjs-jsonapi/core";${extendsContent ? `
-import { ContentInterface } from "@carlonicora/nextjs-jsonapi/core";` : ""}
+import { Modules } from "@carlonicora/nextjs-jsonapi/core";${
+    extendsContent
+      ? `
+import { ContentInterface } from "@carlonicora/nextjs-jsonapi/core";`
+      : ""
+  }
 import {
   registerTableGenerator,
   TableContent,
@@ -107,9 +111,13 @@ function generateFieldColumnEntries(data: FrontendTemplateData): string {
           <Tooltip>
             <TooltipTrigger>
               <Link href={generateUrl({ page: Modules.${names.pascalCase}, id: ${names.camelCase}.id })}>{${names.camelCase}.name}</Link>
-            </TooltipTrigger>${extendsContent ? `
-            <TooltipContent>{${names.camelCase}.tldr}</TooltipContent>` : `
-            <TooltipContent>{${names.camelCase}.name}</TooltipContent>`}
+            </TooltipTrigger>${
+              extendsContent
+                ? `
+            <TooltipContent>{${names.camelCase}.tldr}</TooltipContent>`
+                : `
+            <TooltipContent>{${names.camelCase}.name}</TooltipContent>`
+            }
           </Tooltip>
         );
       },
@@ -135,7 +143,7 @@ function generateFieldColumnEntries(data: FrontendTemplateData): string {
 
   // Other displayable fields (excluding id, name, tldr, abstract, content, dates)
   const displayableFields = fields.filter(
-    (f) => !["id", "name", "tldr", "abstract", "content", "createdAt", "updatedAt"].includes(f.name)
+    (f) => !["id", "name", "tldr", "abstract", "content", "createdAt", "updatedAt"].includes(f.name),
   );
 
   displayableFields.forEach((field) => {

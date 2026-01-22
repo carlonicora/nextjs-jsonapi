@@ -20,7 +20,7 @@ export function generateModuleTemplate(data: FrontendTemplateData): string {
   const listFieldNames = getListFieldNames(data);
   const listInclusionFields = listFieldNames.map((f) => `\`${f}\``).join(", ");
 
-  return `import { ${names.pascalCase} } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}";
+  return `import { ${names.pascalCase} } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}";
 import { createJsonApiInclusion } from "@carlonicora/nextjs-jsonapi/core";
 import { ModuleFactory } from "@carlonicora/nextjs-jsonapi/core";
 import { ${DEFAULT_MODULE_ICON} } from "lucide-react";

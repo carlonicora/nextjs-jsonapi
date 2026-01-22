@@ -32,10 +32,10 @@ function generateContentContainerTemplate(data: FrontendTemplateData): string {
 
   return `"use client";
 
-import ${names.pascalCase}Content from "@/features/${data.targetDir}/${names.kebabCase}/components/details/${names.pascalCase}Content";
-import ${names.pascalCase}Details from "@/features/${data.targetDir}/${names.kebabCase}/components/details/${names.pascalCase}Details";
-import { use${names.pascalCase}Context } from "@/features/${data.targetDir}/${names.kebabCase}/contexts/${names.pascalCase}Context";
-import { ${names.pascalCase}Interface } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
+import ${names.pascalCase}Content from "@/features/${data.importTargetDir}/${names.kebabCase}/components/details/${names.pascalCase}Content";
+import ${names.pascalCase}Details from "@/features/${data.importTargetDir}/${names.kebabCase}/components/details/${names.pascalCase}Details";
+import { use${names.pascalCase}Context } from "@/features/${data.importTargetDir}/${names.kebabCase}/contexts/${names.pascalCase}Context";
+import { ${names.pascalCase}Interface } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
 import {
   AllowedUsersDetails,
   PageContentContainer,
@@ -97,9 +97,9 @@ function generateSimpleContainerTemplate(data: FrontendTemplateData): string {
 
   return `"use client";
 
-import ${names.pascalCase}Details from "@/features/${data.targetDir}/${names.kebabCase}/components/details/${names.pascalCase}Details";
-import { use${names.pascalCase}Context } from "@/features/${data.targetDir}/${names.kebabCase}/contexts/${names.pascalCase}Context";
-import { ${names.pascalCase}Interface } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
+import ${names.pascalCase}Details from "@/features/${data.importTargetDir}/${names.kebabCase}/components/details/${names.pascalCase}Details";
+import { use${names.pascalCase}Context } from "@/features/${data.importTargetDir}/${names.kebabCase}/contexts/${names.pascalCase}Context";
+import { ${names.pascalCase}Interface } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
 import { PageContentContainer } from "@carlonicora/nextjs-jsonapi/components";
 
 type ${names.pascalCase}ContainerProps = {

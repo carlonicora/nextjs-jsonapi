@@ -37,20 +37,14 @@ function generateImports(data: FrontendTemplateData): string {
 
   // Relationship interface imports
   relationships.forEach((rel) => {
-    imports.push(
-      `import { ${rel.interfaceName} } from "${rel.interfaceImportPath}";`
-    );
+    imports.push(`import { ${rel.interfaceName} } from "${rel.interfaceImportPath}";`);
   });
 
   // Base interface import
   if (extendsContent) {
-    imports.push(
-      `import { ContentInput, ContentInterface } from "@/features/features/content/data/ContentInterface";`
-    );
+    imports.push(`import { ContentInput, ContentInterface } from "@/features/content/data/ContentInterface";`);
   } else {
-    imports.push(
-      `import { ApiDataInterface } from "@carlonicora/nextjs-jsonapi/core";`
-    );
+    imports.push(`import { ApiDataInterface } from "@carlonicora/nextjs-jsonapi/core";`);
   }
 
   return imports.join("\n");
@@ -132,7 +126,7 @@ function generateInterface(data: FrontendTemplateData): string {
       // Build return type - use intersection if relationship has fields
       let baseType = rel.interfaceName;
       if (rel.fields && rel.fields.length > 0) {
-        const metaFields = rel.fields.map(f => `${f.name}?: ${f.tsType}`).join("; ");
+        const metaFields = rel.fields.map((f) => `${f.name}?: ${f.tsType}`).join("; ");
         baseType = `${rel.interfaceName} & { ${metaFields} }`;
       }
 
@@ -142,7 +136,7 @@ function generateInterface(data: FrontendTemplateData): string {
       const propertyName = pluralize(toCamelCase(rel.name));
       // Use intersection type if relationship has fields (edge properties)
       if (rel.fields && rel.fields.length > 0) {
-        const metaFields = rel.fields.map(f => `${f.name}?: ${f.tsType}`).join("; ");
+        const metaFields = rel.fields.map((f) => `${f.name}?: ${f.tsType}`).join("; ");
         getterLines.push(`  get ${propertyName}(): (${rel.interfaceName} & { ${metaFields} })[];`);
       } else {
         getterLines.push(`  get ${propertyName}(): ${rel.interfaceName}[];`);

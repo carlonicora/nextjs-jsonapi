@@ -17,8 +17,8 @@ export function generateDeleterTemplate(data: FrontendTemplateData): string {
 
   return `"use client";
 
-import { ${names.pascalCase}Interface } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
-import { ${names.pascalCase}Service } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Service";
+import { ${names.pascalCase}Interface } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
+import { ${names.pascalCase}Service } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Service";
 import { CommonDeleter } from "@carlonicora/nextjs-jsonapi/components";
 import { usePageUrlGenerator } from "@carlonicora/nextjs-jsonapi/client";
 

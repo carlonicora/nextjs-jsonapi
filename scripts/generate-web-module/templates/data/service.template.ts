@@ -49,7 +49,7 @@ function generateImports(data: FrontendTemplateData): string {
 
   return `import { AbstractService, HttpMethod, NextRef, PreviousRef } from "@carlonicora/nextjs-jsonapi/core";
 import { EndpointCreator } from "@carlonicora/nextjs-jsonapi/core";
-import { ${names.pascalCase}Input, ${names.pascalCase}Interface } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
+import { ${names.pascalCase}Input, ${names.pascalCase}Interface } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
 import { Modules } from "@carlonicora/nextjs-jsonapi/core";`;
 }
 

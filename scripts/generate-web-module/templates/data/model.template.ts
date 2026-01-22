@@ -48,7 +48,7 @@ function generateImports(data: FrontendTemplateData): string {
 
   // Own interface import
   imports.push(
-    `import { ${names.pascalCase}Input, ${names.pascalCase}Interface } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";`,
+    `import { ${names.pascalCase}Input, ${names.pascalCase}Interface } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";`,
   );
 
   // Relationship interface imports
@@ -58,7 +58,7 @@ function generateImports(data: FrontendTemplateData): string {
 
   // Base class and core imports
   if (extendsContent) {
-    imports.push(`import { Content } from "@/features/features/content/data/Content";`);
+    imports.push(`import { Content } from "@/features/content/data/Content";`);
     imports.push(`import { JsonApiHydratedDataInterface, Modules } from "@carlonicora/nextjs-jsonapi/core";`);
   } else {
     imports.push(

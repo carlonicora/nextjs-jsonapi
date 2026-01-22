@@ -8,7 +8,13 @@ import { FrontendTemplateData, FrontendField, FrontendRelationship } from "../..
 import { toCamelCase, pluralize, toPascalCase } from "../../transformers/name-transformer";
 import { AUTHOR_VARIANT } from "../../types/field-mapping.types";
 import { getFormFieldJsx } from "../../transformers/field-mapper";
-import { getRelationshipFormJsx, getDefaultValueExpression, getPayloadMapping, isFoundationImport, FOUNDATION_COMPONENTS_PACKAGE } from "../../transformers/relationship-resolver";
+import {
+  getRelationshipFormJsx,
+  getDefaultValueExpression,
+  getPayloadMapping,
+  isFoundationImport,
+  FOUNDATION_COMPONENTS_PACKAGE,
+} from "../../transformers/relationship-resolver";
 
 /**
  * Generate the editor component file content
@@ -81,11 +87,15 @@ ${defaultValues}
     }
   }, [open]);
 
-${hasAuthor ? `  useEffect(() => {
+${
+  hasAuthor
+    ? `  useEffect(() => {
     if (currentUser && !form.getValues("author")?.id) {
       form.setValue("author", { id: currentUser.id, name: currentUser.name, avatar: currentUser.avatar });
     }
-  }, [currentUser]);` : ""}
+  }, [currentUser]);`
+    : ""
+}
 
 ${onSubmit}
 
@@ -142,8 +152,12 @@ function generateImports(data: FrontendTemplateData): string {
   const imports: string[] = [];
 
   // Module imports
-  imports.push(`import { ${names.pascalCase}Input, ${names.pascalCase}Interface } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";`);
-  imports.push(`import { ${names.pascalCase}Service } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Service";`);
+  imports.push(
+    `import { ${names.pascalCase}Input, ${names.pascalCase}Interface } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";`,
+  );
+  imports.push(
+    `import { ${names.pascalCase}Service } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Service";`,
+  );
 
   // Relationship selector imports
   const hasAuthor = relationships.some((r) => r.variant === AUTHOR_VARIANT);
@@ -169,12 +183,7 @@ function generateImports(data: FrontendTemplateData): string {
   imports.push(`import { revalidatePaths } from "@/utils/revalidation";`);
 
   // Library component imports
-  const componentImports: string[] = [
-    "CommonEditorButtons",
-    "CommonEditorHeader",
-    "CommonEditorTrigger",
-    "errorToast",
-  ];
+  const componentImports: string[] = ["CommonEditorButtons", "CommonEditorHeader", "CommonEditorTrigger", "errorToast"];
 
   // Check for field types that need specific components
   const hasContentField = fields.some((f) => f.isContentField || f.name === "content");
@@ -188,11 +197,9 @@ function generateImports(data: FrontendTemplateData): string {
   }
 
   // Check if any relationship has boolean or date fields that need specific form components
-  const hasRelBooleanFields = relationships.some((rel) =>
-    rel.fields?.some((f) => f.type === "boolean")
-  );
+  const hasRelBooleanFields = relationships.some((rel) => rel.fields?.some((f) => f.type === "boolean"));
   const hasRelDateFields = relationships.some((rel) =>
-    rel.fields?.some((f) => f.type === "date" || f.type === "datetime")
+    rel.fields?.some((f) => f.type === "date" || f.type === "datetime"),
   );
 
   if (hasRelBooleanFields) {
@@ -456,9 +463,7 @@ function generateOnSubmit(data: FrontendTemplateData): string {
   // Relationships
   relationships.forEach((rel) => {
     const fieldId = toCamelCase(rel.variant || rel.name);
-    const payloadKey = rel.single
-      ? `${fieldId}Id`
-      : `${toCamelCase(rel.name)}Ids`;
+    const payloadKey = rel.single ? `${fieldId}Id` : `${toCamelCase(rel.name)}Ids`;
 
     if (rel.single) {
       payloadFields.push(`      ${payloadKey}: values.${fieldId}?.id,`);

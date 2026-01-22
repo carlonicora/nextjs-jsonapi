@@ -23,7 +23,7 @@ export function generateContentTemplate(data: FrontendTemplateData): string | nu
 
   return `"use client";
 
-import { use${names.pascalCase}Context } from "@/features/${data.targetDir}/${names.kebabCase}/contexts/${names.pascalCase}Context";
+import { use${names.pascalCase}Context } from "@/features/${data.importTargetDir}/${names.kebabCase}/contexts/${names.pascalCase}Context";
 import { BlockNoteEditorContainer } from "@carlonicora/nextjs-jsonapi/components";
 import { Card } from "@carlonicora/nextjs-jsonapi/components";
 

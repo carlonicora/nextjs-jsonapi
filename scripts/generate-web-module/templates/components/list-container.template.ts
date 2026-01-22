@@ -17,7 +17,7 @@ export function generateListContainerTemplate(data: FrontendTemplateData): strin
 
   return `"use client";
 
-import ${names.pascalCase}List from "@/features/${data.targetDir}/${names.kebabCase}/components/lists/${names.pascalCase}List";
+import ${names.pascalCase}List from "@/features/${data.importTargetDir}/${names.kebabCase}/components/lists/${names.pascalCase}List";
 
 function ${names.pascalCase}ListContainerInternal() {
   return <${names.pascalCase}List />;

@@ -128,7 +128,11 @@ export async function generateWebModule(options: GenerateWebModuleOptions): Prom
  */
 function buildTemplateData(schema: JsonModuleDefinition): FrontendTemplateData {
   const names = transformNames(schema.moduleName, schema.endpointName);
+  // Keep original targetDir for file path generation (buildFilePaths handles stripping)
   const targetDir = schema.targetDir;
+  // Strip the first segment (features or foundations) for import paths
+  // since @/features/ alias already includes it (e.g., "features/culling" → "culling")
+  const importTargetDir = schema.targetDir.split("/").slice(1).join("/") || schema.targetDir;
   const extendsContent = detectExtendsContent(schema.fields, schema.extendsContent);
 
   // Map fields
@@ -156,6 +160,7 @@ function buildTemplateData(schema: JsonModuleDefinition): FrontendTemplateData {
     moduleId: schema.moduleId,
     endpoint: schema.endpointName,
     targetDir,
+    importTargetDir,
     extendsContent,
     fields: allFields, // Keep all fields for interface generation
     relationships,

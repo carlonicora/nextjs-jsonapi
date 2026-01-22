@@ -15,10 +15,10 @@ import { FrontendTemplateData } from "../../types/template-data.interface";
 export function generateDetailPageTemplate(data: FrontendTemplateData): string {
   const { names } = data;
 
-  return `import ${names.pascalCase}Container from "@/features/${data.targetDir}/${names.kebabCase}/components/containers/${names.pascalCase}Container";
-import { ${names.pascalCase}Provider } from "@/features/${data.targetDir}/${names.kebabCase}/contexts/${names.pascalCase}Context";
-import { ${names.pascalCase}Interface } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
-import { ${names.pascalCase}Service } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Service";
+  return `import ${names.pascalCase}Container from "@/features/${data.importTargetDir}/${names.kebabCase}/components/containers/${names.pascalCase}Container";
+import { ${names.pascalCase}Provider } from "@/features/${data.importTargetDir}/${names.kebabCase}/contexts/${names.pascalCase}Context";
+import { ${names.pascalCase}Interface } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
+import { ${names.pascalCase}Service } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Service";
 import { generateSpecificMetadata } from "@/utils/metadata";
 import { PageContainer } from "@carlonicora/nextjs-jsonapi/components";
 import { Modules } from "@carlonicora/nextjs-jsonapi/core";

@@ -35,7 +35,13 @@ export interface FrontendField {
 /**
  * Form component types
  */
-export type FormComponentType = "FormInput" | "FormTextarea" | "BlockNoteEditor" | "Checkbox" | "DatePicker" | "FormInputNumber";
+export type FormComponentType =
+  | "FormInput"
+  | "FormTextarea"
+  | "BlockNoteEditor"
+  | "Checkbox"
+  | "DatePicker"
+  | "FormInputNumber";
 
 /**
  * Frontend relationship representation
@@ -121,6 +127,8 @@ export interface FrontendTemplateData {
   moduleId: string;
   endpoint: string;
   targetDir: string;
+  /** Stripped version of targetDir for use in imports (e.g., "culling" instead of "features/culling") */
+  importTargetDir: string;
 
   // Parent class detection
   extendsContent: boolean;

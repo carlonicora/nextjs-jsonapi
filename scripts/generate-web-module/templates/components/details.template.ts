@@ -20,7 +20,7 @@ export function generateDetailsTemplate(data: FrontendTemplateData): string {
 
   return `"use client";
 
-import { use${names.pascalCase}Context } from "@/features/${data.targetDir}/${names.kebabCase}/contexts/${names.pascalCase}Context";
+import { use${names.pascalCase}Context } from "@/features/${data.importTargetDir}/${names.kebabCase}/contexts/${names.pascalCase}Context";
 import { AttributeElement, ContentTitle, ReactMarkdownContainer } from "@carlonicora/nextjs-jsonapi/components";
 import { useSharedContext } from "@carlonicora/nextjs-jsonapi/contexts";
 import { Modules } from "@carlonicora/nextjs-jsonapi/core";

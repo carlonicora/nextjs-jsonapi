@@ -21,11 +21,11 @@ export function generateListTemplate(data: FrontendTemplateData): string {
 
   return `"use client";
 
-import ${names.pascalCase}Editor from "@/features/${data.targetDir}/${names.kebabCase}/components/forms/${names.pascalCase}Editor";
-import { ${names.pascalCase}Fields } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Fields";
-import { ${names.pascalCase}Interface } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
-import { ${names.pascalCase}Service } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Service";
-import "@/features/${data.targetDir}/${names.kebabCase}/hooks/use${names.pascalCase}TableStructure";
+import ${names.pascalCase}Editor from "@/features/${data.importTargetDir}/${names.kebabCase}/components/forms/${names.pascalCase}Editor";
+import { ${names.pascalCase}Fields } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Fields";
+import { ${names.pascalCase}Interface } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
+import { ${names.pascalCase}Service } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Service";
+import "@/features/${data.importTargetDir}/${names.kebabCase}/hooks/use${names.pascalCase}TableStructure";
 import { ContentListTable } from "@carlonicora/nextjs-jsonapi/components";
 import { Modules } from "@carlonicora/nextjs-jsonapi/core";
 import { DataListRetriever, useDataListRetriever } from "@carlonicora/nextjs-jsonapi/client";

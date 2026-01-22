@@ -17,10 +17,10 @@ export function generateContextTemplate(data: FrontendTemplateData): string {
 
   return `"use client";
 
-import ${names.pascalCase}Deleter from "@/features/${data.targetDir}/${names.kebabCase}/components/forms/${names.pascalCase}Deleter";
-import ${names.pascalCase}Editor from "@/features/${data.targetDir}/${names.kebabCase}/components/forms/${names.pascalCase}Editor";
-import { ${names.pascalCase}Interface } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
-import { ${names.pascalCase}Service } from "@/features/${data.targetDir}/${names.kebabCase}/data/${names.pascalCase}Service";
+import ${names.pascalCase}Deleter from "@/features/${data.importTargetDir}/${names.kebabCase}/components/forms/${names.pascalCase}Deleter";
+import ${names.pascalCase}Editor from "@/features/${data.importTargetDir}/${names.kebabCase}/components/forms/${names.pascalCase}Editor";
+import { ${names.pascalCase}Interface } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
+import { ${names.pascalCase}Service } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Service";
 import { SharedProvider } from "@carlonicora/nextjs-jsonapi/contexts";
 import { usePageUrlGenerator } from "@carlonicora/nextjs-jsonapi/client";
 import { BreadcrumbItemData } from "@carlonicora/nextjs-jsonapi/core";
