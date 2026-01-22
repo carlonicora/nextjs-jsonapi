@@ -1,3 +1,9 @@
+## [1.38.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.38.2...v1.38.3) (2026-01-22)
+
+### 💎 Styles
+
+* update page content container padding ([9477e70](https://github.com/carlonicora/nextjs-jsonapi/commit/9477e7049b6e1d6c7512fde8c8f8974748b5cd28))
+
 ## [1.38.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.38.1...v1.38.2) (2026-01-22)
 
 ### 🐛 Bug Fixes
