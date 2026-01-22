@@ -2,7 +2,7 @@
 
 import { ReactNode, useEffect, useState } from "react";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../../shadcnui";
-import { useIsMobile } from "../../utils";
+import { cn, useIsMobile } from "../../utils";
 
 type PageContentContainerProps = {
   header?: ReactNode;
@@ -27,7 +27,7 @@ export function PageContentContainer({ header, details, footer, content }: PageC
 
   return (
     <div className="flex h-[calc(100vh-4rem)] w-full flex-col transition-opacity duration-150 animate-in fade-in">
-      {header && <div className="mb-4 flex w-full shrink-0 border-b">{header}</div>}
+      {header && <div className="mb-4 flex w-full shrink-0 border-b pr-4">{header}</div>}
       <div className="min-h-0 flex-1">
         {details || footer ? (
           <ResizablePanelGroup
@@ -49,12 +49,12 @@ export function PageContentContainer({ header, details, footer, content }: PageC
               </div>
             </ResizablePanel>
             <ResizableHandle withHandle />
-            <ResizablePanel id="right-panel" className={isMobile ? "pt-4" : "pl-4"}>
-              <div className="h-full overflow-x-hidden overflow-y-auto p-2 pb-20">{content}</div>
+            <ResizablePanel id="right-panel" className={cn("w-full", isMobile ? "pt-4" : "")}>
+              <div className="h-full overflow-x-hidden overflow-y-auto px-4 pb-20">{content}</div>
             </ResizablePanel>
           </ResizablePanelGroup>
         ) : (
-          <div className="h-full overflow-x-hidden overflow-y-auto p-2 pb-20">{content}</div>
+          <div className="h-full overflow-x-hidden overflow-y-auto px-4 pb-20">{content}</div>
         )}
       </div>
     </div>
