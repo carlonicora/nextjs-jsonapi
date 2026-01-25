@@ -9,9 +9,10 @@ type PageContentContainerProps = {
   details?: ReactNode;
   footer?: ReactNode;
   content?: ReactNode;
+  fullBleed?: boolean;
 };
 
-export function PageContentContainer({ header, details, footer, content }: PageContentContainerProps) {
+export function PageContentContainer({ header, details, footer, content, fullBleed }: PageContentContainerProps) {
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
 
@@ -50,11 +51,13 @@ export function PageContentContainer({ header, details, footer, content }: PageC
             </ResizablePanel>
             <ResizableHandle withHandle />
             <ResizablePanel id="right-panel" className={cn("w-full", isMobile ? "pt-4" : "")}>
-              <div className="h-full overflow-x-hidden overflow-y-auto px-4 pb-20">{content}</div>
+              <div className={cn("h-full overflow-x-hidden overflow-y-auto", fullBleed ? "" : "px-4 pb-20")}>
+                {content}
+              </div>
             </ResizablePanel>
           </ResizablePanelGroup>
         ) : (
-          <div className="h-full overflow-x-hidden overflow-y-auto px-4 pb-20">{content}</div>
+          <div className={cn("h-full overflow-x-hidden overflow-y-auto", fullBleed ? "" : "px-4 pb-20")}>{content}</div>
         )}
       </div>
     </div>
