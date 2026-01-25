@@ -9,6 +9,7 @@ const SharedContext = createContext<{
     type: string | string[];
     element?: string;
     functions?: ReactNode;
+    prioritizeFunctions?: boolean;
   };
 } | null>(null);
 
@@ -20,6 +21,7 @@ interface SharedProviderProps {
       type: string;
       element?: string;
       functions?: ReactNode;
+      prioritizeFunctions?: boolean;
     };
   };
 }
