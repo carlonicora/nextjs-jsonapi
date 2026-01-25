@@ -1,3 +1,10 @@
+## [1.39.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.38.3...v1.39.0) (2026-01-25)
+
+### 🚀 Features
+
+* add fullBleed prop to PageContentContainer for flexible content styling ([a7388ee](https://github.com/carlonicora/nextjs-jsonapi/commit/a7388ee3b4cc92ab87a344cbbbd6428efc903967))
+* add prioritizeFunctions prop to ContentTitle and SharedContext for flexible layout handling ([3235bac](https://github.com/carlonicora/nextjs-jsonapi/commit/3235bac066855fc37adf710e60ed93433d981cc5))
+
 ## [1.38.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.38.2...v1.38.3) (2026-01-22)
 
 ### 💎 Styles
