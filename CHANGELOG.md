@@ -1,3 +1,9 @@
+## [1.39.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.39.0...v1.39.1) (2026-01-25)
+
+### 💎 Styles
+
+* simplify JSX structure in ContentTitle component for improved readability ([dadcb46](https://github.com/carlonicora/nextjs-jsonapi/commit/dadcb4663109347c3001297c977fb58e8f9a22dc))
+
 ## [1.39.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.38.3...v1.39.0) (2026-01-25)
 
 ### 🚀 Features
