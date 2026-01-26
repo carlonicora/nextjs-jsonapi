@@ -1,3 +1,10 @@
+## [1.40.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.39.2...v1.40.0) (2026-01-26)
+
+### 🚀 Features
+
+* add waiting list ([b615b4c](https://github.com/carlonicora/nextjs-jsonapi/commit/b615b4c422b1982cab396d15e9dd7f2e983f5995))
+* add waiting list ([d0aa8fe](https://github.com/carlonicora/nextjs-jsonapi/commit/d0aa8fef6cd62fb64df8a7dadb1010123435c38c))
+
 ## [1.39.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.39.1...v1.39.2) (2026-01-26)
 
 ### ♻️ Chores
