@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode, useEffect, useState } from "react";
+import { useDefaultLayout } from "react-resizable-panels";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../../shadcnui";
 import { cn, useIsMobile } from "../../utils";
 
@@ -22,6 +23,12 @@ export function PageContentContainer({ header, details, footer, content, fullBle
 
   const isReady = mounted && isMobile !== undefined;
 
+  const layoutId = `page-content-container-${isMobile ? "mobile" : "desktop"}`;
+  const { defaultLayout, onLayoutChanged } = useDefaultLayout({
+    id: layoutId,
+    storage: typeof window !== "undefined" ? localStorage : undefined,
+  });
+
   if (!isReady) {
     return <div className="flex h-[calc(100vh-4rem)] w-full flex-col" />;
   }
@@ -32,8 +39,10 @@ export function PageContentContainer({ header, details, footer, content, fullBle
       <div className="min-h-0 flex-1">
         {details || footer ? (
           <ResizablePanelGroup
-            autoSaveId={`page-content-container-${isMobile ? "mobile" : "desktop"}`}
-            direction={isMobile ? "vertical" : "horizontal"}
+            id={layoutId}
+            defaultLayout={defaultLayout}
+            onLayoutChanged={onLayoutChanged}
+            orientation={isMobile ? "vertical" : "horizontal"}
             className="h-full items-stretch"
           >
             <ResizablePanel
