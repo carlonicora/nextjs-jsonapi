@@ -1,3 +1,9 @@
+## [1.39.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.39.1...v1.39.2) (2026-01-26)
+
+### ♻️ Chores
+
+* update dependencies and refactor resizable components for improved functionality ([c108b86](https://github.com/carlonicora/nextjs-jsonapi/commit/c108b86c8800c79a80ab76cd5aa7bceedb14b7d5))
+
 ## [1.39.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.39.0...v1.39.1) (2026-01-25)
 
 ### 💎 Styles
