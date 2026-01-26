@@ -62,3 +62,6 @@ export * from "../features/user/user.module";
 export * from "../features/oauth/oauth.module";
 export * from "../features/oauth/data";
 export * from "../features/oauth/interfaces";
+export * from "../features/waitlist/data";
+export * from "../features/waitlist/waitlist.module";
+export * from "../features/waitlist/waitlist-stats.module";

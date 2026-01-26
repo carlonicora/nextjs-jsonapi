@@ -27,5 +27,14 @@ export type { RoleIdConfig } from "./roles";
 export { configureAuth, getTokenHandler } from "./features/auth/config";
 export type { TokenHandler, TokenParams } from "./features/auth/config";
 
+// Waitlist configuration
+export { configureWaitlist, getWaitlistConfig } from "./features/waitlist/config/waitlist.config";
+export type {
+  WaitlistConfig,
+  QuestionnaireField,
+  QuestionnaireFieldType,
+  QuestionnaireOption,
+} from "./features/waitlist/config/waitlist.config";
+
 // Toast utilities
 export { showToast, showError, dismissToast, showCustomToast, type ToastOptions } from "./utils/toast";

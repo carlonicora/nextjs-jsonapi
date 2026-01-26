@@ -29,6 +29,9 @@ export interface FoundationModuleDefinitions {
   StripePromotionCode: ModuleWithPermissions;
   // OAuth modules
   OAuth: ModuleWithPermissions;
+  // Waitlist modules
+  Waitlist: ModuleWithPermissions;
+  WaitlistStats: ModuleWithPermissions;
 }
 
 // App-specific modules - apps will augment this interface ONLY

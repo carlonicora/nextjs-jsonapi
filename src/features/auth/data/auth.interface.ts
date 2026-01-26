@@ -12,6 +12,7 @@ export type AuthInput = {
   termsAcceptedAt?: string;
   marketingConsent?: boolean;
   marketingConsentAt?: string | null;
+  inviteCode?: string;
 };
 
 export type AuthQuery = {

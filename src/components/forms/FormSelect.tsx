@@ -44,7 +44,7 @@ export function FormSelect({
             data-testid={testId}
           >
             <SelectTrigger className="w-full">
-              <SelectValue />
+              <SelectValue>{values.find((v) => v.id === field.value)?.text}</SelectValue>
             </SelectTrigger>
             <SelectContent>
               {values.map((type: { id: string; text: string }) => (
