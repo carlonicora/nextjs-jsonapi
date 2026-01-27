@@ -218,20 +218,14 @@ export async function JsonApiPost(params: {
   token?: string;
 }): Promise<ApiResponseInterface> {
   runBootstrapper();
-  console.log("[DEBUG JsonApiPost] params.body:", JSON.stringify(params.body, null, 2));
-  console.log("[DEBUG JsonApiPost] classKey:", params.classKey?.name);
-  console.log("[DEBUG JsonApiPost] token present:", !!params.token);
   const token = params.token ?? (await getToken());
 
   let body = params.body;
   if (!body) {
-    console.log("[DEBUG JsonApiPost] body was falsy, setting to {}");
     body = {};
   } else if (params.overridesJsonApiCreation !== true) {
-    console.log("[DEBUG JsonApiPost] calling JsonApiDataFactory.create");
     body = JsonApiDataFactory.create(params.classKey, body);
   }
-  console.log("[DEBUG JsonApiPost] final body:", JSON.stringify(body, null, 2));
 
   const apiResponse = await makeRequest({
     method: "POST",

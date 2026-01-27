@@ -8,6 +8,7 @@ export * from "./passkey-registration-options.module";
 export * from "./passkey-registration-verify.module";
 export * from "./passkey-rename.module";
 export * from "./passkey-verify-login.module";
+export * from "./passkey-authentication-options.module";
 export * from "./two-factor-enable.module";
 export * from "./two-factor-challenge.module";
 export * from "./backup-code-verify.module";

@@ -42,6 +42,7 @@ export interface FoundationModuleDefinitions {
   PasskeyRegistrationVerify: ModuleWithPermissions;
   PasskeyRename: ModuleWithPermissions;
   PasskeyVerifyLogin: ModuleWithPermissions;
+  PasskeyAuthenticationOptions: ModuleWithPermissions;
   TwoFactorEnable: ModuleWithPermissions;
   TwoFactorChallenge: ModuleWithPermissions;
   TwoFactorStatus: ModuleWithPermissions;

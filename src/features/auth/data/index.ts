@@ -11,6 +11,8 @@ export * from "./passkey.interface";
 export * from "./passkey";
 export * from "./passkey-registration-options";
 export * from "./passkey-registration-verify";
+export * from "./passkey-authentication-options.interface";
+export * from "./passkey-authentication-options";
 export * from "./two-factor-challenge.interface";
 export * from "./two-factor.service";
 export * from "./totp-verify";

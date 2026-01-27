@@ -1,12 +1,9 @@
-import {
-  AuthenticationResponseJSON,
-  PublicKeyCredentialRequestOptionsJSON,
-  RegistrationResponseJSON,
-} from "@simplewebauthn/browser";
+import { AuthenticationResponseJSON, RegistrationResponseJSON } from "@simplewebauthn/browser";
 import { AbstractService, EndpointCreator, HttpMethod, Modules } from "../../../core";
 import { getTokenHandler } from "../config";
 import { AuthInterface } from "./auth.interface";
 import { PasskeyInterface } from "./passkey.interface";
+import { PasskeyAuthenticationOptionsInterface } from "./passkey-authentication-options.interface";
 import { PasskeyRegistrationOptionsInterface } from "./passkey-registration-options";
 import { TotpAuthenticatorInterface } from "./totp-authenticator.interface";
 import { TotpSetupInterface } from "./totp-setup.interface";
@@ -240,11 +237,6 @@ export class TwoFactorService extends AbstractService {
   }
 
   static async verifyTotp(params: { id: string; pendingToken: string; code: string }): Promise<AuthInterface> {
-    console.log("[DEBUG verifyTotp] params:", JSON.stringify(params, null, 2));
-    console.log(
-      "[DEBUG verifyTotp] input being passed:",
-      JSON.stringify({ id: params.id, code: params.code }, null, 2),
-    );
     const auth = await this.callApi<AuthInterface>({
       type: Modules.TotpVerifyLogin, // Request: { type: "totp-authenticators", attributes: { code } }
       responseType: Modules.Auth, // Response: Auth with user relationship
@@ -279,12 +271,9 @@ export class TwoFactorService extends AbstractService {
     return auth;
   }
 
-  static async getPasskeyAuthOptions(params: { pendingToken: string }): Promise<{
-    pendingId: string;
-    options: PublicKeyCredentialRequestOptionsJSON;
-  }> {
-    return this.callApi<{ pendingId: string; options: PublicKeyCredentialRequestOptionsJSON }>({
-      type: Modules.Auth,
+  static async getPasskeyAuthOptions(params: { pendingToken: string }): Promise<PasskeyAuthenticationOptionsInterface> {
+    return this.callApi<PasskeyAuthenticationOptionsInterface>({
+      type: Modules.PasskeyAuthenticationOptions,
       method: HttpMethod.POST,
       endpoint: new EndpointCreator({
         endpoint: Modules.Auth,

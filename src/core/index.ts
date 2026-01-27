@@ -39,6 +39,7 @@ export * from "../features/auth/passkey-registration-options.module";
 export * from "../features/auth/passkey-registration-verify.module";
 export * from "../features/auth/passkey-rename.module";
 export * from "../features/auth/passkey-verify-login.module";
+export * from "../features/auth/passkey-authentication-options.module";
 export * from "../features/auth/two-factor-enable.module";
 export * from "../features/auth/two-factor-challenge.module";
 export * from "../features/auth/two-factor-status.module";
