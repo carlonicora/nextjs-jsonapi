@@ -219,6 +219,26 @@ export class TwoFactorService extends AbstractService {
   // Login 2FA Verification
   // ============================================================
 
+  private static async handleSuccessfulAuth(auth: AuthInterface): Promise<AuthInterface> {
+    const handler = getTokenHandler();
+    if (handler) {
+      await handler.updateToken({
+        token: auth.token,
+        refreshToken: auth.refreshToken,
+        userId: auth.user.id,
+        companyId: auth.user.company?.id,
+        roles: auth.user.roles.map((role) => role.id),
+        features: auth.user.company?.features?.map((feature) => feature.id) ?? [],
+        modules: auth.user.modules.map((module) => ({
+          id: module.id,
+          permissions: module.permissions,
+        })),
+      });
+    }
+
+    return auth;
+  }
+
   static async getChallenge(params: {
     id: string;
     pendingToken: string;
@@ -251,24 +271,7 @@ export class TwoFactorService extends AbstractService {
       token: params.pendingToken,
     });
 
-    // Update token handler with new credentials
-    const handler = getTokenHandler();
-    if (handler) {
-      await handler.updateToken({
-        token: auth.token,
-        refreshToken: auth.refreshToken,
-        userId: auth.user.id,
-        companyId: auth.user.company?.id,
-        roles: auth.user.roles.map((role) => role.id),
-        features: auth.user.company?.features?.map((feature) => feature.id) ?? [],
-        modules: auth.user.modules.map((module) => ({
-          id: module.id,
-          permissions: module.permissions,
-        })),
-      });
-    }
-
-    return auth;
+    return this.handleSuccessfulAuth(auth);
   }
 
   static async getPasskeyAuthOptions(params: { pendingToken: string }): Promise<PasskeyAuthenticationOptionsInterface> {
@@ -305,24 +308,7 @@ export class TwoFactorService extends AbstractService {
       token: params.pendingToken,
     });
 
-    // Update token handler with new credentials
-    const handler = getTokenHandler();
-    if (handler) {
-      await handler.updateToken({
-        token: auth.token,
-        refreshToken: auth.refreshToken,
-        userId: auth.user.id,
-        companyId: auth.user.company?.id,
-        roles: auth.user.roles.map((role) => role.id),
-        features: auth.user.company?.features?.map((feature) => feature.id) ?? [],
-        modules: auth.user.modules.map((module) => ({
-          id: module.id,
-          permissions: module.permissions,
-        })),
-      });
-    }
-
-    return auth;
+    return this.handleSuccessfulAuth(auth);
   }
 
   static async verifyBackupCode(params: { id: string; pendingToken: string; code: string }): Promise<AuthInterface> {
@@ -340,23 +326,6 @@ export class TwoFactorService extends AbstractService {
       token: params.pendingToken,
     });
 
-    // Update token handler with new credentials
-    const handler = getTokenHandler();
-    if (handler) {
-      await handler.updateToken({
-        token: auth.token,
-        refreshToken: auth.refreshToken,
-        userId: auth.user.id,
-        companyId: auth.user.company?.id,
-        roles: auth.user.roles.map((role) => role.id),
-        features: auth.user.company?.features?.map((feature) => feature.id) ?? [],
-        modules: auth.user.modules.map((module) => ({
-          id: module.id,
-          permissions: module.permissions,
-        })),
-      });
-    }
-
-    return auth;
+    return this.handleSuccessfulAuth(auth);
   }
 }

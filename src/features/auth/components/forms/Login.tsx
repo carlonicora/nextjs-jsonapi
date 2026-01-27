@@ -60,22 +60,15 @@ export function Login() {
         password: values.password,
       });
 
-      console.log("[Login] Received response:", {
-        hasPendingToken: "pendingToken" in response,
-        isUser: "id" in response,
-      });
-
       // Check if 2FA is required (response is TwoFactorChallengeInterface)
       if ("pendingToken" in response) {
         const challenge = response as TwoFactorChallengeInterface;
-        console.log("[Login] 2FA required, switching to TwoFactorChallenge component");
         setPendingTwoFactor(challenge);
         setComponentType(AuthComponent.TwoFactorChallenge);
         return;
       }
 
       // Normal login flow
-      console.log("[Login] Normal login flow, setting user");
       const user = response as UserInterface;
       setUser(user);
 

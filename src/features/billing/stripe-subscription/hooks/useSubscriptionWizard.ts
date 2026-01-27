@@ -173,10 +173,6 @@ export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseS
   const confirmSubscription = useCallback(async () => {
     if (!state.selectedPrice) return;
 
-    console.log("[useSubscriptionWizard] confirmSubscription called");
-    console.log("[useSubscriptionWizard] state.promotionCode:", JSON.stringify(state.promotionCode, null, 2));
-    console.log("[useSubscriptionWizard] promotionCodeId to send:", state.promotionCode?.promotionCodeId);
-
     dispatch({ type: "SET_PROCESSING", isProcessing: true });
     dispatch({ type: "SET_ERROR", error: null });
 
@@ -188,7 +184,6 @@ export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseS
           newPriceId: state.selectedPrice.id,
           promotionCode: state.promotionCode?.promotionCodeId,
         };
-        console.log("[useSubscriptionWizard] changePlan params:", JSON.stringify(changePlanParams, null, 2));
         await StripeSubscriptionService.changePlan(changePlanParams);
       } else {
         // Create new subscription
@@ -197,15 +192,12 @@ export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseS
           priceId: state.selectedPrice.id,
           promotionCode: state.promotionCode?.promotionCodeId,
         };
-        console.log("[useSubscriptionWizard] createSubscription params:", JSON.stringify(createParams, null, 2));
         await StripeSubscriptionService.createSubscription(createParams);
       }
 
       onSuccessRef.current();
       onCloseRef.current();
     } catch (error: any) {
-      console.error("[useSubscriptionWizard] Subscription error:", error);
-
       // Handle 409 Conflict - duplicate recurring subscription
       if (error?.status === 409 || error?.response?.status === 409) {
         dispatch({

@@ -4,7 +4,24 @@ import { Edit, Key, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { errorToast } from "../../../../components/errors/errorToast";
-import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Input } from "../../../../shadcnui";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Input,
+} from "../../../../shadcnui";
 import { showToast } from "../../../../utils/toast";
 import { PasskeyInterface } from "../../data/passkey.interface";
 import { TwoFactorService } from "../../data/two-factor.service";
@@ -22,24 +39,15 @@ export function PasskeyList({ passkeys, onRefresh }: PasskeyListProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleDelete = async (passkey: PasskeyInterface) => {
-    console.log("[PasskeyList] Attempting to delete passkey:", passkey.id);
-
-    if (!confirm(t("auth.two_factor.confirm_delete_passkey"))) {
-      console.log("[PasskeyList] Delete cancelled by user");
-      return;
-    }
-
     setIsLoading(true);
     try {
       await TwoFactorService.deletePasskey({ id: passkey.id });
-      console.log("[PasskeyList] Passkey deleted successfully:", passkey.id);
 
       showToast(t("common.success"), {
         description: t("auth.two_factor.passkey_deleted"),
       });
       onRefresh();
     } catch (error) {
-      console.error("[PasskeyList] Delete failed:", error);
       errorToast({
         title: t("common.errors.error"),
         error,
@@ -52,15 +60,12 @@ export function PasskeyList({ passkeys, onRefresh }: PasskeyListProps) {
   const handleRename = async () => {
     if (!selectedPasskey || !newName.trim()) return;
 
-    console.log("[PasskeyList] Renaming passkey:", selectedPasskey.id, "to:", newName.trim());
-
     setIsLoading(true);
     try {
       await TwoFactorService.renamePasskey({
         id: selectedPasskey.id,
         name: newName.trim(),
       });
-      console.log("[PasskeyList] Passkey renamed successfully");
 
       showToast(t("common.success"), {
         description: t("auth.two_factor.passkey_renamed"),
@@ -70,7 +75,6 @@ export function PasskeyList({ passkeys, onRefresh }: PasskeyListProps) {
       setNewName("");
       onRefresh();
     } catch (error) {
-      console.error("[PasskeyList] Rename failed:", error);
       errorToast({
         title: t("common.errors.error"),
         error,
@@ -81,7 +85,6 @@ export function PasskeyList({ passkeys, onRefresh }: PasskeyListProps) {
   };
 
   const openRenameDialog = (passkey: PasskeyInterface) => {
-    console.log("[PasskeyList] Opening rename dialog for:", passkey.id);
     setSelectedPasskey(passkey);
     setNewName(passkey.name);
     setRenameDialogOpen(true);
@@ -112,9 +115,30 @@ export function PasskeyList({ passkeys, onRefresh }: PasskeyListProps) {
               <Button variant="ghost" size="icon" onClick={() => openRenameDialog(passkey)} disabled={isLoading}>
                 <Edit className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" onClick={() => handleDelete(passkey)} disabled={isLoading}>
-                <Trash2 className="h-4 w-4 text-destructive" />
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger
+                  render={
+                    <Button variant="ghost" size="icon" disabled={isLoading}>
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  }
+                />
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>{t("auth.two_factor.remove_passkey")}</AlertDialogTitle>
+                    <AlertDialogDescription>{t("auth.two_factor.confirm_delete_passkey")}</AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>{t("common.buttons.cancel")}</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => handleDelete(passkey)}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      {t("common.buttons.delete")}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
         ))}

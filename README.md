@@ -575,8 +575,8 @@ const response = await JsonApiGet({
 });
 
 if (response.ok) {
-  console.log(response.data); // Deserialized data
-  console.log(response.pagination); // Pagination info
+  console.info(response.data); // Deserialized data
+  console.info(response.pagination); // Pagination info
 
   // Navigate pages
   if (response.next) {
@@ -671,7 +671,7 @@ const {
 } = useJsonApiMutation<Article>({
   method: "POST",
   classKey: Modules.Article,
-  onSuccess: (data) => console.log("Created:", data),
+  onSuccess: (data) => console.info("Created:", data),
   onError: (error) => console.error("Failed:", error),
 });
 

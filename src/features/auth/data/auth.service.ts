@@ -28,12 +28,6 @@ export class AuthService extends AbstractService {
       language: language,
     });
 
-    console.log("[AuthService.login] API Response:", {
-      ok: apiResponse.ok,
-      error: apiResponse.error,
-      rawType: apiResponse.raw?.data?.type,
-    });
-
     if (!apiResponse.ok) throw new Error(apiResponse.error);
 
     // POLYMORPHIC RESPONSE: Login can return EITHER Auth OR TwoFactorChallenge

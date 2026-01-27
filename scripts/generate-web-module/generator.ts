@@ -45,14 +45,14 @@ import { parseAndValidate, validationPassed } from "./validators/json-schema-val
 export async function generateWebModule(options: GenerateWebModuleOptions): Promise<boolean> {
   const { jsonPath, dryRun = false, force = false, noRegister = false } = options;
 
-  console.log(`\n🔧 Frontend Module Generator`);
-  console.log(`   JSON Schema: ${jsonPath}`);
-  console.log(`   Dry Run: ${dryRun}`);
-  console.log(`   Force: ${force}`);
-  console.log(`   No Register: ${noRegister}`);
+  console.info(`\n🔧 Frontend Module Generator`);
+  console.info(`   JSON Schema: ${jsonPath}`);
+  console.info(`   Dry Run: ${dryRun}`);
+  console.info(`   Force: ${force}`);
+  console.info(`   No Register: ${noRegister}`);
 
   // Step 1: Validate JSON schema
-  console.log("\n📋 Validating JSON schema...");
+  console.info("\n📋 Validating JSON schema...");
   const validation = parseAndValidate(jsonPath);
 
   if (!validationPassed(validation)) {
@@ -62,26 +62,26 @@ export async function generateWebModule(options: GenerateWebModuleOptions): Prom
   }
 
   if (validation.warnings.length > 0) {
-    console.log("\n⚠️  Validation warnings (non-blocking):");
-    validation.warnings.forEach((w) => console.log(`   - ${w}`));
+    console.info("\n⚠️  Validation warnings (non-blocking):");
+    validation.warnings.forEach((w) => console.info(`   - ${w}`));
   }
 
   const schema = validation.data!;
-  console.log(`   ✅ Schema valid: ${schema.moduleName}`);
+  console.info(`   ✅ Schema valid: ${schema.moduleName}`);
 
   // Step 2: Build template data
-  console.log("\n🔨 Building template data...");
+  console.info("\n🔨 Building template data...");
   const templateData = buildTemplateData(schema);
-  console.log(`   Module: ${templateData.names.pascalCase}`);
-  console.log(`   Target: ${templateData.targetDir}`);
-  console.log(`   Extends Content: ${templateData.extendsContent}`);
-  console.log(`   Fields: ${templateData.fields.length}`);
-  console.log(`   Relationships: ${templateData.relationships.length}`);
+  console.info(`   Module: ${templateData.names.pascalCase}`);
+  console.info(`   Target: ${templateData.targetDir}`);
+  console.info(`   Extends Content: ${templateData.extendsContent}`);
+  console.info(`   Fields: ${templateData.fields.length}`);
+  console.info(`   Relationships: ${templateData.relationships.length}`);
 
   // Step 3: Generate all files
-  console.log("\n📝 Generating files...");
+  console.info("\n📝 Generating files...");
   const files = generateAllFiles(templateData, schema);
-  console.log(`   Generated ${files.length} file templates`);
+  console.info(`   Generated ${files.length} file templates`);
 
   // Step 4: Determine web base path
   const webBasePath = findWebBasePath(jsonPath);
@@ -89,35 +89,35 @@ export async function generateWebModule(options: GenerateWebModuleOptions): Prom
     console.error("\n❌ Could not determine web app base path");
     return false;
   }
-  console.log(`   Web base path: ${webBasePath}`);
+  console.info(`   Web base path: ${webBasePath}`);
 
   // Step 5: Write files
-  console.log("\n💾 Writing files...");
+  console.info("\n💾 Writing files...");
   const results = writeFiles(files, { dryRun, force });
   printResults(results);
 
   // Step 6: Update Bootstrapper (unless --no-register)
   if (!noRegister) {
-    console.log("\n🔧 Updating Bootstrapper.ts...");
+    console.info("\n🔧 Updating Bootstrapper.ts...");
     const bootstrapResult = updateBootstrapper(templateData, webBasePath, dryRun);
-    console.log(`   ${bootstrapResult.success ? "✅" : "❌"} ${bootstrapResult.message}`);
+    console.info(`   ${bootstrapResult.success ? "✅" : "❌"} ${bootstrapResult.message}`);
   }
 
   // Step 7: Update i18n for all languages (unless --no-register)
   if (!noRegister) {
     const languages = schema.languages || ["en"];
-    console.log(`\n🌐 Updating i18n for ${languages.length} language(s)...`);
+    console.info(`\n🌐 Updating i18n for ${languages.length} language(s)...`);
     for (const language of languages) {
       const i18nResult = updateI18n(templateData, webBasePath, language, dryRun);
-      console.log(`   ${i18nResult.success ? "✅" : "❌"} ${i18nResult.message}`);
+      console.info(`   ${i18nResult.success ? "✅" : "❌"} ${i18nResult.message}`);
     }
   }
 
-  console.log("\n✅ Generation complete!");
+  console.info("\n✅ Generation complete!");
 
   if (dryRun) {
-    console.log("\n📝 This was a dry run. No files were actually written.");
-    console.log("   Remove --dry-run to generate files.");
+    console.info("\n📝 This was a dry run. No files were actually written.");
+    console.info("   Remove --dry-run to generate files.");
   }
 
   return true;

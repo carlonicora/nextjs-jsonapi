@@ -36,19 +36,15 @@ export function PasskeySetupDialog({ open, onOpenChange, onSuccess }: PasskeySet
 
     setIsLoading(true);
     try {
-      console.log("[PasskeySetupDialog] Starting passkey registration for:", name.trim());
-
       // 1. Get registration options from backend
       const registrationData = await TwoFactorService.getPasskeyRegistrationOptions({
         id: v4(),
         userName: currentUser?.email ?? "",
         userDisplayName: currentUser?.name,
       });
-      console.log("[PasskeySetupDialog] Received registration options with pendingId:", registrationData.pendingId);
 
       // 2. Trigger browser WebAuthn dialog
       const credential = await startRegistration({ optionsJSON: registrationData.options });
-      console.log("[PasskeySetupDialog] Browser returned credential");
 
       // 3. Verify with backend
       await TwoFactorService.verifyPasskeyRegistration({
@@ -57,15 +53,11 @@ export function PasskeySetupDialog({ open, onOpenChange, onSuccess }: PasskeySet
         name: name.trim(),
         response: credential,
       });
-      console.log("[PasskeySetupDialog] Registration verified successfully");
 
       // Auto-enable 2FA if not already enabled
       const status = await TwoFactorService.getStatus();
-      console.log("[PasskeySetupDialog] Current 2FA status:", status);
       if (!status.isEnabled) {
-        console.log("[PasskeySetupDialog] 2FA not enabled, enabling now...");
         await TwoFactorService.enable({ id: v4(), preferredMethod: "passkey" });
-        console.log("[PasskeySetupDialog] 2FA enabled successfully");
       }
 
       showToast(t("common.success"), {
@@ -76,7 +68,6 @@ export function PasskeySetupDialog({ open, onOpenChange, onSuccess }: PasskeySet
       onOpenChange(false);
       onSuccess();
     } catch (error) {
-      console.error("[PasskeySetupDialog] Registration failed:", error);
       errorToast({
         title: t("common.errors.error"),
         error,

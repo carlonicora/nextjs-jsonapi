@@ -32,18 +32,15 @@ export function TotpAuthenticatorList({ authenticators, onDelete }: TotpAuthenti
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleDelete = async (id: string) => {
-    console.log("[TotpAuthenticatorList] Attempting to delete authenticator:", id);
     setDeletingId(id);
     try {
       await TwoFactorService.deleteTotpAuthenticator({ id });
-      console.log("[TotpAuthenticatorList] Authenticator deleted successfully:", id);
 
       showToast(t("common.success"), {
         description: t("auth.two_factor.authenticator_removed"),
       });
       onDelete();
     } catch (error) {
-      console.error("[TotpAuthenticatorList] Delete failed:", error);
       errorToast({ title: t("common.errors.error"), error });
     } finally {
       setDeletingId(null);

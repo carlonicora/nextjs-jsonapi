@@ -40,7 +40,6 @@ export function TotpSetupDialog({ onSuccess, trigger }: TotpSetupDialogProps) {
   const handleStartSetup = async () => {
     if (!name.trim()) return;
 
-    console.log("[TotpSetupDialog] Starting TOTP setup for:", name.trim());
     setIsLoading(true);
     try {
       const setup = await TwoFactorService.setupTotp({
@@ -48,13 +47,11 @@ export function TotpSetupDialog({ onSuccess, trigger }: TotpSetupDialogProps) {
         name: name.trim(),
         accountName: currentUser?.email ?? "",
       });
-      console.log("[TotpSetupDialog] Received setup data:", { authenticatorId: setup.authenticatorId });
 
       setQrCodeUri(setup.qrCodeUri);
       setAuthenticatorId(setup.authenticatorId);
       setStep("scan");
     } catch (error) {
-      console.error("[TotpSetupDialog] Setup failed:", error);
       errorToast({ title: t("common.errors.error"), error });
     } finally {
       setIsLoading(false);
@@ -62,7 +59,6 @@ export function TotpSetupDialog({ onSuccess, trigger }: TotpSetupDialogProps) {
   };
 
   const handleVerify = async (code: string) => {
-    console.log("[TotpSetupDialog] Verifying TOTP code for authenticator:", authenticatorId);
     setIsLoading(true);
     setVerifyError(undefined);
 
@@ -72,15 +68,11 @@ export function TotpSetupDialog({ onSuccess, trigger }: TotpSetupDialogProps) {
         authenticatorId,
         code,
       });
-      console.log("[TotpSetupDialog] TOTP setup verified successfully");
 
       // Auto-enable 2FA if not already enabled
       const status = await TwoFactorService.getStatus();
-      console.log("[TotpSetupDialog] Current 2FA status:", status);
       if (!status.isEnabled) {
-        console.log("[TotpSetupDialog] 2FA not enabled, enabling now...");
         await TwoFactorService.enable({ id: v4(), preferredMethod: "totp" });
-        console.log("[TotpSetupDialog] 2FA enabled successfully");
       }
 
       showToast(t("common.success"), {
@@ -91,7 +83,6 @@ export function TotpSetupDialog({ onSuccess, trigger }: TotpSetupDialogProps) {
       resetState();
       onSuccess();
     } catch (error) {
-      console.error("[TotpSetupDialog] Verification failed:", error);
       setVerifyError(t("auth.two_factor.invalid_code"));
       errorToast({ title: t("common.errors.error"), error });
     } finally {
@@ -100,7 +91,6 @@ export function TotpSetupDialog({ onSuccess, trigger }: TotpSetupDialogProps) {
   };
 
   const resetState = () => {
-    console.log("[TotpSetupDialog] Resetting dialog state");
     setStep("name");
     setName("");
     setQrCodeUri("");
@@ -109,7 +99,6 @@ export function TotpSetupDialog({ onSuccess, trigger }: TotpSetupDialogProps) {
   };
 
   const handleOpenChange = (newOpen: boolean) => {
-    console.log("[TotpSetupDialog] Dialog open state changed:", newOpen);
     setOpen(newOpen);
     if (!newOpen) resetState();
   };

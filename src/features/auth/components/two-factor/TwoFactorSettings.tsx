@@ -28,7 +28,6 @@ export function TwoFactorSettings() {
   const [passkeyDialogOpen, setPasskeyDialogOpen] = useState(false);
 
   const loadStatus = useCallback(async () => {
-    console.log("[TwoFactorSettings] Loading 2FA status...");
     try {
       // Load status and lists in parallel
       const [statusData, authenticatorsList, passkeysList] = await Promise.all([
@@ -36,15 +35,10 @@ export function TwoFactorSettings() {
         TwoFactorService.listTotpAuthenticators(),
         TwoFactorService.listPasskeys(),
       ]);
-      console.log("[TwoFactorSettings] Status loaded:", statusData);
-      console.log("[TwoFactorSettings] Status isEnabled:", statusData?.isEnabled);
-      console.log("[TwoFactorSettings] Authenticators loaded:", authenticatorsList);
-      console.log("[TwoFactorSettings] Passkeys loaded:", passkeysList);
       setStatus(statusData);
       setAuthenticators(authenticatorsList);
       setPasskeys(passkeysList);
     } catch (error) {
-      console.error("[TwoFactorSettings] Error loading status:", error);
       errorToast({ title: t("common.errors.error"), error });
     } finally {
       setIsLoading(false);
@@ -56,21 +50,17 @@ export function TwoFactorSettings() {
   }, [loadStatus]);
 
   const handleRefresh = () => {
-    console.log("[TwoFactorSettings] Refreshing status...");
     loadStatus();
   };
 
   const handleEnable2FA = async () => {
-    console.log("[TwoFactorSettings] Enabling 2FA...");
     setIsEnabling(true);
     try {
       const preferredMethod = authenticators.length > 0 ? "totp" : "passkey";
       await TwoFactorService.enable({ id: v4(), preferredMethod });
-      console.log("[TwoFactorSettings] 2FA enabled successfully");
       showToast(t("common.success"), { description: t("auth.two_factor.enabled_success") });
       await loadStatus();
     } catch (error) {
-      console.error("[TwoFactorSettings] Failed to enable 2FA:", error);
       errorToast({ title: t("common.errors.error"), error });
     } finally {
       setIsEnabling(false);

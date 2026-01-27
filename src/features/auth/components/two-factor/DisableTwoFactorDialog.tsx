@@ -28,18 +28,15 @@ export function DisableTwoFactorDialog({ onSuccess, trigger }: DisableTwoFactorD
   const [error, setError] = useState<string | undefined>();
 
   const handleVerify = async (code: string) => {
-    console.log("[DisableTwoFactorDialog] Verifying code to disable 2FA");
     setIsLoading(true);
     setError(undefined);
 
     try {
       await TwoFactorService.disable({ code });
-      console.log("[DisableTwoFactorDialog] 2FA disabled successfully");
       showToast(t("auth.two_factor.disabled_success"));
       setOpen(false);
       onSuccess();
     } catch (err) {
-      console.error("[DisableTwoFactorDialog] Failed to disable 2FA:", err);
       setError(t("auth.two_factor.invalid_code"));
       errorToast({ title: t("common.errors.error"), error: err });
     } finally {
@@ -48,7 +45,6 @@ export function DisableTwoFactorDialog({ onSuccess, trigger }: DisableTwoFactorD
   };
 
   const handleOpenChange = (newOpen: boolean) => {
-    console.log("[DisableTwoFactorDialog] Dialog open state changed:", newOpen);
     setOpen(newOpen);
     if (!newOpen) {
       setError(undefined);

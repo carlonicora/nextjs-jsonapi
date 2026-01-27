@@ -79,30 +79,22 @@ export default function Register() {
 
   useEffect(() => {
     async function validateInvite() {
-      console.log("[Register] validateInvite called. registrationMode:", registrationMode, "inviteCode:", inviteCode);
-
       if (registrationMode !== "waitlist" || !inviteCode) {
-        console.log("[Register] Skipping validation - not in waitlist mode or no invite code");
         return;
       }
 
       setIsValidatingInvite(true);
       try {
-        console.log("[Register] Calling WaitlistService.validateInvite...");
         const result = await WaitlistService.validateInvite(inviteCode);
-        console.log("[Register] Validation result:", JSON.stringify(result));
 
         if (result && result.valid) {
-          console.log("[Register] Invite valid! Email:", result.email);
           setInviteValidated(true);
           form.setValue("email", result.email);
         } else {
           const errorMsg = result ? t("waitlist.invite.error_expired") : t("waitlist.invite.error_invalid");
-          console.log("[Register] Invite invalid. result:", result, "errorMsg:", errorMsg);
           setInviteError(errorMsg);
         }
-      } catch (error) {
-        console.error("[Register] Validation exception:", error);
+      } catch (_error) {
         setInviteError(t("waitlist.invite.error_validation_failed"));
       } finally {
         setIsValidatingInvite(false);

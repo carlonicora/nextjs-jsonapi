@@ -39,16 +39,13 @@ export function BackupCodesDialog({ remainingCodes, onRegenerate, trigger }: Bac
   const [showCodes, setShowCodes] = useState(false);
 
   const handleGenerate = async () => {
-    console.log("[BackupCodesDialog] Generating new backup codes");
     setIsLoading(true);
     try {
       const newCodes = await TwoFactorService.generateBackupCodes();
-      console.log("[BackupCodesDialog] Generated codes count:", newCodes.length);
       setCodes(newCodes);
       setShowCodes(true);
       onRegenerate();
     } catch (error) {
-      console.error("[BackupCodesDialog] Failed to generate backup codes:", error);
       errorToast({ title: t("common.errors.error"), error });
     } finally {
       setIsLoading(false);
@@ -58,7 +55,6 @@ export function BackupCodesDialog({ remainingCodes, onRegenerate, trigger }: Bac
   const handleCopyAll = async () => {
     const text = codes.join("\n");
     await navigator.clipboard.writeText(text);
-    console.log("[BackupCodesDialog] Copied all backup codes to clipboard");
     showToast(t("auth.two_factor.codes_copied"));
   };
 
@@ -71,11 +67,9 @@ export function BackupCodesDialog({ remainingCodes, onRegenerate, trigger }: Bac
     a.download = "backup-codes.txt";
     a.click();
     URL.revokeObjectURL(url);
-    console.log("[BackupCodesDialog] Downloaded backup codes");
   };
 
   const handleOpenChange = (newOpen: boolean) => {
-    console.log("[BackupCodesDialog] Dialog open state changed:", newOpen);
     setOpen(newOpen);
     if (!newOpen) {
       setCodes([]);

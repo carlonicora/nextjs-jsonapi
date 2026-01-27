@@ -119,7 +119,6 @@ export class WaitlistService extends AbstractService {
    * Validate invite code (public) - calls auth endpoint
    */
   static async validateInvite(code: string): Promise<InviteValidation | null> {
-    console.log("[WaitlistService.validateInvite] Starting validation for code:", code);
     try {
       const endpoint = new EndpointCreator({
         endpoint: Modules.Waitlist,
@@ -127,26 +126,20 @@ export class WaitlistService extends AbstractService {
         childId: code,
       });
 
-      console.log("[WaitlistService.validateInvite] Calling endpoint:", endpoint.generate());
-
       const response = await this.callApiWithMeta<any>({
         type: Modules.Auth,
         method: HttpMethod.GET,
         endpoint: endpoint.generate(),
       });
 
-      console.log("[WaitlistService.validateInvite] Response:", JSON.stringify(response));
-
       // Response structure: data._jsonApi.attributes contains the actual values
       const attributes = response.data?._jsonApi?.attributes;
-      console.log("[WaitlistService.validateInvite] Parsed attributes:", JSON.stringify(attributes));
 
       return {
         email: attributes?.email,
         valid: attributes?.valid ?? false,
       };
-    } catch (error) {
-      console.error("[WaitlistService.validateInvite] Error:", error);
+    } catch (_error) {
       return null;
     }
   }

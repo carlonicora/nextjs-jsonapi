@@ -88,28 +88,28 @@ export function printResults(results: WriteResult[]): void {
   };
 
   if (grouped.dryRun.length > 0) {
-    console.log("\n📋 DRY RUN - Files that would be created:");
+    console.info("\n📋 DRY RUN - Files that would be created:");
     grouped.dryRun.forEach((r) => {
-      console.log(`   ${r.existed ? "🔄" : "✨"} ${r.path}`);
+      console.info(`   ${r.existed ? "🔄" : "✨"} ${r.path}`);
     });
   }
 
   if (grouped.created.length > 0) {
-    console.log("\n✨ Created files:");
-    grouped.created.forEach((r) => console.log(`   ${r.path}`));
+    console.info("\n✨ Created files:");
+    grouped.created.forEach((r) => console.info(`   ${r.path}`));
   }
 
   if (grouped.updated.length > 0) {
-    console.log("\n🔄 Updated files:");
-    grouped.updated.forEach((r) => console.log(`   ${r.path}`));
+    console.info("\n🔄 Updated files:");
+    grouped.updated.forEach((r) => console.info(`   ${r.path}`));
   }
 
   if (grouped.skipped.length > 0) {
-    console.log("\n⏭️  Skipped (already exist, use --force to overwrite):");
-    grouped.skipped.forEach((r) => console.log(`   ${r.path}`));
+    console.info("\n⏭️  Skipped (already exist, use --force to overwrite):");
+    grouped.skipped.forEach((r) => console.info(`   ${r.path}`));
   }
 
-  console.log(
+  console.info(
     `\nTotal: ${results.length} files (${grouped.created.length} created, ${grouped.updated.length} updated, ${grouped.skipped.length} skipped)`
   );
 }

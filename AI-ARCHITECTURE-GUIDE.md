@@ -34,6 +34,7 @@ This architecture provides **automatic, type-safe JSON:API compliance** for the 
 > **Let the Model handle JSON:API creation. Avoid `overridesJsonApiCreation` unless absolutely necessary.**
 
 The architecture handles all serialization/deserialization automatically through:
+
 - **Model.rehydrate()** - Converts JSON:API response → TypeScript object
 - **Model.createJsonApi()** - Converts TypeScript object → JSON:API request
 - **AbstractService.callApi()** - Handles HTTP + automatic transformation
@@ -43,6 +44,7 @@ The architecture handles all serialization/deserialization automatically through
 ## 2. Models
 
 Models extend `AbstractApiData` and implement two critical methods:
+
 - `rehydrate()`: Converts JSON:API to TypeScript object (for GET responses)
 - `createJsonApi()`: Converts TypeScript object to JSON:API (for POST/PUT requests)
 
@@ -69,13 +71,27 @@ export class Gallery extends AbstractApiData implements GalleryInterface {
   private _persons?: (PersonInterface & PersonRelationshipMeta)[];
 
   // Getters - provide typed access to private fields
-  get name(): string { return this._name ?? ""; }
-  get description(): string | undefined { return this._description; }
-  get samplePhotographs(): string[] { return this._samplePhotographs ?? []; }
-  get photoCount(): number { return this._photoCount ?? 0; }
-  get owner(): UserInterface | undefined { return this._owner; }
-  get photographs(): PhotographInterface[] { return this._photographs ?? []; }
-  get persons(): (PersonInterface & PersonRelationshipMeta)[] { return this._persons ?? []; }
+  get name(): string {
+    return this._name ?? "";
+  }
+  get description(): string | undefined {
+    return this._description;
+  }
+  get samplePhotographs(): string[] {
+    return this._samplePhotographs ?? [];
+  }
+  get photoCount(): number {
+    return this._photoCount ?? 0;
+  }
+  get owner(): UserInterface | undefined {
+    return this._owner;
+  }
+  get photographs(): PhotographInterface[] {
+    return this._photographs ?? [];
+  }
+  get persons(): (PersonInterface & PersonRelationshipMeta)[] {
+    return this._persons ?? [];
+  }
 
   /**
    * Deserialize JSON:API response into typed object
@@ -96,11 +112,7 @@ export class Gallery extends AbstractApiData implements GalleryInterface {
     this._owner = this._readIncluded(data, "owner", Modules.User) as UserInterface;
 
     // Array relationship - use _readIncluded
-    this._photographs = this._readIncluded(
-      data,
-      "photographs",
-      Modules.Photograph
-    ) as PhotographInterface[];
+    this._photographs = this._readIncluded(data, "photographs", Modules.Photograph) as PhotographInterface[];
 
     // Relationship WITH edge metadata - use _readIncludedWithMeta
     this._persons = this._readIncludedWithMeta<PersonInterface, PersonRelationshipMeta>(
@@ -158,12 +170,12 @@ export class Gallery extends AbstractApiData implements GalleryInterface {
 
 ### Key Methods
 
-| Method | Purpose | When Called |
-|--------|---------|-------------|
-| `rehydrate(data)` | Convert JSON:API → TypeScript | After GET response |
-| `createJsonApi(data)` | Convert TypeScript → JSON:API | Before POST/PUT request |
-| `_readIncluded(data, key, module)` | Read single or array relationship | In rehydrate() |
-| `_readIncludedWithMeta(data, key, module)` | Read relationship with edge metadata | In rehydrate() |
+| Method                                     | Purpose                              | When Called             |
+| ------------------------------------------ | ------------------------------------ | ----------------------- |
+| `rehydrate(data)`                          | Convert JSON:API → TypeScript        | After GET response      |
+| `createJsonApi(data)`                      | Convert TypeScript → JSON:API        | Before POST/PUT request |
+| `_readIncluded(data, key, module)`         | Read single or array relationship    | In rehydrate()          |
+| `_readIncludedWithMeta(data, key, module)` | Read relationship with edge metadata | In rehydrate()          |
 
 ### Reading Relationships
 
@@ -172,11 +184,7 @@ export class Gallery extends AbstractApiData implements GalleryInterface {
 this._owner = this._readIncluded(data, "owner", Modules.User) as UserInterface;
 
 // Array relationship (cardinality: many)
-this._photographs = this._readIncluded(
-  data,
-  "photographs",
-  Modules.Photograph
-) as PhotographInterface[];
+this._photographs = this._readIncluded(data, "photographs", Modules.Photograph) as PhotographInterface[];
 
 // Relationship with edge metadata (e.g., position, expiration, access code)
 this._persons = this._readIncludedWithMeta<PersonInterface, PersonRelationshipMeta>(
@@ -214,10 +222,10 @@ Use `_readIncludedWithMeta` to access both the entity data AND the edge metadata
 
 ```typescript
 // After rehydration, you can access both entity and edge properties
-gallery.persons.forEach(person => {
-  console.log(person.name);      // From Person entity
-  console.log(person.code);      // From relationship meta
-  console.log(person.completed); // From relationship meta
+gallery.persons.forEach((person) => {
+  console.info(person.name); // From Person entity
+  console.info(person.code); // From relationship meta
+  console.info(person.completed); // From relationship meta
 });
 ```
 
@@ -299,10 +307,12 @@ export class GalleryService extends AbstractService {
   /**
    * GET list of galleries
    */
-  static async findMany(params: {
-    search?: string;
-    fetchAll?: boolean;
-  } = {}): Promise<GalleryInterface[]> {
+  static async findMany(
+    params: {
+      search?: string;
+      fetchAll?: boolean;
+    } = {},
+  ): Promise<GalleryInterface[]> {
     const endpoint = new EndpointCreator({ endpoint: Modules.Gallery });
 
     if (params.fetchAll) endpoint.addAdditionalParam("fetchAll", "true");
@@ -338,7 +348,7 @@ export class GalleryService extends AbstractService {
       type: Modules.Gallery,
       method: HttpMethod.POST,
       endpoint: new EndpointCreator({ endpoint: Modules.Gallery }).generate(),
-      input: params,  // Model.createJsonApi() handles conversion automatically
+      input: params, // Model.createJsonApi() handles conversion automatically
     });
   }
 
@@ -353,7 +363,7 @@ export class GalleryService extends AbstractService {
         endpoint: Modules.Gallery,
         id: params.id,
       }).generate(),
-      input: params,  // Model.createJsonApi() handles conversion automatically
+      input: params, // Model.createJsonApi() handles conversion automatically
     });
   }
 
@@ -481,17 +491,17 @@ static async login(params: { email: string; password: string }): Promise<AuthInt
 
 ```typescript
 // Simple endpoint: /galleries
-new EndpointCreator({ endpoint: Modules.Gallery }).generate()
+new EndpointCreator({ endpoint: Modules.Gallery }).generate();
 
 // With ID: /galleries/123
-new EndpointCreator({ endpoint: Modules.Gallery, id: "123" }).generate()
+new EndpointCreator({ endpoint: Modules.Gallery, id: "123" }).generate();
 
 // Nested endpoint: /users/456/galleries
 new EndpointCreator({
   endpoint: Modules.User,
   id: "456",
   childEndpoint: Modules.Gallery,
-}).generate()
+}).generate();
 
 // Nested with child ID: /galleries/123/persons/789
 new EndpointCreator({
@@ -499,13 +509,13 @@ new EndpointCreator({
   id: "123",
   childEndpoint: Modules.Person,
   childId: "789",
-}).generate()
+}).generate();
 
 // With query parameters
 const endpoint = new EndpointCreator({ endpoint: Modules.Gallery });
 endpoint.addAdditionalParam("search", "summer");
 endpoint.addAdditionalParam("fetchAll", "true");
-endpoint.generate()  // /galleries?search=summer&fetchAll=true
+endpoint.generate(); // /galleries?search=summer&fetchAll=true
 ```
 
 ---
@@ -578,9 +588,15 @@ export class Example extends AbstractApiData implements ExampleInterface {
   private _description?: string;
   private _owner?: UserInterface;
 
-  get name(): string { return this._name ?? ""; }
-  get description(): string | undefined { return this._description; }
-  get owner(): UserInterface | undefined { return this._owner; }
+  get name(): string {
+    return this._name ?? "";
+  }
+  get description(): string | undefined {
+    return this._description;
+  }
+  get owner(): UserInterface | undefined {
+    return this._owner;
+  }
 
   rehydrate(data: JsonApiHydratedDataInterface): this {
     super.rehydrate(data);
@@ -699,16 +715,16 @@ Example: {
 
 ## 7. Frontend Anti-Patterns
 
-| Anti-Pattern | Why It's Wrong | Correct Approach |
-|--------------|---------------|------------------|
-| Using `fetch()` directly | No type safety, no rehydration | Use `callApi()` |
-| Using `overridesJsonApiCreation` unnecessarily | Bypasses model validation | Let model handle it via `input` |
-| Manual JSON:API construction | Error-prone, inconsistent | Use `Model.createJsonApi()` |
-| Not implementing `rehydrate()` | Breaks deserialization | Always implement `rehydrate()` |
-| Not implementing `createJsonApi()` | Breaks serialization | Always implement `createJsonApi()` |
-| Accessing `data.jsonApi.data.*` directly | Bypasses type system | Use typed getters after rehydrate |
-| Hardcoding endpoint strings | Inconsistent, error-prone | Use `EndpointCreator` |
-| Not using Modules registry | Breaks model resolution | Register all entities in Modules |
+| Anti-Pattern                                   | Why It's Wrong                 | Correct Approach                   |
+| ---------------------------------------------- | ------------------------------ | ---------------------------------- |
+| Using `fetch()` directly                       | No type safety, no rehydration | Use `callApi()`                    |
+| Using `overridesJsonApiCreation` unnecessarily | Bypasses model validation      | Let model handle it via `input`    |
+| Manual JSON:API construction                   | Error-prone, inconsistent      | Use `Model.createJsonApi()`        |
+| Not implementing `rehydrate()`                 | Breaks deserialization         | Always implement `rehydrate()`     |
+| Not implementing `createJsonApi()`             | Breaks serialization           | Always implement `createJsonApi()` |
+| Accessing `data.jsonApi.data.*` directly       | Bypasses type system           | Use typed getters after rehydrate  |
+| Hardcoding endpoint strings                    | Inconsistent, error-prone      | Use `EndpointCreator`              |
+| Not using Modules registry                     | Breaks model resolution        | Register all entities in Modules   |
 
 ### When NOT to Use `overridesJsonApiCreation`
 
