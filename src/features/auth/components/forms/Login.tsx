@@ -23,7 +23,8 @@ import {
 import { UserInterface } from "../../../user";
 import { useCurrentUserContext } from "../../../user/contexts";
 import { useAuthContext } from "../../contexts";
-import { AuthService, TwoFactorChallengeResponse } from "../../data/auth.service";
+import { AuthService } from "../../data/auth.service";
+import { TwoFactorChallengeInterface } from "../../data/two-factor-challenge.interface";
 import { AuthComponent } from "../../enums";
 import { GoogleSignInButton } from "../buttons/GoogleSignInButton";
 
@@ -61,18 +62,14 @@ export function Login() {
 
       console.log("[Login] Received response:", {
         hasPendingToken: "pendingToken" in response,
-        requiresTwoFactor: "requiresTwoFactor" in response ? (response as any).requiresTwoFactor : false,
         isUser: "id" in response,
       });
 
-      // Check if 2FA is required
-      if ("requiresTwoFactor" in response && response.requiresTwoFactor) {
+      // Check if 2FA is required (response is TwoFactorChallengeInterface)
+      if ("pendingToken" in response) {
+        const challenge = response as TwoFactorChallengeInterface;
         console.log("[Login] 2FA required, switching to TwoFactorChallenge component");
-        setPendingTwoFactor({
-          pendingToken: response.pendingToken,
-          availableMethods: response.availableMethods,
-          expiresAt: response.expiresAt,
-        });
+        setPendingTwoFactor(challenge);
         setComponentType(AuthComponent.TwoFactorChallenge);
         return;
       }

@@ -222,7 +222,11 @@ export class TwoFactorService extends AbstractService {
   // Login 2FA Verification
   // ============================================================
 
-  static async getChallenge(params: { id: string; pendingToken: string; method: "totp" | "passkey" | "backup" }): Promise<TwoFactorChallengeInterface> {
+  static async getChallenge(params: {
+    id: string;
+    pendingToken: string;
+    method: "totp" | "passkey" | "backup";
+  }): Promise<TwoFactorChallengeInterface> {
     return this.callApi<TwoFactorChallengeInterface>({
       type: Modules.TwoFactorChallenge,
       method: HttpMethod.POST,
@@ -236,6 +240,11 @@ export class TwoFactorService extends AbstractService {
   }
 
   static async verifyTotp(params: { id: string; pendingToken: string; code: string }): Promise<AuthInterface> {
+    console.log("[DEBUG verifyTotp] params:", JSON.stringify(params, null, 2));
+    console.log(
+      "[DEBUG verifyTotp] input being passed:",
+      JSON.stringify({ id: params.id, code: params.code }, null, 2),
+    );
     const auth = await this.callApi<AuthInterface>({
       type: Modules.TotpVerifyLogin,
       method: HttpMethod.POST,
@@ -246,6 +255,7 @@ export class TwoFactorService extends AbstractService {
         childId: "totp",
       }).generate(),
       input: { id: params.id, code: params.code },
+      token: params.pendingToken,
     });
 
     // Update token handler with new credentials
@@ -281,7 +291,7 @@ export class TwoFactorService extends AbstractService {
         childEndpoint: "verify/passkey",
         childId: "options",
       }).generate(),
-      overridesJsonApiCreation: true,
+      token: params.pendingToken,
     });
   }
 
@@ -301,6 +311,7 @@ export class TwoFactorService extends AbstractService {
         childId: "passkey",
       }).generate(),
       input: { id: params.id, pendingId: params.pendingId, response: params.credential },
+      token: params.pendingToken,
     });
 
     // Update token handler with new credentials
@@ -334,6 +345,7 @@ export class TwoFactorService extends AbstractService {
         childId: "backup",
       }).generate(),
       input: { id: params.id, code: params.code },
+      token: params.pendingToken,
     });
 
     // Update token handler with new credentials

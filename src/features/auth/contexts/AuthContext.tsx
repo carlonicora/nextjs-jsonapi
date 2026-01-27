@@ -8,6 +8,7 @@ import {
   LandingComponent,
   Login,
   ResetPassword,
+  TwoFactorChallenge,
 } from "../components";
 import Register from "../components/forms/Register";
 import { AuthComponent } from "../enums";
@@ -54,9 +55,7 @@ export const AuthContextProvider = ({
       case AuthComponent.AcceptInvitation:
         return <AcceptInvitation />;
       case AuthComponent.TwoFactorChallenge:
-        // TwoFactorChallenge will be imported and used here
-        // For now, return null - component will be created in a later task
-        return null;
+        return <TwoFactorChallenge />;
       default:
         return <LandingComponent />;
     }

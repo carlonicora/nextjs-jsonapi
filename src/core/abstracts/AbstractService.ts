@@ -145,6 +145,7 @@ export abstract class AbstractService {
     total?: TotalRef;
     responseType?: ApiRequestDataTypeInterface;
     files?: { [key: string]: File | Blob } | File | Blob;
+    token?: string;
   }): Promise<T> {
     // Dynamic import to avoid bundling issues
     const { JsonApiGet, JsonApiPost, JsonApiPut, JsonApiPatch, JsonApiDelete } =
@@ -181,6 +182,7 @@ export abstract class AbstractService {
           language: language,
           responseType: params.responseType,
           files: params.files,
+          token: params.token,
         });
         break;
       case HttpMethod.PUT:

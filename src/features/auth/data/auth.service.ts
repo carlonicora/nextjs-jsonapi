@@ -11,22 +11,14 @@ import {
 import { JsonApiDelete, JsonApiGet, JsonApiPost } from "../../../unified";
 import { UserInterface } from "../../user";
 import { getTokenHandler } from "../config";
-
-/** Response type when 2FA is required */
-export interface TwoFactorChallengeResponse {
-  requiresTwoFactor: true;
-  pendingToken: string;
-  availableMethods: ("totp" | "passkey" | "backup")[];
-  preferredMethod?: string;
-  expiresAt: Date;
-}
+import { TwoFactorChallengeInterface } from "./two-factor-challenge.interface";
 
 export class AuthService extends AbstractService {
   static async login(params: {
     email: string;
     password: string;
     language?: string;
-  }): Promise<UserInterface | TwoFactorChallengeResponse> {
+  }): Promise<UserInterface | TwoFactorChallengeInterface> {
     const language = params.language || "en-US";
 
     const apiResponse: ApiResponseInterface = await JsonApiPost({
@@ -40,22 +32,19 @@ export class AuthService extends AbstractService {
       ok: apiResponse.ok,
       error: apiResponse.error,
       rawType: apiResponse.raw?.data?.type,
-      rawData: apiResponse.raw?.data,
     });
 
     if (!apiResponse.ok) throw new Error(apiResponse.error);
 
-    // Check if the response is a 2FA challenge
-    const rawResponseType = apiResponse.raw?.data?.type;
-    if (rawResponseType === "two-factor-challenge") {
-      const attrs = apiResponse.raw?.data?.attributes;
-      return {
-        requiresTwoFactor: true,
-        pendingToken: attrs?.pendingToken ?? "",
-        availableMethods: attrs?.availableMethods ?? [],
-        preferredMethod: attrs?.preferredMethod,
-        expiresAt: attrs?.expiresAt ? new Date(attrs.expiresAt) : new Date(Date.now() + 5 * 60 * 1000),
-      };
+    // POLYMORPHIC RESPONSE: Login can return EITHER Auth OR TwoFactorChallenge
+    // translateResponse used Modules.Auth for rehydration, but backend may return different type
+    // Check raw response type and manually rehydrate with correct module if needed
+    if (apiResponse.raw?.data?.type === "two-factor-challenge") {
+      const challenge = rehydrate<TwoFactorChallengeInterface>(Modules.TwoFactorChallenge, {
+        jsonApi: apiResponse.raw.data,
+        included: apiResponse.raw.included ?? [],
+      });
+      return challenge;
     }
 
     // Normal auth response

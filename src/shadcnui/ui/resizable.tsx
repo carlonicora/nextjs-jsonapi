@@ -6,10 +6,7 @@ import * as ResizablePrimitive from "react-resizable-panels";
 
 import { cn } from "@/lib/utils";
 
-function ResizablePanelGroup({
-  className,
-  ...props
-}: React.ComponentProps<typeof ResizablePrimitive.Group>) {
+function ResizablePanelGroup({ className, ...props }: React.ComponentProps<typeof ResizablePrimitive.Group>) {
   return (
     <ResizablePrimitive.Group
       data-slot="resizable-panel-group"
@@ -17,7 +14,7 @@ function ResizablePanelGroup({
         "flex h-full w-full",
         // v4 uses aria-orientation instead of data-panel-group-direction
         "aria-[orientation=vertical]:flex-col",
-        className
+        className,
       )}
       {...props}
     />
@@ -52,7 +49,7 @@ function ResizableHandle({
         "aria-[orientation=horizontal]:after:inset-x-0 aria-[orientation=horizontal]:after:h-3 aria-[orientation=horizontal]:after:inset-y-auto",
         // Rotate grip icon for horizontal separator
         "[&[aria-orientation=horizontal]>div]:rotate-90",
-        className
+        className,
       )}
       {...props}
     >
