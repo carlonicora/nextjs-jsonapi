@@ -1,3 +1,9 @@
+## [1.40.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.40.0...v1.40.1) (2026-01-27)
+
+### 📚 Documentation
+
+* add architecture guide ([8144f76](https://github.com/carlonicora/nextjs-jsonapi/commit/8144f76280782e743a97bf591c80b7492a3b4f7e))
+
 ## [1.40.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.39.2...v1.40.0) (2026-01-26)
 
 ### 🚀 Features
