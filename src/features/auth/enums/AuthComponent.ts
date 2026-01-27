@@ -6,4 +6,5 @@ export enum AuthComponent {
   AcceptInvitation,
   Register,
   Landing,
+  TwoFactorChallenge = "2fa_challenge",
 }

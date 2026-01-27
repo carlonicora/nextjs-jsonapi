@@ -12,8 +12,21 @@ import { JsonApiDelete, JsonApiGet, JsonApiPost } from "../../../unified";
 import { UserInterface } from "../../user";
 import { getTokenHandler } from "../config";
 
+/** Response type when 2FA is required */
+export interface TwoFactorChallengeResponse {
+  requiresTwoFactor: true;
+  pendingToken: string;
+  availableMethods: ("totp" | "passkey" | "backup")[];
+  preferredMethod?: string;
+  expiresAt: Date;
+}
+
 export class AuthService extends AbstractService {
-  static async login(params: { email: string; password: string; language?: string }): Promise<UserInterface> {
+  static async login(params: {
+    email: string;
+    password: string;
+    language?: string;
+  }): Promise<UserInterface | TwoFactorChallengeResponse> {
     const language = params.language || "en-US";
 
     const apiResponse: ApiResponseInterface = await JsonApiPost({
@@ -23,8 +36,29 @@ export class AuthService extends AbstractService {
       language: language,
     });
 
+    console.log("[AuthService.login] API Response:", {
+      ok: apiResponse.ok,
+      error: apiResponse.error,
+      rawType: apiResponse.raw?.data?.type,
+      rawData: apiResponse.raw?.data,
+    });
+
     if (!apiResponse.ok) throw new Error(apiResponse.error);
 
+    // Check if the response is a 2FA challenge
+    const rawResponseType = apiResponse.raw?.data?.type;
+    if (rawResponseType === "two-factor-challenge") {
+      const attrs = apiResponse.raw?.data?.attributes;
+      return {
+        requiresTwoFactor: true,
+        pendingToken: attrs?.pendingToken ?? "",
+        availableMethods: attrs?.availableMethods ?? [],
+        preferredMethod: attrs?.preferredMethod,
+        expiresAt: attrs?.expiresAt ? new Date(attrs.expiresAt) : new Date(Date.now() + 5 * 60 * 1000),
+      };
+    }
+
+    // Normal auth response
     const auth = apiResponse.data as AuthInterface;
 
     // Use injected token handler if configured

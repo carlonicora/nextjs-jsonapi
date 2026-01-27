@@ -1,4 +1,16 @@
 export * from "./auth.module";
+export * from "./totp-authenticator.module";
+export * from "./totp-setup.module";
+export * from "./totp-verify.module";
+export * from "./totp-verify-login.module";
+export * from "./passkey.module";
+export * from "./passkey-registration-options.module";
+export * from "./passkey-registration-verify.module";
+export * from "./passkey-rename.module";
+export * from "./passkey-verify-login.module";
+export * from "./two-factor-enable.module";
+export * from "./two-factor-challenge.module";
+export * from "./backup-code-verify.module";
 export { configureAuth, type TokenHandler, type TokenParams } from "./config";
 export * from "./data";
 export * from "./enums";

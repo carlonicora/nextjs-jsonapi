@@ -32,6 +32,20 @@ export interface FoundationModuleDefinitions {
   // Waitlist modules
   Waitlist: ModuleWithPermissions;
   WaitlistStats: ModuleWithPermissions;
+  // Two-factor authentication modules
+  TotpAuthenticator: ModuleWithPermissions;
+  TotpSetup: ModuleWithPermissions;
+  TotpVerify: ModuleWithPermissions;
+  TotpVerifyLogin: ModuleWithPermissions;
+  Passkey: ModuleWithPermissions;
+  PasskeyRegistrationOptions: ModuleWithPermissions;
+  PasskeyRegistrationVerify: ModuleWithPermissions;
+  PasskeyRename: ModuleWithPermissions;
+  PasskeyVerifyLogin: ModuleWithPermissions;
+  TwoFactorEnable: ModuleWithPermissions;
+  TwoFactorChallenge: ModuleWithPermissions;
+  TwoFactorStatus: ModuleWithPermissions;
+  BackupCodeVerify: ModuleWithPermissions;
 }
 
 // App-specific modules - apps will augment this interface ONLY

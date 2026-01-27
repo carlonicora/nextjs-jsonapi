@@ -2,6 +2,10 @@ import { ApiDataInterface } from "../interfaces/ApiDataInterface";
 import { ApiRequestDataTypeInterface } from "../interfaces/ApiRequestDataTypeInterface";
 
 export class DataClassRegistry {
+  // Use Map with string key (module.name) for reliable lookup
+  // String keys are stable across HMR and module re-evaluations
+  // Note: WeakMap with object identity was tried but fails during Next.js navigation
+  // because module re-evaluation creates new object instances with different identity
   private static _map = new Map<string, { new (): ApiDataInterface }>();
 
   public static registerObjectClass(
@@ -19,7 +23,7 @@ export class DataClassRegistry {
   } {
     const response = this._map.get(classKey.name);
     if (!response) {
-      throw new Error(`Class not registered for key: ${typeof classKey === "string" ? classKey : classKey.name}`);
+      throw new Error(`Class not registered for key: ${typeof classKey === "string" ? classKey : classKey.name}. Ensure bootstrap() was called.`);
     }
 
     return response;

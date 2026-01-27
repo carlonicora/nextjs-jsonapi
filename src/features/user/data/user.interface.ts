@@ -31,6 +31,7 @@ export interface UserInterface extends ApiDataInterface {
 
   get isActivated(): boolean;
   get isDeleted(): boolean;
+  get twoFactorEnabled(): boolean;
   get lastLogin(): Date | undefined;
 
   get relevance(): number | undefined;

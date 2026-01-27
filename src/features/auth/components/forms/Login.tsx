@@ -23,14 +23,14 @@ import {
 import { UserInterface } from "../../../user";
 import { useCurrentUserContext } from "../../../user/contexts";
 import { useAuthContext } from "../../contexts";
-import { AuthService } from "../../data/auth.service";
+import { AuthService, TwoFactorChallengeResponse } from "../../data/auth.service";
 import { AuthComponent } from "../../enums";
 import { GoogleSignInButton } from "../buttons/GoogleSignInButton";
 
 export function Login() {
   const t = useTranslations();
   const { setUser } = useCurrentUserContext<UserInterface>();
-  const { setComponentType } = useAuthContext();
+  const { setComponentType, setPendingTwoFactor } = useAuthContext();
   const generateUrl = usePageUrlGenerator();
   const i18nRouter = useI18nRouter();
   const nativeRouter = useRouter(); // For URLs that already include locale
@@ -54,11 +54,32 @@ export function Login() {
 
   const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (values: z.infer<typeof formSchema>) => {
     try {
-      const user: UserInterface = (await AuthService.login({
+      const response = await AuthService.login({
         email: values.email,
         password: values.password,
-      })) as UserInterface;
+      });
 
+      console.log("[Login] Received response:", {
+        hasPendingToken: "pendingToken" in response,
+        requiresTwoFactor: "requiresTwoFactor" in response ? (response as any).requiresTwoFactor : false,
+        isUser: "id" in response,
+      });
+
+      // Check if 2FA is required
+      if ("requiresTwoFactor" in response && response.requiresTwoFactor) {
+        console.log("[Login] 2FA required, switching to TwoFactorChallenge component");
+        setPendingTwoFactor({
+          pendingToken: response.pendingToken,
+          availableMethods: response.availableMethods,
+          expiresAt: response.expiresAt,
+        });
+        setComponentType(AuthComponent.TwoFactorChallenge);
+        return;
+      }
+
+      // Normal login flow
+      console.log("[Login] Normal login flow, setting user");
+      const user = response as UserInterface;
       setUser(user);
 
       // Redirect to callback URL if present, otherwise go to home
@@ -70,6 +91,7 @@ export function Login() {
         i18nRouter.replace(generateUrl({ page: `/` }));
       }
     } catch (e) {
+      console.error("[Login] Login error:", e);
       errorToast({
         title: t(`common.errors.error`),
         error: e,

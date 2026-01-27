@@ -7,3 +7,4 @@ export * from "./Logout";
 export * from "./RefreshUser";
 export * from "./Register";
 export * from "./ResetPassword";
+export * from "./TwoFactorChallenge";

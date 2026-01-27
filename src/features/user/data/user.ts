@@ -17,6 +17,7 @@ export class User extends AbstractApiData implements UserInterface, SearchResult
 
   private _isActivated?: boolean;
   private _isDeleted?: boolean;
+  private _twoFactorEnabled: boolean = false;
   private _lastLogin?: Date;
 
   private _relevance?: number;
@@ -73,6 +74,10 @@ export class User extends AbstractApiData implements UserInterface, SearchResult
     return this._isDeleted ?? false;
   }
 
+  get twoFactorEnabled(): boolean {
+    return this._twoFactorEnabled;
+  }
+
   get lastLogin(): Date | undefined {
     return this._lastLogin;
   }
@@ -104,6 +109,7 @@ export class User extends AbstractApiData implements UserInterface, SearchResult
 
     this._isActivated = data.jsonApi.meta.isActive;
     this._isDeleted = data.jsonApi.meta.isDeleted;
+    this._twoFactorEnabled = data.jsonApi.attributes.twoFactorEnabled ?? false;
     this._lastLogin = data.jsonApi.meta.lastLogin ? new Date(data.jsonApi.meta.lastLogin) : undefined;
 
     this._relevance = data.jsonApi.meta.relevance;

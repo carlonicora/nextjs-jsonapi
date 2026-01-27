@@ -30,6 +30,19 @@ export * from "../permissions";
 
 // Feature data classes, interfaces, and modules
 export * from "../features/auth/auth.module";
+export * from "../features/auth/totp-authenticator.module";
+export * from "../features/auth/totp-setup.module";
+export * from "../features/auth/totp-verify.module";
+export * from "../features/auth/totp-verify-login.module";
+export * from "../features/auth/passkey.module";
+export * from "../features/auth/passkey-registration-options.module";
+export * from "../features/auth/passkey-registration-verify.module";
+export * from "../features/auth/passkey-rename.module";
+export * from "../features/auth/passkey-verify-login.module";
+export * from "../features/auth/two-factor-enable.module";
+export * from "../features/auth/two-factor-challenge.module";
+export * from "../features/auth/two-factor-status.module";
+export * from "../features/auth/backup-code-verify.module";
 export * from "../features/auth/data";
 export * from "../features/auth/enums";
 export * from "../features/billing/data";
