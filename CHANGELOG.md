@@ -1,3 +1,14 @@
+## [1.41.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.40.1...v1.41.0) (2026-01-27)
+
+### 🚀 Features
+
+* add 2fa ([1cace13](https://github.com/carlonicora/nextjs-jsonapi/commit/1cace13abe014a3a6d8759964e3d58cd343bfa68))
+
+### 🐛 Bug Fixes
+
+* correct 2fa ([0af3b6f](https://github.com/carlonicora/nextjs-jsonapi/commit/0af3b6f36f72365d320c3eb09194ec8fdf721beb))
+* remove console logs ([c68f7d2](https://github.com/carlonicora/nextjs-jsonapi/commit/c68f7d20b287eaf53691d93e38fdaf450029753f))
+
 ## [1.40.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.40.0...v1.40.1) (2026-01-27)
 
 ### 📚 Documentation
