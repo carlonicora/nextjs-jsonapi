@@ -246,7 +246,8 @@ export class TwoFactorService extends AbstractService {
       JSON.stringify({ id: params.id, code: params.code }, null, 2),
     );
     const auth = await this.callApi<AuthInterface>({
-      type: Modules.TotpVerifyLogin,
+      type: Modules.TotpVerifyLogin, // Request: { type: "totp-authenticators", attributes: { code } }
+      responseType: Modules.Auth, // Response: Auth with user relationship
       method: HttpMethod.POST,
       endpoint: new EndpointCreator({
         endpoint: Modules.Auth,
@@ -302,7 +303,8 @@ export class TwoFactorService extends AbstractService {
     credential: AuthenticationResponseJSON;
   }): Promise<AuthInterface> {
     const auth = await this.callApi<AuthInterface>({
-      type: Modules.PasskeyVerifyLogin,
+      type: Modules.PasskeyVerifyLogin, // Request: passkey verification format
+      responseType: Modules.Auth, // Response: Auth with user relationship
       method: HttpMethod.POST,
       endpoint: new EndpointCreator({
         endpoint: Modules.Auth,
@@ -336,7 +338,8 @@ export class TwoFactorService extends AbstractService {
 
   static async verifyBackupCode(params: { id: string; pendingToken: string; code: string }): Promise<AuthInterface> {
     const auth = await this.callApi<AuthInterface>({
-      type: Modules.BackupCodeVerify,
+      type: Modules.BackupCodeVerify, // Request: backup code verification format
+      responseType: Modules.Auth, // Response: Auth with user relationship
       method: HttpMethod.POST,
       endpoint: new EndpointCreator({
         endpoint: Modules.Auth,
