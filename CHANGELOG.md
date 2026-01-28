@@ -1,3 +1,9 @@
+## [1.41.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.41.0...v1.41.1) (2026-01-28)
+
+### 📚 Documentation
+
+* remove architecture guide and delegate it to main app ([2581417](https://github.com/carlonicora/nextjs-jsonapi/commit/2581417dfbd427c095e49c41acf434fedeaa9e79))
+
 ## [1.41.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.40.1...v1.41.0) (2026-01-27)
 
 ### 🚀 Features
