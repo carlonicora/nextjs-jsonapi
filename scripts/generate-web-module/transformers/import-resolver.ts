@@ -60,7 +60,10 @@ export function buildSelectorImports(relationships: FrontendRelationship[]): str
       return;
     }
 
-    const componentName = rel.single ? `${rel.name}Selector` : `${rel.name}MultiSelector`;
+    // Foundation components use MultiSelect, generated modules use MultiSelector
+    const componentName = rel.single
+      ? `${rel.name}Selector`
+      : (rel.isFoundation ? `${rel.name}MultiSelect` : `${rel.name}MultiSelector`);
     imports.push(
       `import ${componentName} from "${rel.importPath}";`
     );

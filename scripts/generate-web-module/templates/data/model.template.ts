@@ -51,8 +51,11 @@ function generateImports(data: FrontendTemplateData): string {
     `import { ${names.pascalCase}Input, ${names.pascalCase}Interface } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";`,
   );
 
-  // Relationship interface imports
+  // Relationship interface imports (skip self-referential - already imported above)
   relationships.forEach((rel) => {
+    if (rel.name === names.pascalCase) {
+      return; // Skip self-reference - interface already imported
+    }
     imports.push(`import { ${rel.interfaceName} } from "${rel.interfaceImportPath}";`);
   });
 

@@ -54,11 +54,14 @@ export function resolveRelationship(rel: JsonRelationshipDefinition): FrontendRe
   }
 
   // Selector component name
+  // Foundation components use MultiSelect, generated modules use MultiSelector
   let selectorComponent: string;
   if (rel.single) {
     selectorComponent = `${rel.name}Selector`;
   } else {
-    selectorComponent = `${rel.name}MultiSelector`;
+    selectorComponent = isFoundationImport(rel.directory)
+      ? `${rel.name}MultiSelect`
+      : `${rel.name}MultiSelector`;
   }
 
   // Zod schema
@@ -132,13 +135,17 @@ export function resolveRelationships(relationships: JsonRelationshipDefinition[]
 
 /**
  * Map directory value to web path
- * e.g., "features" -> "features", "foundations" -> "foundations"
+ * Strips the leading "features/" or "foundations/" prefix since @/features/ already includes it
  *
- * @param directory - Directory value from JSON
- * @returns Web path segment
+ * @param directory - Directory value from JSON (e.g., "features/expertise")
+ * @returns Web path segment without the base prefix (e.g., "expertise")
  */
 export function mapDirectoryToWebPath(directory: string): string {
-  // The directory value maps directly to the web path
+  const segments = directory.split("/");
+  // Remove "features" or "foundations" prefix since @/features/ already includes it
+  if (segments[0] === "features" || segments[0] === "foundations") {
+    return segments.slice(1).join("/");
+  }
   return directory;
 }
 

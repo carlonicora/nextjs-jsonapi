@@ -166,7 +166,10 @@ function generateImports(data: FrontendTemplateData): string {
     if (rel.variant === AUTHOR_VARIANT) {
       imports.push(`import { UserInterface } from "@/features/foundations/user/data/UserInterface";`);
     } else {
-      const componentName = rel.single ? `${rel.name}Selector` : `${rel.name}MultiSelector`;
+      // Foundation components use MultiSelect, generated modules use MultiSelector
+      const componentName = rel.single
+        ? `${rel.name}Selector`
+        : (rel.isFoundation ? `${rel.name}MultiSelect` : `${rel.name}MultiSelector`);
       if (rel.isFoundation) {
         // Foundation entities use named imports from the package
         imports.push(`import { ${componentName} } from "${FOUNDATION_COMPONENTS_PACKAGE}";`);
@@ -617,7 +620,9 @@ function generateFormFields(data: FrontendTemplateData): string {
         });
       }
     } else {
-      formElements.push(`              <${rel.name}MultiSelector
+      // Foundation components use MultiSelect, generated modules use MultiSelector
+      const multiComponentName = rel.isFoundation ? `${rel.name}MultiSelect` : `${rel.name}MultiSelector`;
+      formElements.push(`              <${multiComponentName}
                 id="${fieldId}"
                 form={form}
                 label={t(\`types.${pluralize(rel.name.toLowerCase())}\`, { count: 2 })}

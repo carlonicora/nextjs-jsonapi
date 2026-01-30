@@ -32,11 +32,14 @@ ${interfaceDefinition}
  * Generate import statements
  */
 function generateImports(data: FrontendTemplateData): string {
-  const { extendsContent, relationships } = data;
+  const { names, extendsContent, relationships } = data;
   const imports: string[] = [];
 
-  // Relationship interface imports
+  // Relationship interface imports (skip self-referential - interface is defined in this file)
   relationships.forEach((rel) => {
+    if (rel.name === names.pascalCase) {
+      return; // Skip self-reference - interface defined in this file
+    }
     imports.push(`import { ${rel.interfaceName} } from "${rel.interfaceImportPath}";`);
   });
 
