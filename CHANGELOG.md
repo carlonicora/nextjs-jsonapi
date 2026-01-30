@@ -1,3 +1,9 @@
+## [1.41.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.41.1...v1.41.2) (2026-01-30)
+
+### 📚 Documentation
+
+* add claude.md files ([7a8b64d](https://github.com/carlonicora/nextjs-jsonapi/commit/7a8b64d2c8ca6103db9939cdf9e58f40596d530f))
+
 ## [1.41.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.41.0...v1.41.1) (2026-01-28)
 
 ### 📚 Documentation
