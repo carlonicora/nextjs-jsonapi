@@ -1,3 +1,9 @@
+## [1.41.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.41.2...v1.41.3) (2026-01-30)
+
+### 🐛 Bug Fixes
+
+* correct module generator ([cb6c867](https://github.com/carlonicora/nextjs-jsonapi/commit/cb6c867a1718534a6ce412d3e4c0539d2b1af0f3))
+
 ## [1.41.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.41.1...v1.41.2) (2026-01-30)
 
 ### 📚 Documentation
