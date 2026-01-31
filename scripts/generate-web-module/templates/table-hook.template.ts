@@ -70,12 +70,12 @@ ${fieldColumnEntries}
     [${names.pascalCase}Fields.createdAt]: () =>
       cellDate({
         name: "createdAt",
-        title: t(\`generic.date.create\`),
+        title: t(\`common.date.create\`),
       }),
     [${names.pascalCase}Fields.updatedAt]: () =>
       cellDate({
         name: "updatedAt",
-        title: t(\`generic.date.update\`),
+        title: t(\`common.date.update\`),
       }),
   };
 
