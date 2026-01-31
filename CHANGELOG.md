@@ -1,3 +1,9 @@
+## [1.43.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.42.1...v1.43.0) (2026-01-31)
+
+### 🚀 Features
+
+* add testId prop to CommonDeleter and CommonEditorTrigger components ([beb43c6](https://github.com/carlonicora/nextjs-jsonapi/commit/beb43c663772fc254f885102fb1fe5c05e0b23b7))
+
 ## [1.42.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.42.0...v1.42.1) (2026-01-31)
 
 ### 🐛 Bug Fixes
