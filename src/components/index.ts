@@ -23,3 +23,6 @@ export * from "../features/waitlist/components";
 
 // shadcn/ui components (merged from /shadcnui entry point)
 export * from "../shadcnui";
+
+// Icon utilities
+export { getIconByModule, getIconByModuleName, getIcon } from "../utils/icons";
