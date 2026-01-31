@@ -1,3 +1,9 @@
+## [1.42.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.42.0...v1.42.1) (2026-01-31)
+
+### 🐛 Bug Fixes
+
+* correct internationalisation ([2355e8a](https://github.com/carlonicora/nextjs-jsonapi/commit/2355e8a44ee3509fcaae3b30921e111c7f08391d))
+
 ## [1.42.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.41.3...v1.42.0) (2026-01-31)
 
 ### 🚀 Features
