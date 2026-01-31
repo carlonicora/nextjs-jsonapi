@@ -1,3 +1,9 @@
+## [1.42.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.41.3...v1.42.0) (2026-01-31)
+
+### 🚀 Features
+
+* add icon utilities export to index ([8744402](https://github.com/carlonicora/nextjs-jsonapi/commit/87444027a7d4f7657a1e2882db90008afc545049))
+
 ## [1.41.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.41.2...v1.41.3) (2026-01-30)
 
 ### 🐛 Bug Fixes
