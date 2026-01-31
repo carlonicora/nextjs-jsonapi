@@ -19,9 +19,10 @@ type CommonDeleterProps = {
   deleteFunction: () => Promise<void>;
   redirectTo?: string;
   forceShow?: boolean;
+  testId?: string;
 };
 
-export function CommonDeleter({ deleteFunction, redirectTo, type, forceShow }: CommonDeleterProps) {
+export function CommonDeleter({ deleteFunction, redirectTo, type, forceShow, testId }: CommonDeleterProps) {
   const t = useI18nTranslations();
   const router = useI18nRouter();
   const [open, setOpen] = useState<boolean>(forceShow || false);
@@ -50,6 +51,7 @@ export function CommonDeleter({ deleteFunction, redirectTo, type, forceShow }: C
             size="sm"
             variant={"ghost"}
             className="text-muted-foreground hover:text-destructive"
+            data-testid={testId}
           >
             <Trash2Icon />
           </Button>
