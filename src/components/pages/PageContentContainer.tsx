@@ -73,13 +73,15 @@ export function PageContentContainer({ header, details, footer, content, fullBle
               defaultSize={rightPanelDefaultSize}
               className={cn("w-full", isMobile ? "pt-4" : "")}
             >
-              <div className={cn("h-full overflow-x-hidden overflow-y-auto", fullBleed ? "" : "px-4 pb-20")}>
+              <div className={cn("h-full overflow-x-hidden overflow-y-auto pt-4", fullBleed ? "" : "px-4 pb-20")}>
                 {content}
               </div>
             </ResizablePanel>
           </ResizablePanelGroup>
         ) : (
-          <div className={cn("h-full overflow-x-hidden overflow-y-auto", fullBleed ? "" : "px-4 pb-20")}>{content}</div>
+          <div className={cn("h-full overflow-x-hidden overflow-y-auto pt-4", fullBleed ? "" : "px-4 pb-20")}>
+            {content}
+          </div>
         )}
       </div>
     </div>

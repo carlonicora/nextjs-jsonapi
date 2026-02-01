@@ -1,9 +1,21 @@
 "use client";
 
-import { FieldLabel, Switch } from "../../shadcnui";
+import { FieldDescription, FieldLabel, Switch } from "../../shadcnui";
 import { FormFieldWrapper } from "./FormFieldWrapper";
 
-export function FormSwitch({ form, id, name, disabled }: { form: any; id: string; name?: string; disabled?: boolean }) {
+export function FormSwitch({
+  form,
+  id,
+  name,
+  disabled,
+  description,
+}: {
+  form: any;
+  id: string;
+  name?: string;
+  disabled?: boolean;
+  description?: string;
+}) {
   return (
     <div className="flex w-full flex-col">
       <FormFieldWrapper form={form} name={id} orientation="horizontal">
@@ -14,6 +26,8 @@ export function FormSwitch({ form, id, name, disabled }: { form: any; id: string
           </div>
         )}
       </FormFieldWrapper>
+      {description && <FieldDescription>{description}</FieldDescription>}
+      <Switch id={id} />
     </div>
   );
 }
