@@ -37,7 +37,7 @@ export const UserProvider = ({ children, dehydratedUser }: UserProviderProps) =>
 
     if (hasPermissionToModule({ module: Modules.User, action: Action.Update })) {
       response.push({
-        name: t(`common.settings`),
+        name: t(`common.settings`, { item: "settings" }),
         href: generateUrl({ page: `/settings` }),
       });
 
