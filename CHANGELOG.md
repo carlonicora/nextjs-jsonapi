@@ -1,3 +1,10 @@
+## [1.44.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.44.1...v1.44.2) (2026-02-01)
+
+### 🐛 Bug Fixes
+
+* add item context to settings translation in UserProvider ([9f00e23](https://github.com/carlonicora/nextjs-jsonapi/commit/9f00e234b2cb0036f1a41fc202294d4c3b8b92a3))
+* remove duplicate switch from form switch ([8d0f6ad](https://github.com/carlonicora/nextjs-jsonapi/commit/8d0f6ad2253de9cdf94556a2183c266e75c594ac))
+
 ## [1.44.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.44.0...v1.44.1) (2026-02-01)
 
 ### 💎 Styles
