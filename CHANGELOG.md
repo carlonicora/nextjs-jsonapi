@@ -1,3 +1,9 @@
+## [1.44.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.44.0...v1.44.1) (2026-02-01)
+
+### 💎 Styles
+
+* correct design of form switch and page content container ([2163553](https://github.com/carlonicora/nextjs-jsonapi/commit/216355338d8ae1355b144b2c42b4eb719e19efd8))
+
 ## [1.44.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.43.0...v1.44.0) (2026-02-01)
 
 ### 🚀 Features
