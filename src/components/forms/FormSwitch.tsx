@@ -27,7 +27,6 @@ export function FormSwitch({
         )}
       </FormFieldWrapper>
       {description && <FieldDescription>{description}</FieldDescription>}
-      <Switch id={id} />
     </div>
   );
 }
