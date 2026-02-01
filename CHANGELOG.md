@@ -1,3 +1,9 @@
+## [1.44.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.43.0...v1.44.0) (2026-02-01)
+
+### 🚀 Features
+
+* add standalone user details ([7947fa8](https://github.com/carlonicora/nextjs-jsonapi/commit/7947fa8e0700c5244279d0a09387d5a183828a61))
+
 ## [1.43.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.42.1...v1.43.0) (2026-01-31)
 
 ### 🚀 Features
