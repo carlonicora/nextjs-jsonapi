@@ -5,10 +5,30 @@ import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import { z } from "zod";
+
+// Referral cookie utilities
+const REFERRAL_COOKIE_NAME = "referral_code";
+
+function getReferralCode(): string | null {
+  if (typeof document === "undefined") return null;
+  const cookies = document.cookie.split("; ");
+  for (const cookie of cookies) {
+    const [name, value] = cookie.split("=");
+    if (name === REFERRAL_COOKIE_NAME && value) {
+      return decodeURIComponent(value);
+    }
+  }
+  return null;
+}
+
+function clearReferralCode(): void {
+  if (typeof document === "undefined") return;
+  document.cookie = `${REFERRAL_COOKIE_NAME}=; path=/; max-age=0; SameSite=Lax`;
+}
 import { getApiUrl } from "../../../../client/config";
 import { errorToast, FormInput, FormPassword } from "../../../../components";
 import { getRegistrationMode, isDiscordAuthEnabled, isGoogleAuthEnabled } from "../../../../login/config";
@@ -42,6 +62,12 @@ export default function Register() {
   const [isValidatingInvite, setIsValidatingInvite] = useState<boolean>(
     registrationMode === "waitlist" && !!inviteCode,
   );
+
+  // Store referral code from cookie on mount
+  const referralCodeRef = useRef<string | null>(null);
+  useEffect(() => {
+    referralCodeRef.current = getReferralCode();
+  }, []);
 
   const formSchema = z.object({
     company: z.string().min(1, {
@@ -116,9 +142,12 @@ export default function Register() {
         marketingConsent: values.marketingConsent ?? false,
         marketingConsentAt: values.marketingConsent ? new Date().toISOString() : null,
         inviteCode: inviteCode ?? undefined,
+        referralCode: referralCodeRef.current ?? undefined,
       };
 
       await AuthService.register(payload);
+      // Clear referral cookie after successful registration
+      clearReferralCode();
       setShowConfirmation(true);
     } catch (e) {
       errorToast({ error: e });
