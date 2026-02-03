@@ -4,13 +4,24 @@ import { getApiUrl } from "../../../../client/config";
 import { isGoogleAuthEnabled } from "../../../../login";
 import { Button, Link } from "../../../../shadcnui";
 
-export function GoogleSignInButton() {
+interface GoogleSignInButtonProps {
+  referralCode?: string | null;
+}
+
+export function GoogleSignInButton({ referralCode }: GoogleSignInButtonProps) {
   if (!isGoogleAuthEnabled()) {
     return null;
   }
 
+  // Build OAuth URL with referral parameter if available
+  const buildGoogleOAuthUrl = (): string => {
+    const baseUrl = `${getApiUrl()}auth/google`;
+    if (!referralCode) return baseUrl;
+    return `${baseUrl}?referral=${encodeURIComponent(referralCode)}`;
+  };
+
   return (
-    <Link href={`${getApiUrl()}auth/google`} className="flex w-full justify-end">
+    <Link href={buildGoogleOAuthUrl()} className="flex w-full justify-end">
       <Button
         className="w-full bg-white hover:bg-gray-50 text-gray-700 border border-gray-300"
         variant="outline"

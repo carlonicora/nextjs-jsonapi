@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { getApiUrl } from "../../../../client/config";
@@ -37,6 +38,27 @@ export function Login() {
   const nativeRouter = useRouter(); // For URLs that already include locale
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
+
+  // Read referral code from cookie on mount
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+
+  useEffect(() => {
+    const cookies = document.cookie.split("; ");
+    for (const cookie of cookies) {
+      const [name, value] = cookie.split("=");
+      if (name === "referral_code" && value) {
+        setReferralCode(decodeURIComponent(value));
+        break;
+      }
+    }
+  }, []);
+
+  // Helper function to build OAuth URL with referral
+  const buildDiscordOAuthUrl = (): string => {
+    const baseUrl = `${getApiUrl()}auth/discord`;
+    if (!referralCode) return baseUrl;
+    return `${baseUrl}?referral=${encodeURIComponent(referralCode)}`;
+  };
 
   const formSchema = z.object({
     email: z.string().email({
@@ -126,9 +148,9 @@ export function Login() {
             )}
           </CardContent>
           <CardFooter className="flex w-full flex-col gap-y-4 mt-4">
-            {isGoogleAuthEnabled() && <GoogleSignInButton />}
+            {isGoogleAuthEnabled() && <GoogleSignInButton referralCode={referralCode} />}
             {isDiscordAuthEnabled() && (
-              <Link href={`${getApiUrl()}auth/discord`} className="flex w-full justify-end">
+              <Link href={buildDiscordOAuthUrl()} className="flex w-full justify-end">
                 <Button className="w-full" variant={`outline`} data-testid="page-login-button-initial-login">
                   Login with Discord
                 </Button>

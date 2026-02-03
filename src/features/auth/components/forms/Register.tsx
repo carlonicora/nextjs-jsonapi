@@ -29,6 +29,14 @@ function clearReferralCode(): void {
   if (typeof document === "undefined") return;
   document.cookie = `${REFERRAL_COOKIE_NAME}=; path=/; max-age=0; SameSite=Lax`;
 }
+
+// Helper function to build OAuth URLs with both invite and referral codes
+function buildOAuthQueryParams(inviteCode?: string | null, referralCode?: string | null): string {
+  const params = new URLSearchParams();
+  if (inviteCode) params.set("invite", inviteCode);
+  if (referralCode) params.set("referral", referralCode);
+  return params.toString() ? `?${params.toString()}` : "";
+}
 import { getApiUrl } from "../../../../client/config";
 import { errorToast, FormInput, FormPassword } from "../../../../components";
 import { getRegistrationMode, isDiscordAuthEnabled, isGoogleAuthEnabled } from "../../../../login/config";
@@ -288,7 +296,7 @@ export default function Register() {
                     <div className="space-y-2">
                       {isGoogleAuthEnabled() && (
                         <Link
-                          href={`${getApiUrl()}auth/google${inviteCode ? `?invite=${inviteCode}` : ""}`}
+                          href={`${getApiUrl()}auth/google${buildOAuthQueryParams(inviteCode, referralCodeRef.current)}`}
                           className="flex w-full"
                         >
                           <Button
@@ -320,7 +328,7 @@ export default function Register() {
                       )}
                       {isDiscordAuthEnabled() && (
                         <Link
-                          href={`${getApiUrl()}auth/discord${inviteCode ? `?invite=${inviteCode}` : ""}`}
+                          href={`${getApiUrl()}auth/discord${buildOAuthQueryParams(inviteCode, referralCodeRef.current)}`}
                           className="flex w-full"
                         >
                           <Button className="w-full" variant="outline" type="button">
