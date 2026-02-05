@@ -1,3 +1,9 @@
+## [1.45.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.45.0...v1.45.1) (2026-02-05)
+
+### 🐛 Bug Fixes
+
+* update react and react-dom to version 19.2.4 ([ca8021f](https://github.com/carlonicora/nextjs-jsonapi/commit/ca8021f46049ebf30cf38d4a7d93b2160a189b5e))
+
 ## [1.45.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.44.2...v1.45.0) (2026-02-05)
 
 ### 🚀 Features
