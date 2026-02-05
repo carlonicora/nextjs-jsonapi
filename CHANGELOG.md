@@ -1,3 +1,11 @@
+## [1.45.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.44.2...v1.45.0) (2026-02-05)
+
+### 🚀 Features
+
+* add oauth referral tracking ([0ef3e49](https://github.com/carlonicora/nextjs-jsonapi/commit/0ef3e4993d118a4ccf23a14443ce0405c1ebdd36))
+* add referral feature ([b1d7d1b](https://github.com/carlonicora/nextjs-jsonapi/commit/b1d7d1beeca7ae511eb7e7c1ede47565adfc91d1))
+* add referral support ([d7ed0f2](https://github.com/carlonicora/nextjs-jsonapi/commit/d7ed0f2df6be2f97ee58594a2787685d7c99abfa))
+
 ## [1.44.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.44.1...v1.44.2) (2026-02-01)
 
 ### 🐛 Bug Fixes
