@@ -32,6 +32,9 @@ export interface FoundationModuleDefinitions {
   // Waitlist modules
   Waitlist: ModuleWithPermissions;
   WaitlistStats: ModuleWithPermissions;
+  // Referral modules
+  Referral: ModuleWithPermissions;
+  ReferralStats: ModuleWithPermissions;
   // Two-factor authentication modules
   TotpAuthenticator: ModuleWithPermissions;
   TotpSetup: ModuleWithPermissions;

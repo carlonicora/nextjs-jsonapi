@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import { z } from "zod";
@@ -71,10 +71,12 @@ export default function Register() {
     registrationMode === "waitlist" && !!inviteCode,
   );
 
-  // Store referral code from cookie on mount
-  const referralCodeRef = useRef<string | null>(null);
+  // Store referral code from cookie on mount (must use useState to trigger re-render for OAuth links)
+  const [referralCode, setReferralCode] = useState<string | null>(null);
   useEffect(() => {
-    referralCodeRef.current = getReferralCode();
+    const code = getReferralCode();
+    console.log("[REFERRAL] Register.tsx - cookie value on mount:", code);
+    setReferralCode(code);
   }, []);
 
   const formSchema = z.object({
@@ -140,6 +142,7 @@ export default function Register() {
 
   const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (values: z.infer<typeof formSchema>) => {
     try {
+      console.log("[REFERRAL] Register.tsx - referralCode at submit:", referralCode);
       const payload = {
         id: v4(),
         companyName: values.company,
@@ -150,8 +153,9 @@ export default function Register() {
         marketingConsent: values.marketingConsent ?? false,
         marketingConsentAt: values.marketingConsent ? new Date().toISOString() : null,
         inviteCode: inviteCode ?? undefined,
-        referralCode: referralCodeRef.current ?? undefined,
+        referralCode: referralCode ?? undefined,
       };
+      console.log("[REFERRAL] Register.tsx - payload.referralCode:", payload.referralCode);
 
       await AuthService.register(payload);
       // Clear referral cookie after successful registration
@@ -279,9 +283,8 @@ export default function Register() {
                 {t(`auth.buttons.register`)}
               </Button>
 
-              {/* OAuth options when invite code is validated */}
-              {registrationMode === "waitlist" &&
-                inviteValidated &&
+              {/* OAuth options - shown unless in waitlist mode without valid invite */}
+              {(registrationMode !== "waitlist" || inviteValidated) &&
                 (isGoogleAuthEnabled() || isDiscordAuthEnabled()) && (
                   <div className="space-y-4 pt-4">
                     <div className="relative">
@@ -296,7 +299,7 @@ export default function Register() {
                     <div className="space-y-2">
                       {isGoogleAuthEnabled() && (
                         <Link
-                          href={`${getApiUrl()}auth/google${buildOAuthQueryParams(inviteCode, referralCodeRef.current)}`}
+                          href={`${getApiUrl()}auth/google${buildOAuthQueryParams(inviteCode, referralCode)}`}
                           className="flex w-full"
                         >
                           <Button
@@ -328,7 +331,7 @@ export default function Register() {
                       )}
                       {isDiscordAuthEnabled() && (
                         <Link
-                          href={`${getApiUrl()}auth/discord${buildOAuthQueryParams(inviteCode, referralCodeRef.current)}`}
+                          href={`${getApiUrl()}auth/discord${buildOAuthQueryParams(inviteCode, referralCode)}`}
                           className="flex w-full"
                         >
                           <Button className="w-full" variant="outline" type="button">

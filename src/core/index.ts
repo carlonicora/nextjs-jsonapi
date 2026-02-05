@@ -79,3 +79,6 @@ export * from "../features/oauth/interfaces";
 export * from "../features/waitlist/data";
 export * from "../features/waitlist/waitlist.module";
 export * from "../features/waitlist/waitlist-stats.module";
+export * from "../features/referral/data";
+export * from "../features/referral/referral.module";
+export * from "../features/referral/referral-stats.module";

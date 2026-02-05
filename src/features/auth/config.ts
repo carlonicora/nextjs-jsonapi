@@ -37,7 +37,7 @@ let _tokenHandler: TokenHandler | null = null;
  *
  * @example
  * ```typescript
- * import { configureAuth } from "@carlonicora/nextjs-jsonapi/features";
+ * import { configureAuth } from "@carlonicora/nextjs-jsonapi";
  * import { updateToken, removeToken } from "@/features/auth/utils/AuthCookies";
  *
  * configureAuth({ updateToken, removeToken });

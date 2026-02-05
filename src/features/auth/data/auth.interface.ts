@@ -13,6 +13,7 @@ export type AuthInput = {
   marketingConsent?: boolean;
   marketingConsentAt?: string | null;
   inviteCode?: string;
+  referralCode?: string;
 };
 
 export type AuthQuery = {

@@ -36,5 +36,9 @@ export type {
   QuestionnaireOption,
 } from "./features/waitlist/config/waitlist.config";
 
+// Referral configuration
+export { configureReferral, getReferralConfig, isReferralEnabled } from "./features/referral/config";
+export type { ReferralConfig } from "./features/referral/config";
+
 // Toast utilities
 export { showToast, showError, dismissToast, showCustomToast, type ToastOptions } from "./utils/toast";

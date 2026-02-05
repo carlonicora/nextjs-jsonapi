@@ -50,6 +50,7 @@ export class Auth extends AbstractApiData implements AuthInterface {
     if (data.marketingConsent !== undefined) response.data.attributes.marketingConsent = data.marketingConsent;
     if (data.marketingConsentAt !== undefined) response.data.attributes.marketingConsentAt = data.marketingConsentAt;
     if (data.inviteCode !== undefined) response.data.attributes.inviteCode = data.inviteCode;
+    if (data.referralCode !== undefined) response.data.attributes.referralCode = data.referralCode;
 
     return response;
   }

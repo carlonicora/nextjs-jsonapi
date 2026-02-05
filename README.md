@@ -155,7 +155,7 @@ Create a bootstrapper that registers all modules for both the ModuleRegistry (fo
 // src/config/Bootstrapper.ts
 import { DataClassRegistry, FieldSelector, ModuleRegistry } from "@carlonicora/nextjs-jsonapi/core";
 import { ModuleWithPermissions } from "@carlonicora/nextjs-jsonapi/permissions";
-import { S3Module } from "@carlonicora/nextjs-jsonapi/features";
+import { S3Module } from "@carlonicora/nextjs-jsonapi/core";
 
 // Import your module definitions
 import { ArticleModule } from "@/features/article/ArticleModule";
@@ -396,7 +396,7 @@ import {
   S3, // Data class
   type S3Interface, // Response interface
   type S3Input, // Input parameters
-} from "@carlonicora/nextjs-jsonapi/features";
+} from "@carlonicora/nextjs-jsonapi/core";
 
 // Usage example:
 const s3Response = await S3Service.getPreSignedUrl({

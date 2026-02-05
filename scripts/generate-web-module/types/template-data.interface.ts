@@ -52,7 +52,7 @@ export interface FrontendRelationship {
   directory: string; // e.g., "foundations"
   single: boolean;
   nullable: boolean;
-  isFoundation: boolean; // true if importing from @carlonicora/nextjs-jsonapi/features
+  isFoundation: boolean; // true if importing from @carlonicora/nextjs-jsonapi/core
   // Derived properties
   formFieldId: string; // e.g., "author" (lowercase variant) or "user"
   formFieldIdPlural: string; // e.g., "topics" for multi-select
