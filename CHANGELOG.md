@@ -1,3 +1,9 @@
+## [1.45.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.45.1...v1.45.2) (2026-02-06)
+
+### 🐛 Bug Fixes
+
+* update next-intl to version 4.8.2 ([1fc5eb8](https://github.com/carlonicora/nextjs-jsonapi/commit/1fc5eb898d38f98ea6fe2ae0daf75965e953e27d))
+
 ## [1.45.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.45.0...v1.45.1) (2026-02-05)
 
 ### 🐛 Bug Fixes
