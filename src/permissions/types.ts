@@ -87,6 +87,7 @@ export type ModuleWithPermissions = ApiRequestDataTypeInterface & {
     {
       types?: string[];
       fields?: FieldSelector<any>[];
+      include?: string[];
     }
   >;
 };
@@ -107,6 +108,7 @@ export type ModuleFactory = (params: {
     {
       types?: string[];
       fields?: FieldSelector<any>[];
+      include?: string[];
     }
   >;
 }) => ModuleWithPermissions;

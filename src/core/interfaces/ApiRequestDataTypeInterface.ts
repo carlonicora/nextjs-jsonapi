@@ -8,6 +8,7 @@ export type ApiRequestDataTypeInterface = {
     {
       types?: string[];
       fields?: FieldSelector<any>[];
+      include?: string[];
     }
   >;
   model: new () => any;
