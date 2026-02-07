@@ -1,3 +1,9 @@
+## [1.45.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.45.2...v1.45.3) (2026-02-07)
+
+### 🐛 Bug Fixes
+
+* add optional 'include' field to ApiRequestDataTypeInterface and ModuleWithPermissions ([c6fccae](https://github.com/carlonicora/nextjs-jsonapi/commit/c6fccae59b9ee1c0d549e9b565ee6bfcb3008a2a))
+
 ## [1.45.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.45.1...v1.45.2) (2026-02-06)
 
 ### 🐛 Bug Fixes
