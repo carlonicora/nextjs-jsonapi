@@ -1,3 +1,9 @@
+## [1.45.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.45.3...v1.45.4) (2026-02-09)
+
+### 🐛 Bug Fixes
+
+* remove unnecessary bottom padding from PageContainer main element ([0454fb8](https://github.com/carlonicora/nextjs-jsonapi/commit/0454fb8e8d4cf34080195fa6987a6ce1a996cb2d))
+
 ## [1.45.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.45.2...v1.45.3) (2026-02-07)
 
 ### 🐛 Bug Fixes
