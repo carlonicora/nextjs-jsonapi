@@ -1,3 +1,9 @@
+## [1.46.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.46.0...v1.46.1) (2026-02-10)
+
+### 🐛 Bug Fixes
+
+* simplify date cell rendering in cellDate component ([d28de65](https://github.com/carlonicora/nextjs-jsonapi/commit/d28de657d898f58c11a6ab0577bb39d5085928f6))
+
 ## [1.46.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.45.4...v1.46.0) (2026-02-10)
 
 ### 🚀 Features
