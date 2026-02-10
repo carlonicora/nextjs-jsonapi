@@ -5,11 +5,15 @@ export const cellDate = (params: { name: string; title: string }): ColumnDef<any
     id: params.name,
     accessorKey: params.name,
     header: params.title,
-    cell: ({ row }) => (
-      <span className="text-muted-foreground text-xs">
-        {row.getValue<Date>(params.name).toLocaleDateString("en", { dateStyle: "medium" })}
-      </span>
-    ),
+    cell: ({ row }) => {
+      const date = row.getValue<Date>(params.name);
+      if (!date) return null;
+      return (
+        <span className="text-muted-foreground text-xs">
+          {date.toLocaleDateString("en", { dateStyle: "medium" })}
+        </span>
+      );
+    },
     enableSorting: false,
     enableHiding: false,
   };

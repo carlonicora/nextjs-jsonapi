@@ -1,10 +1,10 @@
 "use client";
 import "../../client";
 
-import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { ExpandedState, flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from "@tanstack/react-table";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { ReactNode, memo, useMemo } from "react";
+import { ReactNode, memo, useMemo, useState } from "react";
 import { DataListRetriever, useTableGenerator } from "../../hooks";
 import { ModuleWithPermissions } from "../../permissions";
 import { Button, Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "../../shadcnui";
@@ -30,10 +30,13 @@ type ContentListTableProps = {
   filters?: ReactNode;
   allowSearch?: boolean;
   context?: Record<string, any>;
+  expandable?: boolean;
+  getSubRows?: (row: any) => any[];
 };
 
 export const ContentListTable = memo(function ContentListTable(props: ContentListTableProps) {
   const { data, fields, checkedIds, toggleId, allowSearch, filters: _filters } = props;
+  const [expanded, setExpanded] = useState<ExpandedState>({});
 
   const { data: tableData, columns: tableColumns } = useTableGenerator(props.tableGeneratorType, {
     data: data?.data ?? EMPTY_ARRAY,
@@ -60,6 +63,12 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
     data: tableData,
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
+    ...(props.expandable && {
+      getExpandedRowModel: getExpandedRowModel(),
+      getSubRows: props.getSubRows,
+      onExpandedChange: setExpanded,
+      state: { expanded },
+    }),
     initialState: {
       columnVisibility,
     },
@@ -96,8 +105,9 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
+                  const meta = header.column.columnDef.meta as { className?: string } | undefined;
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className={meta?.className}>
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   );
@@ -109,9 +119,14 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
             {rowModel && rowModel.rows?.length ? (
               rowModel.rows.map((row) => (
                 <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    const meta = cell.column.columnDef.meta as { className?: string } | undefined;
+                    return (
+                      <TableCell key={cell.id} className={meta?.className}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))
             ) : (
