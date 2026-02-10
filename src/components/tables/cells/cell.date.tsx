@@ -9,9 +9,7 @@ export const cellDate = (params: { name: string; title: string }): ColumnDef<any
       const date = row.getValue<Date>(params.name);
       if (!date) return null;
       return (
-        <span className="text-muted-foreground text-xs">
-          {date.toLocaleDateString("en", { dateStyle: "medium" })}
-        </span>
+        <span className="text-muted-foreground text-xs">{date.toLocaleDateString("en", { dateStyle: "medium" })}</span>
       );
     },
     enableSorting: false,
