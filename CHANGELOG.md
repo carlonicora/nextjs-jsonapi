@@ -1,3 +1,9 @@
+## [1.46.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.45.4...v1.46.0) (2026-02-10)
+
+### 🚀 Features
+
+* add expandable rows and improve date cell rendering in ContentListTable ([08f75c3](https://github.com/carlonicora/nextjs-jsonapi/commit/08f75c3e7f567c583ec4f95ffdcd1fca22cf5829))
+
 ## [1.45.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.45.3...v1.45.4) (2026-02-09)
 
 ### 🐛 Bug Fixes
