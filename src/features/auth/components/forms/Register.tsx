@@ -9,6 +9,24 @@ import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import { z } from "zod";
+import { getApiUrl } from "../../../../client/config";
+import { errorToast, FormInput, FormPassword } from "../../../../components";
+import { getRegistrationMode, isDiscordAuthEnabled, isGoogleAuthEnabled } from "../../../../login/config";
+import {
+  Button,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  Form,
+  Link,
+} from "../../../../shadcnui";
+import { WaitlistService } from "../../../waitlist/data/WaitlistService";
+import { useAuthContext } from "../../contexts";
+import { AuthService } from "../../data/auth.service";
+import { AuthComponent } from "../../enums";
+import { GdprConsentSection } from "../GdprConsentSection";
 
 // Referral cookie utilities
 const REFERRAL_COOKIE_NAME = "referral_code";
@@ -37,24 +55,6 @@ function buildOAuthQueryParams(inviteCode?: string | null, referralCode?: string
   if (referralCode) params.set("referral", referralCode);
   return params.toString() ? `?${params.toString()}` : "";
 }
-import { getApiUrl } from "../../../../client/config";
-import { errorToast, FormInput, FormPassword } from "../../../../components";
-import { getRegistrationMode, isDiscordAuthEnabled, isGoogleAuthEnabled } from "../../../../login/config";
-import { GdprConsentSection } from "../GdprConsentSection";
-import {
-  Button,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  Form,
-  Link,
-} from "../../../../shadcnui";
-import { useAuthContext } from "../../contexts";
-import { AuthService } from "../../data/auth.service";
-import { AuthComponent } from "../../enums";
-import { WaitlistService } from "../../../waitlist/data/WaitlistService";
 
 export default function Register() {
   const t = useTranslations();
@@ -75,7 +75,6 @@ export default function Register() {
   const [referralCode, setReferralCode] = useState<string | null>(null);
   useEffect(() => {
     const code = getReferralCode();
-    console.log("[REFERRAL] Register.tsx - cookie value on mount:", code);
     setReferralCode(code);
   }, []);
 
@@ -142,7 +141,6 @@ export default function Register() {
 
   const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (values: z.infer<typeof formSchema>) => {
     try {
-      console.log("[REFERRAL] Register.tsx - referralCode at submit:", referralCode);
       const payload = {
         id: v4(),
         companyName: values.company,
@@ -155,7 +153,6 @@ export default function Register() {
         inviteCode: inviteCode ?? undefined,
         referralCode: referralCode ?? undefined,
       };
-      console.log("[REFERRAL] Register.tsx - payload.referralCode:", payload.referralCode);
 
       await AuthService.register(payload);
       // Clear referral cookie after successful registration
