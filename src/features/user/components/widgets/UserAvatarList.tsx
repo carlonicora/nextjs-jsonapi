@@ -20,7 +20,7 @@ export function UserAvatarList({ users }: UserAvatarListProps) {
           <Link
             key={user.id}
             href={generateUrl({ page: Modules.User, id: user.id })}
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
           >
             <UserAvatar user={user} className="h-5 w-5" />
           </Link>
