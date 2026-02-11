@@ -1,3 +1,13 @@
+## [1.48.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.47.2...v1.48.0) (2026-02-11)
+
+### 🚀 Features
+
+* refactor multi-selector component and improve user multi-select functionality ([f397a28](https://github.com/carlonicora/nextjs-jsonapi/commit/f397a283a7095c172f87fdc813a67b28ff805fb3))
+
+### 🐛 Bug Fixes
+
+* add missing commas in function parameters and JSX elements for consistency ([f40444b](https://github.com/carlonicora/nextjs-jsonapi/commit/f40444b5255b310d3aaf3e3e0a33a9c2dba05dd5))
+
 ## [1.47.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.47.1...v1.47.2) (2026-02-11)
 
 ### 🐛 Bug Fixes
