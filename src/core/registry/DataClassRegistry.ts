@@ -32,6 +32,14 @@ export class DataClassRegistry {
   }
 
   /**
+   * Get class constructor by JSON:API type name.
+   * Used for polymorphic rehydration where the type is determined at runtime.
+   */
+  public static getByJsonApiType(typeName: string): { new (): ApiDataInterface } | undefined {
+    return this._map.get(typeName);
+  }
+
+  /**
    * Bootstrap the registry with all modules.
    * This is a convenience method for apps to register all their modules at once.
    *

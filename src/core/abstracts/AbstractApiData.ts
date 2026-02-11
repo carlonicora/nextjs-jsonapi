@@ -116,6 +116,62 @@ export abstract class AbstractApiData implements ApiDataInterface {
   }
 
   /**
+   * Read included relationships with polymorphic type resolution.
+   * Determines the correct model class based on the JSON:API type in included data.
+   */
+  protected _readIncludedPolymorphic<T extends ApiDataInterface>(
+    data: JsonApiHydratedDataInterface,
+    relationshipKey: string,
+    candidateModules: ApiRequestDataTypeInterface[],
+  ): T | T[] | undefined {
+    // Validate relationship exists
+    if (!data.included?.length || !data.jsonApi.relationships?.[relationshipKey]?.data) {
+      return undefined;
+    }
+
+    const relData = data.jsonApi.relationships[relationshipKey].data;
+
+    // Build lookup map: JSON:API type -> module
+    const typeToModule = new Map<string, ApiRequestDataTypeInterface>();
+    for (const mod of candidateModules) {
+      typeToModule.set(mod.name, mod);
+    }
+
+    if (Array.isArray(relData)) {
+      // Many relationship
+      const result: T[] = [];
+      for (const item of relData) {
+        const includedItem = data.included.find((inc: any) => inc.id === item.id && inc.type === item.type);
+        if (!includedItem) continue;
+
+        // Resolve module by JSON:API type
+        const module = typeToModule.get(includedItem.type);
+        if (!module) continue;
+
+        result.push(
+          RehydrationFactory.rehydrate(module, {
+            jsonApi: includedItem,
+            included: data.included,
+          }) as T,
+        );
+      }
+      return result.length > 0 ? result : undefined;
+    }
+
+    // Single relationship
+    const includedItem = data.included.find((inc: any) => inc.id === relData.id && inc.type === relData.type);
+    if (!includedItem) return undefined;
+
+    const module = typeToModule.get(includedItem.type);
+    if (!module) return undefined;
+
+    return RehydrationFactory.rehydrate(module, {
+      jsonApi: includedItem,
+      included: data.included,
+    }) as T;
+  }
+
+  /**
    * Read included relationship data and augment with relationship meta properties.
    * Handles both single relationships (one-to-one) and array relationships (one-to-many).
    *
