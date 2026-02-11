@@ -1,3 +1,9 @@
+## [1.47.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.46.1...v1.47.0) (2026-02-11)
+
+### 🚀 Features
+
+* implement polymorphic relationship handling in AbstractApiData and add tests for DataClassRegistry ([aaef94b](https://github.com/carlonicora/nextjs-jsonapi/commit/aaef94b64fa0dc8b5cbfbf082897c14da2c17f78))
+
 ## [1.46.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.46.0...v1.46.1) (2026-02-10)
 
 ### 🐛 Bug Fixes
