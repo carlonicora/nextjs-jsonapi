@@ -97,7 +97,7 @@ export function UserMultiSelect({
         setIsSearching(false);
       }
     },
-    [searchTermRef, data]
+    [searchTermRef, data],
   );
 
   const updateSearchTerm = useDebounce(search, 500);
@@ -208,7 +208,9 @@ export function UserMultiSelect({
               ) : undefined
             }
             emptyIndicator={
-              <span className="text-muted-foreground">{t("ui.search.no_results", { type: t("entities.users", { count: 2 }) })}</span>
+              <span className="text-muted-foreground">
+                {t("ui.search.no_results", { type: t("entities.users", { count: 2 }) })}
+              </span>
             }
           />
         )}
