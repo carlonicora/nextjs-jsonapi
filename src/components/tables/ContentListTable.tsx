@@ -38,7 +38,7 @@ type ContentListTableProps = {
 export const ContentListTable = memo(function ContentListTable(props: ContentListTableProps) {
   const { data, fields, checkedIds, toggleId, allowSearch, filters: _filters } = props;
   const [expanded, setExpanded] = useState<ExpandedState>(
-    props.defaultExpanded === true ? true : (typeof props.defaultExpanded === "object" ? props.defaultExpanded : {}),
+    props.defaultExpanded === true ? true : typeof props.defaultExpanded === "object" ? props.defaultExpanded : {},
   );
 
   const { data: tableData, columns: tableColumns } = useTableGenerator(props.tableGeneratorType, {
