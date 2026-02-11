@@ -32,11 +32,14 @@ type ContentListTableProps = {
   context?: Record<string, any>;
   expandable?: boolean;
   getSubRows?: (row: any) => any[];
+  defaultExpanded?: boolean | ExpandedState;
 };
 
 export const ContentListTable = memo(function ContentListTable(props: ContentListTableProps) {
   const { data, fields, checkedIds, toggleId, allowSearch, filters: _filters } = props;
-  const [expanded, setExpanded] = useState<ExpandedState>({});
+  const [expanded, setExpanded] = useState<ExpandedState>(
+    props.defaultExpanded === true ? true : (typeof props.defaultExpanded === "object" ? props.defaultExpanded : {}),
+  );
 
   const { data: tableData, columns: tableColumns } = useTableGenerator(props.tableGeneratorType, {
     data: data?.data ?? EMPTY_ARRAY,
