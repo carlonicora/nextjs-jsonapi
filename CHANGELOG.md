@@ -1,3 +1,10 @@
+## [1.47.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.47.1...v1.47.2) (2026-02-11)
+
+### 🐛 Bug Fixes
+
+* simplify default expanded state handling in ContentListTable ([a8c59de](https://github.com/carlonicora/nextjs-jsonapi/commit/a8c59deef2322d2c9c52d6de647236fafbf97fff))
+* update default expanded state handling in ContentListTable ([2a02f83](https://github.com/carlonicora/nextjs-jsonapi/commit/2a02f839282b80fd4db82ab362bc6cfd9a0bcd08))
+
 ## [1.47.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.47.0...v1.47.1) (2026-02-11)
 
 ### 🐛 Bug Fixes
