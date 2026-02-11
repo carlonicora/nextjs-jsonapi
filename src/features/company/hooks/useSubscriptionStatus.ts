@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useCurrentUserContext } from "../../user/contexts/CurrentUserContext";
 import { getRoleId, isRolesConfigured } from "../../../roles";
+import { getStripePublishableKey } from "../../../client/config";
 
 export interface TrialSubscriptionStatus {
   status: "loading" | "trial" | "active" | "expired";
@@ -29,6 +30,17 @@ export function useSubscriptionStatus(): TrialSubscriptionStatus {
     if (currentUser === null) {
       return {
         status: "loading",
+        trialEndsAt: null,
+        daysRemaining: 0,
+        isGracePeriod: false,
+        isBlocked: false,
+      };
+    }
+
+    // If Stripe is not configured, treat as active subscription (no trial/blocking features)
+    if (!getStripePublishableKey()) {
+      return {
+        status: "active",
         trialEndsAt: null,
         daysRemaining: 0,
         isGracePeriod: false,

@@ -49,12 +49,16 @@ interface MultiSelectProps
    * Each option object has a label, value, and an optional icon.
    */
   options: {
-    /** The text to display for the option. */
+    /** The text to display for the option in the dropdown. */
     label: string;
     /** The unique value associated with the option. */
     value: string;
+    /** Optional text to display when selected (in badges). Falls back to label if not provided. */
+    selectedLabel?: string;
     /** Optional icon component to display alongside the option. */
     icon?: React.ComponentType<{ className?: string }>;
+    /** Optional custom className for the icon. */
+    iconClassName?: string;
   }[];
 
   /**
@@ -126,6 +130,19 @@ interface MultiSelectProps
    * Optional, defaults to "No results found.".
    */
   emptyText?: string;
+
+  /**
+   * Whether to hide the "Select All" option.
+   * Optional, defaults to false.
+   */
+  hideSelectAll?: boolean;
+
+  /**
+   * Custom function to determine if an option should appear selected.
+   * Useful when option values differ from selected values (e.g., prefixed values).
+   * If not provided, uses default check: selectedValues.includes(option.value)
+   */
+  isOptionSelected?: (optionValue: string, selectedValues: string[]) => boolean;
 }
 
 export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
@@ -145,6 +162,8 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
       loading = false,
       loadingText = "Searching...",
       emptyText = "No results found.",
+      hideSelectAll = false,
+      isOptionSelected,
       ...props
     },
     _ref,
@@ -157,6 +176,17 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
 
     const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
     const [isAnimating, setIsAnimating] = React.useState(false);
+
+    // Ref and state to match popover width to trigger width
+    const triggerRef = React.useRef<HTMLButtonElement>(null);
+    const [triggerWidth, setTriggerWidth] = React.useState<number>(0);
+
+    // Measure trigger width when popover opens
+    React.useEffect(() => {
+      if (isPopoverOpen && triggerRef.current) {
+        setTriggerWidth(triggerRef.current.offsetWidth);
+      }
+    }, [isPopoverOpen]);
 
     const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (event.key === "Enter") {
@@ -199,7 +229,12 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
       onValueChange([]);
     };
 
-    const handleTogglePopover = () => {
+    const handleTogglePopover = (event: React.MouseEvent) => {
+      // Don't toggle if clicking on X buttons (clear icons)
+      const target = event.target as HTMLElement;
+      if (target.closest("[data-remove-button]")) {
+        return;
+      }
       setIsPopoverOpen((prev) => !prev);
     };
 
@@ -237,6 +272,7 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen} modal={modalPopover}>
         <PopoverTrigger
           {...props}
+          ref={triggerRef}
           onClick={handleTogglePopover}
           className={cn(
             "flex h-auto min-h-10 w-full items-center justify-between rounded-md border bg-inherit p-1 hover:bg-inherit [&_svg]:pointer-events-auto",
@@ -256,11 +292,17 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
                       style={{ animationDuration: `${animation}s` }}
                     >
                       {IconComponent && <IconComponent className="mr-2 h-4 w-4" />}
-                      {option?.label}
+                      {option?.selectedLabel ?? option?.label}
                       <XCircle
+                        data-remove-button
                         className="ml-2 h-4 w-4 cursor-pointer"
+                        onPointerDown={(event) => {
+                          event.stopPropagation();
+                          event.preventDefault();
+                        }}
                         onClick={(event) => {
                           event.stopPropagation();
+                          event.preventDefault();
                           toggleOption(value);
                         }}
                       />
@@ -278,9 +320,15 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
                   >
                     {`+ ${selectedValues.length - maxCount} more`}
                     <XCircle
+                      data-remove-button
                       className="ml-2 h-4 w-4 cursor-pointer"
+                      onPointerDown={(event) => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                      }}
                       onClick={(event) => {
                         event.stopPropagation();
+                        event.preventDefault();
                         clearExtraOptions();
                       }}
                     />
@@ -289,9 +337,15 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
               </div>
               <div className="flex items-center justify-between">
                 <XIcon
+                  data-remove-button
                   className="text-muted-foreground mx-2 h-4 cursor-pointer"
+                  onPointerDown={(event) => {
+                    event.stopPropagation();
+                    event.preventDefault();
+                  }}
                   onClick={(event) => {
                     event.stopPropagation();
+                    event.preventDefault();
                     handleClear();
                   }}
                 />
@@ -306,7 +360,11 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
             </div>
           )}
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent
+          className="w-auto p-0"
+          style={{ minWidth: triggerWidth > 0 ? triggerWidth : undefined }}
+          align="start"
+        >
           <Command>
             <CommandInput
               autoFocus
@@ -322,25 +380,29 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
             <CommandList>
               <CommandEmpty>{loading ? loadingText : emptyText}</CommandEmpty>
               <CommandGroup>
-                <CommandItem
-                  key="all"
-                  onSelect={toggleAll}
-                  className="cursor-pointer hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent"
-                >
-                  <div
-                    className={cn(
-                      "border-primary mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
-                      selectedValues.length === options.length
-                        ? "bg-primary text-primary-foreground"
-                        : "opacity-50 [&_svg]:invisible",
-                    )}
+                {!hideSelectAll && (
+                  <CommandItem
+                    key="all"
+                    onSelect={toggleAll}
+                    className="cursor-pointer hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent"
                   >
-                    <CheckIcon className="h-4 w-4" />
-                  </div>
-                  <span>(Select All)</span>
-                </CommandItem>
+                    <div
+                      className={cn(
+                        "border-primary mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
+                        selectedValues.length === options.length
+                          ? "bg-primary text-primary-foreground"
+                          : "opacity-50 [&_svg]:invisible",
+                      )}
+                    >
+                      <CheckIcon className="h-4 w-4" />
+                    </div>
+                    <span>(Select All)</span>
+                  </CommandItem>
+                )}
                 {options.map((option) => {
-                  const isSelected = selectedValues.includes(option.value);
+                  const isSelected = isOptionSelected
+                    ? isOptionSelected(option.value, selectedValues)
+                    : selectedValues.includes(option.value);
                   return (
                     <CommandItem
                       key={option.value}
@@ -355,7 +417,9 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
                       >
                         <CheckIcon className="h-4 w-4" />
                       </div>
-                      {option.icon && <option.icon className="text-muted-foreground mr-2 h-4 w-4" />}
+                      {option.icon && (
+                        <option.icon className={option.iconClassName ?? "text-muted-foreground mr-2 h-4 w-4"} />
+                      )}
                       <span>{option.label}</span>
                     </CommandItem>
                   );

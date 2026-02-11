@@ -50,3 +50,4 @@ export * from "./ui/tooltip";
 export * from "./custom/kanban";
 export * from "./custom/link";
 export * from "./custom/multi-select";
+export * from "./custom/multiple-selector";

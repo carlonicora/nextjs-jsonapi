@@ -17,14 +17,13 @@ export function generateMultiSelectorTemplate(data: FrontendTemplateData): strin
 
   return `"use client";
 
-import { FormFieldWrapper, MultiSelect } from "@carlonicora/nextjs-jsonapi/components";
 import { ${names.pascalCase}Interface } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
 import { ${names.pascalCase}Service } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Service";
-import { DataListRetriever, useDataListRetriever } from "@carlonicora/nextjs-jsonapi/client";
-import { useDebounce } from "@carlonicora/nextjs-jsonapi/client";
+import { DataListRetriever, useDataListRetriever, useDebounce } from "@carlonicora/nextjs-jsonapi/client";
+import { FormFieldWrapper, MultipleSelector } from "@carlonicora/nextjs-jsonapi/components";
+import { Option } from "@carlonicora/nextjs-jsonapi/components";
 import { Modules } from "@carlonicora/nextjs-jsonapi/core";
-import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useWatch } from "react-hook-form";
 
 type ${names.pascalCase}MultiSelectType = {
@@ -43,6 +42,10 @@ type ${names.pascalCase}MultiSelectorProps = {
   isRequired?: boolean;
 };
 
+type ${names.pascalCase}Option = Option & {
+  ${names.camelCase}Data?: ${names.pascalCase}Interface;
+};
+
 export default function ${names.pascalCase}MultiSelector({
   id,
   form,
@@ -53,8 +56,7 @@ export default function ${names.pascalCase}MultiSelector({
   maxCount = 3,
   isRequired = false,
 }: ${names.pascalCase}MultiSelectorProps) {
-  const t = useTranslations("features.${names.camelCase}");
-  const [${names.camelCase}Options, set${names.pascalCase}Options] = useState<any[]>([]);
+  const [${names.camelCase}Options, set${names.pascalCase}Options] = useState<${names.pascalCase}Option[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   const selected${names.pluralPascal}: ${names.pascalCase}MultiSelectType[] = useWatch({ control: form.control, name: id }) || [];
@@ -74,7 +76,7 @@ export default function ${names.pascalCase}MultiSelector({
         data.removeAdditionalParameter("search");
       }
     },
-    [data],
+    [data]
   );
 
   const debouncedUpdateSearch = useDebounce(updateSearch, 500);
@@ -88,79 +90,75 @@ export default function ${names.pascalCase}MultiSelector({
       const ${names.pluralCamel} = data.data as ${names.pascalCase}Interface[];
       const filtered${names.pluralPascal} = ${names.pluralCamel}.filter((${names.camelCase}) => ${names.camelCase}.id !== current${names.pascalCase}?.id);
 
-      const options = filtered${names.pluralPascal}.map((${names.camelCase}) => ({
+      const options: ${names.pascalCase}Option[] = filtered${names.pluralPascal}.map((${names.camelCase}) => ({
         label: ${names.camelCase}.name,
         value: ${names.camelCase}.id,
         ${names.camelCase}Data: ${names.camelCase},
       }));
 
-      set${names.pascalCase}Options(options);
-    }
-  }, [data.data, current${names.pascalCase}]);
-
-  // Add options for any already selected ${names.pluralCamel} that aren't in search results
-  useEffect(() => {
-    if (selected${names.pluralPascal}.length > 0) {
-      // Create a map of existing option IDs for quick lookup
-      const existingOptionIds = new Set(${names.camelCase}Options.map((option) => option.value));
-
-      // Find selected ${names.pluralCamel} that don't have an option yet
-      const missingOptions = selected${names.pluralPascal}
+      // Add options for any already selected that aren't in search results
+      const existingOptionIds = new Set(options.map((option) => option.value));
+      const missingOptions: ${names.pascalCase}Option[] = selected${names.pluralPascal}
         .filter((${names.camelCase}) => !existingOptionIds.has(${names.camelCase}.id))
         .map((${names.camelCase}) => ({
           label: ${names.camelCase}.name,
           value: ${names.camelCase}.id,
-          ${names.camelCase}Data: ${names.camelCase},
+          ${names.camelCase}Data: ${names.camelCase} as unknown as ${names.pascalCase}Interface,
         }));
 
-      if (missingOptions.length > 0) {
-        set${names.pascalCase}Options((prev) => [...prev, ...missingOptions]);
-      }
+      set${names.pascalCase}Options([...options, ...missingOptions]);
     }
-  }, [selected${names.pluralPascal}, ${names.camelCase}Options]);
+  }, [data.data, current${names.pascalCase}, selected${names.pluralPascal}]);
 
-  const handleValueChange = (selectedIds: string[]) => {
-    const updatedSelected${names.pluralPascal} = selectedIds.map((id) => {
-      const existing${names.pascalCase} = selected${names.pluralPascal}.find((${names.camelCase}) => ${names.camelCase}.id === id);
-      if (existing${names.pascalCase}) {
-        return existing${names.pascalCase};
-      }
+  // Convert selected to Option[] format
+  const selectedOptions = useMemo(() => {
+    return selected${names.pluralPascal}.map((${names.camelCase}) => ({
+      value: ${names.camelCase}.id,
+      label: ${names.camelCase}.name,
+    }));
+  }, [selected${names.pluralPascal}]);
 
-      const option = ${names.camelCase}Options.find((option) => option.value === id);
-      if (option?.${names.camelCase}Data) {
-        return {
-          id: option.${names.camelCase}Data.id,
-          name: option.${names.camelCase}Data.name,
-        };
-      }
+  const handleChange = (options: Option[]) => {
+    // Convert to form format
+    const formValues = options.map((option) => ({
+      id: option.value,
+      name: option.label,
+    }));
 
-      return { id, name: id };
-    });
-
-    form.setValue(id, updatedSelected${names.pluralPascal});
+    form.setValue(id, formValues, { shouldDirty: true, shouldTouch: true });
 
     if (onChange) {
-      const fullSelected${names.pluralPascal} = selectedIds
-        .map((id) => ${names.camelCase}Options.find((option) => option.value === id)?.${names.camelCase}Data)
+      // Get full data for onChange callback
+      const fullData = options
+        .map((option) => {
+          const ${names.camelCase}Option = ${names.camelCase}Options.find((opt) => opt.value === option.value);
+          return ${names.camelCase}Option?.${names.camelCase}Data;
+        })
         .filter(Boolean) as ${names.pascalCase}Interface[];
-      onChange(fullSelected${names.pluralPascal});
+      onChange(fullData);
     }
   };
 
-  const selected${names.pascalCase}Ids = selected${names.pluralPascal}.map((${names.camelCase}: ${names.pascalCase}MultiSelectType) => ${names.camelCase}.id);
+  // Search handler
+  const handleSearchSync = (search: string): Option[] => {
+    setSearchTerm(search);
+    return ${names.camelCase}Options;
+  };
 
   return (
     <div className="flex w-full flex-col">
       <FormFieldWrapper form={form} name={id} label={label} isRequired={isRequired}>
-        {(field) => (
-          <MultiSelect
+        {() => (
+          <MultipleSelector
+            value={selectedOptions}
+            onChange={handleChange}
             options={${names.camelCase}Options}
-            onValueChange={handleValueChange}
-            defaultValue={selected${names.pascalCase}Ids}
             placeholder={placeholder}
-            maxCount={maxCount}
-            animation={0}
-            onSearchChange={setSearchTerm}
+            maxDisplayCount={maxCount}
+            hideClearAllButton
+            onSearchSync={handleSearchSync}
+            delay={0}
+            emptyIndicator={<span className="text-muted-foreground">No results found</span>}
           />
         )}
       </FormFieldWrapper>

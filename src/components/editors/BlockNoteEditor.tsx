@@ -390,14 +390,14 @@ export default function BlockNoteEditor({
   );
 
   return (
-    <div ref={editorRef} className={cn(bordered ? "rounded-md border" : "", "w-full")}>
+    <div ref={editorRef} className={cn(bordered ? "rounded-md border" : "", "flex flex-col w-full", className)}>
       <BlockNoteView
         editor={editor}
         onChange={handleChange}
         editable={onChange !== undefined}
         formattingToolbar={false}
         theme="light"
-        className={cn(`BlockNoteView ${onChange ? "min-h-96 p-4" : ""}`, className, size === "sm" && "small")}
+        className={cn(`BlockNoteView flex-1 ${onChange ? "p-4" : ""}`, size === "sm" && "small")}
       >
         <BlockNoteEditorFormattingToolbar />
       </BlockNoteView>

@@ -1,12 +1,14 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useWatch } from "react-hook-form";
 import { FormFieldWrapper } from "../../../../components/forms";
 import { Modules } from "../../../../core";
 import { DataListRetriever, useDataListRetriever, useDebounce } from "../../../../hooks";
-import { Avatar, AvatarFallback, AvatarImage, MultiSelect } from "../../../../shadcnui";
+import { Avatar, AvatarFallback, AvatarImage, MultipleSelector } from "../../../../shadcnui";
+import { Option } from "../../../../shadcnui";
 import { useCurrentUserContext } from "../../contexts";
 import { UserInterface } from "../../data";
 import { UserService } from "../../data/user.service";
@@ -27,6 +29,11 @@ type UserMultiSelectProps = {
   onChange?: (users?: UserInterface[]) => void;
   maxCount?: number;
   isRequired?: boolean;
+};
+
+type UserOption = Option & {
+  userData?: UserInterface;
+  avatar?: string;
 };
 
 function UserAvatarIcon({ className, url, name }: { className?: string; url?: string; name?: string }) {
@@ -61,7 +68,7 @@ export function UserMultiSelect({
   const searchTermRef = useRef<string>("");
   const [searchTerm, _setSearchTerm] = useState<string>("");
   const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [userOptions, setUserOptions] = useState<any[]>([]);
+  const [userOptions, setUserOptions] = useState<UserOption[]>([]);
 
   // Get the current selected users from the form
   const selectedUsers: UserSelectType[] = useWatch({ control: form.control, name: id }) || [];
@@ -90,7 +97,7 @@ export function UserMultiSelect({
         setIsSearching(false);
       }
     },
-    [searchTermRef, data],
+    [searchTermRef, data]
   );
 
   const updateSearchTerm = useDebounce(search, 500);
@@ -106,94 +113,103 @@ export function UserMultiSelect({
       const users = data.data as UserInterface[];
       const filteredUsers = users.filter((user) => user.id !== currentUser?.id);
 
-      const options = filteredUsers.map((user) => ({
+      const options: UserOption[] = filteredUsers.map((user) => ({
         label: user.name,
         value: user.id,
-        icon: ({ className }: { className?: string }) => (
-          <UserAvatarIcon className={className} url={user.avatar} name={user.name} />
-        ),
         userData: user,
+        avatar: user.avatar,
       }));
 
-      setUserOptions(options);
-    }
-  }, [data.data, currentUser]);
-
-  // Add options for any already selected users that aren't in search results
-  useEffect(() => {
-    if (selectedUsers.length > 0) {
-      // Create a map of existing option IDs for quick lookup
-      const existingOptionIds = new Set(userOptions.map((option) => option.value));
-
-      // Find selected users that don't have an option yet
-      const missingOptions = selectedUsers
+      // Add options for any already selected users that aren't in search results
+      const existingOptionIds = new Set(options.map((option) => option.value));
+      const missingOptions: UserOption[] = selectedUsers
         .filter((user) => !existingOptionIds.has(user.id))
         .map((user) => ({
           label: user.name,
           value: user.id,
-          icon: ({ className }: { className?: string }) => (
-            <UserAvatarIcon className={className} url={user.avatar} name={user.name} />
-          ),
-          userData: user,
+          userData: user as unknown as UserInterface,
+          avatar: user.avatar,
         }));
 
-      // Add missing options if there are any
-      if (missingOptions.length > 0) {
-        setUserOptions((prev) => [...prev, ...missingOptions]);
-      }
+      setUserOptions([...options, ...missingOptions]);
     }
-  }, [selectedUsers, userOptions]);
+  }, [data.data, currentUser, selectedUsers]);
 
-  const handleValueChange = (selectedIds: string[]) => {
-    // Map selected IDs to user objects for the form
-    const updatedSelectedUsers = selectedIds.map((id) => {
-      // First check if user is already in the selected users (preserve existing data)
-      const existingUser = selectedUsers.find((user) => user.id === id);
-      if (existingUser) {
-        return existingUser;
-      }
+  // Convert selected users to Option[] format
+  const selectedOptions = useMemo(() => {
+    return selectedUsers.map((user) => ({
+      value: user.id,
+      label: user.name,
+    }));
+  }, [selectedUsers]);
 
-      // Otherwise, get user data from the options
-      const option = userOptions.find((option) => option.value === id);
-      if (option?.userData) {
-        return {
-          id: option.userData.id,
-          name: option.userData.name,
-          avatar: option.userData.avatar,
-        };
-      }
-
-      // Fallback to just the ID if no data is available
-      return { id, name: id };
+  const handleChange = (options: Option[]) => {
+    // Convert to form format
+    const formValues = options.map((option) => {
+      const userOption = userOptions.find((opt) => opt.value === option.value);
+      return {
+        id: option.value,
+        name: option.label,
+        avatar: userOption?.avatar,
+      };
     });
 
-    form.setValue(id, updatedSelectedUsers);
+    form.setValue(id, formValues, { shouldDirty: true, shouldTouch: true });
 
     if (onChange) {
-      const fullSelectedUsers = selectedIds
-        .map((id) => userOptions.find((option) => option.value === id)?.userData)
+      // Get full user data for onChange callback
+      const fullUsers = options
+        .map((option) => {
+          const userOption = userOptions.find((opt) => opt.value === option.value);
+          return userOption?.userData;
+        })
         .filter(Boolean) as UserInterface[];
-      onChange(fullSelectedUsers);
+      onChange(fullUsers);
     }
   };
 
-  // Extract just the IDs for the MultiSelect component
-  const selectedUserIds = selectedUsers.map((user: UserSelectType) => user.id);
+  // Custom render function for dropdown options (with avatar)
+  const renderOption = (option: Option) => {
+    const userOption = option as UserOption;
+    return (
+      <span className="flex items-center gap-2">
+        <UserAvatarIcon url={userOption.avatar} name={option.label} />
+        {option.label}
+      </span>
+    );
+  };
+
+  // Search handler
+  const handleSearchSync = (search: string): Option[] => {
+    _setSearchTerm(search);
+    return userOptions;
+  };
 
   return (
     <div className="flex w-full flex-col">
       <FormFieldWrapper form={form} name={id} label={label} isRequired={isRequired}>
         {() => (
-          <MultiSelect
+          <MultipleSelector
+            value={selectedOptions}
+            onChange={handleChange}
             options={userOptions}
-            onValueChange={handleValueChange}
-            defaultValue={selectedUserIds}
             placeholder={placeholder}
-            maxCount={maxCount}
-            animation={0}
-            loading={isSearching}
-            loadingText={t("ui.search.button")}
-            emptyText={t("ui.search.no_results", { type: t("entities.users", { count: 2 }) })}
+            maxDisplayCount={maxCount}
+            hideClearAllButton
+            onSearchSync={handleSearchSync}
+            delay={0}
+            renderOption={renderOption}
+            loadingIndicator={
+              isSearching ? (
+                <div className="flex items-center justify-center py-2">
+                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                  <span className="ml-2 text-sm text-muted-foreground">{t("ui.search.button")}</span>
+                </div>
+              ) : undefined
+            }
+            emptyIndicator={
+              <span className="text-muted-foreground">{t("ui.search.no_results", { type: t("entities.users", { count: 2 }) })}</span>
+            }
           />
         )}
       </FormFieldWrapper>
