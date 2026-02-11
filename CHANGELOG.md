@@ -1,3 +1,10 @@
+## [1.48.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.48.0...v1.48.1) (2026-02-11)
+
+### 🐛 Bug Fixes
+
+* add type annotation for onClick event in UserAvatarList component ([1da935f](https://github.com/carlonicora/nextjs-jsonapi/commit/1da935f962f50f1efe5e64ba9910aeffd8d09f4a))
+* export UserAvatarList component from widgets index ([07aa56b](https://github.com/carlonicora/nextjs-jsonapi/commit/07aa56b7fee88a61993d0c72ecbfde667d07ec0c))
+
 ## [1.48.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.47.2...v1.48.0) (2026-02-11)
 
 ### 🚀 Features
