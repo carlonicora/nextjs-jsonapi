@@ -1,3 +1,9 @@
+## [1.48.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.48.1...v1.48.2) (2026-02-11)
+
+### 🐛 Bug Fixes
+
+* remove UserTopic and UserExpertise from FoundationModuleDefinitions ([e0253c7](https://github.com/carlonicora/nextjs-jsonapi/commit/e0253c7a4749bf04ec439c5b8584489a09ebb1d9))
+
 ## [1.48.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.48.0...v1.48.1) (2026-02-11)
 
 ### 🐛 Bug Fixes
