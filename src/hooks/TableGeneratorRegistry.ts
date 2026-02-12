@@ -18,7 +18,7 @@ export class TableGeneratorRegistry {
   }
 
   public register<T, U>(type: string, hook: UseTableStructureHook<T, U>): void {
-    if (!this.registry.has(type)) this.registry.set(type, hook as TableGeneratorHook);
+    this.registry.set(type, hook as TableGeneratorHook);
   }
 
   public get<T, U>(type: string, params: UseTableStructureHookParams<T, U>): UseTableStructureHookReturn<T> {
