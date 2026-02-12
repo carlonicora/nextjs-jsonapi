@@ -27,7 +27,7 @@ export function ContentTitle({ module, type, element, functions, className, prio
   if (!element) return null;
 
   return (
-    <div className={cn(`mb-4 flex items-center justify-between gap-x-4 w-full`, className)}>
+    <div className={cn(`mb-4 flex items-start justify-between gap-x-4 w-full`, className)}>
       {/* Title section - shrinks when prioritizeFunctions is true */}
       <div className={cn("flex flex-col", prioritizeFunctions ? "min-w-0 shrink" : "w-full")}>
         {/* Type label - never shrinks (stays visible as minimum) */}
