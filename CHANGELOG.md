@@ -1,3 +1,18 @@
+## [1.48.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.48.2...v1.48.3) (2026-02-12)
+
+### 🐛 Bug Fixes
+
+* add group class to TableRow for improved hover effects ([9d7edfa](https://github.com/carlonicora/nextjs-jsonapi/commit/9d7edfab9dbd4a419929be84181d2fa640919d54))
+* allow overwriting existing table generator hooks in TableGeneratorRegistry ([8481b39](https://github.com/carlonicora/nextjs-jsonapi/commit/8481b3901f4d59b3640ce9a9251a62a77d1c2f9e))
+
+### 💎 Styles
+
+* update flex alignment in ContentTitle component ([14e47c6](https://github.com/carlonicora/nextjs-jsonapi/commit/14e47c6bd700b270844fc998cc0510ef5bcdd950))
+
+### ♻️ Chores
+
+* add @handlewithcare/prosemirror-inputrules dependency ([3d1d9be](https://github.com/carlonicora/nextjs-jsonapi/commit/3d1d9be1d3e31bf078270654d484a77a0cca73d1))
+
 ## [1.48.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.48.1...v1.48.2) (2026-02-11)
 
 ### 🐛 Bug Fixes
