@@ -51,6 +51,10 @@ export default defineConfig({
     "next-intl/server",
     "react-hook-form",
     "next-themes",
+    "jotai",
+    "jotai/utils",
+    "jotai/react",
+    "jotai-family",
     // Test dependencies (for /testing export)
     "vitest",
     "@testing-library/react",
