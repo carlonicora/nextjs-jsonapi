@@ -3,6 +3,7 @@
 import { Command as CommandPrimitive, useCommandState } from "cmdk";
 import { ChevronDownIcon, X } from "lucide-react";
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { forwardRef, useEffect } from "react";
 
 import { cn } from "../../utils/cn";
@@ -84,6 +85,8 @@ export interface MultipleSelectorProps {
   renderOption?: (option: Option) => React.ReactNode;
   /** Maximum number of badges to display before showing "+X more" */
   maxDisplayCount?: number;
+  /** Render dropdown in a portal to escape overflow containers (e.g., dialogs) */
+  usePortal?: boolean;
 }
 
 export interface MultipleSelectorRef {
@@ -200,14 +203,17 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
       hideClearAllButton = false,
       renderOption,
       maxDisplayCount,
+      usePortal = false,
     }: MultipleSelectorProps,
     ref: React.Ref<MultipleSelectorRef>,
   ) => {
     const inputRef = React.useRef<HTMLInputElement>(null);
+    const containerRef = React.useRef<HTMLDivElement>(null);
     const [open, setOpen] = React.useState(false);
     const [onScrollbar, setOnScrollbar] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const dropdownRef = React.useRef<HTMLDivElement>(null);
+    const [dropdownPosition, setDropdownPosition] = React.useState({ top: 0, left: 0, width: 0 });
 
     const [selected, setSelected] = React.useState<Option[]>(value || []);
     const [options, setOptions] = React.useState<GroupOption>(transToGroupOption(arrayDefaultOptions, groupBy));
@@ -316,6 +322,42 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
 
       void exec();
     }, [debouncedSearchTerm, groupBy, open, triggerSearchOnFocus, onSearchSync]);
+
+    useEffect(() => {
+      if (!usePortal || !open || !containerRef.current) return;
+
+      const updatePosition = () => {
+        if (containerRef.current) {
+          const rect = containerRef.current.getBoundingClientRect();
+          setDropdownPosition({
+            top: rect.bottom + window.scrollY + 4,
+            left: rect.left + window.scrollX,
+            width: rect.width,
+          });
+        }
+      };
+
+      updatePosition();
+
+      const handleScroll = () => {
+        if (containerRef.current) {
+          const rect = containerRef.current.getBoundingClientRect();
+          if (rect.bottom < 0 || rect.top > window.innerHeight) {
+            setOpen(false);
+          } else {
+            updatePosition();
+          }
+        }
+      };
+
+      window.addEventListener("scroll", handleScroll, true);
+      window.addEventListener("resize", updatePosition);
+
+      return () => {
+        window.removeEventListener("scroll", handleScroll, true);
+        window.removeEventListener("resize", updatePosition);
+      };
+    }, [usePortal, open]);
 
     useEffect(() => {
       const doSearch = async () => {
@@ -429,6 +471,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
         filter={commandFilter()}
       >
         <div
+          ref={containerRef}
           className={cn(
             "flex min-h-10 items-start justify-between rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 md:text-sm",
             {
@@ -534,10 +577,85 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
             <ChevronDownIcon className={cn("size-5 text-muted-foreground/50", selected.length >= 1 && "hidden")} />
           </div>
         </div>
-        <div className="relative">
-          {open && (
+        {!usePortal && (
+          <div className="relative">
+            {open && (
+              <CommandList
+                className="absolute top-1 z-10 w-full rounded-md border bg-background text-foreground shadow-md outline-none animate-in"
+                onMouseLeave={() => {
+                  setOnScrollbar(false);
+                }}
+                onMouseEnter={() => {
+                  setOnScrollbar(true);
+                }}
+                onMouseUp={() => {
+                  inputRef?.current?.focus();
+                }}
+              >
+                {isLoading ? (
+                  <>{loadingIndicator}</>
+                ) : (
+                  <>
+                    {EmptyItem()}
+                    {CreatableItem()}
+                    {!selectFirstItem && <CommandItem value="-" className="hidden" />}
+                    {Object.entries(selectables).map(([key, dropdowns]) => (
+                      <CommandGroup
+                        key={key}
+                        heading={key}
+                        className="h-full overflow-auto [&_[cmdk-group-heading]]:border-b [&_[cmdk-group-heading]]:border-border/50 [&_[cmdk-group-heading]]:mb-1"
+                      >
+                        <>
+                          {dropdowns.map((option) => {
+                            return (
+                              <CommandItem
+                                key={option.value}
+                                value={option.label}
+                                disabled={option.disable}
+                                onMouseDown={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                }}
+                                onSelect={() => {
+                                  if (selected.length >= maxSelected) {
+                                    onMaxSelected?.(selected.length);
+                                    return;
+                                  }
+                                  setInputValue("");
+                                  const newOptions = [...selected, option];
+                                  setSelected(newOptions);
+                                  onChange?.(newOptions);
+                                }}
+                                className={cn(
+                                  "cursor-pointer bg-transparent hover:bg-accent data-selected:bg-transparent data-selected:hover:bg-accent",
+                                  option.disable && "cursor-default text-muted-foreground",
+                                )}
+                              >
+                                {renderOption ? renderOption(option) : option.label}
+                              </CommandItem>
+                            );
+                          })}
+                        </>
+                      </CommandGroup>
+                    ))}
+                  </>
+                )}
+              </CommandList>
+            )}
+          </div>
+        )}
+        {usePortal &&
+          open &&
+          typeof window !== "undefined" &&
+          createPortal(
             <CommandList
-              className="absolute top-1 z-10 w-full rounded-md border bg-background text-foreground shadow-md outline-none animate-in"
+              ref={dropdownRef}
+              className="fixed z-50 max-h-80 rounded-md border bg-background text-foreground shadow-md outline-none animate-in"
+              style={{
+                top: dropdownPosition.top,
+                left: dropdownPosition.left,
+                width: dropdownPosition.width,
+              }}
               onMouseLeave={() => {
                 setOnScrollbar(false);
               }}
@@ -596,9 +714,9 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
                   ))}
                 </>
               )}
-            </CommandList>
+            </CommandList>,
+            document.body,
           )}
-        </div>
       </Command>
     );
   },
