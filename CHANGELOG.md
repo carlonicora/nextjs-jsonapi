@@ -1,3 +1,13 @@
+## [1.49.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.48.3...v1.49.0) (2026-02-14)
+
+### 🚀 Features
+
+* add portal support for dropdown in MultipleSelector to improve rendering in overflow containers ([30e343a](https://github.com/carlonicora/nextjs-jsonapi/commit/30e343ac125747a7d379d225d731ee9b781d8610))
+
+### 🐛 Bug Fixes
+
+* add jotai dependencies to external list in tsup config ([8403e71](https://github.com/carlonicora/nextjs-jsonapi/commit/8403e712d91cf04fce7460d1de3b4d98819be0c0))
+
 ## [1.48.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.48.2...v1.48.3) (2026-02-12)
 
 ### 🐛 Bug Fixes
