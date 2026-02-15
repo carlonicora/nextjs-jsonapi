@@ -225,7 +225,7 @@ export function formatValidationErrors(errors: ValidationError[]): string {
  * Validation result interface
  */
 export interface ValidationResult {
-  data: JsonModuleDefinition | null;
+  data: JsonModuleDefinition[] | null;
   errors: string[];
   warnings: string[];
 }
@@ -266,36 +266,39 @@ export function parseAndValidate(filePath: string): ValidationResult {
     return result;
   }
 
-  // Handle array format (for bulk import compatibility)
-  if (Array.isArray(schema)) {
-    if (schema.length === 0) {
-      result.errors.push("JSON array is empty");
-      return result;
-    }
-    if (schema.length > 1) {
-      result.warnings.push(
-        `JSON file contains ${schema.length} definitions. Only processing the first one.`
-      );
-    }
-    schema = schema[0];
+  // Normalize to array
+  const schemas: any[] = Array.isArray(schema) ? schema : [schema];
+  if (schemas.length === 0) {
+    result.errors.push("JSON array is empty");
+    return result;
   }
 
-  // Validate
-  const validationErrors = validateJsonSchema(schema);
+  // Validate each definition
+  const validSchemas: JsonModuleDefinition[] = [];
+  for (let i = 0; i < schemas.length; i++) {
+    const item = schemas[i];
+    const prefix = schemas.length > 1 ? `[${i}] ` : "";
+    const validationErrors = validateJsonSchema(item);
 
-  // Separate errors and warnings
-  validationErrors.forEach((ve) => {
-    const msg = `${ve.field}: ${ve.message}`;
-    if (ve.severity === "error") {
-      result.errors.push(msg);
-    } else {
-      result.warnings.push(msg);
+    let hasErrors = false;
+    validationErrors.forEach((ve) => {
+      const msg = `${prefix}${ve.field}: ${ve.message}`;
+      if (ve.severity === "error") {
+        result.errors.push(msg);
+        hasErrors = true;
+      } else {
+        result.warnings.push(msg);
+      }
+    });
+
+    if (!hasErrors) {
+      validSchemas.push(item as JsonModuleDefinition);
     }
-  });
+  }
 
-  // Only set data if validation passed
-  if (result.errors.length === 0) {
-    result.data = schema as JsonModuleDefinition;
+  // Only set data if at least one schema passed validation
+  if (result.errors.length === 0 && validSchemas.length > 0) {
+    result.data = validSchemas;
   }
 
   return result;
@@ -305,5 +308,5 @@ export function parseAndValidate(filePath: string): ValidationResult {
  * Check if validation result passed (no errors)
  */
 export function validationPassed(result: ValidationResult): boolean {
-  return result.errors.length === 0 && result.data !== null;
+  return result.errors.length === 0 && result.data !== null && result.data.length > 0;
 }

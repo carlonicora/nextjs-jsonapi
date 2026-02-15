@@ -66,24 +66,11 @@ export async function generateWebModule(options: GenerateWebModuleOptions): Prom
     validation.warnings.forEach((w) => console.info(`   - ${w}`));
   }
 
-  const schema = validation.data!;
-  console.info(`   ✅ Schema valid: ${schema.moduleName}`);
+  const schemas = validation.data!;
+  const total = schemas.length;
+  console.info(`   ✅ ${total} schema(s) valid`);
 
-  // Step 2: Build template data
-  console.info("\n🔨 Building template data...");
-  const templateData = buildTemplateData(schema);
-  console.info(`   Module: ${templateData.names.pascalCase}`);
-  console.info(`   Target: ${templateData.targetDir}`);
-  console.info(`   Extends Content: ${templateData.extendsContent}`);
-  console.info(`   Fields: ${templateData.fields.length}`);
-  console.info(`   Relationships: ${templateData.relationships.length}`);
-
-  // Step 3: Generate all files
-  console.info("\n📝 Generating files...");
-  const files = generateAllFiles(templateData, schema);
-  console.info(`   Generated ${files.length} file templates`);
-
-  // Step 4: Determine web base path
+  // Determine web base path once
   const webBasePath = findWebBasePath(jsonPath);
   if (!webBasePath) {
     console.error("\n❌ Could not determine web app base path");
@@ -91,29 +78,53 @@ export async function generateWebModule(options: GenerateWebModuleOptions): Prom
   }
   console.info(`   Web base path: ${webBasePath}`);
 
-  // Step 5: Write files
-  console.info("\n💾 Writing files...");
-  const results = writeFiles(files, { dryRun, force });
-  printResults(results);
+  for (let i = 0; i < total; i++) {
+    const schema = schemas[i];
+    console.info(`\n📦 Processing module ${i + 1}/${total}: ${schema.moduleName}`);
+    console.info(`${"─".repeat(50)}`);
 
-  // Step 6: Update Bootstrapper (unless --no-register)
-  if (!noRegister) {
-    console.info("\n🔧 Updating Bootstrapper.ts...");
-    const bootstrapResult = updateBootstrapper(templateData, webBasePath, dryRun);
-    console.info(`   ${bootstrapResult.success ? "✅" : "❌"} ${bootstrapResult.message}`);
-  }
+    // Step 2: Build template data
+    console.info("🔨 Building template data...");
+    const templateData = buildTemplateData(schema);
+    console.info(`   Module: ${templateData.names.pascalCase}`);
+    console.info(`   Target: ${templateData.targetDir}`);
+    console.info(`   Extends Content: ${templateData.extendsContent}`);
+    console.info(`   Fields: ${templateData.fields.length}`);
+    console.info(`   Relationships: ${templateData.relationships.length}`);
 
-  // Step 7: Update i18n for all languages (unless --no-register)
-  if (!noRegister) {
-    const languages = schema.languages || ["en"];
-    console.info(`\n🌐 Updating i18n for ${languages.length} language(s)...`);
-    for (const language of languages) {
-      const i18nResult = updateI18n(templateData, webBasePath, language, dryRun);
-      console.info(`   ${i18nResult.success ? "✅" : "❌"} ${i18nResult.message}`);
+    // Step 3: Generate all files
+    console.info("\n📝 Generating files...");
+    const files = generateAllFiles(templateData, schema);
+    console.info(`   Generated ${files.length} file templates`);
+
+    // Step 5: Write files
+    console.info("\n💾 Writing files...");
+    const results = writeFiles(files, { dryRun, force });
+    printResults(results);
+
+    // Step 6: Update Bootstrapper (unless --no-register)
+    if (!noRegister) {
+      console.info("\n🔧 Updating Bootstrapper.ts...");
+      const bootstrapResult = updateBootstrapper(templateData, webBasePath, dryRun);
+      console.info(`   ${bootstrapResult.success ? "✅" : "❌"} ${bootstrapResult.message}`);
     }
+
+    // Step 7: Update i18n for all languages (unless --no-register)
+    if (!noRegister) {
+      const languages = schema.languages || ["en"];
+      console.info(`\n🌐 Updating i18n for ${languages.length} language(s)...`);
+      for (const language of languages) {
+        const i18nResult = updateI18n(templateData, webBasePath, language, dryRun);
+        console.info(`   ${i18nResult.success ? "✅" : "❌"} ${i18nResult.message}`);
+      }
+    }
+
+    console.info(`\n✅ ${schema.moduleName} generation complete!`);
   }
 
-  console.info("\n✅ Generation complete!");
+  // Final summary
+  console.info(`\n${"═".repeat(50)}`);
+  console.info(`✅ All done! ${total} module(s) generated successfully.`);
 
   if (dryRun) {
     console.info("\n📝 This was a dry run. No files were actually written.");
