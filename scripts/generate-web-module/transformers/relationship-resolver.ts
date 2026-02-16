@@ -37,7 +37,7 @@ export function isFoundationImport(directory: string): boolean {
  */
 export function resolveRelationship(rel: JsonRelationshipDefinition): FrontendRelationship {
   const isAuthor = rel.variant === AUTHOR_VARIANT;
-  const effectiveName = rel.variant || rel.name;
+  const effectiveName = rel.alias || rel.variant || rel.name;
   const effectiveNameLower = toCamelCase(effectiveName);
   const modelKebab = toKebabCase(rel.name);
 
@@ -56,12 +56,13 @@ export function resolveRelationship(rel: JsonRelationshipDefinition): FrontendRe
   // Selector component name
   // Foundation components use MultiSelect, generated modules use MultiSelector
   let selectorComponent: string;
+  const selectorBaseName = rel.alias || rel.name;
   if (rel.single) {
-    selectorComponent = `${rel.name}Selector`;
+    selectorComponent = `${selectorBaseName}Selector`;
   } else {
     selectorComponent = isFoundationImport(rel.directory)
-      ? `${rel.name}MultiSelect`
-      : `${rel.name}MultiSelector`;
+      ? `${selectorBaseName}MultiSelect`
+      : `${selectorBaseName}MultiSelector`;
   }
 
   // Zod schema
@@ -105,6 +106,7 @@ export function resolveRelationship(rel: JsonRelationshipDefinition): FrontendRe
   return {
     name: rel.name,
     variant: rel.variant,
+    alias: rel.alias,
     directory: rel.directory,
     single: rel.single,
     nullable: rel.nullable,
@@ -157,7 +159,7 @@ export function mapDirectoryToWebPath(directory: string): string {
  */
 export function generateServiceMethods(relationships: FrontendRelationship[]): RelationshipServiceMethod[] {
   return relationships.map((rel) => {
-    const effectiveName = rel.variant || rel.name;
+    const effectiveName = rel.alias || rel.variant || rel.name;
     return {
       methodName: `findManyBy${toPascalCase(effectiveName)}`,
       paramName: `${toCamelCase(effectiveName)}Id`,
@@ -230,7 +232,7 @@ export function getRelationshipFormJsx(rel: FrontendRelationship, moduleName: st
  * @returns Expression for default value
  */
 export function getDefaultValueExpression(rel: FrontendRelationship, modelVarName: string): string {
-  const propertyName = rel.variant ? toCamelCase(rel.variant) : toCamelCase(rel.name);
+  const propertyName = rel.alias ? toCamelCase(rel.alias) : rel.variant ? toCamelCase(rel.variant) : toCamelCase(rel.name);
   const pluralPropertyName = pluralize(propertyName);
 
   if (rel.single) {

@@ -49,6 +49,8 @@ export type FormComponentType =
 export interface FrontendRelationship {
   name: string; // e.g., "User"
   variant?: string; // e.g., "Author"
+  /** PascalCase alias for disambiguation when multiple relationships target the same entity */
+  alias?: string;
   directory: string; // e.g., "foundations"
   single: boolean;
   nullable: boolean;
