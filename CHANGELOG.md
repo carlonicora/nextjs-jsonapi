@@ -1,3 +1,13 @@
+## [1.50.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.49.0...v1.50.0) (2026-02-16)
+
+### 🚀 Features
+
+* enhance relationship handling with alias support and validation ([b0e2fe7](https://github.com/carlonicora/nextjs-jsonapi/commit/b0e2fe7f097fe329768a3889846caae80752113d))
+
+### 🐛 Bug Fixes
+
+* correct import of multi-entity schema ([9860306](https://github.com/carlonicora/nextjs-jsonapi/commit/9860306dd4cefe8b18516009423aedb57ed746ed))
+
 ## [1.49.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.48.3...v1.49.0) (2026-02-14)
 
 ### 🚀 Features
