@@ -1,3 +1,13 @@
+## [1.51.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.50.0...v1.51.0) (2026-02-23)
+
+### 🚀 Features
+
+* add round page container ([1785d1f](https://github.com/carlonicora/nextjs-jsonapi/commit/1785d1fe249cef2ef16a9cea678fc3b5a32779a1))
+
+### 🐛 Bug Fixes
+
+* correct linting ([2986a39](https://github.com/carlonicora/nextjs-jsonapi/commit/2986a39df7c96f9daee14599d088897ec29b85dc))
+
 ## [1.50.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.49.0...v1.50.0) (2026-02-16)
 
 ### 🚀 Features
