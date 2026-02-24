@@ -13,9 +13,7 @@ export function Header({ children, className }: HeaderProps) {
   const { breadcrumbs } = useSharedContext();
 
   return (
-    <header
-      className={`sticky top-0 z-10 flex h-12 flex-col items-center justify-start gap-x-4 border-b ${className ?? ""}`}
-    >
+    <header className={`sticky top-0 z-10 flex h-12 flex-col items-center justify-start gap-x-4 ${className ?? ""}`}>
       <div className="bg-sidebar flex h-12 w-full flex-row items-center justify-between pl-2 pr-4">
         <SidebarTrigger aria-label="Toggle sidebar" id="sidebar-trigger" />
         <div className="flex w-full flex-row items-center justify-start">
