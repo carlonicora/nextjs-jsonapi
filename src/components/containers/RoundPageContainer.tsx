@@ -9,21 +9,12 @@ import { cn } from "@/index";
 import { ModuleWithPermissions } from "@/permissions";
 import { ReactNode, useState } from "react";
 
-type RoundPageContainerTabProps = {
+type RoundPageContainerProps = {
   module: ModuleWithPermissions;
   details?: ReactNode;
-  tabs: Tab[];
-  children?: never;
+  tabs?: Tab[];
+  children?: ReactNode;
 };
-
-type RoundPageContainerChildrenProps = {
-  module: ModuleWithPermissions;
-  details?: ReactNode;
-  tabs: never;
-  children: ReactNode;
-};
-
-type RoundPageContainerProps = RoundPageContainerTabProps | RoundPageContainerChildrenProps;
 
 export function RoundPageContainer({ module, details, tabs, children }: RoundPageContainerProps) {
   const headerChildren = useHeaderChildren();
@@ -32,8 +23,8 @@ export function RoundPageContainer({ module, details, tabs, children }: RoundPag
   return (
     <>
       <Header className="bg-sidebar border-0">{headerChildren}</Header>
-      <div className="flex h-[calc(100vh-3rem)] w-full flex-col p-2 pt-0">
-        <div className="bg-background flex h-full w-full rounded border p-0">
+      <div className="flex h-[calc(100vh-3rem)] w-full flex-col p-2 pt-0 pl-0">
+        <div className="bg-background flex h-full w-full rounded-lg border p-0">
           <div className="flex w-full flex-col">
             <RoundPageContainerTitle
               module={module}
@@ -62,7 +53,13 @@ export function RoundPageContainer({ module, details, tabs, children }: RoundPag
                   </div>
                 </Tabs>
               ) : (
-                <>{children && <div className="grow overflow-y-auto p-4">{children}</div>}</>
+                <>
+                  {children && (
+                    <div className="grow overflow-y-auto p-4">
+                      <div className="mx-auto max-w-6xl space-y-12 p-8">{children}</div>
+                    </div>
+                  )}
+                </>
               )}
               {details && (
                 <div
