@@ -1,3 +1,18 @@
+## [1.52.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.51.0...v1.52.0) (2026-02-25)
+
+### 🚀 Features
+
+* refactor templates and add alias support ([99a9918](https://github.com/carlonicora/nextjs-jsonapi/commit/99a991818d9bec45e11d982b2b497568ef2c067b))
+
+### 🐛 Bug Fixes
+
+* update class names for selected states in CommandItem and CommandShortcut ([d3393ab](https://github.com/carlonicora/nextjs-jsonapi/commit/d3393abd279585131c020120fadb5f458cfff6e6))
+
+### 📦 Code Refactoring
+
+* remove unnecessary line breaks in Header component ([9f157ad](https://github.com/carlonicora/nextjs-jsonapi/commit/9f157addd809c5ab960230a020f55a80f86fccee))
+* simplify RoundPageContainer props and enhance children rendering ([da48c8e](https://github.com/carlonicora/nextjs-jsonapi/commit/da48c8e7c95bcdccc6419c2cec1eecc16b34e2d9))
+
 ## [1.51.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.50.0...v1.51.0) (2026-02-23)
 
 ### 🚀 Features
