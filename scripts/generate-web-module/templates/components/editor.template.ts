@@ -24,6 +24,8 @@ import {
  */
 export function generateEditorTemplate(data: FrontendTemplateData): string {
   const { names, fields, relationships, extendsContent } = data;
+  const hasNameField = extendsContent || fields.some((f) => f.name === "name");
+  const i18nKey = names.pluralCamel.toLowerCase();
 
   const imports = generateImports(data);
   const propsType = generatePropsType(data);
@@ -122,7 +124,7 @@ ${onSubmit}
       <DialogContent
         className="flex max-h-[70vh] max-w-3xl flex-col overflow-y-auto"
       >
-        <CommonEditorHeader type={t(\`types.${names.pluralKebab}\`, { count: 1 })} name={${names.camelCase}?.name} />
+        <CommonEditorHeader type={t(\`entities.${i18nKey}\`, { count: 1 })}${hasNameField ? ` name={${names.camelCase}?.name}` : ""} />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full flex-col gap-y-4">
             <div className="flex flex-col justify-between gap-x-4">
@@ -159,17 +161,23 @@ function generateImports(data: FrontendTemplateData): string {
     `import { ${names.pascalCase}Service } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Service";`,
   );
 
-  // Relationship selector imports
+  // Relationship selector imports (deduplicated - multiple aliases may target the same entity)
   const hasAuthor = relationships.some((r) => r.variant === AUTHOR_VARIANT);
+  const seenImports = new Set<string>();
 
   relationships.forEach((rel) => {
     if (rel.variant === AUTHOR_VARIANT) {
-      imports.push(`import { UserInterface } from "@/features/foundations/user/data/UserInterface";`);
+      if (!seenImports.has("UserInterface")) {
+        seenImports.add("UserInterface");
+        imports.push(`import { UserInterface } from "@/features/foundations/user/data/UserInterface";`);
+      }
     } else {
       // Foundation components use MultiSelect, generated modules use MultiSelector
       const componentName = rel.single
         ? `${rel.name}Selector`
         : (rel.isFoundation ? `${rel.name}MultiSelect` : `${rel.name}MultiSelector`);
+      if (seenImports.has(componentName)) return;
+      seenImports.add(componentName);
       if (rel.isFoundation) {
         // Foundation entities use named imports from the package
         imports.push(`import { ${componentName} } from "${FOUNDATION_COMPONENTS_PACKAGE}";`);
@@ -291,7 +299,7 @@ function generateFormSchema(data: FrontendTemplateData): string {
   }
 
   fieldsToInclude.forEach((field) => {
-    if (field.name === "content" || field.isContentField) {
+    if (field.isContentField) {
       schemaFields.push(`    ${field.name}: z.any(),`);
     } else if (field.type === "string") {
       if (field.nullable) {
@@ -308,7 +316,7 @@ function generateFormSchema(data: FrontendTemplateData): string {
 
   // Relationship fields
   relationships.forEach((rel) => {
-    const fieldId = toCamelCase(rel.variant || rel.name);
+    const fieldId = toCamelCase(rel.alias || rel.variant || rel.name);
     const fieldIdLower = fieldId.toLowerCase();
     if (rel.variant === AUTHOR_VARIANT) {
       schemaFields.push(`    ${fieldId}: userObjectSchema.refine((data) => data.id && data.id.length > 0, {
@@ -335,7 +343,7 @@ function generateFormSchema(data: FrontendTemplateData): string {
               break;
             case "date":
             case "datetime":
-              schemaFields.push(`    ${field.name}: z.coerce.date()${optional},`);
+              schemaFields.push(`    ${field.name}: z.date()${optional},`);
               break;
             case "any":
               schemaFields.push(`    ${field.name}: z.any()${optional},`);
@@ -378,7 +386,7 @@ function generateDefaultValues(data: FrontendTemplateData): string {
     : fields;
 
   fieldsToInclude.forEach((field) => {
-    if (field.name === "content" || field.isContentField) {
+    if (field.isContentField) {
       defaults.push(`    ${field.name}: ${names.camelCase}?.${field.name} || [],`);
     } else if (field.type === "string") {
       defaults.push(`    ${field.name}: ${names.camelCase}?.${field.name} || "",`);
@@ -393,17 +401,18 @@ function generateDefaultValues(data: FrontendTemplateData): string {
 
   // Relationship defaults
   relationships.forEach((rel) => {
-    const fieldId = toCamelCase(rel.variant || rel.name);
-    const propertyName = rel.variant ? toCamelCase(rel.variant) : toCamelCase(rel.name);
-    const pluralPropertyName = pluralize(toCamelCase(rel.name));
+    const fieldId = toCamelCase(rel.alias || rel.variant || rel.name);
+    const propertyName = rel.alias ? toCamelCase(rel.alias) : rel.variant ? toCamelCase(rel.variant) : toCamelCase(rel.name);
+    const pluralPropertyName = pluralize(toCamelCase(rel.alias || rel.name));
 
     if (rel.variant === AUTHOR_VARIANT) {
       defaults.push(`    ${fieldId}: ${names.camelCase}?.${propertyName}
       ? { id: ${names.camelCase}.${propertyName}.id, name: ${names.camelCase}.${propertyName}.name, avatar: ${names.camelCase}.${propertyName}.avatar }
       : undefined,`);
     } else if (rel.single) {
+      const displayProp = rel.targetHasName ? "name" : "id";
       defaults.push(`    ${fieldId}: ${names.camelCase}?.${propertyName}
-      ? { id: ${names.camelCase}.${propertyName}.id, name: ${names.camelCase}.${propertyName}.name }
+      ? { id: ${names.camelCase}.${propertyName}.id, name: ${names.camelCase}.${propertyName}.${displayProp} }
       : undefined,`);
       // Add relationship property field defaults
       if (rel.fields && rel.fields.length > 0) {
@@ -428,8 +437,9 @@ function generateDefaultValues(data: FrontendTemplateData): string {
         });
       }
     } else {
+      const displayProp = rel.targetHasName ? "name" : "id";
       defaults.push(`    ${fieldId}: ${names.camelCase}?.${pluralPropertyName}
-      ? ${names.camelCase}.${pluralPropertyName}.map((item) => ({ id: item.id, name: item.name }))
+      ? ${names.camelCase}.${pluralPropertyName}.map((item) => ({ id: item.id, name: item.${displayProp} }))
       : [],`);
     }
   });
@@ -465,8 +475,8 @@ function generateOnSubmit(data: FrontendTemplateData): string {
 
   // Relationships
   relationships.forEach((rel) => {
-    const fieldId = toCamelCase(rel.variant || rel.name);
-    const payloadKey = rel.single ? `${fieldId}Id` : `${toCamelCase(rel.name)}Ids`;
+    const fieldId = toCamelCase(rel.alias || rel.variant || rel.name);
+    const payloadKey = rel.single ? `${fieldId}Id` : `${toCamelCase(rel.alias || rel.name)}Ids`;
 
     if (rel.single) {
       payloadFields.push(`      ${payloadKey}: values.${fieldId}?.id,`);
@@ -529,7 +539,7 @@ function generateFormFields(data: FrontendTemplateData): string {
     : fields;
 
   fieldsToInclude.forEach((field) => {
-    if (field.name === "content" || field.isContentField) {
+    if (field.isContentField) {
       formElements.push(`              <BlockNoteEditorContainer
                 id={form.getValues("id")}
                 type="${names.camelCase}"
@@ -567,7 +577,7 @@ function generateFormFields(data: FrontendTemplateData): string {
       return;
     }
 
-    const fieldId = toCamelCase(rel.variant || rel.name);
+    const fieldId = toCamelCase(rel.alias || rel.variant || rel.name);
     const fieldIdLower = fieldId.toLowerCase();
 
     if (rel.single) {
@@ -625,7 +635,7 @@ function generateFormFields(data: FrontendTemplateData): string {
       formElements.push(`              <${multiComponentName}
                 id="${fieldId}"
                 form={form}
-                label={t(\`types.${pluralize(rel.name.toLowerCase())}\`, { count: 2 })}
+                label={t(\`entities.${pluralize(rel.name.toLowerCase())}\`, { count: 2 })}
               />`);
     }
   });

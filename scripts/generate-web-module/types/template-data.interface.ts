@@ -67,6 +67,7 @@ export interface FrontendRelationship {
   interfaceName: string; // e.g., "UserInterface"
   modelKebab: string; // e.g., "user"
   fields?: FrontendField[]; // Relationship property fields (stored on edges)
+  targetHasName: boolean; // Whether the target entity has a "name" field (or extends Content)
 }
 
 /**
@@ -162,6 +163,7 @@ export interface RelationshipServiceMethod {
   paramName: string; // e.g., "authorId"
   relationshipName: string; // e.g., "User"
   relationshipEndpoint: string; // e.g., "users"
+  aliasEndpoint?: string; // e.g., "created-by" — when set, uses raw string instead of Modules reference
 }
 
 /**

@@ -8,3 +8,4 @@ export * from "./interface.template";
 export * from "./model.template";
 export * from "./service.template";
 export * from "./fields.template";
+export * from "./aliases.template";

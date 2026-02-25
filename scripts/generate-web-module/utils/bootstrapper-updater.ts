@@ -54,8 +54,8 @@ export function updateBootstrapper(
 
   let content = fs.readFileSync(bootstrapperPath, "utf-8");
 
-  // Check if module is already registered
-  const modulePattern = new RegExp(`${names.pascalCase}Module`, "g");
+  // Check if module is already registered (exact match to avoid e.g. "InvoiceModule" matching "InvoiceLineModule")
+  const modulePattern = new RegExp(`\\b${names.pascalCase}Module\\b`, "g");
   if (modulePattern.test(content)) {
     return {
       success: true,

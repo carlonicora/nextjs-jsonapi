@@ -171,6 +171,7 @@ export interface ModuleFilePaths {
   model: string;
   service: string;
   fields: string;
+  aliases: string;
   editor: string;
   deleter: string;
   selector: string;
@@ -211,6 +212,7 @@ export function buildFilePaths(
     model: `${basePath}/data/${names.pascalCase}.ts`,
     service: `${basePath}/data/${names.pascalCase}Service.ts`,
     fields: `${basePath}/data/${names.pascalCase}Fields.ts`,
+    aliases: `${basePath}/data/${names.pascalCase}Aliases.ts`,
 
     // Components
     editor: `${basePath}/components/forms/${names.pascalCase}Editor.tsx`,

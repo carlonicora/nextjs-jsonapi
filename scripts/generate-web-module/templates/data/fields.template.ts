@@ -47,10 +47,10 @@ function generateEnumEntries(data: FrontendTemplateData): string {
 
   // Add relationship fields
   relationships.forEach((rel) => {
-    const effectiveName = rel.variant || rel.name;
+    const effectiveName = rel.alias || rel.variant || rel.name;
     const key = rel.single
       ? toCamelCase(effectiveName)
-      : pluralize(toCamelCase(rel.name));
+      : pluralize(toCamelCase(effectiveName));
     entries.push(`  ${key} = "${key}",`);
   });
 

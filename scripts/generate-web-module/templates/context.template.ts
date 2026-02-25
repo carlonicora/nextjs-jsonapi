@@ -13,7 +13,9 @@ import { FrontendTemplateData } from "../types/template-data.interface";
  * @returns Generated file content
  */
 export function generateContextTemplate(data: FrontendTemplateData): string {
-  const { names, extendsContent } = data;
+  const { names, fields, extendsContent } = data;
+  const hasNameField = extendsContent || fields.some((f) => f.name === "name");
+  const i18nKey = names.pluralCamel.toLowerCase();
 
   return `"use client";
 
@@ -61,13 +63,13 @@ export const ${names.pascalCase}Provider = ({ children, dehydrated${names.pascal
     const response: BreadcrumbItemData[] = [];
 
     response.push({
-      name: t(\`types.${names.pluralCamel}\`, { count: 2 }),
+      name: t(\`entities.${i18nKey}\`, { count: 2 }),
       href: generateUrl({ page: Modules.${names.pascalCase} }),
     });
 
     if (${names.camelCase})
       response.push({
-        name: ${names.camelCase}.name,
+        name: ${hasNameField ? `${names.camelCase}.name` : `${names.camelCase}.id`},
         href: generateUrl({ page: Modules.${names.pascalCase}, id: ${names.camelCase}.id }),
       });
 
@@ -76,13 +78,13 @@ export const ${names.pascalCase}Provider = ({ children, dehydrated${names.pascal
 
   const title = () => {
     const response: any = {
-      type: t(\`types.${names.pluralCamel}\`, { count: ${names.camelCase} ? 1 : 2 }),
+      type: t(\`entities.${i18nKey}\`, { count: ${names.camelCase} ? 1 : 2 }),
     };
 
     const functions: ReactNode[] = [];
 
-    if (${names.camelCase}) {
-      response.element = ${names.camelCase}.name;
+    if (${names.camelCase}) {${hasNameField ? `
+      response.element = ${names.camelCase}.name;` : ""}
 
       functions.push(<${names.pascalCase}Deleter key={\`${names.pascalCase}Deleter\`} ${names.camelCase}={${names.camelCase}} />);
       functions.push(<${names.pascalCase}Editor key={\`${names.pascalCase}Editor\`} ${names.camelCase}={${names.camelCase}} propagateChanges={set${names.pascalCase}} />);

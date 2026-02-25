@@ -13,14 +13,15 @@ import { FrontendTemplateData } from "../../types/template-data.interface";
  * @returns Generated file content
  */
 export function generateDetailPageTemplate(data: FrontendTemplateData): string {
-  const { names } = data;
+  const { names, fields, extendsContent } = data;
+  const hasNameField = extendsContent || fields.some((f) => f.name === "name");
+  const i18nKey = names.pluralCamel.toLowerCase();
 
   return `import ${names.pascalCase}Container from "@/features/${data.importTargetDir}/${names.kebabCase}/components/containers/${names.pascalCase}Container";
 import { ${names.pascalCase}Provider } from "@/features/${data.importTargetDir}/${names.kebabCase}/contexts/${names.pascalCase}Context";
 import { ${names.pascalCase}Interface } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
 import { ${names.pascalCase}Service } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Service";
 import { generateSpecificMetadata } from "@/utils/metadata";
-import { PageContainer } from "@carlonicora/nextjs-jsonapi/components";
 import { Modules } from "@carlonicora/nextjs-jsonapi/core";
 import { Action } from "@carlonicora/nextjs-jsonapi/core";
 import { ServerSession } from "@carlonicora/nextjs-jsonapi/server";
@@ -41,8 +42,8 @@ export async function generateMetadata(props: { params: Promise<{ id: string }> 
     action: Action.Read,
     data: ${names.camelCase},
   }))
-    ? \`[\${t(\`types.${names.pluralCamel}\`, { count: 1 })}] \${${names.camelCase}.name}\`
-    : \`\${t(\`types.${names.pluralCamel}\`, { count: 1 })}\`;
+    ? \`[\${t(\`entities.${i18nKey}\`, { count: 1 })}]${hasNameField ? ` \${${names.camelCase}.name}` : ""}\`
+    : \`\${t(\`entities.${i18nKey}\`, { count: 1 })}\`;
 
   return await generateSpecificMetadata({ title: title });
 }
@@ -55,9 +56,7 @@ export default async function ${names.pascalCase}Page(props: { params: Promise<{
 
   return (
     <${names.pascalCase}Provider dehydrated${names.pascalCase}={${names.camelCase}.dehydrate()}>
-      <PageContainer>
-        <${names.pascalCase}Container />
-      </PageContainer>
+      <${names.pascalCase}Container />
     </${names.pascalCase}Provider>
   );
 }

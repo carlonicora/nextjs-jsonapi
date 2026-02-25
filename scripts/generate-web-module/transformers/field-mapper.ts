@@ -23,7 +23,7 @@ import {
  */
 export function mapField(field: JsonFieldDefinition, moduleName: string): FrontendField {
   const formComponent = getFormComponent(field.name, field.type);
-  const isContent = isContentField(field.name);
+  const isContent = isContentField(field.name, field.type);
 
   return {
     name: field.name,
@@ -56,7 +56,7 @@ export function mapFields(fields: JsonFieldDefinition[], moduleName: string): Fr
  */
 export function buildZodSchema(field: JsonFieldDefinition, moduleName: string): string {
   // Content fields always use z.any()
-  if (isContentField(field.name)) {
+  if (isContentField(field.name, field.type)) {
     return "z.any()";
   }
 
@@ -87,12 +87,12 @@ export function buildZodSchema(field: JsonFieldDefinition, moduleName: string): 
     return base;
   }
 
-  // Date fields
+  // Date fields — use z.date() not z.coerce.date() to avoid react-hook-form type inference issues
   if (field.type === "date") {
     if (field.nullable) {
-      return `z.coerce.date().optional()`;
+      return `z.date().optional()`;
     }
-    return `z.coerce.date()`;
+    return `z.date()`;
   }
 
   // Default case

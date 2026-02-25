@@ -35,11 +35,14 @@ function generateImports(data: FrontendTemplateData): string {
   const { names, extendsContent, relationships } = data;
   const imports: string[] = [];
 
-  // Relationship interface imports (skip self-referential - interface is defined in this file)
+  // Relationship interface imports (deduplicated, skip self-referential)
+  const seenInterfaces = new Set<string>();
   relationships.forEach((rel) => {
     if (rel.name === names.pascalCase) {
       return; // Skip self-reference - interface defined in this file
     }
+    if (seenInterfaces.has(rel.interfaceName)) return;
+    seenInterfaces.add(rel.interfaceName);
     imports.push(`import { ${rel.interfaceName} } from "${rel.interfaceImportPath}";`);
   });
 
@@ -73,7 +76,7 @@ function generateInputType(data: FrontendTemplateData): string {
 
   // Add relationship IDs and relationship property fields
   relationships.forEach((rel) => {
-    const effectiveName = rel.variant || rel.name;
+    const effectiveName = rel.alias || rel.variant || rel.name;
     if (rel.single) {
       const key = `${toCamelCase(effectiveName)}Id`;
       const optional = rel.nullable ? "?" : "";
@@ -87,7 +90,8 @@ function generateInputType(data: FrontendTemplateData): string {
         });
       }
     } else {
-      const key = `${toCamelCase(rel.name)}Ids`;
+      const effectiveMany = rel.alias || rel.name;
+      const key = `${toCamelCase(effectiveMany)}Ids`;
       fieldLines.push(`  ${key}?: string[];`);
     }
   });
@@ -122,7 +126,7 @@ function generateInterface(data: FrontendTemplateData): string {
 
   // Add relationship getters
   relationships.forEach((rel) => {
-    const effectiveName = rel.variant || rel.name;
+    const effectiveName = rel.alias || rel.variant || rel.name;
     if (rel.single) {
       const propertyName = toCamelCase(effectiveName);
 
@@ -136,7 +140,8 @@ function generateInterface(data: FrontendTemplateData): string {
       const type = rel.nullable ? `(${baseType}) | undefined` : baseType;
       getterLines.push(`  get ${propertyName}(): ${type};`);
     } else {
-      const propertyName = pluralize(toCamelCase(rel.name));
+      const effectiveMany = rel.alias || rel.name;
+      const propertyName = pluralize(toCamelCase(effectiveMany));
       // Use intersection type if relationship has fields (edge properties)
       if (rel.fields && rel.fields.length > 0) {
         const metaFields = rel.fields.map((f) => `${f.name}?: ${f.tsType}`).join("; ");

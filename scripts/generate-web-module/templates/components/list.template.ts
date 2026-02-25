@@ -49,7 +49,7 @@ export default function ${names.pascalCase}List() {
       fields={[${displayFields}]}
       tableGeneratorType={Modules.${names.pascalCase}}
       functions={functions}
-      title={t(\`types.${names.pluralKebab}\`, { count: 2 })}
+      title={t(\`entities.${names.pluralCamel.toLowerCase()}\`, { count: 2 })}
     />
   );
 }
@@ -78,9 +78,10 @@ function buildDisplayFields(data: FrontendTemplateData): string {
   // Add first non-author relationship
   const otherRel = relationships.find((r) => r.variant !== "Author");
   if (otherRel) {
+    const effectiveName = otherRel.alias || otherRel.variant || otherRel.name;
     const relFieldName = otherRel.single
-      ? toCamelCase(otherRel.variant || otherRel.name)
-      : pluralize(toCamelCase(otherRel.name));
+      ? toCamelCase(effectiveName)
+      : pluralize(toCamelCase(effectiveName));
     displayFields.push(`${names.pascalCase}Fields.${relFieldName}`);
   }
 

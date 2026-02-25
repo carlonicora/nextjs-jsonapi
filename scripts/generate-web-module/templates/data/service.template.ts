@@ -108,6 +108,11 @@ function generateRelationshipMethods(data: FrontendTemplateData): string {
 
   return relationshipServiceMethods
     .map((method) => {
+      // For aliases, use a raw string endpoint; for standard relationships, use Modules reference
+      const endpointValue = method.aliasEndpoint
+        ? `"${method.aliasEndpoint}"`
+        : `Modules.${method.relationshipName}`;
+
       return `  static async ${method.methodName}(params: {
     ${method.paramName}: string;
     search?: string;
@@ -116,7 +121,7 @@ function generateRelationshipMethods(data: FrontendTemplateData): string {
     prev?: PreviousRef;
   }): Promise<${names.pascalCase}Interface[]> {
     const endpoint = new EndpointCreator({
-      endpoint: Modules.${method.relationshipName},
+      endpoint: ${endpointValue},
       id: params.${method.paramName},
       childEndpoint: Modules.${names.pascalCase},
     });

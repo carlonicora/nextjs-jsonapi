@@ -13,7 +13,10 @@ import { FrontendTemplateData } from "../../types/template-data.interface";
  * @returns Generated file content
  */
 export function generateSelectorTemplate(data: FrontendTemplateData): string {
-  const { names } = data;
+  const { names, fields, extendsContent } = data;
+  const hasNameField = extendsContent || fields.some((f) => f.name === "name");
+  const i18nKey = names.pluralCamel.toLowerCase();
+  const displayProp = hasNameField ? "name" : "id";
 
   return `"use client";
 
@@ -103,7 +106,7 @@ export default function ${names.pascalCase}Selector({
       return;
     }
 
-    form.setValue(id, { id: ${names.camelCase}.id, name: ${names.camelCase}.name });
+    form.setValue(id, { id: ${names.camelCase}.id, name: ${names.camelCase}.${displayProp} });
     setOpen(false);
 
     setTimeout(() => {
@@ -125,7 +128,7 @@ export default function ${names.pascalCase}Selector({
                   className="h-auto min-h-10 w-full justify-between px-3 py-2"
                 >
                   <span className={field.value ? "" : "text-muted-foreground"}>
-                    {field.value?.name ?? placeholder ?? t(\`generic.search.placeholder\`, { type: t(\`types.${names.pluralKebab}\`, { count: 1 }) })}
+                    {field.value?.name ?? placeholder ?? t(\`generic.search.placeholder\`, { type: t(\`entities.${i18nKey}\`, { count: 1 }) })}
                   </span>
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -140,7 +143,7 @@ export default function ${names.pascalCase}Selector({
             <PopoverContent className="w-(--radix-popover-trigger-width) p-0" align="start">
               <Command shouldFilter={false}>
                 <CommandInput
-                  placeholder={t(\`generic.search.placeholder\`, { type: t(\`types.${names.pluralKebab}\`, { count: 1 }) })}
+                  placeholder={t(\`generic.search.placeholder\`, { type: t(\`entities.${i18nKey}\`, { count: 1 }) })}
                   value={searchTerm}
                   onValueChange={setSearchTerm}
                 />
@@ -162,7 +165,7 @@ export default function ${names.pascalCase}Selector({
                           onSelect={() => set${names.pascalCase}(${names.camelCase})}
                           className="hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent cursor-pointer"
                         >
-                          {${names.camelCase}.name}
+                          {${names.camelCase}.${displayProp}}
                         </CommandItem>
                       ))}
                     </CommandGroup>

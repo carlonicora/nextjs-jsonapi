@@ -13,7 +13,9 @@ import { FrontendTemplateData } from "../../types/template-data.interface";
  * @returns Generated file content
  */
 export function generateMultiSelectorTemplate(data: FrontendTemplateData): string {
-  const { names } = data;
+  const { names, fields, extendsContent } = data;
+  const hasNameField = extendsContent || fields.some((f) => f.name === "name");
+  const displayProp = hasNameField ? "name" : "id";
 
   return `"use client";
 
@@ -91,7 +93,7 @@ export default function ${names.pascalCase}MultiSelector({
       const filtered${names.pluralPascal} = ${names.pluralCamel}.filter((${names.camelCase}) => ${names.camelCase}.id !== current${names.pascalCase}?.id);
 
       const options: ${names.pascalCase}Option[] = filtered${names.pluralPascal}.map((${names.camelCase}) => ({
-        label: ${names.camelCase}.name,
+        label: ${names.camelCase}.${displayProp},
         value: ${names.camelCase}.id,
         ${names.camelCase}Data: ${names.camelCase},
       }));
@@ -101,7 +103,7 @@ export default function ${names.pascalCase}MultiSelector({
       const missingOptions: ${names.pascalCase}Option[] = selected${names.pluralPascal}
         .filter((${names.camelCase}) => !existingOptionIds.has(${names.camelCase}.id))
         .map((${names.camelCase}) => ({
-          label: ${names.camelCase}.name,
+          label: ${names.camelCase}.${displayProp},
           value: ${names.camelCase}.id,
           ${names.camelCase}Data: ${names.camelCase} as unknown as ${names.pascalCase}Interface,
         }));
@@ -114,7 +116,7 @@ export default function ${names.pascalCase}MultiSelector({
   const selectedOptions = useMemo(() => {
     return selected${names.pluralPascal}.map((${names.camelCase}) => ({
       value: ${names.camelCase}.id,
-      label: ${names.camelCase}.name,
+      label: ${names.camelCase}.${displayProp},
     }));
   }, [selected${names.pluralPascal}]);
 

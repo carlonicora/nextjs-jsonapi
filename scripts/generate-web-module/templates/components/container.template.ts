@@ -36,47 +36,18 @@ import ${names.pascalCase}Content from "@/features/${data.importTargetDir}/${nam
 import ${names.pascalCase}Details from "@/features/${data.importTargetDir}/${names.kebabCase}/components/details/${names.pascalCase}Details";
 import { use${names.pascalCase}Context } from "@/features/${data.importTargetDir}/${names.kebabCase}/contexts/${names.pascalCase}Context";
 import { ${names.pascalCase}Interface } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
-import {
-  AllowedUsersDetails,
-  PageContentContainer,
-  RelevantContentsList,
-  RelevantUsersList,
-} from "@carlonicora/nextjs-jsonapi/components";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@carlonicora/nextjs-jsonapi/components";
-import { useTranslations } from "next-intl";
+import { RoundPageContainer } from "@carlonicora/nextjs-jsonapi/components";
+import { Modules } from "@carlonicora/nextjs-jsonapi/core";
 
 type ${names.pascalCase}ContainerProps = {
   ${names.camelCase}: ${names.pascalCase}Interface;
 };
 
 function ${names.pascalCase}ContainerInternal({ ${names.camelCase} }: ${names.pascalCase}ContainerProps) {
-  const t = useTranslations();
-
   return (
-    <PageContentContainer
-      details={<${names.pascalCase}Details />}
-      footer={
-        <AllowedUsersDetails showTitle content={${names.camelCase}} />
-      }
-      content={
-        <Tabs defaultValue={\`${names.camelCase}\`}>
-          <TabsList className="mb-4">
-            <TabsTrigger value="${names.camelCase}">{t(\`types.${names.pluralCamel}\`, { count: 1 })}</TabsTrigger>
-            <TabsTrigger value="contents">{t(\`generic.relevant\`)}</TabsTrigger>
-            <TabsTrigger value="users">{t(\`generic.relevant_users\`)}</TabsTrigger>
-          </TabsList>
-          <TabsContent value="${names.camelCase}">
-            <${names.pascalCase}Content />
-          </TabsContent>
-          <TabsContent value="contents">
-            <RelevantContentsList id={${names.camelCase}.id} />
-          </TabsContent>
-          <TabsContent value="users">
-            <RelevantUsersList id={${names.camelCase}.id} />
-          </TabsContent>
-        </Tabs>
-      }
-    />
+    <RoundPageContainer module={Modules.${names.pascalCase}} details={<${names.pascalCase}Details />}>
+      <${names.pascalCase}Content />
+    </RoundPageContainer>
   );
 }
 
@@ -100,7 +71,8 @@ function generateSimpleContainerTemplate(data: FrontendTemplateData): string {
 import ${names.pascalCase}Details from "@/features/${data.importTargetDir}/${names.kebabCase}/components/details/${names.pascalCase}Details";
 import { use${names.pascalCase}Context } from "@/features/${data.importTargetDir}/${names.kebabCase}/contexts/${names.pascalCase}Context";
 import { ${names.pascalCase}Interface } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";
-import { PageContentContainer } from "@carlonicora/nextjs-jsonapi/components";
+import { RoundPageContainer } from "@carlonicora/nextjs-jsonapi/components";
+import { Modules } from "@carlonicora/nextjs-jsonapi/core";
 
 type ${names.pascalCase}ContainerProps = {
   ${names.camelCase}: ${names.pascalCase}Interface;
@@ -108,14 +80,11 @@ type ${names.pascalCase}ContainerProps = {
 
 function ${names.pascalCase}ContainerInternal({ ${names.camelCase} }: ${names.pascalCase}ContainerProps) {
   return (
-    <PageContentContainer
-      details={<${names.pascalCase}Details />}
-      content={
-        <div className="flex w-full flex-col gap-y-4">
-          {/* Add custom content sections here */}
-        </div>
-      }
-    />
+    <RoundPageContainer module={Modules.${names.pascalCase}} details={<${names.pascalCase}Details />}>
+      <div className="flex w-full flex-col gap-y-4">
+        {/* Add custom content sections here */}
+      </div>
+    </RoundPageContainer>
   );
 }
 

@@ -35,7 +35,7 @@ export function isFoundationImport(directory: string): boolean {
  * @param rel - JSON relationship definition
  * @returns Frontend relationship representation
  */
-export function resolveRelationship(rel: JsonRelationshipDefinition): FrontendRelationship {
+export function resolveRelationship(rel: JsonRelationshipDefinition, targetHasNameMap?: Map<string, boolean>): FrontendRelationship {
   const isAuthor = rel.variant === AUTHOR_VARIANT;
   const effectiveName = rel.alias || rel.variant || rel.name;
   const effectiveNameLower = toCamelCase(effectiveName);
@@ -50,19 +50,18 @@ export function resolveRelationship(rel: JsonRelationshipDefinition): FrontendRe
   if (rel.single) {
     payloadFieldId = `${effectiveNameLower}Id`;
   } else {
-    payloadFieldId = `${toCamelCase(rel.name)}Ids`;
+    payloadFieldId = `${effectiveNameLower}Ids`;
   }
 
-  // Selector component name
+  // Selector component name - always based on target entity name, not alias
   // Foundation components use MultiSelect, generated modules use MultiSelector
   let selectorComponent: string;
-  const selectorBaseName = rel.alias || rel.name;
   if (rel.single) {
-    selectorComponent = `${selectorBaseName}Selector`;
+    selectorComponent = `${rel.name}Selector`;
   } else {
     selectorComponent = isFoundationImport(rel.directory)
-      ? `${selectorBaseName}MultiSelect`
-      : `${selectorBaseName}MultiSelector`;
+      ? `${rel.name}MultiSelect`
+      : `${rel.name}MultiSelector`;
   }
 
   // Zod schema
@@ -122,6 +121,7 @@ export function resolveRelationship(rel: JsonRelationshipDefinition): FrontendRe
     interfaceName: `${rel.name}Interface`,
     modelKebab,
     fields,
+    targetHasName: targetHasNameMap?.get(rel.name) ?? true, // Foundation entities default to true
   };
 }
 
@@ -131,8 +131,8 @@ export function resolveRelationship(rel: JsonRelationshipDefinition): FrontendRe
  * @param relationships - Array of JSON relationship definitions
  * @returns Array of frontend relationship representations
  */
-export function resolveRelationships(relationships: JsonRelationshipDefinition[]): FrontendRelationship[] {
-  return relationships.map(resolveRelationship);
+export function resolveRelationships(relationships: JsonRelationshipDefinition[], targetHasNameMap?: Map<string, boolean>): FrontendRelationship[] {
+  return relationships.map((rel) => resolveRelationship(rel, targetHasNameMap));
 }
 
 /**
@@ -157,14 +157,18 @@ export function mapDirectoryToWebPath(directory: string): string {
  * @param relationships - Array of frontend relationships
  * @returns Array of service method definitions
  */
-export function generateServiceMethods(relationships: FrontendRelationship[]): RelationshipServiceMethod[] {
+export function generateServiceMethods(relationships: FrontendRelationship[], conflictingAliases?: Set<string>): RelationshipServiceMethod[] {
   return relationships.map((rel) => {
     const effectiveName = rel.alias || rel.variant || rel.name;
+    // Only use alias endpoint when the alias conflicts with another alias targeting the same entity
+    const needsAliasEndpoint = rel.alias && (conflictingAliases?.has(rel.alias) ?? false);
     return {
       methodName: `findManyBy${toPascalCase(effectiveName)}`,
       paramName: `${toCamelCase(effectiveName)}Id`,
       relationshipName: rel.name,
       relationshipEndpoint: pluralize(toKebabCase(rel.name)),
+      // For conflicting aliases, use a raw string endpoint (e.g., "created-by") instead of Modules reference
+      aliasEndpoint: needsAliasEndpoint ? toKebabCase(rel.alias!) : undefined,
     };
   });
 }
@@ -219,7 +223,7 @@ export function getRelationshipFormJsx(rel: FrontendRelationship, moduleName: st
     return `<${rel.name}MultiSelector
   id="${rel.formFieldId}"
   form={form}
-  label={t(\`types.${pluralize(toKebabCase(rel.name))}\`, { count: 2 })}
+  label={t(\`entities.${pluralize(rel.name.toLowerCase())}\`, { count: 2 })}
 />`;
   }
 }
@@ -242,13 +246,15 @@ export function getDefaultValueExpression(rel: FrontendRelationship, modelVarNam
         ? { id: ${modelVarName}.${propertyName}.id, name: ${modelVarName}.${propertyName}.name, avatar: ${modelVarName}.${propertyName}.avatar }
         : undefined`;
     }
+    const displayProp = rel.targetHasName ? "name" : "id";
     return `${modelVarName}?.${propertyName}
-        ? { id: ${modelVarName}.${propertyName}.id, name: ${modelVarName}.${propertyName}.name }
+        ? { id: ${modelVarName}.${propertyName}.id, name: ${modelVarName}.${propertyName}.${displayProp} }
         : undefined`;
   } else {
     // Multi-select
+    const displayProp = rel.targetHasName ? "name" : "id";
     return `${modelVarName}?.${pluralPropertyName}
-        ? ${modelVarName}.${pluralPropertyName}.map((item) => ({ id: item.id, name: item.name }))
+        ? ${modelVarName}.${pluralPropertyName}.map((item) => ({ id: item.id, name: item.${displayProp} }))
         : []`;
   }
 }

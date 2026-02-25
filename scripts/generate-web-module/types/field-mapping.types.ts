@@ -98,19 +98,32 @@ export function getZodBase(jsonType: string): string {
  * Get form component for a field
  */
 export function getFormComponent(fieldName: string, fieldType: string): FormComponentType {
-  // Check for special field names first
+  // Check for special field names first, but only if the type is compatible
+  // (e.g., "content" as a string field should NOT use BlockNoteEditor)
   if (SPECIAL_FIELD_COMPONENTS[fieldName]) {
-    return SPECIAL_FIELD_COMPONENTS[fieldName];
+    const specialComponent = SPECIAL_FIELD_COMPONENTS[fieldName];
+    if (specialComponent === "BlockNoteEditor" && isContentField(fieldName, fieldType)) {
+      return specialComponent;
+    } else if (specialComponent !== "BlockNoteEditor") {
+      return specialComponent;
+    }
   }
   // Fall back to type-based component
   return TYPE_TO_FORM_COMPONENT[fieldType] || "FormInput";
 }
 
 /**
- * Check if a field name indicates BlockNoteEditor should be used
+ * Check if a field indicates BlockNoteEditor should be used.
+ * Only fields named "content" with non-primitive types (not string/number/boolean/date)
+ * are treated as rich-content (JSON/BlockNote) fields.
  */
-export function isContentField(fieldName: string): boolean {
-  return fieldName === "content";
+export function isContentField(fieldName: string, fieldType?: string): boolean {
+  if (fieldName !== "content") return false;
+  // If no type provided, assume it's a content field (backwards compat)
+  if (!fieldType) return true;
+  // Primitive types are NOT content fields even when named "content"
+  const primitiveTypes = ["string", "number", "boolean", "date", "datetime"];
+  return !primitiveTypes.includes(fieldType);
 }
 
 /**
@@ -120,7 +133,7 @@ export function buildZodSchema(fieldType: string, nullable: boolean, fieldName: 
   const base = getZodBase(fieldType);
 
   // Content fields use z.any()
-  if (isContentField(fieldName)) {
+  if (isContentField(fieldName, fieldType)) {
     return "z.any()";
   }
 

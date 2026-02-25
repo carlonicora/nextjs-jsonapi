@@ -6,6 +6,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import { execSync } from "child_process";
 import { GeneratedFile } from "../types/template-data.interface";
 
 export interface WriteOptions {
@@ -72,6 +73,26 @@ export function writeFile(file: GeneratedFile, options: WriteOptions = {}): Writ
  */
 export function writeFiles(files: GeneratedFile[], options: WriteOptions = {}): WriteResult[] {
   return files.map((file) => writeFile(file, options));
+}
+
+/**
+ * Format files with Prettier
+ *
+ * @param filePaths - Absolute paths of files to format
+ */
+export function formatFiles(filePaths: string[]): void {
+  if (filePaths.length === 0) return;
+
+  console.info(`\n💅 Formatting ${filePaths.length} files with Prettier...`);
+  try {
+    execSync(`npx prettier --write ${filePaths.map((p) => `"${p}"`).join(" ")}`, {
+      stdio: "pipe",
+      cwd: process.cwd(),
+    });
+    console.info(`   ✅ Formatted successfully`);
+  } catch {
+    console.warn(`   ⚠️  Prettier formatting failed — files were written but may need manual formatting`);
+  }
 }
 
 /**

@@ -51,11 +51,14 @@ function generateImports(data: FrontendTemplateData): string {
     `import { ${names.pascalCase}Input, ${names.pascalCase}Interface } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";`,
   );
 
-  // Relationship interface imports (skip self-referential - already imported above)
+  // Relationship interface imports (deduplicated, skip self-referential)
+  const seenInterfaces = new Set<string>();
   relationships.forEach((rel) => {
     if (rel.name === names.pascalCase) {
       return; // Skip self-reference - interface already imported
     }
+    if (seenInterfaces.has(rel.interfaceName)) return;
+    seenInterfaces.add(rel.interfaceName);
     imports.push(`import { ${rel.interfaceName} } from "${rel.interfaceImportPath}";`);
   });
 
@@ -91,7 +94,7 @@ function generatePrivateFields(data: FrontendTemplateData): string {
   // Relationship private members
   if (!extendsContent) {
     relationships.forEach((rel) => {
-      const effectiveName = rel.variant || rel.name;
+      const effectiveName = rel.alias || rel.variant || rel.name;
       if (rel.single) {
         const propName = toCamelCase(effectiveName);
         // Use intersection type if relationship has fields
@@ -102,7 +105,8 @@ function generatePrivateFields(data: FrontendTemplateData): string {
         }
         lines.push(`  private _${propName}?: ${typeDecl};`);
       } else {
-        const propName = pluralize(toCamelCase(rel.name));
+        const effectiveMany = rel.alias || rel.name;
+        const propName = pluralize(toCamelCase(effectiveMany));
         // Use intersection type if relationship has fields (edge properties)
         if (rel.fields && rel.fields.length > 0) {
           const metaFields = rel.fields.map((f) => `${f.name}?: ${f.tsType}`).join("; ");
@@ -139,7 +143,7 @@ function generateGetters(data: FrontendTemplateData): string {
   // Relationship getters (only for non-Content extending)
   if (!extendsContent) {
     relationships.forEach((rel) => {
-      const effectiveName = rel.variant || rel.name;
+      const effectiveName = rel.alias || rel.variant || rel.name;
       if (rel.single) {
         const propName = toCamelCase(effectiveName);
 
@@ -161,7 +165,8 @@ function generateGetters(data: FrontendTemplateData): string {
   }`);
         }
       } else {
-        const propName = pluralize(toCamelCase(rel.name));
+        const effectiveMany = rel.alias || rel.name;
+        const propName = pluralize(toCamelCase(effectiveMany));
         // Use intersection type if relationship has fields (edge properties)
         if (rel.fields && rel.fields.length > 0) {
           const metaFields = rel.fields.map((f) => `${f.name}?: ${f.tsType}`).join("; ");
@@ -197,7 +202,7 @@ function generateRehydrateMethod(data: FrontendTemplateData): string {
     : fields;
 
   fieldsToInclude.forEach((field) => {
-    if (field.isContentField || field.name === "content") {
+    if (field.isContentField) {
       // Content fields need JSON parsing
       lines.push(
         `    this._${field.name} = data.jsonApi.attributes.${field.name} ? JSON.parse(data.jsonApi.attributes.${field.name}) : undefined;`,
@@ -215,17 +220,19 @@ function generateRehydrateMethod(data: FrontendTemplateData): string {
   if (!extendsContent && relationships.length > 0) {
     lines.push(``);
     relationships.forEach((rel) => {
-      const effectiveName = rel.variant || rel.name;
+      const effectiveName = rel.alias || rel.variant || rel.name;
       if (rel.single) {
         const propName = toCamelCase(effectiveName);
-        const relationshipKey = effectiveName.toLowerCase();
+        const relationshipKey = toCamelCase(effectiveName);
 
         // Use _readIncludedWithMeta for relationships with fields
         if (rel.fields && rel.fields.length > 0) {
           const metaType = `{ ${rel.fields.map((f) => `${f.name}?: ${f.tsType}`).join("; ")} }`;
-          const nullableCast = rel.nullable ? ` as (${rel.interfaceName} & ${metaType}) | undefined` : "";
+          const singleCast = rel.nullable
+            ? ` as (${rel.interfaceName} & ${metaType}) | undefined`
+            : ` as ${rel.interfaceName} & ${metaType}`;
           lines.push(
-            `    this._${propName} = this._readIncludedWithMeta<${rel.interfaceName}, ${metaType}>(data, "${relationshipKey}", Modules.${rel.name})${nullableCast};`,
+            `    this._${propName} = this._readIncludedWithMeta<${rel.interfaceName}, ${metaType}>(data, "${relationshipKey}", Modules.${rel.name})${singleCast};`,
           );
         } else {
           lines.push(
@@ -233,8 +240,9 @@ function generateRehydrateMethod(data: FrontendTemplateData): string {
           );
         }
       } else {
-        const propName = pluralize(toCamelCase(rel.name));
-        const relationshipKey = pluralize(rel.name.toLowerCase());
+        const effectiveMany = rel.alias || rel.name;
+        const propName = pluralize(toCamelCase(effectiveMany));
+        const relationshipKey = toCamelCase(effectiveMany);
 
         // Use _readIncludedWithMeta for relationships with fields (edge properties)
         if (rel.fields && rel.fields.length > 0) {
@@ -290,7 +298,7 @@ function generateCreateJsonApiMethod(data: FrontendTemplateData): string {
     : fields;
 
   fieldsToInclude.forEach((field) => {
-    if (field.isContentField || field.name === "content") {
+    if (field.isContentField) {
       lines.push(
         `    if (data.${field.name} !== undefined) response.data.attributes.${field.name} = JSON.stringify(data.${field.name});`,
       );
@@ -307,8 +315,8 @@ function generateCreateJsonApiMethod(data: FrontendTemplateData): string {
   if (relationshipsToSerialize.length > 0) {
     lines.push(``);
     relationshipsToSerialize.forEach((rel) => {
-      const effectiveName = rel.variant || rel.name;
-      const payloadKey = rel.single ? `${toCamelCase(effectiveName)}Id` : `${toCamelCase(rel.name)}Ids`;
+      const effectiveName = rel.alias || rel.variant || rel.name;
+      const payloadKey = rel.single ? `${toCamelCase(effectiveName)}Id` : `${toCamelCase(effectiveName)}Ids`;
       const relationshipKey = toCamelCase(effectiveName);
 
       if (rel.single) {
@@ -355,7 +363,7 @@ function generateCreateJsonApiMethod(data: FrontendTemplateData): string {
  * Get default value for a field type
  */
 function getDefaultValue(field: FrontendField): string {
-  if (field.isContentField || field.name === "content") {
+  if (field.isContentField) {
     return "[]";
   }
 

@@ -91,20 +91,22 @@ function generateAttributeElements(data: FrontendTemplateData): string {
   relationships
     .filter((rel) => rel.variant !== "Author") // Skip author, usually shown in title
     .forEach((rel) => {
+      const displayProp = rel.targetHasName ? "name" : "id";
       if (rel.single) {
-        const propName = toCamelCase(rel.variant || rel.name);
+        const propName = toCamelCase(rel.alias || rel.variant || rel.name);
         elements.push(`      {${names.camelCase}.${propName} && (
         <AttributeElement
           title={t(\`generic.relationships.${propName}.label\`)}
-          value={${names.camelCase}.${propName}.name}
+          value={${names.camelCase}.${propName}.${displayProp}}
         />
       )}`);
       } else {
-        const propName = pluralize(toCamelCase(rel.name));
+        const effectiveMany = rel.alias || rel.name;
+        const propName = pluralize(toCamelCase(effectiveMany));
         elements.push(`      {${names.camelCase}.${propName} && ${names.camelCase}.${propName}.length > 0 && (
         <AttributeElement
-          title={t(\`types.${pluralize(rel.name.toLowerCase())}\`, { count: 2 })}
-          value={${names.camelCase}.${propName}.map((item) => item.name).join(", ")}
+          title={t(\`entities.${pluralize(rel.name.toLowerCase())}\`, { count: 2 })}
+          value={${names.camelCase}.${propName}.map((item) => item.${displayProp}).join(", ")}
         />
       )}`);
       }

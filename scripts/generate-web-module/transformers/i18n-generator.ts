@@ -90,7 +90,7 @@ export function buildI18nMessages(i18nKeys: I18nKeySet): Record<string, any> {
         relationships: i18nKeys.relationships,
       },
     },
-    types: {
+    entities: {
       [pluralLowercaseKey]: i18nKeys.type.icuPlural,
     },
   };
@@ -136,7 +136,7 @@ export function getFieldErrorKey(moduleName: string, fieldName: string): string 
  * @returns Translation key path
  */
 export function getTypeKey(pluralKebab: string): string {
-  return `types.${pluralKebab}`;
+  return `entities.${pluralKebab}`;
 }
 
 /**

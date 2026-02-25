@@ -15,6 +15,7 @@ import {
   generateDetailsTemplate,
   generateEditorTemplate,
   generateFieldsTemplate,
+  generateAliasesTemplate,
   generateInterfaceTemplate,
   generateListContainerTemplate,
   generateListPageTemplate,
@@ -33,7 +34,7 @@ import { toCamelCase, transformNames } from "./transformers/name-transformer";
 import { detectExtendsContent } from "./transformers/parent-detector";
 import { generateServiceMethods, resolveRelationships } from "./transformers/relationship-resolver";
 import { FrontendTemplateData, GeneratedFile, GenerateWebModuleOptions, JsonModuleDefinition } from "./types";
-import { printResults, updateBootstrapper, updateI18n, writeFiles } from "./utils";
+import { formatFiles, printResults, updateBootstrapper, updateI18n, writeFiles } from "./utils";
 import { parseAndValidate, validationPassed } from "./validators/json-schema-validator";
 
 /**
@@ -78,6 +79,10 @@ export async function generateWebModule(options: GenerateWebModuleOptions): Prom
   }
   console.info(`   Web base path: ${webBasePath}`);
 
+  // Build target hasName map from all structure files for cross-module awareness
+  const structureDir = path.dirname(jsonPath);
+  const targetHasNameMap = buildTargetHasNameMap(structureDir);
+
   for (let i = 0; i < total; i++) {
     const schema = schemas[i];
     console.info(`\n📦 Processing module ${i + 1}/${total}: ${schema.moduleName}`);
@@ -85,7 +90,7 @@ export async function generateWebModule(options: GenerateWebModuleOptions): Prom
 
     // Step 2: Build template data
     console.info("🔨 Building template data...");
-    const templateData = buildTemplateData(schema);
+    const templateData = buildTemplateData(schema, targetHasNameMap);
     console.info(`   Module: ${templateData.names.pascalCase}`);
     console.info(`   Target: ${templateData.targetDir}`);
     console.info(`   Extends Content: ${templateData.extendsContent}`);
@@ -101,6 +106,12 @@ export async function generateWebModule(options: GenerateWebModuleOptions): Prom
     console.info("\n💾 Writing files...");
     const results = writeFiles(files, { dryRun, force });
     printResults(results);
+
+    // Step 5b: Format files with Prettier
+    if (!dryRun) {
+      const writtenPaths = results.filter((r) => r.status === "created" || r.status === "updated").map((r) => r.path);
+      formatFiles(writtenPaths);
+    }
 
     // Step 6: Update Bootstrapper (unless --no-register)
     if (!noRegister) {
@@ -135,9 +146,36 @@ export async function generateWebModule(options: GenerateWebModuleOptions): Prom
 }
 
 /**
+ * Build a map of moduleName → hasNameField by scanning all structure files.
+ * Foundation entities (User, Company, etc.) always have name, so default to true for unknowns.
+ */
+function buildTargetHasNameMap(structureDir: string): Map<string, boolean> {
+  const map = new Map<string, boolean>();
+
+  if (!fs.existsSync(structureDir)) return map;
+
+  const files = fs.readdirSync(structureDir).filter((f) => f.endsWith(".json"));
+  for (const file of files) {
+    try {
+      const content = fs.readFileSync(path.join(structureDir, file), "utf-8");
+      const schemas: JsonModuleDefinition[] = JSON.parse(content);
+      for (const schema of schemas) {
+        const hasName =
+          schema.extendsContent === true || schema.fields.some((f) => f.name === "name");
+        map.set(schema.moduleName, hasName);
+      }
+    } catch {
+      // Skip invalid files
+    }
+  }
+
+  return map;
+}
+
+/**
  * Build template data from JSON schema
  */
-function buildTemplateData(schema: JsonModuleDefinition): FrontendTemplateData {
+function buildTemplateData(schema: JsonModuleDefinition, targetHasNameMap?: Map<string, boolean>): FrontendTemplateData {
   const names = transformNames(schema.moduleName, schema.endpointName);
   // Keep original targetDir for file path generation (buildFilePaths handles stripping)
   const targetDir = schema.targetDir;
@@ -154,8 +192,25 @@ function buildTemplateData(schema: JsonModuleDefinition): FrontendTemplateData {
   const fields = filterInheritedFields(allFields, inheritedFields);
 
   // Resolve relationships
-  const relationships = resolveRelationships(schema.relationships);
-  const relationshipServiceMethods = generateServiceMethods(relationships);
+  const relationships = resolveRelationships(schema.relationships, targetHasNameMap);
+
+  // Determine which aliases conflict (multiple aliases targeting the same entity)
+  const entityAliasNames = new Map<string, string[]>();
+  for (const rel of relationships) {
+    if (rel.alias) {
+      const key = rel.name;
+      if (!entityAliasNames.has(key)) entityAliasNames.set(key, []);
+      entityAliasNames.get(key)!.push(rel.alias);
+    }
+  }
+  const conflictingAliases = new Set<string>();
+  for (const aliases of entityAliasNames.values()) {
+    if (aliases.length > 1) {
+      for (const alias of aliases) conflictingAliases.add(alias);
+    }
+  }
+
+  const relationshipServiceMethods = generateServiceMethods(relationships, conflictingAliases);
 
   // Build imports
   const imports = buildImportStatements(relationships, extendsContent);
@@ -240,6 +295,16 @@ function generateAllFiles(data: FrontendTemplateData, schema: JsonModuleDefiniti
     content: generateFieldsTemplate(data),
     type: "data",
   });
+
+  // Aliases file (only when module has aliased relationships)
+  const aliasesContent = generateAliasesTemplate(data);
+  if (aliasesContent) {
+    files.push({
+      path: paths.aliases,
+      content: aliasesContent,
+      type: "data",
+    });
+  }
 
   // Form components (4 files)
   files.push({

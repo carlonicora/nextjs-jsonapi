@@ -10,6 +10,7 @@ export {
   generateModelTemplate,
   generateServiceTemplate,
   generateFieldsTemplate,
+  generateAliasesTemplate,
 } from "./data";
 
 // Component templates
