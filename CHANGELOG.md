@@ -1,3 +1,9 @@
+## [1.53.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.53.0...v1.53.1) (2026-03-02)
+
+### 🐛 Bug Fixes
+
+* correct module generation ([348f479](https://github.com/carlonicora/nextjs-jsonapi/commit/348f4794b911c417f89d91540abd94f45f579944))
+
 ## [1.53.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.52.0...v1.53.0) (2026-03-02)
 
 ### 🚀 Features
