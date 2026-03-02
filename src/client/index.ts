@@ -27,6 +27,10 @@ export * from "../features/user/hooks";
 export * from "../features/oauth/hooks";
 export * from "../features/company/hooks/useSubscriptionStatus";
 
+// RBAC hooks and utils
+export { useRbacState } from "../features/rbac/hooks/useRbacState";
+export { generateMigrationFile, downloadMigrationFile } from "../features/rbac/utils/RbacMigrationGenerator";
+
 registerTableGenerator("roles", useRoleTableStructure);
 registerTableGenerator("users", useUserTableStructure);
 registerTableGenerator("companies", useCompanyTableStructure);

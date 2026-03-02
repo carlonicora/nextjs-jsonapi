@@ -48,6 +48,9 @@ export interface FoundationModuleDefinitions {
   TwoFactorChallenge: ModuleWithPermissions;
   TwoFactorStatus: ModuleWithPermissions;
   BackupCodeVerify: ModuleWithPermissions;
+  // RBAC modules
+  PermissionMapping: ModuleWithPermissions;
+  ModulePaths: ModuleWithPermissions;
 }
 
 // App-specific modules - apps will augment this interface ONLY

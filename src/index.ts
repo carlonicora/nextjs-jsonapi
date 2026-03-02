@@ -42,3 +42,7 @@ export type { ReferralConfig } from "./features/referral/config";
 
 // Toast utilities
 export { showToast, showError, dismissToast, showCustomToast, type ToastOptions } from "./utils/toast";
+
+// RBAC feature (data + modules only; components via /components, hooks via /client)
+export * from "./features/rbac/data";
+export * from "./features/rbac/rbac.module";
