@@ -8,7 +8,7 @@ import { PanelRightCloseIcon, PanelRightOpenIcon } from "lucide-react";
 import { ReactNode } from "react";
 
 type RoundPageContainerTitleProps = {
-  module: ModuleWithPermissions;
+  module?: ModuleWithPermissions;
   details?: ReactNode;
   showDetails: boolean;
   setShowDetails: (show: boolean) => void;

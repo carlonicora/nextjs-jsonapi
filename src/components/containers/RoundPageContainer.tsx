@@ -10,7 +10,7 @@ import { ModuleWithPermissions } from "@/permissions";
 import { ReactNode, useState } from "react";
 
 type RoundPageContainerProps = {
-  module: ModuleWithPermissions;
+  module?: ModuleWithPermissions;
   details?: ReactNode;
   tabs?: Tab[];
   children?: ReactNode;
