@@ -14,9 +14,10 @@ type RoundPageContainerProps = {
   details?: ReactNode;
   tabs?: Tab[];
   children?: ReactNode;
+  fullWidth?: boolean;
 };
 
-export function RoundPageContainer({ module, details, tabs, children }: RoundPageContainerProps) {
+export function RoundPageContainer({ module, details, tabs, children, fullWidth }: RoundPageContainerProps) {
   const headerChildren = useHeaderChildren();
   const [showDetails, setShowDetails] = useState(false);
 
@@ -55,8 +56,10 @@ export function RoundPageContainer({ module, details, tabs, children }: RoundPag
               ) : (
                 <>
                   {children && (
-                    <div className="grow overflow-y-auto p-4">
-                      <div className="mx-auto max-w-6xl space-y-12 p-8">{children}</div>
+                    <div className={cn(`grow overflow-y-auto p-4`, fullWidth && `p-0`)}>
+                      <div className={cn(`mx-auto max-w-6xl space-y-12 p-8`, fullWidth && `max-w-full w-full p-0`)}>
+                        {children}
+                      </div>
                     </div>
                   )}
                 </>
