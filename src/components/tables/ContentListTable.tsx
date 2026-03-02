@@ -3,6 +3,7 @@ import "../../client";
 
 import { ExpandedState, flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from "@tanstack/react-table";
 
+import { cn } from "@/index";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ReactNode, memo, useMemo, useState } from "react";
 import { DataListRetriever, useTableGenerator } from "../../hooks";
@@ -33,10 +34,11 @@ type ContentListTableProps = {
   expandable?: boolean;
   getSubRows?: (row: any) => any[];
   defaultExpanded?: boolean | ExpandedState;
+  fullWidth?: boolean;
 };
 
 export const ContentListTable = memo(function ContentListTable(props: ContentListTableProps) {
-  const { data, fields, checkedIds, toggleId, allowSearch, filters: _filters } = props;
+  const { data, fields, checkedIds, toggleId, allowSearch, filters: _filters, fullWidth } = props;
   const [expanded, setExpanded] = useState<ExpandedState>(
     props.defaultExpanded === true ? true : typeof props.defaultExpanded === "object" ? props.defaultExpanded : {},
   );
@@ -86,14 +88,15 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
 
   return (
     <div className="flex w-full flex-col">
-      <div className="overflow-clip rounded-md border">
+      {/* <div className="overflow-clip rounded-md border"> */}
+      <div className={cn(`overflow-clip`, fullWidth ? `` : `rounded-md border`)}>
         <Table>
           <TableHeader className="bg-muted font-semibold">
             {props.title && (
               <TableRow>
                 <TableHead className="bg-card text-primary p-4 text-left font-bold" colSpan={tableColumns.length}>
                   <div className="flex w-full items-center justify-between gap-x-2">
-                    <div className="w-full">{props.title}</div>
+                    <div className="w-full">{fullWidth ? `` : props.title}</div>
                     {(props.functions || props.filters || allowSearch) && (
                       <>
                         {props.functions}
