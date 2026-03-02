@@ -1,3 +1,13 @@
+## [1.53.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.52.0...v1.53.0) (2026-03-02)
+
+### 🚀 Features
+
+* add rbac generator ([379fe69](https://github.com/carlonicora/nextjs-jsonapi/commit/379fe698ad62dfc960e4901484b98f57f011515d))
+
+### 🐛 Bug Fixes
+
+* correct container ([814439c](https://github.com/carlonicora/nextjs-jsonapi/commit/814439c17f9b57d7a9f6fb2fb3cc691a36ef93ec))
+
 ## [1.52.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.51.0...v1.52.0) (2026-02-25)
 
 ### 🚀 Features
