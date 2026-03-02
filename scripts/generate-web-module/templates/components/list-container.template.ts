@@ -18,9 +18,15 @@ export function generateListContainerTemplate(data: FrontendTemplateData): strin
   return `"use client";
 
 import ${names.pascalCase}List from "@/features/${data.importTargetDir}/${names.kebabCase}/components/lists/${names.pascalCase}List";
+import { RoundPageContainer } from "@carlonicora/nextjs-jsonapi/components";
+import { Modules } from "@carlonicora/nextjs-jsonapi/core";
 
 function ${names.pascalCase}ListContainerInternal() {
-  return <${names.pascalCase}List />;
+  return (
+    <RoundPageContainer module={Modules.${names.pascalCase}}>
+      <${names.pascalCase}List />
+    </RoundPageContainer>
+  );
 }
 
 export default function ${names.pascalCase}ListContainer() {

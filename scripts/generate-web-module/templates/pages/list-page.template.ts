@@ -17,7 +17,6 @@ export function generateListPageTemplate(data: FrontendTemplateData): string {
 
   return `import ${names.pascalCase}ListContainer from "@/features/${data.importTargetDir}/${names.kebabCase}/components/containers/${names.pascalCase}ListContainer";
 import { ${names.pascalCase}Provider } from "@/features/${data.importTargetDir}/${names.kebabCase}/contexts/${names.pascalCase}Context";
-import { RoundPageContainer } from "@carlonicora/nextjs-jsonapi/components";
 import { Modules } from "@carlonicora/nextjs-jsonapi/core";
 import { Action } from "@carlonicora/nextjs-jsonapi/core";
 import { ServerSession } from "@carlonicora/nextjs-jsonapi/server";
@@ -27,9 +26,7 @@ export default async function ${names.pluralPascal}ListPage() {
 
   return (
     <${names.pascalCase}Provider>
-      <RoundPageContainer module={Modules.${names.pascalCase}}>
-        <${names.pascalCase}ListContainer />
-      </RoundPageContainer>
+      <${names.pascalCase}ListContainer />
     </${names.pascalCase}Provider>
   );
 }

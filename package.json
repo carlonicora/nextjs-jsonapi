@@ -56,7 +56,7 @@
   },
   "scripts": {
     "build": "NODE_OPTIONS='--max-old-space-size=8192' tsup && tsc -p scripts/generate-web-module/tsconfig.json",
-    "dev": "NODE_OPTIONS='--max-old-space-size=8192' tsup --watch --no-dts",
+    "dev": "NODE_OPTIONS='--max-old-space-size=8192' tsup --watch",
     "clean": "rm -rf dist",
     "lint": "eslint \"src/**/*.ts\" \"src/**/*.tsx\" --fix",
     "format": "prettier --write \"src/**/*.ts\"",

@@ -15,7 +15,8 @@ import { FrontendTemplateData } from "../../types/template-data.interface";
 export function generateMultiSelectorTemplate(data: FrontendTemplateData): string {
   const { names, fields, extendsContent } = data;
   const hasNameField = extendsContent || fields.some((f) => f.name === "name");
-  const displayProp = hasNameField ? "name" : "id";
+  const firstStringField = fields.find((f) => f.tsType === "string" || f.tsType === "string | null");
+  const displayProp = hasNameField ? "name" : (firstStringField?.name ?? "id");
 
   return `"use client";
 
@@ -26,11 +27,12 @@ import { FormFieldWrapper, MultipleSelector } from "@carlonicora/nextjs-jsonapi/
 import { Option } from "@carlonicora/nextjs-jsonapi/components";
 import { Modules } from "@carlonicora/nextjs-jsonapi/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { useWatch } from "react-hook-form";
 
 type ${names.pascalCase}MultiSelectType = {
   id: string;
-  name: string;
+  ${displayProp}: string;
 };
 
 type ${names.pascalCase}MultiSelectorProps = {
@@ -58,6 +60,7 @@ export default function ${names.pascalCase}MultiSelector({
   maxCount = 3,
   isRequired = false,
 }: ${names.pascalCase}MultiSelectorProps) {
+  const t = useTranslations();
   const [${names.camelCase}Options, set${names.pascalCase}Options] = useState<${names.pascalCase}Option[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
@@ -124,7 +127,7 @@ export default function ${names.pascalCase}MultiSelector({
     // Convert to form format
     const formValues = options.map((option) => ({
       id: option.value,
-      name: option.label,
+      ${displayProp}: option.label,
     }));
 
     form.setValue(id, formValues, { shouldDirty: true, shouldTouch: true });
@@ -160,7 +163,7 @@ export default function ${names.pascalCase}MultiSelector({
             hideClearAllButton
             onSearchSync={handleSearchSync}
             delay={0}
-            emptyIndicator={<span className="text-muted-foreground">No results found</span>}
+            emptyIndicator={<span className="text-muted-foreground">{t("ui.search.no_results_generic")}</span>}
           />
         )}
       </FormFieldWrapper>
