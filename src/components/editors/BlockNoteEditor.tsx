@@ -97,6 +97,21 @@ export default function BlockNoteEditor({
 
   const editorRef = useRef<HTMLDivElement>(null);
 
+  // Ensure side menu buttons don't trigger form submission
+  useEffect(() => {
+    if (!editorRef.current) return;
+    const setButtonTypes = () => {
+      editorRef.current?.querySelectorAll(".bn-side-menu button").forEach((btn) => {
+        if (!btn.getAttribute("type")) {
+          btn.setAttribute("type", "button");
+        }
+      });
+    };
+    const observer = new MutationObserver(setButtonTypes);
+    observer.observe(editorRef.current, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, []);
+
   const handleAcceptChange = useCallback((diffId: string) => {
     setAcceptedChanges((prev) => new Set([...prev, diffId]));
     setRejectedChanges((prev) => {
@@ -390,7 +405,14 @@ export default function BlockNoteEditor({
   );
 
   return (
-    <div ref={editorRef} className={cn(bordered ? "rounded-md border" : "", "flex flex-col w-full", className)}>
+    <div
+      ref={editorRef}
+      className={cn(
+        bordered ? "rounded-md border border-input bg-input/20 dark:bg-input/30" : "",
+        "flex flex-col w-full",
+        className,
+      )}
+    >
       <BlockNoteView
         editor={editor}
         onChange={handleChange}

@@ -199,7 +199,7 @@ function generateImports(data: FrontendTemplateData): string {
   // Check for field types that need specific components
   const hasContentField = fields.some((f) => f.isContentField || f.name === "content");
   if (hasContentField) {
-    componentImports.push("BlockNoteEditorContainer");
+    componentImports.push("FormBlockNote");
   }
 
   const hasStringFields = fields.some((f) => f.formComponent === "FormInput" || f.formComponent === "FormInputNumber");
@@ -540,15 +540,12 @@ function generateFormFields(data: FrontendTemplateData): string {
 
   fieldsToInclude.forEach((field) => {
     if (field.isContentField) {
-      formElements.push(`              <BlockNoteEditorContainer
-                id={form.getValues("id")}
-                type="${names.camelCase}"
-                initialContent={form.getValues("${field.name}")}
-                onChange={(content, isEmpty, hasUnresolvedDiff) => {
-                  form.setValue("${field.name}", content);
-                }}
+      formElements.push(`              <FormBlockNote
+                form={form}
+                id="${field.name}"
+                name={t(\`features.${names.camelCase.toLowerCase()}.fields.${field.name}.label\`)}
                 placeholder={t(\`features.${names.camelCase.toLowerCase()}.fields.${field.name}.placeholder\`)}
-                bordered
+                type="${names.camelCase}"
               />`);
     } else if (field.name === "description" || field.type === "textarea") {
       // Use FormTextarea for description and textarea fields
