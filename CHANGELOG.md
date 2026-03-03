@@ -1,3 +1,9 @@
+## [1.56.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.56.0...v1.56.1) (2026-03-03)
+
+### 🐛 Bug Fixes
+
+* **RoundPageContainer:** update tab handling to use activeTab state and improve key assignment ([75e5d46](https://github.com/carlonicora/nextjs-jsonapi/commit/75e5d4668678af2ff56ac33d980672f5dd7426d1))
+
 ## [1.56.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.55.2...v1.56.0) (2026-03-03)
 
 ### 🚀 Features
