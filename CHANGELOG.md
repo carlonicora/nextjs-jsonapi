@@ -1,3 +1,9 @@
+## [1.56.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.55.2...v1.56.0) (2026-03-03)
+
+### 🚀 Features
+
+* **FormSelect:** add allowEmpty prop for clearable select fields ([fbfd37b](https://github.com/carlonicora/nextjs-jsonapi/commit/fbfd37bbce10a4b8dffdd0033ecf07e3e95285b7))
+
 ## [1.55.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.55.1...v1.55.2) (2026-03-03)
 
 ### 🐛 Bug Fixes
