@@ -1,3 +1,9 @@
+## [1.55.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.55.0...v1.55.1) (2026-03-03)
+
+### 🐛 Bug Fixes
+
+* adjust title styling in AttributeElement for consistency ([f70f1d2](https://github.com/carlonicora/nextjs-jsonapi/commit/f70f1d2a9b9b3332e08ec96864066b6f0becf9ff))
+
 ## [1.55.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.54.1...v1.55.0) (2026-03-03)
 
 ### 🚀 Features
