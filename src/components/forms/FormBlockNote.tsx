@@ -13,6 +13,7 @@ export function FormBlockNote({
   isRequired = false,
   description,
   testId,
+  onEmptyChange,
 }: {
   form: any;
   id: string;
@@ -22,6 +23,7 @@ export function FormBlockNote({
   isRequired?: boolean;
   description?: string;
   testId?: string;
+  onEmptyChange?: (isEmpty: boolean) => void;
 }) {
   return (
     <div className="flex w-full flex-col">
@@ -38,8 +40,9 @@ export function FormBlockNote({
             id={form.getValues("id")}
             type={type}
             initialContent={field.value}
-            onChange={(content) => {
+            onChange={(content, isEmpty) => {
               field.onChange(content);
+              onEmptyChange?.(isEmpty);
             }}
             placeholder={placeholder}
             bordered
