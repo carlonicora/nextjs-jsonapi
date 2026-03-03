@@ -1,3 +1,11 @@
+## [1.54.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.53.1...v1.54.0) (2026-03-03)
+
+### 🚀 Features
+
+* add FormBlockNote ([86dfca3](https://github.com/carlonicora/nextjs-jsonapi/commit/86dfca31916f97ec9022b392f00822ff95526fe5))
+* add fullwidth option to round page container ([8b2209a](https://github.com/carlonicora/nextjs-jsonapi/commit/8b2209ae1062fff99227e892115c3d6a21402b8e))
+* add fullwith to hide title and borders  in content list table ([08a30ad](https://github.com/carlonicora/nextjs-jsonapi/commit/08a30ad480c160fabb8ee8fa24c342e6a5443867))
+
 ## [1.53.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.53.0...v1.53.1) (2026-03-02)
 
 ### 🐛 Bug Fixes
