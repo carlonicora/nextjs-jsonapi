@@ -13,7 +13,9 @@ type AttributeElementProps = {
 export function AttributeElement({ inline, title, value, className }: AttributeElementProps) {
   return (
     <div className={cn(`flex ${inline === true ? "flex-row" : "flex-col"} my-1 justify-start`, className)}>
-      {title && <div className={`${inline === true ? "min-w-48 pr-4" : "w-full"} text-sm font-semibold`}>{title}</div>}
+      {title && (
+        <div className={`${inline === true ? "min-w-48 pr-4" : "w-full"} text-xs text-muted-foreground`}>{title}</div>
+      )}
       {value && <div className="flex w-full flex-col text-sm">{value}</div>}
     </div>
   );
