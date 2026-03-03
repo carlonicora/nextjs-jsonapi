@@ -29,7 +29,12 @@ export function RoundPageContainer({ module, id, details, tabs, children, fullWi
 
   const rewriteUrl = useUrlRewriter();
 
-  const defaultValue = tabs ? (section && tabs.find((i) => i.key?.name === section)?.key) || tabs[0].key : undefined;
+  const initialValue = tabs
+    ? (section && tabs.find((i) => (i.key?.name ?? i.label) === section) ? section : null) ||
+      (tabs[0].key?.name ?? tabs[0].label)
+    : undefined;
+
+  const [activeTab, setActiveTab] = useState(initialValue);
 
   return (
     <>
@@ -48,16 +53,17 @@ export function RoundPageContainer({ module, id, details, tabs, children, fullWi
                 <div className={cn(`mx-auto max-w-6xl space-y-12 p-8`, fullWidth && `max-w-full w-full p-0`)}>
                   {tabs ? (
                     <Tabs
-                      defaultValue={defaultValue}
+                      value={activeTab}
                       className="w-full"
-                      onValueChange={(key) =>
-                        module && id && rewriteUrl({ page: module, id: id, additionalParameters: { section: key } })
-                      }
+                      onValueChange={(key) => {
+                        setActiveTab(key);
+                        if (module && id) rewriteUrl({ page: module, id: id, additionalParameters: { section: key } });
+                      }}
                     >
                       <div className="p-4">
                         <TabsList className={``}>
                           {tabs.map((tab) => (
-                            <TabsTrigger key={tab.label} value={tab.label} className={`px-4`}>
+                            <TabsTrigger key={tab.label} value={tab.key?.name ?? tab.label} className={`px-4`}>
                               {tab.contentLabel ?? tab.label}
                             </TabsTrigger>
                           ))}
@@ -65,7 +71,7 @@ export function RoundPageContainer({ module, id, details, tabs, children, fullWi
                       </div>
                       <div className="flex w-full overflow-y-auto px-4">
                         {tabs.map((tab) => (
-                          <TabsContent key={tab.label} value={tab.label} className={`pb-20`}>
+                          <TabsContent key={tab.label} value={tab.key?.name ?? tab.label} className={`pb-20`}>
                             {tab.content}
                           </TabsContent>
                         ))}
