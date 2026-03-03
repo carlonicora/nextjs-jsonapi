@@ -7,6 +7,7 @@ import { ScrollArea, Tabs, TabsContent, TabsList, TabsTrigger } from "../../shad
 import { cn } from "../../utils";
 
 export type Tab = {
+  key?: ModuleWithPermissions;
   label: string;
   contentLabel?: React.ReactNode;
   content: React.ReactNode;
