@@ -95,23 +95,21 @@ export function UserSelector({ id, form, label, placeholder, onChange, isRequire
               <PopoverTrigger className="w-full">
                 <div className="flex w-full flex-row items-center justify-start rounded-md">
                   {field.value ? (
-                    <>
-                      <div className="flex w-full flex-row items-center justify-start rounded-md border p-2">
-                        <div className="*:ring-border *:ring-1">
-                          <Avatar className={`mr-2 h-6 w-6`}>
-                            <AvatarImage src={field.value?.avatar} />
-                            <AvatarFallback>
-                              {field.value?.name
-                                ? field.value?.name.split(" ").map((name: string) => name.charAt(0).toUpperCase())
-                                : "X"}
-                            </AvatarFallback>
-                          </Avatar>
-                        </div>
-                        <span className="">{field.value?.name ?? ""}</span>
+                    <div className="bg-input/20 dark:bg-input/30 border-input flex h-7 w-full flex-row items-center justify-start rounded-md border px-2 py-0.5 text-sm md:text-xs/relaxed">
+                      <div className="*:ring-border *:ring-1">
+                        <Avatar className={`mr-2 h-4 w-4`}>
+                          <AvatarImage src={field.value?.avatar} />
+                          <AvatarFallback>
+                            {field.value?.name
+                              ? field.value?.name.split(" ").map((name: string) => name.charAt(0).toUpperCase())
+                              : "X"}
+                          </AvatarFallback>
+                        </Avatar>
                       </div>
-                    </>
+                      <span>{field.value?.name ?? ""}</span>
+                    </div>
                   ) : (
-                    <div className="text-muted-foreground mr-7 flex h-10 w-full flex-row items-center justify-start rounded-md border p-2 text-sm">
+                    <div className="bg-input/20 dark:bg-input/30 border-input text-muted-foreground flex h-7 w-full flex-row items-center justify-start rounded-md border px-2 py-0.5 text-sm md:text-xs/relaxed">
                       {placeholder ?? t(`ui.search.placeholder`, { type: t(`entities.users`, { count: 1 }) })}
                     </div>
                   )}
@@ -119,12 +117,12 @@ export function UserSelector({ id, form, label, placeholder, onChange, isRequire
               </PopoverTrigger>
               {field.value && (
                 <CircleX
-                  className="text-muted hover:text-destructive ml-2 h-6 w-6 cursor-pointer"
+                  className="text-muted hover:text-destructive ml-2 h-4 w-4 shrink-0 cursor-pointer"
                   onClick={() => setUser()}
                 />
               )}
             </div>
-            <PopoverContent>
+            <PopoverContent align="start" className="w-(--anchor-width)">
               <Command shouldFilter={false}>
                 <div className="relative mb-2 w-full">
                   <SearchIcon className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
