@@ -1,3 +1,9 @@
+## [1.54.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.54.0...v1.54.1) (2026-03-03)
+
+### 🐛 Bug Fixes
+
+* add onEmptyChange callback to FormBlockNote for handling empty state ([63a77e6](https://github.com/carlonicora/nextjs-jsonapi/commit/63a77e62df83d2709251e136812a4bb38b3ec305))
+
 ## [1.54.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.53.1...v1.54.0) (2026-03-03)
 
 ### 🚀 Features
