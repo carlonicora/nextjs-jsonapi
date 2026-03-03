@@ -1,3 +1,11 @@
+## [1.55.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.54.1...v1.55.0) (2026-03-03)
+
+### 🚀 Features
+
+* add optional key property to Tab type for enhanced flexibility ([beb8c3a](https://github.com/carlonicora/nextjs-jsonapi/commit/beb8c3a0623f3b090fd6c6d1ce477b32e7858bcd))
+* enhance RoundPageContainer with URL rewriting and default tab selection ([ebc795d](https://github.com/carlonicora/nextjs-jsonapi/commit/ebc795dcfe03ce661b55ec73c73cb08b0818f637))
+* include additionalParameters in useUrlRewriter for improved URL generation ([b0874ad](https://github.com/carlonicora/nextjs-jsonapi/commit/b0874adea978f28c8e354a02a3f1b72858d61175))
+
 ## [1.54.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.54.0...v1.54.1) (2026-03-03)
 
 ### 🐛 Bug Fixes
