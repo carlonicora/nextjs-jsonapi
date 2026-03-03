@@ -5,21 +5,31 @@ import { Tab } from "@/components/containers";
 import { RoundPageContainerTitle } from "@/components/containers/RoundPageContainerTitle";
 import { Header } from "@/components/navigations";
 import { useHeaderChildren } from "@/contexts";
+import { useUrlRewriter } from "@/hooks";
 import { cn } from "@/index";
 import { ModuleWithPermissions } from "@/permissions";
+import { useSearchParams } from "next/navigation";
 import { ReactNode, useState } from "react";
 
 type RoundPageContainerProps = {
   module?: ModuleWithPermissions;
+  id?: string;
   details?: ReactNode;
   tabs?: Tab[];
   children?: ReactNode;
   fullWidth?: boolean;
 };
 
-export function RoundPageContainer({ module, details, tabs, children, fullWidth }: RoundPageContainerProps) {
+export function RoundPageContainer({ module, id, details, tabs, children, fullWidth }: RoundPageContainerProps) {
   const headerChildren = useHeaderChildren();
   const [showDetails, setShowDetails] = useState(false);
+
+  const searchParams = useSearchParams();
+  const section = searchParams.get("section");
+
+  const rewriteUrl = useUrlRewriter();
+
+  const defaultValue = tabs ? (section && tabs.find((i) => i.key?.name === section)?.key) || tabs[0].key : undefined;
 
   return (
     <>
@@ -34,36 +44,38 @@ export function RoundPageContainer({ module, details, tabs, children, fullWidth 
               setShowDetails={setShowDetails}
             />
             <div className="flex h-full w-full overflow-hidden">
-              {tabs ? (
-                <Tabs defaultValue={tabs[0].label} className="w-full">
-                  <div className="p-4">
-                    <TabsList className={``}>
-                      {tabs.map((tab) => (
-                        <TabsTrigger key={tab.label} value={tab.label} className={`px-4`}>
-                          {tab.contentLabel ?? tab.label}
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
-                  </div>
-                  <div className="flex w-full overflow-y-auto px-4">
-                    {tabs.map((tab) => (
-                      <TabsContent key={tab.label} value={tab.label} className={`pb-20`}>
-                        {tab.content}
-                      </TabsContent>
-                    ))}
-                  </div>
-                </Tabs>
-              ) : (
-                <>
-                  {children && (
-                    <div className={cn(`grow overflow-y-auto p-4`, fullWidth && `p-0`)}>
-                      <div className={cn(`mx-auto max-w-6xl space-y-12 p-8`, fullWidth && `max-w-full w-full p-0`)}>
-                        {children}
+              <div className={cn(`grow overflow-y-auto p-4`, fullWidth && `p-0`)}>
+                <div className={cn(`mx-auto max-w-6xl space-y-12 p-8`, fullWidth && `max-w-full w-full p-0`)}>
+                  {tabs ? (
+                    <Tabs
+                      defaultValue={defaultValue}
+                      className="w-full"
+                      onValueChange={(key) =>
+                        module && id && rewriteUrl({ page: module, id: id, additionalParameters: { section: key } })
+                      }
+                    >
+                      <div className="p-4">
+                        <TabsList className={``}>
+                          {tabs.map((tab) => (
+                            <TabsTrigger key={tab.label} value={tab.label} className={`px-4`}>
+                              {tab.contentLabel ?? tab.label}
+                            </TabsTrigger>
+                          ))}
+                        </TabsList>
                       </div>
-                    </div>
+                      <div className="flex w-full overflow-y-auto px-4">
+                        {tabs.map((tab) => (
+                          <TabsContent key={tab.label} value={tab.label} className={`pb-20`}>
+                            {tab.content}
+                          </TabsContent>
+                        ))}
+                      </div>
+                    </Tabs>
+                  ) : (
+                    children
                   )}
-                </>
-              )}
+                </div>
+              </div>
               {details && (
                 <div
                   className={cn(
