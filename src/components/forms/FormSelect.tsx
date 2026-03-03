@@ -3,16 +3,19 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../shadcnui";
 import { FormFieldWrapper } from "./FormFieldWrapper";
 
+const EMPTY_VALUE = "__empty__";
+
 export function FormSelect({
   form,
   id,
   name,
-  placeholder: _placeholder,
+  placeholder,
   disabled,
   values,
   onChange,
   useRows,
   testId,
+  allowEmpty,
 }: {
   form: any;
   id: string;
@@ -23,6 +26,7 @@ export function FormSelect({
   onChange?: (value: string) => void;
   useRows?: boolean;
   testId?: string;
+  allowEmpty?: boolean;
 }) {
   return (
     <div className="flex w-full flex-col">
@@ -36,17 +40,25 @@ export function FormSelect({
         {(field) => (
           <Select
             onValueChange={(e) => {
-              field.onChange(e);
-              if (onChange) onChange(e);
+              const actual = e === EMPTY_VALUE ? "" : e;
+              field.onChange(actual);
+              if (onChange) onChange(actual);
             }}
-            value={field.value}
+            value={field.value || (allowEmpty ? EMPTY_VALUE : field.value)}
             disabled={disabled}
             data-testid={testId}
           >
             <SelectTrigger className="w-full">
-              <SelectValue>{values.find((v) => v.id === field.value)?.text}</SelectValue>
+              <SelectValue>
+                {field.value ? values.find((v) => v.id === field.value)?.text : (placeholder ?? "")}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
+              {allowEmpty && (
+                <SelectItem value={EMPTY_VALUE} className="text-muted-foreground">
+                  {placeholder ?? ""}
+                </SelectItem>
+              )}
               {values.map((type: { id: string; text: string }) => (
                 <SelectItem key={type.id} value={type.id}>
                   {type.text}
