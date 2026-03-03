@@ -1,3 +1,9 @@
+## [1.55.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.55.1...v1.55.2) (2026-03-03)
+
+### 🐛 Bug Fixes
+
+* match UserSelector trigger styling to Input component and use anchor-width for popover ([aec9692](https://github.com/carlonicora/nextjs-jsonapi/commit/aec9692dd7cda0cf957ab6eaaa4107c0661fd035))
+
 ## [1.55.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.55.0...v1.55.1) (2026-03-03)
 
 ### 🐛 Bug Fixes
