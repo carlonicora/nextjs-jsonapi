@@ -15,6 +15,7 @@ export function useUrlRewriter() {
       id?: string;
       childPage?: ModuleWithPermissions | string;
       childId?: string;
+      additionalParameters?: { [key: string]: string | string[] | undefined };
     }): void => {
       window.history.replaceState(
         null,
@@ -25,6 +26,7 @@ export function useUrlRewriter() {
           childPage: params.childPage,
           childId: params.childId,
           language: locale,
+          additionalParameters: params.additionalParameters,
         }),
       );
     },
