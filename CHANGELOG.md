@@ -1,3 +1,9 @@
+## [1.56.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.56.1...v1.56.2) (2026-03-06)
+
+### 🐛 Bug Fixes
+
+* **FormPlaceAutocomplete:** remove overly restrictive includedPrimaryTypes default ([b093d01](https://github.com/carlonicora/nextjs-jsonapi/commit/b093d01db9750f6b2afdc09eb735abea996eff76))
+
 ## [1.56.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.56.0...v1.56.1) (2026-03-03)
 
 ### 🐛 Bug Fixes
