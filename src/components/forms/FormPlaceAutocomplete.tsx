@@ -38,7 +38,8 @@ interface PlaceAutocompleteProps {
   className?: string;
   /**
    * Optional array of place types to include in search results.
-   * When not specified, defaults to address types: ["street_address", "premise", "subpremise"]
+   * When not specified, no type restriction is applied (all place types returned).
+   * For addresses, use: ["street_address", "premise", "subpremise"]
    * For cities, use: ["locality", "administrative_area_level_3"]
    * For regions, use: ["administrative_area_level_1", "administrative_area_level_2"]
    */
@@ -103,7 +104,7 @@ export function FormPlaceAutocomplete({
         },
         body: JSON.stringify({
           input: input,
-          includedPrimaryTypes: includeTypes || ["street_address", "premise", "subpremise"],
+          ...(includeTypes ? { includedPrimaryTypes: includeTypes } : {}),
           languageCode: "en",
         }),
       });
