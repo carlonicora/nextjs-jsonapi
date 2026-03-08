@@ -165,15 +165,12 @@ export function FormPlaceAutocomplete({
     if (!apiKey || !placeId) return defaults;
 
     try {
-      const response = await fetch(
-        `https://places.googleapis.com/v1/places/${placeId}`,
-        {
-          headers: {
-            "X-Goog-Api-Key": apiKey,
-            "X-Goog-FieldMask": "addressComponents",
-          },
+      const response = await fetch(`https://places.googleapis.com/v1/places/${placeId}`, {
+        headers: {
+          "X-Goog-Api-Key": apiKey,
+          "X-Goog-FieldMask": "addressComponents",
         },
-      );
+      });
 
       if (!response.ok) return defaults;
 
