@@ -17,13 +17,25 @@ import { FormFieldWrapper } from "./FormFieldWrapper";
  * Note: This uses the new Places API via REST calls, not the legacy JavaScript API
  */
 
-interface PlaceSuggestion {
+export interface PlaceAddressComponents {
+  street_number: string;
+  street: string;
+  city: string;
+  province: string;
+  region: string;
+  postcode: string;
+  country: string;
+  country_code: string;
+}
+
+export interface PlaceSuggestion {
   place_id: string;
   description: string;
   structured_formatting: {
     main_text: string;
     secondary_text: string;
   };
+  addressComponents?: PlaceAddressComponents;
 }
 
 interface PlaceAutocompleteProps {
@@ -138,6 +150,64 @@ export function FormPlaceAutocomplete({
     }
   };
 
+  const fetchPlaceDetails = async (placeId: string): Promise<PlaceAddressComponents> => {
+    const defaults: PlaceAddressComponents = {
+      street_number: "",
+      street: "",
+      city: "",
+      province: "",
+      region: "",
+      postcode: "",
+      country: "",
+      country_code: "",
+    };
+
+    if (!apiKey || !placeId) return defaults;
+
+    try {
+      const response = await fetch(
+        `https://places.googleapis.com/v1/places/${placeId}`,
+        {
+          headers: {
+            "X-Goog-Api-Key": apiKey,
+            "X-Goog-FieldMask": "addressComponents",
+          },
+        },
+      );
+
+      if (!response.ok) return defaults;
+
+      const data = await response.json();
+      const components = data.addressComponents ?? [];
+
+      const result = { ...defaults };
+
+      for (const comp of components) {
+        const types: string[] = comp.types ?? [];
+        if (types.includes("street_number")) {
+          result.street_number = comp.longText ?? "";
+        } else if (types.includes("route")) {
+          result.street = comp.longText ?? "";
+        } else if (types.includes("locality")) {
+          result.city = comp.longText ?? "";
+        } else if (types.includes("administrative_area_level_2")) {
+          result.province = comp.longText ?? "";
+        } else if (types.includes("administrative_area_level_1")) {
+          result.region = comp.longText ?? "";
+        } else if (types.includes("postal_code")) {
+          result.postcode = comp.longText ?? "";
+        } else if (types.includes("country")) {
+          result.country = comp.longText ?? "";
+          result.country_code = comp.shortText ?? "";
+        }
+      }
+
+      return result;
+    } catch {
+      return defaults;
+    }
+  };
+
   // Handle input changes with debouncing
   const handleInputChange = (value: string) => {
     setInputValue(value);
@@ -159,14 +229,20 @@ export function FormPlaceAutocomplete({
   };
 
   // Handle suggestion selection
-  const handleSuggestionSelect = (suggestion: PlaceSuggestion) => {
+  const handleSuggestionSelect = async (suggestion: PlaceSuggestion) => {
     setInputValue(suggestion.description);
     form.setValue(id, suggestion.description);
     setShowSuggestions(false);
     setSuggestions([]);
 
+    const addressComponents = await fetchPlaceDetails(suggestion.place_id);
+    const enrichedSuggestion: PlaceSuggestion = {
+      ...suggestion,
+      addressComponents,
+    };
+
     if (onPlaceSelect) {
-      onPlaceSelect(suggestion);
+      onPlaceSelect(enrichedSuggestion);
     }
   };
 
