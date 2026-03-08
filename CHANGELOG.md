@@ -1,3 +1,9 @@
+## [1.57.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.57.0...v1.57.1) (2026-03-08)
+
+### 🐛 Bug Fixes
+
+* **ContentListTable:** only show footer when pagination is available ([738a538](https://github.com/carlonicora/nextjs-jsonapi/commit/738a538d978d9ef36b4686f3c8d3aaf3a2bf5882))
+
 ## [1.57.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.56.2...v1.57.0) (2026-03-08)
 
 ### 🚀 Features
