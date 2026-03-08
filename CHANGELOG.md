@@ -1,3 +1,9 @@
+## [1.58.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.57.1...v1.58.0) (2026-03-08)
+
+### 🚀 Features
+
+* add EntityAvatar and TableCellAvatar components with initials fallback ([7acaafe](https://github.com/carlonicora/nextjs-jsonapi/commit/7acaafe0e45213b154049b9a8d4b1f12761074a0))
+
 ## [1.57.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.57.0...v1.57.1) (2026-03-08)
 
 ### 🐛 Bug Fixes
