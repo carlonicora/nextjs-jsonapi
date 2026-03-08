@@ -1,3 +1,13 @@
+## [1.57.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.56.2...v1.57.0) (2026-03-08)
+
+### 🚀 Features
+
+* **nextjs-jsonapi:** fetch Place Details for address components on selection ([f0e414f](https://github.com/carlonicora/nextjs-jsonapi/commit/f0e414f72be63e340a379b8a36096a873501f0c4))
+
+### 🐛 Bug Fixes
+
+* **FormPlaceAutocomplete:** streamline fetch request for address components ([1bbdd27](https://github.com/carlonicora/nextjs-jsonapi/commit/1bbdd27628dcf237586f563f32e7e7334906ec4b))
+
 ## [1.56.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.56.1...v1.56.2) (2026-03-06)
 
 ### 🐛 Bug Fixes
