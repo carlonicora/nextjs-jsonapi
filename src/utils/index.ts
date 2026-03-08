@@ -11,6 +11,7 @@ export { getTableComponents, getTableOptions, TableOptions } from "./table-optio
 // Schemas
 export { entityObjectSchema, userObjectSchema, type EntityObject, type UserObject } from "./schemas";
 
+export { getInitials } from "./getInitials";
 export * from "./blocknote-diff.util";
 export * from "./blocknote-word-diff-renderer.util";
 export * from "./icons";

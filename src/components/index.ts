@@ -1,3 +1,6 @@
+export { EntityAvatar } from "./EntityAvatar";
+export { TableCellAvatar } from "./TableCellAvatar";
+export { getInitials } from "../utils/getInitials";
 export * from "./containers";
 export * from "./contents";
 export * from "./details";
