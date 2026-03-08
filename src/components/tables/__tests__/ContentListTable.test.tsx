@@ -291,7 +291,7 @@ describe("ContentListTable", () => {
   });
 
   describe("footer visibility", () => {
-    it("should show footer when functions are provided", () => {
+    it("should show functions in header when title is provided", () => {
       const dataRetriever = createMockDataRetriever({
         data: [{ id: "1", title: "Article 1" }],
       });
@@ -301,11 +301,12 @@ describe("ContentListTable", () => {
           data={dataRetriever}
           tableGeneratorType={mockModule as any}
           fields={["id", "title"]}
+          title="Test Table"
           functions={<button>Action</button>}
         />,
       );
 
-      // Footer should be present with buttons
+      // Functions should be present in header with buttons
       const buttons = screen.getAllByRole("button");
       expect(buttons.length).toBeGreaterThan(0);
     });
