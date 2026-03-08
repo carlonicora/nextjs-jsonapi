@@ -1,3 +1,9 @@
+## [1.58.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.58.0...v1.58.1) (2026-03-08)
+
+### 📦 Code Refactoring
+
+* **EntityAvatar, TableCellAvatar:** improve formatting and readability of component code ([3e617b2](https://github.com/carlonicora/nextjs-jsonapi/commit/3e617b21b4baa66c99d03fb3eb9166eabb45d941))
+
 ## [1.58.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.57.1...v1.58.0) (2026-03-08)
 
 ### 🚀 Features
