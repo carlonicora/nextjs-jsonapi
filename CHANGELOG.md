@@ -1,3 +1,9 @@
+## [1.58.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.58.1...v1.58.2) (2026-03-08)
+
+### 🚨 Tests
+
+* update footer visibility test description and add title prop ([9bf40e0](https://github.com/carlonicora/nextjs-jsonapi/commit/9bf40e0384696d4e4a1c371bbe6a75e25d970e38))
+
 ## [1.58.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.58.0...v1.58.1) (2026-03-08)
 
 ### 📦 Code Refactoring
