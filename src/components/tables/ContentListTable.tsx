@@ -84,7 +84,7 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
   // }
 
   const rowModel = tableData ? table.getRowModel() : null;
-  const showFooter = !!(props.functions || data.next || data.previous);
+  const showFooter = !!(data.next || data.previous);
 
   return (
     <div className="flex w-full flex-col">
