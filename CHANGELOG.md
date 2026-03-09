@@ -1,3 +1,9 @@
+## [1.58.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.58.2...v1.58.3) (2026-03-09)
+
+### 🐛 Bug Fixes
+
+* refine currency input handling and adjust input type attributes ([19d9cb1](https://github.com/carlonicora/nextjs-jsonapi/commit/19d9cb100e1ad90204c8982720fe3fbdf2f95a9d))
+
 ## [1.58.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.58.1...v1.58.2) (2026-03-08)
 
 ### 🚨 Tests
