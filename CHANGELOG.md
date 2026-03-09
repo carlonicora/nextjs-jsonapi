@@ -1,3 +1,9 @@
+## [1.58.5](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.58.4...v1.58.5) (2026-03-09)
+
+### 🐛 Bug Fixes
+
+* format inputMode assignment for better readability ([a8826c2](https://github.com/carlonicora/nextjs-jsonapi/commit/a8826c2c65e87431cc75a77cd9ab5960e5d49f09))
+
 ## [1.58.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.58.3...v1.58.4) (2026-03-09)
 
 ### 🐛 Bug Fixes
