@@ -90,8 +90,9 @@ describe("FormInput", () => {
         </FormWrapper>,
       );
 
-      const input = screen.getByRole("spinbutton");
-      expect(input).toHaveAttribute("type", "number");
+      const input = screen.getByRole("textbox");
+      expect(input).toHaveAttribute("type", "text");
+      expect(input).toHaveAttribute("inputmode", "decimal");
     });
 
     it("should render number input with euro symbol for currency", () => {
@@ -102,8 +103,9 @@ describe("FormInput", () => {
       );
 
       expect(screen.getByText("€")).toBeInTheDocument();
-      const input = screen.getByRole("spinbutton");
-      expect(input).toHaveAttribute("type", "number");
+      const input = screen.getByRole("textbox");
+      expect(input).toHaveAttribute("type", "text");
+      expect(input).toHaveAttribute("inputmode", "decimal");
     });
 
     it("should render password input for type password", () => {
@@ -146,11 +148,11 @@ describe("FormInput", () => {
         </FormWrapper>,
       );
 
-      const input = screen.getByRole("spinbutton");
+      const input = screen.getByRole("textbox");
       fireEvent.change(input, { target: { value: "123" } });
 
-      // Should accept the number
-      expect(input).toHaveValue(123);
+      // Should accept the number (rendered as text input with inputMode decimal)
+      expect(input).toHaveValue("123");
     });
 
     it("should call onChange when value changes", () => {

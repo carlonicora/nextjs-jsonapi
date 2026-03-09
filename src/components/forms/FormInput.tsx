@@ -23,7 +23,7 @@ export function FormInput({
   id: string;
   name?: string;
   placeholder?: string;
-  type?: "text" | "number" | "currency" | "password" | "link";
+  type?: "text" | "number" | "currency" | "decimal" | "password" | "link";
   onBlur?: () => Promise<void>;
   disabled?: boolean;
   onKeyDown?: (event: React.KeyboardEvent) => void;
@@ -66,7 +66,7 @@ export function FormInput({
               const value = e.target.value.replace(/[^0-9]/g, "");
               field.onChange(+value);
               if (onChange) onChange(+value);
-            } else if (type === "currency") {
+            } else if (type === "currency" || type === "decimal") {
               // Allow digits, comma, and period
               let value = e.target.value.replace(/[^0-9.,]/g, "");
               // Allow only one decimal separator (first one wins)
@@ -89,8 +89,8 @@ export function FormInput({
             ...field,
             autoFocus: autoFocus === true,
             type: type === "password" ? "password" : "text",
-            inputMode: (type === "number" || type === "currency" ? "decimal" : undefined) as "decimal" | undefined,
-            className: `w-full ${type === "number" || type === "currency" ? "text-end" : ""}`,
+            inputMode: (type === "number" || type === "currency" || type === "decimal" ? "decimal" : undefined) as "decimal" | undefined,
+            className: `w-full ${type === "number" || type === "currency" || type === "decimal" ? "text-end" : ""}`,
             disabled: disabled === true || form.formState.isSubmitting,
             placeholder: placeholder || "",
             onBlur: handleBlur,
