@@ -89,7 +89,9 @@ export function FormInput({
             ...field,
             autoFocus: autoFocus === true,
             type: type === "password" ? "password" : "text",
-            inputMode: (type === "number" || type === "currency" || type === "decimal" ? "decimal" : undefined) as "decimal" | undefined,
+            inputMode: (type === "number" || type === "currency" || type === "decimal" ? "decimal" : undefined) as
+              | "decimal"
+              | undefined,
             className: `w-full ${type === "number" || type === "currency" || type === "decimal" ? "text-end" : ""}`,
             disabled: disabled === true || form.formState.isSubmitting,
             placeholder: placeholder || "",
