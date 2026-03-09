@@ -13,11 +13,6 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
 } from "../../shadcnui";
 import { FormFieldWrapper } from "./FormFieldWrapper";
 
@@ -85,19 +80,6 @@ export function FormDate({
     return currentValue ? formatDate(currentValue) : "";
   });
 
-  // Generate year options (1900 to current year)
-  const currentYear = new Date().getFullYear();
-  const yearOptions = Array.from({ length: currentYear - 1900 + 1 }, (_, i) => 1900 + i);
-
-  // Generate month names dynamically based on current locale
-  const monthNames = useMemo(() => {
-    const formatter = new Intl.DateTimeFormat(locale, { month: "long" });
-    return Array.from({ length: 12 }, (_, i) => {
-      const monthName = formatter.format(new Date(2000, i, 1));
-      return monthName.charAt(0).toUpperCase() + monthName.slice(1);
-    });
-  }, [locale]);
-
   // Handle text input change
   const handleInputChange = (value: string, field: any) => {
     setInputValue(value);
@@ -159,68 +141,23 @@ export function FormDate({
                 )}
               </InputGroupAddon>
             </InputGroup>
-            <PopoverContent className="w-auto p-0" align="start">
-              <div className="p-3">
-                {/* Year and Month Selectors */}
-                <div className="mb-3 flex gap-2">
-                  <Select
-                    value={displayMonth.getMonth().toString()}
-                    onValueChange={(value) => {
-                      if (!value) return;
-                      const newMonth = parseInt(value);
-                      const newDate = new Date(displayMonth.getFullYear(), newMonth, 1);
-                      setDisplayMonth(newDate);
-                    }}
-                  >
-                    <SelectTrigger className="w-[130px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {monthNames.map((month, index) => (
-                        <SelectItem key={index} value={index.toString()}>
-                          {month}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <Select
-                    value={displayMonth.getFullYear().toString()}
-                    onValueChange={(value) => {
-                      if (!value) return;
-                      const newYear = parseInt(value);
-                      const newDate = new Date(newYear, displayMonth.getMonth(), 1);
-                      setDisplayMonth(newDate);
-                    }}
-                  >
-                    <SelectTrigger className="w-[80px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {yearOptions.reverse().map((year) => (
-                        <SelectItem key={year} value={year.toString()}>
-                          {year}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Calendar */}
-                <Calendar
-                  mode="single"
-                  selected={field.value}
-                  onSelect={(e) => {
-                    handleCalendarSelect(e, field);
-                    setOpen(false);
-                  }}
-                  disabled={(date) => (minDate && date < minDate ? true : false)}
-                  locale={dateFnsLocale}
-                  weekStartsOn={1}
-                  month={displayMonth}
-                  onMonthChange={setDisplayMonth}
-                />
-              </div>
+            <PopoverContent className="w-auto p-0" align="end">
+              <Calendar
+                mode="single"
+                captionLayout="dropdown"
+                selected={field.value}
+                onSelect={(e) => {
+                  handleCalendarSelect(e, field);
+                  setOpen(false);
+                }}
+                disabled={(date) => (minDate && date < minDate ? true : false)}
+                locale={dateFnsLocale}
+                weekStartsOn={1}
+                month={displayMonth}
+                onMonthChange={setDisplayMonth}
+                startMonth={new Date(1900, 0)}
+                endMonth={new Date(new Date().getFullYear() + 10, 11)}
+              />
             </PopoverContent>
           </Popover>
         )}
