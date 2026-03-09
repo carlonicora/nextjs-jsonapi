@@ -1,3 +1,9 @@
+## [1.58.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.58.3...v1.58.4) (2026-03-09)
+
+### 🐛 Bug Fixes
+
+* update FormInput to support decimal type and adjust test cases accordingly ([8864a85](https://github.com/carlonicora/nextjs-jsonapi/commit/8864a85797d5abe81ed1acbdd69296c2db0fe9f4))
+
 ## [1.58.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.58.2...v1.58.3) (2026-03-09)
 
 ### 🐛 Bug Fixes
