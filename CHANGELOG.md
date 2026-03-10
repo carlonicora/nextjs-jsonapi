@@ -1,3 +1,9 @@
+## [1.59.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.58.5...v1.59.0) (2026-03-10)
+
+### 🚀 Features
+
+* add forceHeader prop to RoundPageContainer and RoundPageContainerTitle for conditional rendering ([bb94d66](https://github.com/carlonicora/nextjs-jsonapi/commit/bb94d6617279e1f801accbe734dbe45151779237))
+
 ## [1.58.5](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.58.4...v1.58.5) (2026-03-09)
 
 ### 🐛 Bug Fixes
