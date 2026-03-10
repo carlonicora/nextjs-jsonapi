@@ -101,20 +101,19 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                   <div className="flex w-full items-center justify-between gap-x-2">
                     {/* <div className="w-full">{fullWidth ? `` : props.title}</div> */}
                     <div className="w-full">
-                      {fullWidth ? (
-                        <div
-                          className={
-                            "text-muted-foreground flex items-center gap-x-2 text-lg font-light whitespace-nowrap"
-                          }
-                        >
-                          {props.tableGeneratorType.icon && (
-                            <props.tableGeneratorType.icon className="text-primary h-6 w-6" />
-                          )}
-                          {props.title}
-                        </div>
-                      ) : (
-                        props.title
-                      )}
+                      <div
+                        className={cn(
+                          "text-muted-foreground flex items-center gap-x-2  font-light whitespace-nowrap",
+                          fullWidth ? `text-lg` : `text-sm`,
+                        )}
+                      >
+                        {props.tableGeneratorType.icon && (
+                          <props.tableGeneratorType.icon
+                            className={cn(`text-primary`, fullWidth ? `h-6 w-6` : `h-4 w-4`)}
+                          />
+                        )}
+                        {props.title}
+                      </div>
                     </div>
                     {(props.functions || props.filters || allowSearch) && (
                       <>
