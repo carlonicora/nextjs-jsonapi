@@ -18,9 +18,18 @@ type RoundPageContainerProps = {
   tabs?: Tab[];
   children?: ReactNode;
   fullWidth?: boolean;
+  forceHeader?: boolean;
 };
 
-export function RoundPageContainer({ module, id, details, tabs, children, fullWidth }: RoundPageContainerProps) {
+export function RoundPageContainer({
+  module,
+  id,
+  details,
+  tabs,
+  children,
+  fullWidth,
+  forceHeader,
+}: RoundPageContainerProps) {
   const headerChildren = useHeaderChildren();
   const [showDetails, setShowDetails] = useState(false);
 
@@ -42,12 +51,15 @@ export function RoundPageContainer({ module, id, details, tabs, children, fullWi
       <div className="flex h-[calc(100vh-3rem)] w-full flex-col p-2 pt-0 pl-0">
         <div className="bg-background flex h-full w-full rounded-lg border p-0">
           <div className="flex w-full flex-col">
-            <RoundPageContainerTitle
-              module={module}
-              details={details}
-              showDetails={showDetails}
-              setShowDetails={setShowDetails}
-            />
+            {(!fullWidth || forceHeader) && (
+              <RoundPageContainerTitle
+                module={module}
+                details={details}
+                showDetails={showDetails}
+                setShowDetails={setShowDetails}
+                fullWidth={fullWidth}
+              />
+            )}
             <div className="flex h-full w-full overflow-hidden">
               <div className={cn(`grow overflow-y-auto p-4`, fullWidth && `p-0`)}>
                 <div className={cn(`mx-auto max-w-6xl space-y-12 p-8`, fullWidth && `max-w-full w-full p-0`)}>

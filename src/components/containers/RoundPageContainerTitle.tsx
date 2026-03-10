@@ -12,6 +12,7 @@ type RoundPageContainerTitleProps = {
   details?: ReactNode;
   showDetails: boolean;
   setShowDetails: (show: boolean) => void;
+  fullWidth?: boolean;
 };
 
 export function RoundPageContainerTitle({
