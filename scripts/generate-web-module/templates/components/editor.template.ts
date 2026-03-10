@@ -53,25 +53,8 @@ function ${names.pascalCase}EditorInternal({
 }: ${names.pascalCase}EditorProps) {
   const router = useRouter();
   const generateUrl = usePageUrlGenerator();
-  const [open, setOpen] = useState<boolean>(false);
   const t = useTranslations();
 ${hasAuthor ? `  const { currentUser } = useCurrentUserContext<UserInterface>();` : ""}
-
-  useEffect(() => {
-    if (dialogOpen !== undefined) {
-      setOpen(dialogOpen);
-    }
-  }, [dialogOpen]);
-
-  useEffect(() => {
-    if (typeof onDialogOpenChange === "function") {
-      onDialogOpenChange(open);
-    }
-  }, [open, onDialogOpenChange]);
-
-  useEffect(() => {
-    if (forceShow) setOpen(true);
-  }, [forceShow]);
 
 ${formSchema}
 
@@ -82,10 +65,19 @@ ${defaultValues}
     defaultValues: getDefaultValues(),
   });
 
+  const { dirtyFields } = form.formState;
+
+  const isFormDirty = useCallback(() => {
+    return Object.keys(dirtyFields).length > 0;
+  }, [dirtyFields]);
+
+  const { open, setOpen, handleOpenChange, discardDialogProps } = useEditorDialog(isFormDirty, {
+    dialogOpen, onDialogOpenChange, forceShow, onClose,
+  });
+
   useEffect(() => {
     if (!open) {
       form.reset(getDefaultValues());
-      if (onClose) onClose();
     }
   }, [open]);
 
@@ -101,25 +93,9 @@ ${
 
 ${onSubmit}
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && open) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-    };
-
-    if (open) {
-      document.addEventListener("keydown", handleKeyDown, true);
-    }
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown, true);
-    };
-  }, [open]);
-
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       {dialogOpen === undefined && (trigger ? <DialogTrigger>{trigger}</DialogTrigger> : <CommonEditorTrigger isEdit={!!${names.camelCase}} />)}
       <DialogContent
         className="flex max-h-[70vh] max-w-3xl flex-col overflow-y-auto"
@@ -129,12 +105,14 @@ ${onSubmit}
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full flex-col gap-y-4">
             <div className="flex flex-col justify-between gap-x-4">
 ${formFields}
-              <CommonEditorButtons form={form} setOpen={setOpen} isEdit={!!${names.camelCase}} />
+              <CommonEditorButtons form={form} setOpen={handleOpenChange} isEdit={!!${names.camelCase}} />
             </div>
           </form>
         </Form>
       </DialogContent>
     </Dialog>
+    <CommonEditorDiscardDialog {...discardDialogProps} />
+    </>
   );
 }
 
@@ -194,7 +172,7 @@ function generateImports(data: FrontendTemplateData): string {
   imports.push(`import { revalidatePaths } from "@/utils/revalidation";`);
 
   // Library component imports
-  const componentImports: string[] = ["CommonEditorButtons", "CommonEditorHeader", "CommonEditorTrigger", "errorToast"];
+  const componentImports: string[] = ["CommonEditorButtons", "CommonEditorDiscardDialog", "CommonEditorHeader", "CommonEditorTrigger", "errorToast", "useEditorDialog"];
 
   // Check for field types that need specific components
   const hasContentField = fields.some((f) => f.isContentField || f.name === "content");
@@ -251,7 +229,7 @@ function generateImports(data: FrontendTemplateData): string {
   // Other imports
   imports.push(`import { zodResolver } from "@hookform/resolvers/zod";`);
   imports.push(`import { useTranslations } from "next-intl";`);
-  imports.push(`import { ReactNode, useEffect, useState } from "react";`);
+  imports.push(`import { ReactNode, useCallback, useEffect } from "react";`);
   imports.push(`import { SubmitHandler, useForm } from "react-hook-form";`);
   imports.push(`import { v4 } from "uuid";`);
   imports.push(`import { z } from "zod";`);
