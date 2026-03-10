@@ -66,10 +66,9 @@ describe("useEditorDialog", () => {
 
   describe("options.dialogOpen", () => {
     it("should sync open state from external dialogOpen prop", () => {
-      const { result, rerender } = renderHook(
-        ({ dialogOpen }) => useEditorDialog(() => false, { dialogOpen }),
-        { initialProps: { dialogOpen: false } },
-      );
+      const { result, rerender } = renderHook(({ dialogOpen }) => useEditorDialog(() => false, { dialogOpen }), {
+        initialProps: { dialogOpen: false },
+      });
       expect(result.current.open).toBe(false);
       rerender({ dialogOpen: true });
       expect(result.current.open).toBe(true);
@@ -79,9 +78,7 @@ describe("useEditorDialog", () => {
   describe("options.onDialogOpenChange", () => {
     it("should notify parent when open state changes", () => {
       const onDialogOpenChange = vi.fn();
-      const { result } = renderHook(() =>
-        useEditorDialog(() => false, { onDialogOpenChange }),
-      );
+      const { result } = renderHook(() => useEditorDialog(() => false, { onDialogOpenChange }));
       act(() => result.current.setOpen(true));
       expect(onDialogOpenChange).toHaveBeenCalledWith(true);
     });
@@ -89,10 +86,9 @@ describe("useEditorDialog", () => {
 
   describe("options.forceShow", () => {
     it("should open dialog when forceShow becomes true", () => {
-      const { result, rerender } = renderHook(
-        ({ forceShow }) => useEditorDialog(() => false, { forceShow }),
-        { initialProps: { forceShow: false } },
-      );
+      const { result, rerender } = renderHook(({ forceShow }) => useEditorDialog(() => false, { forceShow }), {
+        initialProps: { forceShow: false },
+      });
       expect(result.current.open).toBe(false);
       rerender({ forceShow: true });
       expect(result.current.open).toBe(true);
@@ -102,9 +98,7 @@ describe("useEditorDialog", () => {
   describe("options.onClose", () => {
     it("should call onClose when dialog closes", () => {
       const onClose = vi.fn();
-      const { result } = renderHook(() =>
-        useEditorDialog(() => false, { onClose }),
-      );
+      const { result } = renderHook(() => useEditorDialog(() => false, { onClose }));
       act(() => result.current.setOpen(true));
       act(() => result.current.setOpen(false));
       expect(onClose).toHaveBeenCalled();
@@ -112,9 +106,7 @@ describe("useEditorDialog", () => {
 
     it("should call onClose when discard is confirmed", () => {
       const onClose = vi.fn();
-      const { result } = renderHook(() =>
-        useEditorDialog(() => true, { onClose }),
-      );
+      const { result } = renderHook(() => useEditorDialog(() => true, { onClose }));
       act(() => result.current.setOpen(true));
       act(() => result.current.handleOpenChange(false));
       act(() => result.current.discardDialogProps.onDiscard());

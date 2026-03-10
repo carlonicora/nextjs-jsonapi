@@ -20,10 +20,7 @@ type UseEditorDialogReturn = {
   };
 };
 
-export function useEditorDialog(
-  isFormDirty: () => boolean,
-  options?: UseEditorDialogOptions,
-): UseEditorDialogReturn {
+export function useEditorDialog(isFormDirty: () => boolean, options?: UseEditorDialogOptions): UseEditorDialogReturn {
   const [open, setOpen] = useState<boolean>(false);
   const [showDiscardConfirm, setShowDiscardConfirm] = useState<boolean>(false);
 
