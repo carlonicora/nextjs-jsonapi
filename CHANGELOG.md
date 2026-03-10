@@ -1,3 +1,16 @@
+## [1.60.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.59.0...v1.60.0) (2026-03-10)
+
+### 🚀 Features
+
+* **nextjs-jsonapi:** add CommonEditorDiscardDialog component ([2a0b8dd](https://github.com/carlonicora/nextjs-jsonapi/commit/2a0b8ddcb2f5ad12cab41a4ff3026da06d4ed681))
+* **nextjs-jsonapi:** add useEditorDialog hook for centralized editor dialog state ([019a549](https://github.com/carlonicora/nextjs-jsonapi/commit/019a5493aedfb9aaeb2f832a2a101369d9ac201c))
+* **nextjs-jsonapi:** export new editor dialog utilities and update editor template ([48aa347](https://github.com/carlonicora/nextjs-jsonapi/commit/48aa3471b270af66dbc5da799266a966b05b19b9))
+
+### 📦 Code Refactoring
+
+* simplified content table title ([19a3d24](https://github.com/carlonicora/nextjs-jsonapi/commit/19a3d24f7369ae4d35a3f922237ff97188e78f6c))
+* streamline useEditorDialog function signature ([2f99106](https://github.com/carlonicora/nextjs-jsonapi/commit/2f99106f34d57eba5206e859cf7c09a9b1e81837))
+
 ## [1.59.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.58.5...v1.59.0) (2026-03-10)
 
 ### 🚀 Features
