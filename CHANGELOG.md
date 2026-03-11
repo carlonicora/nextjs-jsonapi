@@ -1,3 +1,13 @@
+## [1.61.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.60.0...v1.61.0) (2026-03-11)
+
+### 🚀 Features
+
+* add EditorSheet reusable component to nextjs-jsonapi ([7923b27](https://github.com/carlonicora/nextjs-jsonapi/commit/7923b279661ac0f01060b2857bf3a74f9f9d1bae))
+
+### 🚨 Tests
+
+* add EditorSheet component tests ([6b50283](https://github.com/carlonicora/nextjs-jsonapi/commit/6b50283ae8fd1fe52cb5cc88c782958d13f0761d))
+
 ## [1.60.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.59.0...v1.60.0) (2026-03-10)
 
 ### 🚀 Features
