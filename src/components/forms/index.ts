@@ -5,6 +5,7 @@ export * from "./CommonEditorHeader";
 export * from "./CommonEditorDiscardDialog";
 export * from "./CommonEditorTrigger";
 export * from "./useEditorDialog";
+export * from "./EditorSheet";
 export * from "./DatePickerPopover";
 export * from "./DateRangeSelector";
 export * from "./FileUploader";
