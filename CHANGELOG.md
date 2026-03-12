@@ -1,3 +1,9 @@
+## [1.61.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.61.0...v1.61.1) (2026-03-12)
+
+### 💎 Styles
+
+* **sheet:** add rounded corners to left/right side sheets ([89335ad](https://github.com/carlonicora/nextjs-jsonapi/commit/89335ad8af86d2bff3de5c974d92cb8374a40822))
+
 ## [1.61.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.60.0...v1.61.0) (2026-03-11)
 
 ### 🚀 Features
