@@ -1,3 +1,9 @@
+## [1.62.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.61.1...v1.62.0) (2026-03-12)
+
+### 🚀 Features
+
+* **TableCellAvatar:** add className prop for customizable styling ([79a80a3](https://github.com/carlonicora/nextjs-jsonapi/commit/79a80a3364d1b859aef4eb11fb5cfd1802e42e24))
+
 ## [1.61.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.61.0...v1.61.1) (2026-03-12)
 
 ### 💎 Styles
