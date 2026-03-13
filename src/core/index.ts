@@ -83,3 +83,4 @@ export * from "../features/rbac/rbac.module";
 export * from "../features/referral/data";
 export * from "../features/referral/referral.module";
 export * from "../features/referral/referral-stats.module";
+export * from "../features/audit-log";

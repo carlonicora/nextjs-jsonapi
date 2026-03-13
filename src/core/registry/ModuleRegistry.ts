@@ -51,6 +51,8 @@ export interface FoundationModuleDefinitions {
   // RBAC modules
   PermissionMapping: ModuleWithPermissions;
   ModulePaths: ModuleWithPermissions;
+  // Audit modules
+  AuditLog: ModuleWithPermissions;
 }
 
 // App-specific modules - apps will augment this interface ONLY
