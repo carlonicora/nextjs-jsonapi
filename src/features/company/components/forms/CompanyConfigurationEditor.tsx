@@ -3,8 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Settings2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { ReactNode, useEffect, useState } from "react";
+import { SubmitHandler, UseFormReturn, useForm } from "react-hook-form";
 import { showToast } from "../../../../utils/toast";
 import z from "zod";
 import { CommonEditorButtons, errorToast } from "../../../../components";
@@ -18,44 +18,36 @@ import {
   DialogTitle,
   DialogTrigger,
   Form,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
 } from "../../../../shadcnui";
 import { UserInterface } from "../../../user";
 import { useCurrentUserContext } from "../../../user/contexts";
 import { UserService } from "../../../user/data/user.service";
 import { CompanyInput, CompanyInterface } from "../../data";
 import { CompanyService } from "../../data/company.service";
-import { CompanyConfigurationRegionalForm } from "./CompanyConfigurationRegionalForm";
 
 type CompanyConfigurationEditorProps = {
   company: CompanyInterface;
-  currencyOptions?: string[];
+  formSchema: z.ZodObject<any>;
+  defaultValues: Record<string, any>;
+  buildPayload: (values: Record<string, any>) => Partial<CompanyInput["configurations"]>;
+  children: (form: UseFormReturn<any>) => ReactNode;
 };
 
-function CompanyConfigurationEditorInternal({ company, currencyOptions }: CompanyConfigurationEditorProps) {
+function CompanyConfigurationEditorInternal({
+  company,
+  formSchema,
+  defaultValues,
+  buildPayload,
+  children,
+}: CompanyConfigurationEditorProps) {
   const [open, setOpen] = useState<boolean>(false);
   const t = useTranslations();
   const { setUser } = useCurrentUserContext<UserInterface>();
-
-  const defaultValues = useMemo(() => {
-    return {
-      country: company.configurations?.country ?? "IT",
-      currency: company.configurations?.currency ?? "EUR",
-    };
-  }, [company.configurations]);
 
   const close = () => {
     setOpen(false);
     form.reset();
   };
-
-  const formSchema = z.object({
-    country: z.string().optional(),
-    currency: z.string().optional(),
-  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -65,20 +57,14 @@ function CompanyConfigurationEditorInternal({ company, currencyOptions }: Compan
 
   useEffect(() => {
     if (open) {
-      form.reset({
-        country: company.configurations?.country ?? "IT",
-        currency: company.configurations?.currency ?? "EUR",
-      });
+      form.reset(defaultValues);
     }
   }, [company, open]);
 
   const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (values) => {
     const payload: CompanyInput = {
       id: company.id,
-      configurations: {
-        country: values.country ?? "IT",
-        currency: values.currency ?? "EUR",
-      },
+      configurations: buildPayload(values),
     };
 
     try {
@@ -104,7 +90,7 @@ function CompanyConfigurationEditorInternal({ company, currencyOptions }: Compan
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
-        <Button size="sm" variant={`ghost`} className="cursor-pointer">
+        <Button render={<div />} nativeButton={false} size="sm" variant={`ghost`} className="cursor-pointer">
           <Settings2Icon className="h-3.5 w-3.5" />
         </Button>
       </DialogTrigger>
@@ -117,18 +103,7 @@ function CompanyConfigurationEditorInternal({ company, currencyOptions }: Compan
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className={`flex w-full flex-col gap-y-4`}>
-            <div className={`flex flex-row gap-x-4`}>
-              <div className={`flex w-full flex-col justify-start gap-y-4`}>
-                <Tabs defaultValue="regional">
-                  <TabsList>
-                    <TabsTrigger value="regional">{t("features.configuration.regional_settings")}</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="regional">
-                    <CompanyConfigurationRegionalForm form={form} currencyOptions={currencyOptions} />
-                  </TabsContent>
-                </Tabs>
-              </div>
-            </div>
+            {children(form)}
             <CommonEditorButtons form={form} setOpen={setOpen} isEdit={true} />
           </form>
         </Form>
