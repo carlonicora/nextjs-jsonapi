@@ -1,3 +1,9 @@
+## [1.63.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.62.0...v1.63.0) (2026-03-13)
+
+### 🚀 Features
+
+* **Selector:** enhance search functionality and update UI components ([5b64fa0](https://github.com/carlonicora/nextjs-jsonapi/commit/5b64fa0f98e78ab3bac2faf50705fb40b9ae0a44))
+
 ## [1.62.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.61.1...v1.62.0) (2026-03-12)
 
 ### 🚀 Features
