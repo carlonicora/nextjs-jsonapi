@@ -1,3 +1,9 @@
+## [1.65.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.64.0...v1.65.0) (2026-03-13)
+
+### 🚀 Features
+
+* **audit-log:** add audit log module, service, and interface ([f88d625](https://github.com/carlonicora/nextjs-jsonapi/commit/f88d6256cf6074105a983ddb697e3dbf2283dbf5))
+
 ## [1.64.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.63.0...v1.64.0) (2026-03-13)
 
 ### 🚀 Features
