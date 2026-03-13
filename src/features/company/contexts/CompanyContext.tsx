@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { createContext, ReactNode, useContext, useState } from "react";
+import { Fragment, createContext, ReactNode, useContext, useState } from "react";
 import { SharedProvider } from "../../../contexts";
 import { JsonApiHydratedDataInterface, Modules, rehydrate } from "../../../core";
 import { usePageUrlGenerator } from "../../../hooks";
@@ -23,6 +23,7 @@ const CompanyContext = createContext<CompanyContextType | undefined>(undefined);
 type CompanyProviderProps = {
   children: ReactNode;
   dehydratedCompany?: JsonApiHydratedDataInterface;
+  configurationEditorSlot?: ReactNode;
 };
 
 const defaultContextValue: CompanyContextType = {
@@ -30,7 +31,7 @@ const defaultContextValue: CompanyContextType = {
   setCompany: () => {},
 };
 
-export const CompanyProvider = ({ children, dehydratedCompany }: CompanyProviderProps) => {
+export const CompanyProvider = ({ children, dehydratedCompany, configurationEditorSlot }: CompanyProviderProps) => {
   const generateUrl = usePageUrlGenerator();
   const t = useTranslations();
   const { hasPermissionToModule, hasRole } = useCurrentUserContext<UserInterface>();
@@ -71,7 +72,7 @@ export const CompanyProvider = ({ children, dehydratedCompany }: CompanyProvider
       hasRole(getRoleId().Administrator) ||
       hasPermissionToModule({ module: Modules.Company, action: Action.Update })
     ) {
-      // if (company) functions.push(<CompanyConfigurationEditor key="companyConfigurationEditor" company={company} />);
+      if (company && configurationEditorSlot) functions.push(<Fragment key="configurationEditorSlot">{configurationEditorSlot}</Fragment>);
       functions.push(<CompanyEditor key="companyEditor" company={company} propagateChanges={setCompany} />);
     }
 
