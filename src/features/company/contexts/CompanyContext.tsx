@@ -72,7 +72,8 @@ export const CompanyProvider = ({ children, dehydratedCompany, configurationEdit
       hasRole(getRoleId().Administrator) ||
       hasPermissionToModule({ module: Modules.Company, action: Action.Update })
     ) {
-      if (company && configurationEditorSlot) functions.push(<Fragment key="configurationEditorSlot">{configurationEditorSlot}</Fragment>);
+      if (company && configurationEditorSlot)
+        functions.push(<Fragment key="configurationEditorSlot">{configurationEditorSlot}</Fragment>);
       functions.push(<CompanyEditor key="companyEditor" company={company} propagateChanges={setCompany} />);
     }
 

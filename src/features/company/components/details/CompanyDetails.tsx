@@ -27,8 +27,7 @@ export function CompanyDetails() {
       <div className="flex flex-col gap-y-1">
         {company.configurations?.country && (
           <div className="text-muted-foreground text-sm">
-            <span className="font-medium">{t("features.configuration.country")}:</span>{" "}
-            {company.configurations.country}
+            <span className="font-medium">{t("features.configuration.country")}:</span> {company.configurations.country}
           </div>
         )}
         {company.configurations?.currency && (

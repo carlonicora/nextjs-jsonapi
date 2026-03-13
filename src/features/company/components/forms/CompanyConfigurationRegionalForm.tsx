@@ -3,13 +3,7 @@
 import { useTranslations } from "next-intl";
 import { UseFormReturn } from "react-hook-form";
 import { FormFieldWrapper } from "../../../../components/forms";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../../../shadcnui";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../shadcnui";
 
 type RegionalConfigurationFormProps = {
   form: UseFormReturn<any>;
@@ -36,12 +30,7 @@ export function CompanyConfigurationRegionalForm({ form, currencyOptions = ["EUR
   return (
     <div className="space-y-4">
       <div className="space-y-4 border-t pt-4">
-        <FormFieldWrapper
-          form={form}
-          name="country"
-          label={t("features.configuration.country")}
-          isRequired={false}
-        >
+        <FormFieldWrapper form={form} name="country" label={t("features.configuration.country")} isRequired={false}>
           {(field) => (
             <Select value={field.value ?? "IT"} onValueChange={field.onChange}>
               <SelectTrigger>
@@ -58,12 +47,7 @@ export function CompanyConfigurationRegionalForm({ form, currencyOptions = ["EUR
           )}
         </FormFieldWrapper>
 
-        <FormFieldWrapper
-          form={form}
-          name="currency"
-          label={t("features.configuration.currency")}
-          isRequired={false}
-        >
+        <FormFieldWrapper form={form} name="currency" label={t("features.configuration.currency")} isRequired={false}>
           {(field) => (
             <Select value={field.value ?? "EUR"} onValueChange={field.onChange}>
               <SelectTrigger>
