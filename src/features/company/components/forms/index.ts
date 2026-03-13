@@ -1,4 +1,4 @@
 export * from "./CompanyConfigurationEditor";
-export * from "./CompanyConfigurationSecurityForm";
+export * from "./CompanyConfigurationRegionalForm";
 export * from "./CompanyDeleter";
 export * from "./CompanyEditor";

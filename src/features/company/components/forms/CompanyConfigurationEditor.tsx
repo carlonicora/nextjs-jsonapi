@@ -28,21 +28,22 @@ import { useCurrentUserContext } from "../../../user/contexts";
 import { UserService } from "../../../user/data/user.service";
 import { CompanyInput, CompanyInterface } from "../../data";
 import { CompanyService } from "../../data/company.service";
-import { CompanyConfigurationSecurityForm } from "./CompanyConfigurationSecurityForm";
+import { CompanyConfigurationRegionalForm } from "./CompanyConfigurationRegionalForm";
 
 type CompanyConfigurationEditorProps = {
   company: CompanyInterface;
+  currencyOptions?: string[];
 };
 
-function CompanyConfigurationEditorInternal({ company }: CompanyConfigurationEditorProps) {
+function CompanyConfigurationEditorInternal({ company, currencyOptions }: CompanyConfigurationEditorProps) {
   const [open, setOpen] = useState<boolean>(false);
   const t = useTranslations();
   const { setUser } = useCurrentUserContext<UserInterface>();
 
   const defaultValues = useMemo(() => {
     return {
-      isManagedKnowledge: company.configurations?.isManagedKnowledge ?? false,
-      allowPublicBot: company.configurations?.allowPublicBot ?? false,
+      country: company.configurations?.country ?? "IT",
+      currency: company.configurations?.currency ?? "EUR",
     };
   }, [company.configurations]);
 
@@ -52,8 +53,8 @@ function CompanyConfigurationEditorInternal({ company }: CompanyConfigurationEdi
   };
 
   const formSchema = z.object({
-    isManagedKnowledge: z.boolean().optional(),
-    allowPublicBot: z.boolean().optional(),
+    country: z.string().optional(),
+    currency: z.string().optional(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -65,8 +66,8 @@ function CompanyConfigurationEditorInternal({ company }: CompanyConfigurationEdi
   useEffect(() => {
     if (open) {
       form.reset({
-        isManagedKnowledge: company.configurations?.isManagedKnowledge ?? false,
-        allowPublicBot: company.configurations?.allowPublicBot ?? false,
+        country: company.configurations?.country ?? "IT",
+        currency: company.configurations?.currency ?? "EUR",
       });
     }
   }, [company, open]);
@@ -75,22 +76,21 @@ function CompanyConfigurationEditorInternal({ company }: CompanyConfigurationEdi
     const payload: CompanyInput = {
       id: company.id,
       configurations: {
-        isManagedKnowledge: values.isManagedKnowledge ?? false,
-        allowPublicBot: values.allowPublicBot ?? false,
+        country: values.country ?? "IT",
+        currency: values.currency ?? "EUR",
       },
     };
 
     try {
       await CompanyService.updateConfigurations(payload);
 
-      // Refresh user data to update localStorage with new company configurations
       const fullUser = await UserService.findFullUser();
       if (fullUser) {
         setUser(fullUser);
       }
 
-      showToast("Configurations Updated", {
-        description: `The system configurations have been updated successfully.`,
+      showToast(t("features.configuration.updated_title"), {
+        description: t("features.configuration.updated_description"),
       });
       close();
     } catch (error) {
@@ -119,19 +119,12 @@ function CompanyConfigurationEditorInternal({ company }: CompanyConfigurationEdi
           <form onSubmit={form.handleSubmit(onSubmit)} className={`flex w-full flex-col gap-y-4`}>
             <div className={`flex flex-row gap-x-4`}>
               <div className={`flex w-full flex-col justify-start gap-y-4`}>
-                <Tabs defaultValue={process.env.NEXT_PUBLIC_PRIVATE_INSTALLATION ? "security" : "ai"}>
+                <Tabs defaultValue="regional">
                   <TabsList>
-                    <TabsTrigger value="security">Privacy & Security</TabsTrigger>
+                    <TabsTrigger value="regional">{t("features.configuration.regional_settings")}</TabsTrigger>
                   </TabsList>
-                  <TabsContent value="features">
-                    <div className="space-y-4">
-                      <p className="text-muted-foreground text-sm">
-                        Feature configuration will be implemented in future updates.
-                      </p>
-                    </div>
-                  </TabsContent>
-                  <TabsContent value="security">
-                    <CompanyConfigurationSecurityForm form={form} />
+                  <TabsContent value="regional">
+                    <CompanyConfigurationRegionalForm form={form} currencyOptions={currencyOptions} />
                   </TabsContent>
                 </Tabs>
               </div>
