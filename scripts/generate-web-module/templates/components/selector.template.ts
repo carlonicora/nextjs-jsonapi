@@ -21,14 +21,11 @@ export function generateSelectorTemplate(data: FrontendTemplateData): string {
   return `"use client";
 
 import {
-  Button,
   Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList,
   FormFieldWrapper,
+  Input,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -39,7 +36,7 @@ import { DataListRetriever, useDataListRetriever } from "@carlonicora/nextjs-jso
 import { useDebounce } from "@carlonicora/nextjs-jsonapi/client";
 import { Modules } from "@carlonicora/nextjs-jsonapi/core";
 
-import { ChevronsUpDown, Loader2, XIcon } from "lucide-react";
+import { CircleX, RefreshCwIcon, SearchIcon, XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -101,12 +98,12 @@ export default function ${names.pascalCase}Selector({
   const set${names.pascalCase} = (${names.camelCase}?: ${names.pascalCase}Interface) => {
     if (onChange) onChange(${names.camelCase});
     if (!${names.camelCase}) {
-      form.setValue(id, undefined);
+      form.setValue(id, undefined, { shouldDirty: true });
       setOpen(false);
       return;
     }
 
-    form.setValue(id, { id: ${names.camelCase}.id, name: ${names.camelCase}.${displayProp} });
+    form.setValue(id, { id: ${names.camelCase}.id, name: ${names.camelCase}.${displayProp} }, { shouldDirty: true });
     setOpen(false);
 
     setTimeout(() => {
@@ -121,55 +118,62 @@ export default function ${names.pascalCase}Selector({
           <Popover open={open} onOpenChange={setOpen} modal={true}>
             <div className="flex w-full flex-row items-center justify-between">
               <PopoverTrigger className="w-full">
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={open}
-                  className="h-auto min-h-10 w-full justify-between px-3 py-2"
-                >
-                  <span className={field.value ? "" : "text-muted-foreground"}>
-                    {field.value?.name ?? placeholder ?? t(\`generic.search.placeholder\`, { type: t(\`entities.${i18nKey}\`, { count: 1 }) })}
-                  </span>
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
+                <div className="flex w-full flex-row items-center justify-start rounded-md">
+                  {field.value ? (
+                    <div className="bg-input/20 dark:bg-input/30 border-input flex h-7 w-full flex-row items-center justify-start rounded-md border px-2 py-0.5 text-sm md:text-xs/relaxed">
+                      <span>{field.value?.name ?? ""}</span>
+                    </div>
+                  ) : (
+                    <div className="bg-input/20 dark:bg-input/30 border-input text-muted-foreground flex h-7 w-full flex-row items-center justify-start rounded-md border px-2 py-0.5 text-sm md:text-xs/relaxed">
+                      {placeholder ?? t(\`generic.search.placeholder\`, { type: t(\`entities.${i18nKey}\`, { count: 1 }) })}
+                    </div>
+                  )}
+                </div>
               </PopoverTrigger>
               {field.value && (
-                <XIcon
-                  className="text-muted-foreground hover:text-destructive ml-2 h-5 w-5 cursor-pointer"
+                <CircleX
+                  className="text-muted hover:text-destructive ml-2 h-4 w-4 shrink-0 cursor-pointer"
                   onClick={() => set${names.pascalCase}()}
                 />
               )}
             </div>
-            <PopoverContent className="w-(--radix-popover-trigger-width) p-0" align="start">
+            <PopoverContent align="start" className="w-(--anchor-width)">
               <Command shouldFilter={false}>
-                <CommandInput
-                  placeholder={t(\`generic.search.placeholder\`, { type: t(\`entities.${i18nKey}\`, { count: 1 }) })}
-                  value={searchTerm}
-                  onValueChange={setSearchTerm}
-                />
+                <div className="relative mb-2 w-full">
+                  <SearchIcon className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
+                  <Input
+                    placeholder={t(\`generic.search.placeholder\`, { type: t(\`entities.${i18nKey}\`, { count: 1 }) })}
+                    type="text"
+                    className="w-full pr-8 pl-8"
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    value={searchTerm}
+                  />
+                  {isSearching ? (
+                    <RefreshCwIcon className="text-muted-foreground absolute top-2.5 right-2.5 h-4 w-4 animate-spin" />
+                  ) : searchTermRef.current ? (
+                    <XIcon
+                      className={\`absolute top-2.5 right-2.5 h-4 w-4 \${searchTermRef.current ? "cursor-pointer" : "text-muted-foreground"}\`}
+                      onClick={() => {
+                        setSearchTerm("");
+                        search("");
+                      }}
+                    />
+                  ) : (
+                    <></>
+                  )}
+                </div>
                 <CommandList>
-                  {isSearching && (
-                    <div className="flex items-center justify-center py-6">
-                      <Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />
-                    </div>
-                  )}
-                  {!isSearching && data.data && data.data.length === 0 && (
-                    <CommandEmpty>{t(\`generic.search.no_results\`)}</CommandEmpty>
-                  )}
-                  {!isSearching && data.data && data.data.length > 0 && (
-                    <CommandGroup>
-                      {(data.data as ${names.pascalCase}Interface[]).map((${names.camelCase}: ${names.pascalCase}Interface) => (
-                        <CommandItem
-                          key={${names.camelCase}.id}
-                          value={${names.camelCase}.id}
-                          onSelect={() => set${names.pascalCase}(${names.camelCase})}
-                          className="hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent cursor-pointer"
-                        >
-                          {${names.camelCase}.${displayProp}}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  )}
+                  {data.data &&
+                    data.data.length > 0 &&
+                    (data.data as ${names.pascalCase}Interface[]).map((${names.camelCase}: ${names.pascalCase}Interface) => (
+                      <CommandItem
+                        className="cursor-pointer hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent"
+                        key={${names.camelCase}.id}
+                        onSelect={() => set${names.pascalCase}(${names.camelCase})}
+                      >
+                        {${names.camelCase}.${displayProp}}
+                      </CommandItem>
+                    ))}
                 </CommandList>
               </Command>
             </PopoverContent>
