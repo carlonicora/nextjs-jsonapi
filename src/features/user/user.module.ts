@@ -1,6 +1,7 @@
-import { User } from "./data/user";
+import { UsersIcon } from "lucide-react";
 import { createJsonApiInclusion } from "../../core";
 import { ModuleFactory } from "../../permissions";
+import { User } from "./data/user";
 
 export const UserModule = (factory: ModuleFactory) =>
   factory({
@@ -8,6 +9,7 @@ export const UserModule = (factory: ModuleFactory) =>
     name: "users",
     model: User,
     moduleId: "04cfc677-0fd2-4f5e-adf4-2483a00c0277",
+    icon: UsersIcon,
     inclusions: {
       lists: {
         fields: [
