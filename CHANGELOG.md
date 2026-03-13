@@ -1,3 +1,19 @@
+## [1.64.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.63.0...v1.64.0) (2026-03-13)
+
+### 🚀 Features
+
+* **company:** add Building2Icon to CompanyModule ([9f9548f](https://github.com/carlonicora/nextjs-jsonapi/commit/9f9548f794c3e78bb2cfec75d5e7a77d8fbb59fa))
+* **company:** add configurationEditorSlot to CompanyProvider and CompanyContainer ([039da4b](https://github.com/carlonicora/nextjs-jsonapi/commit/039da4b1059224a6e194783585aa7360d7bbb316))
+* **company:** enhance CompanyDetails with TokenStatusIndicator and config display ([477c80c](https://github.com/carlonicora/nextjs-jsonapi/commit/477c80ca3ab84378472586094b1d2f734af3e3ff))
+* **company:** refactor CompanyConfigurationEditor to use props for default values and form schema ([bcd2b33](https://github.com/carlonicora/nextjs-jsonapi/commit/bcd2b3378810c4de673e1866ad3b34ace94f7da3))
+* **company:** remove CompanyConfigurationRegionalForm component ([8df6995](https://github.com/carlonicora/nextjs-jsonapi/commit/8df6995f0744d077eb35a91b65f26d81cba31b1e))
+* **company:** replace config editor with country/currency regional settings ([5933eb9](https://github.com/carlonicora/nextjs-jsonapi/commit/5933eb90c3992294b59ec5fae3990d7daeb2e0c5))
+* **user:** add UsersIcon to UserModule ([8662151](https://github.com/carlonicora/nextjs-jsonapi/commit/8662151e4c521c24b1fc533ea47fbf205dce4219))
+
+### 💎 Styles
+
+* apply lint formatting fixes ([7f1d4b1](https://github.com/carlonicora/nextjs-jsonapi/commit/7f1d4b112b02260c4f405ffe80d9f47702be2b34))
+
 ## [1.63.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.62.0...v1.63.0) (2026-03-13)
 
 ### 🚀 Features
