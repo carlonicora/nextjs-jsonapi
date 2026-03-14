@@ -1,3 +1,9 @@
+## [1.65.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.65.0...v1.65.1) (2026-03-14)
+
+### 🐛 Bug Fixes
+
+* increase ITEMS_TO_DISPLAY from 3 to 4 for improved navigation ([80b9fdc](https://github.com/carlonicora/nextjs-jsonapi/commit/80b9fdc5cef4bf67b30d49243dc03fb1eb49e656))
+
 ## [1.65.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.64.0...v1.65.0) (2026-03-13)
 
 ### 🚀 Features
