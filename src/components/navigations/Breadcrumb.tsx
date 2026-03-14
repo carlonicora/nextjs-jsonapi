@@ -19,7 +19,7 @@ import {
 
 type BreadcrumbProps = { items: BreadcrumbItemData[] };
 
-const ITEMS_TO_DISPLAY = 3;
+const ITEMS_TO_DISPLAY = 4;
 
 export function BreadcrumbNavigation({ items }: BreadcrumbProps) {
   const generateUrl = usePageUrlGenerator();
@@ -47,7 +47,7 @@ export function BreadcrumbNavigation({ items }: BreadcrumbProps) {
                   <BreadcrumbEllipsis className="h-4 w-4" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
-                  {items.slice(1, -ITEMS_TO_DISPLAY + 1).map((item, index) => (
+                  {items.slice(1, -ITEMS_TO_DISPLAY + 2).map((item, index) => (
                     <DropdownMenuItem key={index}>
                       <Link href={item.href ? item.href : "#"}>{item.name}</Link>
                     </DropdownMenuItem>
@@ -56,12 +56,12 @@ export function BreadcrumbNavigation({ items }: BreadcrumbProps) {
               </DropdownMenu>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
-            {items.slice(-ITEMS_TO_DISPLAY + 1).map((item, index) => (
+            {items.slice(-ITEMS_TO_DISPLAY + 2).map((item, index) => (
               <Fragment key={index}>
                 <BreadcrumbItem>
                   {item.href ? <Link href={item.href}>{item.name}</Link> : <>{item.name}</>}
                 </BreadcrumbItem>
-                {index < items.slice(-ITEMS_TO_DISPLAY + 1).length - 1 && <BreadcrumbSeparator />}
+                {index < items.slice(-ITEMS_TO_DISPLAY + 2).length - 1 && <BreadcrumbSeparator />}
               </Fragment>
             ))}
           </>
