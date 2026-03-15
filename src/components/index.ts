@@ -10,6 +10,8 @@ export * from "./forms";
 export * from "./navigations";
 export * from "./pages";
 export * from "./tables";
+export * from "./fiscal";
+export { parseFiscalData } from "../utils/fiscal-utils";
 
 // Feature components
 export * from "../features/auth/components";
