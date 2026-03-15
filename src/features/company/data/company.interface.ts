@@ -14,6 +14,16 @@ export type CompanyInput = {
 
   featureIds?: string[];
   moduleIds?: string[];
+  legal_address?: string;
+  street_number?: string;
+  street?: string;
+  city?: string;
+  province?: string;
+  region?: string;
+  postcode?: string;
+  country?: string;
+  country_code?: string;
+  fiscal_data?: string;
 };
 
 export interface CompanyInterface extends ApiDataInterface {
@@ -30,4 +40,14 @@ export interface CompanyInterface extends ApiDataInterface {
 
   get features(): FeatureInterface[];
   get modules(): ModuleInterface[];
+  get legal_address(): string | undefined;
+  get street_number(): string | undefined;
+  get street(): string | undefined;
+  get city(): string | undefined;
+  get province(): string | undefined;
+  get region(): string | undefined;
+  get postcode(): string | undefined;
+  get country(): string | undefined;
+  get country_code(): string | undefined;
+  get fiscal_data(): string | undefined;
 }
