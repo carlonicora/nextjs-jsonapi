@@ -3,7 +3,7 @@
 import { RoundPageContainer, Tab } from "@/components";
 import { Modules } from "@/core";
 import { useUserContext } from "../../contexts";
-import { UserDetails } from "../details";
+import { UserContent } from "../details";
 
 export function UserContainer() {
   const { user } = useUserContext();
@@ -12,7 +12,7 @@ export function UserContainer() {
   const tabs: Tab[] = [
     {
       label: "Details",
-      content: <UserDetails user={user} />,
+      content: <UserContent user={user} />,
     },
   ];
 
