@@ -195,9 +195,7 @@ function CompanyEditorInternal({
           fiscal_data: fiscalRef.current ? JSON.stringify(fiscalRef.current.getData()) : undefined,
         };
 
-        const updatedCompany = company
-          ? await CompanyService.update(payload)
-          : await CompanyService.create(payload);
+        const updatedCompany = company ? await CompanyService.update(payload) : await CompanyService.create(payload);
 
         // Refresh user context after company changes
         const fullUser = await UserService.findFullUser();
