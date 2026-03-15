@@ -12,9 +12,10 @@ import { UserEditor } from "../forms";
 
 type CompanyUsersListProps = {
   isDeleted?: boolean;
+  fullWidth?: boolean;
 };
 
-export function CompanyUsersList({ isDeleted }: CompanyUsersListProps) {
+export function CompanyUsersList({ isDeleted, fullWidth }: CompanyUsersListProps) {
   const { company } = useCurrentUserContext<UserInterface>();
   const t = useTranslations();
 
@@ -39,6 +40,7 @@ export function CompanyUsersList({ isDeleted }: CompanyUsersListProps) {
       fields={[UserFields.name, UserFields.email]}
       tableGeneratorType={Modules.User}
       functions={functions}
+      fullWidth={fullWidth}
       title={t(`entities.users`, { count: 2 })}
     />
   );

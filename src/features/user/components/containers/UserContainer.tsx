@@ -1,6 +1,7 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { RoundPageContainer, Tab } from "@/components";
+import { Modules } from "@/core";
 import { useUserContext } from "../../contexts";
 import { UserDetails } from "../details";
 
@@ -8,16 +9,12 @@ export function UserContainer() {
   const { user } = useUserContext();
   if (!user) return null;
 
-  const _t = useTranslations();
+  const tabs: Tab[] = [
+    {
+      label: "Details",
+      content: <UserDetails user={user} />,
+    },
+  ];
 
-  return (
-    <div className="flex w-full gap-x-4">
-      <div className="w-2xl flex h-[calc(100vh-theme(spacing.20))] flex-col justify-between border-r pr-4">
-        <div className="flex h-full overflow-y-auto">
-          <UserDetails user={user} />
-        </div>
-      </div>
-      <div className="flex w-full flex-col gap-y-4"></div>
-    </div>
-  );
+  return <RoundPageContainer module={Modules.User} tabs={tabs} />;
 }

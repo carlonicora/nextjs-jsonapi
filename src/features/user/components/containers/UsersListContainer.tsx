@@ -1,36 +1,27 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { CompanyUsersList, Tab, TabsContainer } from "../../../../components";
+import { CompanyUsersList, RoundPageContainer } from "../../../../components";
 import { Modules } from "../../../../core";
 import { Action } from "../../../../permissions";
 import { useCurrentUserContext } from "../../contexts";
 import { UserInterface } from "../../data";
 
-function UsersListContainerInternal() {
-  const { hasPermissionToModule } = useCurrentUserContext<UserInterface>();
-  const t = useTranslations();
+type UsersListContainerProps = {
+  fullWidth?: boolean;
+};
 
-  if (!hasPermissionToModule({ module: Modules.User, action: Action.Delete })) return <CompanyUsersList />;
-
-  const tabs: Tab[] = [
-    {
-      label: t(`entities.users`, { count: 2 }),
-      content: <CompanyUsersList />,
-      modules: [Modules.Company],
-      action: Action.Read,
-    },
-    {
-      label: t(`user.deleted`),
-      content: <CompanyUsersList isDeleted={true} />,
-      modules: [Modules.Company],
-      action: Action.Update,
-    },
-  ];
-
-  return <TabsContainer tabs={tabs} />;
+function UsersListContainerInternal({ fullWidth }: UsersListContainerProps) {
+  return (
+    <RoundPageContainer module={Modules.User} fullWidth={fullWidth}>
+      <CompanyUsersList fullWidth={fullWidth} />
+    </RoundPageContainer>
+  );
 }
 
-export function UsersListContainer() {
-  return <UsersListContainerInternal />;
+export function UsersListContainer({ fullWidth }: UsersListContainerProps) {
+  const { hasPermissionToModule } = useCurrentUserContext<UserInterface>();
+
+  if (!hasPermissionToModule({ module: Modules.User, action: Action.Read })) return null;
+
+  return <UsersListContainerInternal fullWidth={fullWidth} />;
 }
