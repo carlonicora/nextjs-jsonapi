@@ -7,6 +7,7 @@ import { ContentTitle } from "../../../../components";
 import { useSharedContext } from "../../../../contexts";
 import { usePageUrlGenerator } from "../../../../hooks";
 import { useCompanyContext } from "../../contexts/CompanyContext";
+import { CompanyContent } from "./CompanyContent";
 import { TokenStatusIndicator } from "./TokenStatusIndicator";
 
 export function CompanyDetails() {
@@ -37,6 +38,7 @@ export function CompanyDetails() {
           </div>
         )}
       </div>
+      <CompanyContent company={company} />
     </div>
   );
 }
