@@ -26,10 +26,10 @@ export function RecentPagesNavigator() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <div className="flex w-full cursor-pointer items-center gap-2">
+      <DropdownMenuTrigger render={<span />} nativeButton={false}>
+        <span className="flex w-full cursor-pointer items-center gap-2">
           {state === "collapsed" ? <HistoryIcon className="h-4 w-4" /> : <span>{t(`common.recent_pages`)}</span>}
-        </div>
+        </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-96">
         <DropdownMenuLabel>{t(`common.recent_pages`)}</DropdownMenuLabel>
