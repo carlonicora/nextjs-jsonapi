@@ -1,3 +1,28 @@
+## [1.66.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.65.1...v1.66.0) (2026-03-15)
+
+### 🚀 Features
+
+* add shared fiscal data components and utilities ([8610923](https://github.com/carlonicora/nextjs-jsonapi/commit/8610923e452d982bf8d6a1734682d573cb287eb8))
+* **company:** add address and fiscal_data fields to interface ([5524663](https://github.com/carlonicora/nextjs-jsonapi/commit/5524663bdc69c9ee36eee29a5b7f6429a1c0cc74))
+* **company:** add address and fiscal_data to model rehydrate/createJsonApi ([5605608](https://github.com/carlonicora/nextjs-jsonapi/commit/5605608a6d54d6a17561307c7b5d4c43391a6157))
+* **company:** add CompanyContent display component and integrate into CompanyDetails ([8d20067](https://github.com/carlonicora/nextjs-jsonapi/commit/8d200678ba9e31c6ce21d36287952ef46182cd49))
+* **company:** enhance CompanyContent with logo and actions support ([904189e](https://github.com/carlonicora/nextjs-jsonapi/commit/904189eb5c1810dd6c5b7b356f617ca8bbe38d2e))
+* **company:** extend CompanyEditor with address and fiscal data fields ([843c40a](https://github.com/carlonicora/nextjs-jsonapi/commit/843c40ace800500dc851848b9f16cddaa43378c3))
+
+### 🐛 Bug Fixes
+
+* add h-full class to container for consistent height ([acfa55b](https://github.com/carlonicora/nextjs-jsonapi/commit/acfa55b766b4b7cd091973b31f64896861ff6449))
+* **navigation:** update DropdownMenuTrigger to use render prop for better compatibility ([14eb69b](https://github.com/carlonicora/nextjs-jsonapi/commit/14eb69b36ce92d88184c0a133884131023534d0c))
+
+### 💎 Styles
+
+* apply linter formatting to fiscal components ([25ed230](https://github.com/carlonicora/nextjs-jsonapi/commit/25ed230152778c7b88824e46c06d3ccebf45d506))
+* **company:** improve formatting and consistency in CompanyContent component ([c01fbf8](https://github.com/carlonicora/nextjs-jsonapi/commit/c01fbf82cfabe36868637babe8b2ac8fcdf4bc1f))
+
+### 📦 Code Refactoring
+
+* **company:** simplify CompanyEditor and CompanyConfigurationEditor components with EditorSheet integration ([6b25878](https://github.com/carlonicora/nextjs-jsonapi/commit/6b2587830ccbd9dda991bbb7716b2d11ced076b9))
+
 ## [1.65.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.65.0...v1.65.1) (2026-03-14)
 
 ### 🐛 Bug Fixes
