@@ -1,4 +1,5 @@
 export { EntityAvatar } from "./EntityAvatar";
+export { EditableAvatar } from "./EditableAvatar";
 export { TableCellAvatar } from "./TableCellAvatar";
 export { getInitials } from "../utils/getInitials";
 export * from "./containers";
