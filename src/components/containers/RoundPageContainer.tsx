@@ -62,7 +62,7 @@ export function RoundPageContainer({
             )}
             <div className="flex h-full w-full overflow-hidden">
               <div className={cn(`grow overflow-y-auto p-4`, fullWidth && `p-0`)}>
-                <div className={cn(`mx-auto max-w-6xl space-y-12 p-8`, fullWidth && `max-w-full w-full p-0`)}>
+                <div className={cn(`mx-auto max-w-6xl space-y-12 p-8`, fullWidth && `max-w-full w-full p-0 h-full`)}>
                   {tabs ? (
                     <Tabs
                       value={activeTab}
