@@ -18,6 +18,17 @@ export class Company extends AbstractApiData implements CompanyInterface {
   private _features?: FeatureInterface[];
   private _modules?: ModuleInterface[];
 
+  private _legal_address?: string;
+  private _street_number?: string;
+  private _street?: string;
+  private _city?: string;
+  private _province?: string;
+  private _region?: string;
+  private _postcode?: string;
+  private _country?: string;
+  private _country_code?: string;
+  private _fiscal_data?: string;
+
   get name(): string {
     if (this._name === undefined) throw new Error("Name is not defined");
     return this._name;
@@ -59,6 +70,46 @@ export class Company extends AbstractApiData implements CompanyInterface {
     return this._configurations;
   }
 
+  get legal_address(): string | undefined {
+    return this._legal_address;
+  }
+
+  get street_number(): string | undefined {
+    return this._street_number;
+  }
+
+  get street(): string | undefined {
+    return this._street;
+  }
+
+  get city(): string | undefined {
+    return this._city;
+  }
+
+  get province(): string | undefined {
+    return this._province;
+  }
+
+  get region(): string | undefined {
+    return this._region;
+  }
+
+  get postcode(): string | undefined {
+    return this._postcode;
+  }
+
+  get country(): string | undefined {
+    return this._country;
+  }
+
+  get country_code(): string | undefined {
+    return this._country_code;
+  }
+
+  get fiscal_data(): string | undefined {
+    return this._fiscal_data;
+  }
+
   rehydrate(data: JsonApiHydratedDataInterface): this {
     super.rehydrate(data);
 
@@ -72,6 +123,17 @@ export class Company extends AbstractApiData implements CompanyInterface {
     this._monthlyTokens = data.jsonApi.attributes.monthlyTokens ?? 0;
     this._availableMonthlyTokens = data.jsonApi.attributes.availableMonthlyTokens ?? 0;
     this._availableExtraTokens = data.jsonApi.attributes.availableExtraTokens ?? 0;
+
+    this._legal_address = data.jsonApi.attributes.legal_address;
+    this._street_number = data.jsonApi.attributes.street_number;
+    this._street = data.jsonApi.attributes.street;
+    this._city = data.jsonApi.attributes.city;
+    this._province = data.jsonApi.attributes.province;
+    this._region = data.jsonApi.attributes.region;
+    this._postcode = data.jsonApi.attributes.postcode;
+    this._country = data.jsonApi.attributes.country;
+    this._country_code = data.jsonApi.attributes.country_code;
+    this._fiscal_data = data.jsonApi.attributes.fiscal_data;
 
     this._features = this._readIncluded<FeatureInterface>(data, "features", Modules.Feature) as FeatureInterface[];
     this._modules = this._readIncluded<ModuleInterface>(data, "modules", Modules.Module) as ModuleInterface[];
@@ -99,6 +161,17 @@ export class Company extends AbstractApiData implements CompanyInterface {
       response.data.attributes.availableMonthlyTokens = data.availableMonthlyTokens;
     if (data.availableExtraTokens !== undefined)
       response.data.attributes.availableExtraTokens = data.availableExtraTokens;
+
+    if (data.legal_address !== undefined) response.data.attributes.legal_address = data.legal_address;
+    if (data.street_number !== undefined) response.data.attributes.street_number = data.street_number;
+    if (data.street !== undefined) response.data.attributes.street = data.street;
+    if (data.city !== undefined) response.data.attributes.city = data.city;
+    if (data.province !== undefined) response.data.attributes.province = data.province;
+    if (data.region !== undefined) response.data.attributes.region = data.region;
+    if (data.postcode !== undefined) response.data.attributes.postcode = data.postcode;
+    if (data.country !== undefined) response.data.attributes.country = data.country;
+    if (data.country_code !== undefined) response.data.attributes.country_code = data.country_code;
+    if (data.fiscal_data !== undefined) response.data.attributes.fiscal_data = data.fiscal_data;
 
     if (data.featureIds && data.featureIds.length > 0) {
       response.data.relationships.features = {
