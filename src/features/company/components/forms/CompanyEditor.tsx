@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { setCookie } from "cookies-next";
 import { UploadIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -35,6 +34,7 @@ import { S3Interface } from "../../../s3";
 import { S3Service } from "../../../s3/data/s3.service";
 import { UserInterface } from "../../../user";
 import { useCurrentUserContext } from "../../../user/contexts";
+import { UserService } from "../../../user/data/user.service";
 import { CompanyInput, CompanyInterface } from "../../data";
 import { CompanyService } from "../../data/company.service";
 
@@ -45,7 +45,7 @@ type CompanyEditorProps = {
 };
 
 function CompanyEditorInternal({ company, propagateChanges, onRevalidate }: CompanyEditorProps) {
-  const { hasRole } = useCurrentUserContext<UserInterface>();
+  const { hasRole, setUser } = useCurrentUserContext<UserInterface>();
   const router = useI18nRouter();
   const [open, setOpen] = useState<boolean>(false);
   const [features, setFeatures] = useState<FeatureInterface[]>([]);
@@ -113,11 +113,15 @@ function CompanyEditorInternal({ company, propagateChanges, onRevalidate }: Comp
     try {
       const updatedCompany = company ? await CompanyService.update(payload) : await CompanyService.create(payload);
 
+      const fullUser = await UserService.findFullUser();
+      if (fullUser) {
+        setUser(fullUser);
+      }
+
       if (onRevalidate) {
         await onRevalidate(generateUrl({ page: Modules.Company, id: updatedCompany.id, language: `[locale]` }));
       }
       if (company && propagateChanges) {
-        setCookie("reloadData", "true", { path: "/" });
         propagateChanges(updatedCompany);
         setOpen(false);
       } else {
