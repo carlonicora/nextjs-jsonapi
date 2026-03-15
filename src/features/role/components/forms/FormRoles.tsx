@@ -30,7 +30,7 @@ export function FormRoles({ form, id, name, roles }: FormRolesProps) {
                 if (role.requiredFeature && !hasAccesToFeature(role.requiredFeature.id)) return null;
 
                 return (
-                  <div key={role.id}>
+                  <div key={role.id} className="flex w-full">
                     <Checkbox
                       defaultChecked={(field.value as string[]).some((roleId: string) => roleId === role.id)}
                       onCheckedChange={(checked) => {
