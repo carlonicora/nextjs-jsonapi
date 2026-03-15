@@ -225,6 +225,15 @@ export class UserService extends AbstractService {
     });
   }
 
+  static async patch(params: { id: string } & Partial<Omit<UserInput, "id">>): Promise<UserInterface> {
+    return this.callApi({
+      type: Modules.User,
+      method: HttpMethod.PATCH,
+      endpoint: new EndpointCreator({ endpoint: Modules.User, id: params.id }).generate(),
+      input: params,
+    });
+  }
+
   static async patchRate(params: UserInput): Promise<UserInterface> {
     return this.callApi({
       type: Modules.User,

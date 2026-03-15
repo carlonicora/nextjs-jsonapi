@@ -126,15 +126,14 @@ export class User extends AbstractApiData implements UserInterface, SearchResult
       data: {
         type: Modules.User.name,
         id: data.id,
-        attributes: {
-          name: data.name,
-        },
+        attributes: {},
         meta: {},
         relationships: {},
       },
       included: [],
     };
 
+    if (data.name !== undefined) response.data.attributes.name = data.name;
     if (data.email !== undefined) response.data.attributes.email = data.email;
     if (data.title !== undefined) response.data.attributes.title = data.title;
     if (data.bio !== undefined) response.data.attributes.bio = data.bio;
@@ -142,7 +141,7 @@ export class User extends AbstractApiData implements UserInterface, SearchResult
     if (data.password !== undefined) response.data.attributes.password = data.password;
     if (data.sendInvitationEmail) response.data.attributes.sendInvitationEmail = true;
     if (data.adminCreated) response.data.attributes.adminCreated = true;
-    if (data.avatar) response.data.attributes.avatar = data.avatar;
+    if (data.avatar !== undefined) response.data.attributes.avatar = data.avatar;
     if (data.rate !== undefined) response.data.attributes.rate = data.rate;
 
     if (data.roleIds) {
