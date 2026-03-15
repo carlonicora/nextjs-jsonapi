@@ -5,7 +5,7 @@ import { setCookie } from "cookies-next";
 import { UploadIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DropzoneOptions } from "react-dropzone";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { v4 } from "uuid";
@@ -19,7 +19,11 @@ import {
   FileUploader,
   FormFeatures,
   FormInput,
+  FormPlaceAutocomplete,
+  ItalianFiscalData,
+  parseFiscalData,
 } from "../../../../components";
+import type { FiscalDataHandle } from "../../../../components";
 import { Modules } from "../../../../core";
 import { usePageUrlGenerator } from "../../../../hooks";
 import { useI18nRouter } from "../../../../i18n";
@@ -50,6 +54,8 @@ function CompanyEditorInternal({ company, propagateChanges, onRevalidate }: Comp
   const [contentType, setContentType] = useState<string | null>(null);
   const t = useTranslations();
   const generateUrl = usePageUrlGenerator();
+  const fiscalRef = useRef<FiscalDataHandle>(null);
+  const addressComponentsRef = useRef<Record<string, string>>({});
 
   const formSchema = z.object({
     id: z.uuidv4(),
@@ -59,6 +65,7 @@ function CompanyEditorInternal({ company, propagateChanges, onRevalidate }: Comp
     featureIds: z.array(z.string()).optional(),
     moduleIds: z.array(z.string()).optional(),
     logo: z.string().optional(),
+    legal_address: z.string().optional(),
   });
 
   const form = useForm({
@@ -69,6 +76,7 @@ function CompanyEditorInternal({ company, propagateChanges, onRevalidate }: Comp
       featureIds: company?.features.map((feature) => feature.id) || [],
       moduleIds: company?.modules.map((module) => module.id) || [],
       logo: company?.logo || "",
+      legal_address: company?.legal_address || "",
     },
   });
 
@@ -87,12 +95,19 @@ function CompanyEditorInternal({ company, propagateChanges, onRevalidate }: Comp
       });
     }
 
+    if (fiscalRef.current && !fiscalRef.current.validate()) {
+      return;
+    }
+
     const payload: CompanyInput = {
       id: company?.id ?? v4(),
       name: values.name,
       logo: files && contentType ? values.logo : undefined,
       featureIds: values.featureIds,
       moduleIds: values.moduleIds,
+      legal_address: values.legal_address,
+      ...addressComponentsRef.current,
+      fiscal_data: fiscalRef.current ? JSON.stringify(fiscalRef.current.getData()) : undefined,
     };
 
     try {
@@ -220,6 +235,19 @@ function CompanyEditorInternal({ company, propagateChanges, onRevalidate }: Comp
                   name={t(`company.fields.name.label`)}
                   placeholder={t(`company.fields.name.placeholder`)}
                 />
+                <FormPlaceAutocomplete
+                  form={form}
+                  id="legal_address"
+                  name={t(`company.fields.legal_address.label`)}
+                  placeholder={t(`company.fields.legal_address.placeholder`)}
+                  onPlaceSelect={(place) => {
+                    if (place.addressComponents) {
+                      addressComponentsRef.current = { ...place.addressComponents };
+                    }
+                  }}
+                />
+                <h3 className="mt-2 text-sm font-semibold">{t(`company.sections.fiscal_data`)}</h3>
+                <ItalianFiscalData ref={fiscalRef} initialData={parseFiscalData(company?.fiscal_data)} />
               </div>
               {canAccessFeatures && (
                 <div className={`flex w-96 flex-col justify-start gap-y-4`}>
