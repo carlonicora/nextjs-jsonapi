@@ -1,3 +1,21 @@
+## [1.67.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.66.0...v1.67.0) (2026-03-16)
+
+### 🚀 Features
+
+* move EditableAvatar component to nextjs-jsonapi library ([163a570](https://github.com/carlonicora/nextjs-jsonapi/commit/163a5701b6c7f4ae2e5155c9d939157189177b68))
+* replace UserDetails with UserContent following modern Content pattern ([c2462db](https://github.com/carlonicora/nextjs-jsonapi/commit/c2462dba6bbf1cc74a9360c7a4b7c3cb3f4ac100))
+
+### 🐛 Bug Fixes
+
+* **company:** streamline company update/create logic in CompanyEditorInternal ([5866190](https://github.com/carlonicora/nextjs-jsonapi/commit/58661909a832a2be006ebb742e5ae1c195a47608))
+* make User.createJsonApi conditional and add UserService.patch for safe partial updates ([87b83a6](https://github.com/carlonicora/nextjs-jsonapi/commit/87b83a6e0543b55ca126ab92266b4d8a1e6dc033))
+
+### 📦 Code Refactoring
+
+* **role:** improve layout and accessibility in FormRoles component ([bef3e4f](https://github.com/carlonicora/nextjs-jsonapi/commit/bef3e4f72afb18b4c96f92deb89b2394c988216a))
+* update user components ([cf2ebef](https://github.com/carlonicora/nextjs-jsonapi/commit/cf2ebef44508c3338647d901a6b2506267bbf8af))
+* **user:** enhance UserEditor component structure and logic for better maintainability ([0ee2e06](https://github.com/carlonicora/nextjs-jsonapi/commit/0ee2e062a98b9f02aa9275a9c57b0c7a554ff929))
+
 ## [1.66.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.65.1...v1.66.0) (2026-03-15)
 
 ### 🚀 Features
