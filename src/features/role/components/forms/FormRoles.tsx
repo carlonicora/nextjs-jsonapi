@@ -22,7 +22,7 @@ export function FormRoles({ form, id, name, roles }: FormRolesProps) {
     <div className="flex w-full flex-col">
       <FormFieldWrapper form={form} name={id} label={name}>
         {(field) => (
-          <div>
+          <div className="flex w-full flex-col gap-y-1">
             {roles
               .filter((role: RoleInterface) => role.isSelectable)
               .sort((a: RoleInterface, b: RoleInterface) => a.name.localeCompare(b.name))
@@ -30,9 +30,10 @@ export function FormRoles({ form, id, name, roles }: FormRolesProps) {
                 if (role.requiredFeature && !hasAccesToFeature(role.requiredFeature.id)) return null;
 
                 return (
-                  <div key={role.id} className="flex w-full">
+                  <div key={role.id} className="flex w-full items-center">
                     <Checkbox
-                      defaultChecked={(field.value as string[]).some((roleId: string) => roleId === role.id)}
+                      id={`role-${role.id}`}
+                      checked={(field.value as string[]).some((roleId: string) => roleId === role.id)}
                       onCheckedChange={(checked) => {
                         if (checked) {
                           form.setValue(id, [...(field.value as string[]), role.id]);
@@ -46,7 +47,7 @@ export function FormRoles({ form, id, name, roles }: FormRolesProps) {
                     />
                     <Tooltip>
                       <TooltipTrigger>
-                        <FieldLabel className="ml-3 font-normal">
+                        <FieldLabel htmlFor={`role-${role.id}`} className="ml-3 cursor-pointer font-normal">
                           {t(`role.roles`, { role: role.id.replaceAll(`-`, ``) })}
                         </FieldLabel>
                       </TooltipTrigger>
