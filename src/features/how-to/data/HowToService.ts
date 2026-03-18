@@ -10,12 +10,14 @@ export class HowToService extends AbstractService {
     });
   }
 
-  static async findMany(params: {
-    search?: string;
-    fetchAll?: boolean;
-    next?: NextRef;
-    prev?: PreviousRef;
-  } = {}): Promise<HowToInterface[]> {
+  static async findMany(
+    params: {
+      search?: string;
+      fetchAll?: boolean;
+      next?: NextRef;
+      prev?: PreviousRef;
+    } = {},
+  ): Promise<HowToInterface[]> {
     const endpoint = new EndpointCreator({ endpoint: Modules.HowTo });
 
     if (params.fetchAll) endpoint.addAdditionalParam("fetchAll", "true");

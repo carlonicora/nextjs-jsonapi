@@ -61,8 +61,7 @@ export class HowTo extends Content implements HowToInterface {
 
     super.addContentInput(response, data);
 
-    if (data.description !== undefined)
-      response.data.attributes.description = JSON.stringify(data.description);
+    if (data.description !== undefined) response.data.attributes.description = JSON.stringify(data.description);
     if (data.pages !== undefined) response.data.attributes.pages = data.pages;
 
     return response;

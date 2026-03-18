@@ -17,15 +17,7 @@ import {
   useEditorDialog,
   FormInput,
 } from "../../../../components";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  Form,
-  Button,
-  Input,
-  Label,
-} from "../../../../shadcnui";
+import { Dialog, DialogContent, DialogTrigger, Form, Button, Input, Label } from "../../../../shadcnui";
 import { BlockNoteEditorContainer } from "../../../../components";
 import { Modules } from "../../../../core";
 import { useI18nRouter, usePageUrlGenerator } from "../../../../hooks";
