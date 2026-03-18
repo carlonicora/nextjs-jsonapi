@@ -39,7 +39,11 @@ export function UserContent({ user }: UserContentProps) {
               id: user.id,
               name: user.name,
               email: user.email,
+              title: user.title,
+              bio: user.bio,
+              phone: user.phone,
               avatar: imageKey,
+              roleIds: user.roles?.map((r) => r.id),
             });
             setUser(updated);
           }}
