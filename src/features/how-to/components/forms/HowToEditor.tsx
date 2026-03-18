@@ -12,9 +12,7 @@ import { EditorSheet, FormInput } from "../../../../components";
 import { BlockNoteEditorContainer } from "../../../../components";
 import { Modules } from "../../../../core";
 import { useI18nRouter } from "../../../../hooks";
-import { Action } from "../../../../permissions";
 import { Button, Input, Label } from "../../../../shadcnui";
-import { useCurrentUserContext } from "../../../user/contexts";
 import { HowTo } from "../../data/HowTo";
 import { HowToInput, HowToInterface } from "../../data/HowToInterface";
 import { HowToService } from "../../data/HowToService";
@@ -108,9 +106,7 @@ function HowToEditorInternal({
           pages: HowTo.serializePagesToString(values.pages),
         };
 
-        const updatedHowTo = howTo
-          ? await HowToService.update(payload)
-          : await HowToService.create(payload);
+        const updatedHowTo = howTo ? await HowToService.update(payload) : await HowToService.create(payload);
 
         return updatedHowTo;
       }}
@@ -173,15 +169,5 @@ function HowToEditorInternal({
 }
 
 export default function HowToEditor(props: HowToEditorProps) {
-  const { hasPermissionToModule } = useCurrentUserContext();
-  if (
-    !hasPermissionToModule({
-      module: Modules.HowTo,
-      action: props.howTo ? Action.Update : Action.Create,
-      data: props.howTo,
-    })
-  )
-    return null;
-
   return <HowToEditorInternal {...props} />;
 }
