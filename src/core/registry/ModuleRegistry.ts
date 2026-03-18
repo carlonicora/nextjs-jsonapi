@@ -123,6 +123,24 @@ class ModuleRegistryClass {
     throw new Error(`Module not found: ${moduleName}`);
   }
 
+  getAllPageUrls(): { id: string; text: string }[] {
+    if (this._modules.size === 0) {
+      tryBootstrap();
+    }
+
+    const seen = new Set<string>();
+    const result: { id: string; text: string }[] = [];
+    for (const [key, module] of this._modules.entries()) {
+      const m = module as ModuleWithPermissions;
+      if (m.pageUrl && !seen.has(m.pageUrl)) {
+        seen.add(m.pageUrl);
+        result.push({ id: m.pageUrl, text: key });
+        result.push({ id: `${m.pageUrl}/:id`, text: `${key} (detail)` });
+      }
+    }
+    return result.sort((a, b) => a.text.localeCompare(b.text));
+  }
+
   findByModelName(modelName: string): ModuleWithPermissions {
     // Direct lookup by registry key (e.g., "Article", "Document")
     let module = this._modules.get(modelName);

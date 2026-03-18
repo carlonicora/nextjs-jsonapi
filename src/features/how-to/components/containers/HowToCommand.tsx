@@ -25,6 +25,16 @@ import { HowToInterface } from "../../data/HowToInterface";
 import { HowToService } from "../../data/HowToService";
 import HowToCommandViewer from "./HowToCommandViewer";
 
+function matchPage(pathname: string, pattern: string): boolean {
+  if (pattern.includes(":")) {
+    const pathSegments = pathname.split("/").filter(Boolean);
+    const patternSegments = pattern.split("/").filter(Boolean);
+    if (pathSegments.length !== patternSegments.length) return false;
+    return patternSegments.every((seg, i) => (seg.startsWith(":") ? true : seg === pathSegments[i]));
+  }
+  return pathname.toLowerCase().includes(pattern.toLowerCase());
+}
+
 type HowToCommandProps = {
   /** Current pathname for page relevance matching */
   pathname: string;
@@ -60,7 +70,7 @@ export default function HowToCommand({ pathname, extraGroups, onStartChat }: How
 
     (data.data as HowToInterface[]).forEach((howTo) => {
       const pages = HowTo.parsePagesFromString(howTo.pages);
-      const isRelevant = pages.some((page) => page && pathname.toLowerCase().includes(page.toLowerCase()));
+      const isRelevant = pages.some((page) => page && matchPage(pathname, page));
       if (isRelevant) {
         relevant.push(howTo);
       } else {
