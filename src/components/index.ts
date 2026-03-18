@@ -19,6 +19,7 @@ export * from "../features/auth/components";
 // Billing components moved to separate entry point: @carlonicora/nextjs-jsonapi/billing
 export * from "../features/company/components";
 export * from "../features/content/components";
+export * from "../features/how-to/components";
 export * from "../features/feature/components";
 export * from "../features/notification/components";
 export * from "../features/onboarding/components";

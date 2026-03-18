@@ -59,6 +59,8 @@ export * from "../features/company/company.module";
 export * from "../features/company/data";
 export * from "../features/content/content.module";
 export * from "../features/content/data";
+export * from "../features/how-to/HowToModule";
+export * from "../features/how-to/data";
 export * from "../features/feature/data";
 export * from "../features/feature/feature.module";
 export * from "../features/module";
