@@ -1,7 +1,5 @@
-import { AbstractService, HttpMethod, NextRef, PreviousRef } from "@carlonicora/nextjs-jsonapi/core";
-import { EndpointCreator } from "@carlonicora/nextjs-jsonapi/core";
-import { HowToInput, HowToInterface } from "@/features/essentials/how-to/data/HowToInterface";
-import { Modules } from "@carlonicora/nextjs-jsonapi/core";
+import { AbstractService, EndpointCreator, HttpMethod, Modules, NextRef, PreviousRef } from "../../../core";
+import { HowToInput, HowToInterface } from "./HowToInterface";
 
 export class HowToService extends AbstractService {
   static async findOne(params: { id: string }): Promise<HowToInterface> {
@@ -17,7 +15,7 @@ export class HowToService extends AbstractService {
     fetchAll?: boolean;
     next?: NextRef;
     prev?: PreviousRef;
-  }): Promise<HowToInterface[]> {
+  } = {}): Promise<HowToInterface[]> {
     const endpoint = new EndpointCreator({ endpoint: Modules.HowTo });
 
     if (params.fetchAll) endpoint.addAdditionalParam("fetchAll", "true");
@@ -33,31 +31,6 @@ export class HowToService extends AbstractService {
     });
   }
 
-  static async findManyByAuthor(params: {
-    authorId: string;
-    search?: string;
-    fetchAll?: boolean;
-    next?: NextRef;
-    prev?: PreviousRef;
-  }): Promise<HowToInterface[]> {
-    const endpoint = new EndpointCreator({
-      endpoint: Modules.User,
-      id: params.authorId,
-      childEndpoint: Modules.HowTo,
-    });
-
-    if (params.fetchAll) endpoint.addAdditionalParam("fetchAll", "true");
-    if (params.search) endpoint.addAdditionalParam("search", params.search);
-    if (Modules.HowTo.inclusions?.lists?.fields) endpoint.limitToFields(Modules.HowTo.inclusions.lists.fields);
-    if (Modules.HowTo.inclusions?.lists?.types) endpoint.limitToType(Modules.HowTo.inclusions.lists.types);
-
-    return this.callApi({
-      type: Modules.HowTo,
-      method: HttpMethod.GET,
-      endpoint: endpoint.generate(),
-      next: params.next,
-    });
-  }
   static async create(params: HowToInput): Promise<HowToInterface> {
     return this.callApi({
       type: Modules.HowTo,
