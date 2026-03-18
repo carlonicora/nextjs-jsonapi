@@ -1,3 +1,30 @@
+## [1.69.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.68.0...v1.69.0) (2026-03-18)
+
+### 🚀 Features
+
+* **how-to:** adapt interface and model to extend Content ([e2b6ca5](https://github.com/carlonicora/nextjs-jsonapi/commit/e2b6ca5afb44f4a507c7034d9488593944600c46))
+* **how-to:** adapt service with library-relative imports ([ac5187e](https://github.com/carlonicora/nextjs-jsonapi/commit/ac5187e3e6d1e4bba95fd77112325caac5373650))
+* **how-to:** add fields, module, barrel exports and registry ([62dcb9d](https://github.com/carlonicora/nextjs-jsonapi/commit/62dcb9d6a623f4b0cf3052515d06938d6e289cdc))
+* **how-to:** add fullWidth prop to HowToList and update HowToListContainer ([23bf6ef](https://github.com/carlonicora/nextjs-jsonapi/commit/23bf6efe198b1a98dad4299da78b0bd39d6fd65a))
+* **how-to:** add moduleId and icon to HowToModule ([92b188b](https://github.com/carlonicora/nextjs-jsonapi/commit/92b188be4e49d641a765aff43c18dc6471ae3b46))
+* **how-to:** add UI components with library-relative imports ([0367462](https://github.com/carlonicora/nextjs-jsonapi/commit/0367462bce964899ed425d3297047303b7ba6bbd))
+* **how-to:** raw relocation of generated frontend module ([c5ac96d](https://github.com/carlonicora/nextjs-jsonapi/commit/c5ac96db22edee615727d227a97e6261c797566b))
+* **how-to:** replace page text inputs with searchable dropdowns ([0f13ced](https://github.com/carlonicora/nextjs-jsonapi/commit/0f13ceda8f16889494e4b02178641a797620949c))
+* **howto:** update pageUrl to administration path ([3512e31](https://github.com/carlonicora/nextjs-jsonapi/commit/3512e31788785f376734ffd6264a5fd438b6a1fb))
+
+### 🐛 Bug Fixes
+
+* **how-to:** remove permission check that hid create button ([f2fec91](https://github.com/carlonicora/nextjs-jsonapi/commit/f2fec91fb102fcc55f5a74a661503f165c2dda3c))
+* use string type for HowTo table generator registration ([07df9d5](https://github.com/carlonicora/nextjs-jsonapi/commit/07df9d557cf0cb8532a9df176de832d1fb84f694))
+
+### 💎 Styles
+
+* auto-format HowTo files per linter rules ([6bfb455](https://github.com/carlonicora/nextjs-jsonapi/commit/6bfb455be539ebbb8bf129ac84c7a5347e617f0b))
+
+### 📦 Code Refactoring
+
+* **how-to:** use EditorSheet instead of custom Dialog in HowToEditor ([1c26470](https://github.com/carlonicora/nextjs-jsonapi/commit/1c264704aec6dcd081d34e07b99a643cccc60ba8))
+
 ## [1.68.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.67.0...v1.68.0) (2026-03-18)
 
 ### 🚀 Features
