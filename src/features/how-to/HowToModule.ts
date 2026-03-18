@@ -4,7 +4,7 @@ import { HowTo } from "./data/HowTo";
 
 export const HowToModule = (factory: ModuleFactory) =>
   factory({
-    pageUrl: "/howtos",
+    pageUrl: "/administration/howtos",
     name: "howtos",
     model: HowTo,
     inclusions: {
