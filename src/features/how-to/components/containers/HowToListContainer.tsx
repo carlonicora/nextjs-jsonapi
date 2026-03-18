@@ -6,8 +6,8 @@ import HowToList from "../lists/HowToList";
 
 function HowToListContainerInternal() {
   return (
-    <RoundPageContainer module={Modules.HowTo}>
-      <HowToList />
+    <RoundPageContainer module={Modules.HowTo} fullWidth>
+      <HowToList fullWidth />
     </RoundPageContainer>
   );
 }

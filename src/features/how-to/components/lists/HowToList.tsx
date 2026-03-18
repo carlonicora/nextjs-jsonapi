@@ -11,7 +11,11 @@ import { HowToService } from "../../data/HowToService";
 import "../../hooks/useHowToTableStructure";
 import HowToEditor from "../forms/HowToEditor";
 
-export default function HowToList() {
+type HowToListProps = {
+  fullWidth?: boolean;
+};
+
+export default function HowToList({ fullWidth }: HowToListProps) {
   const t = useTranslations();
 
   const data: DataListRetriever<HowToInterface> = useDataListRetriever({
@@ -29,6 +33,7 @@ export default function HowToList() {
       tableGeneratorType={Modules.HowTo}
       functions={functions}
       title={t(`entities.howtos`, { count: 2 })}
+      fullWidth={fullWidth}
     />
   );
 }
