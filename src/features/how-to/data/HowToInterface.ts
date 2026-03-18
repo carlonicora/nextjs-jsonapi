@@ -1,17 +1,11 @@
-import { UserInterface } from "@carlonicora/nextjs-jsonapi/core";
-import { ContentInput, ContentInterface } from "@/features/content/data/ContentInterface";
+import { ContentInput, ContentInterface } from "../../content/data/content.interface";
 
 export type HowToInput = ContentInput & {
-  id: string;
-  description: string;
-  pages?: string;
-  aiStatus?: string;
-  authorId: string;
+  description?: any;
+  pages?: string | undefined | null;
 };
 
 export interface HowToInterface extends ContentInterface {
-  get description(): string;
-  get pages(): string;
-  get aiStatus(): string;
-  get author(): UserInterface;
+  get description(): any;
+  get pages(): string | undefined;
 }

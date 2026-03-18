@@ -1,31 +1,48 @@
-import { HowToInput, HowToInterface } from "@/features/essentials/how-to/data/HowToInterface";
-import { UserInterface } from "@carlonicora/nextjs-jsonapi/core";
-import { Content } from "@/features/content/data/Content";
-import { JsonApiHydratedDataInterface, Modules } from "@carlonicora/nextjs-jsonapi/core";
+import { JsonApiHydratedDataInterface, Modules } from "../../../core";
+import { Content } from "../../content/data/content";
+import { HowToInput, HowToInterface } from "./HowToInterface";
 
 export class HowTo extends Content implements HowToInterface {
-  private _description?: string;
+  private _description?: any;
   private _pages?: string;
-  private _aiStatus?: string;
 
-  get description(): string {
-    return this._description ?? "";
+  /**
+   * Parse pages from backend JSON string (handles legacy single string + JSON array)
+   */
+  static parsePagesFromString(pagesStr?: string): string[] {
+    if (!pagesStr) return [];
+    try {
+      const parsed = JSON.parse(pagesStr);
+      return Array.isArray(parsed) ? parsed : [pagesStr];
+    } catch {
+      // Legacy: treat as single page if not valid JSON
+      return pagesStr ? [pagesStr] : [];
+    }
   }
 
-  get pages(): string {
-    return this._pages ?? "";
+  /**
+   * Serialize pages array to JSON string for backend
+   */
+  static serializePagesToString(pages: string[]): string | undefined {
+    const filtered = pages.filter((p) => p.trim());
+    return filtered.length > 0 ? JSON.stringify(filtered) : undefined;
   }
 
-  get aiStatus(): string {
-    return this._aiStatus ?? "";
+  get description(): any {
+    return this._description;
+  }
+
+  get pages(): string | undefined {
+    return this._pages;
   }
 
   rehydrate(data: JsonApiHydratedDataInterface): this {
     super.rehydrate(data);
 
-    this._description = data.jsonApi.attributes.description;
+    this._description = data.jsonApi.attributes.description
+      ? JSON.parse(data.jsonApi.attributes.description)
+      : undefined;
     this._pages = data.jsonApi.attributes.pages;
-    this._aiStatus = data.jsonApi.attributes.aiStatus;
 
     return this;
   }
@@ -44,18 +61,9 @@ export class HowTo extends Content implements HowToInterface {
 
     super.addContentInput(response, data);
 
-    if (data.description !== undefined) response.data.attributes.description = data.description;
+    if (data.description !== undefined)
+      response.data.attributes.description = JSON.stringify(data.description);
     if (data.pages !== undefined) response.data.attributes.pages = data.pages;
-    if (data.aiStatus !== undefined) response.data.attributes.aiStatus = data.aiStatus;
-
-    if (data.authorId) {
-      response.data.relationships.author = {
-        data: {
-          type: Modules.User.name,
-          id: data.authorId,
-        },
-      };
-    }
 
     return response;
   }
