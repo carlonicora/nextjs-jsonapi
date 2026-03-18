@@ -1,3 +1,14 @@
+## [1.68.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.67.0...v1.68.0) (2026-03-18)
+
+### 🚀 Features
+
+* use dedicated patchAvatar endpoint for user avatar updates ([5fef9a7](https://github.com/carlonicora/nextjs-jsonapi/commit/5fef9a74e1eb6ce20dbb226edbc476ed424cfd7e))
+
+### 🐛 Bug Fixes
+
+* pass all user fields in avatar update to prevent data wipe ([b2325d7](https://github.com/carlonicora/nextjs-jsonapi/commit/b2325d73df40a128f38f842c6b017c980e0e7886))
+* use UserService.update with required fields for avatar patching ([419d292](https://github.com/carlonicora/nextjs-jsonapi/commit/419d292b4dc70428f41e2cf9113b11520bb14a90))
+
 ## [1.67.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.66.0...v1.67.0) (2026-03-16)
 
 ### 🚀 Features
