@@ -35,16 +35,7 @@ export function UserContent({ user }: UserContentProps) {
           fallback={getInitials(user.name)}
           alt={user.name}
           patchImage={async (imageKey) => {
-            const updated = await UserService.update({
-              id: user.id,
-              name: user.name,
-              email: user.email,
-              title: user.title,
-              bio: user.bio,
-              phone: user.phone,
-              avatar: imageKey,
-              roleIds: user.roles?.map((r) => r.id),
-            });
+            const updated = await UserService.patchAvatar({ id: user.id, avatar: imageKey });
             setUser(updated);
           }}
           className="h-24 w-24"
