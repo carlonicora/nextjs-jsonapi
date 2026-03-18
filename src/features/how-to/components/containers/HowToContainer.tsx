@@ -1,11 +1,11 @@
 "use client";
 
-import HowToContent from "@/features/essentials/how-to/components/details/HowToContent";
-import HowToDetails from "@/features/essentials/how-to/components/details/HowToDetails";
-import { useHowToContext } from "@/features/essentials/how-to/contexts/HowToContext";
-import { HowToInterface } from "@/features/essentials/how-to/data/HowToInterface";
-import { RoundPageContainer } from "@carlonicora/nextjs-jsonapi/components";
-import { Modules } from "@carlonicora/nextjs-jsonapi/core";
+import { RoundPageContainer } from "../../../../components";
+import { Modules } from "../../../../core";
+import { useHowToContext } from "../../contexts/HowToContext";
+import { HowToInterface } from "../../data/HowToInterface";
+import HowToContent from "../details/HowToContent";
+import HowToDetails from "../details/HowToDetails";
 
 type HowToContainerProps = {
   howTo: HowToInterface;

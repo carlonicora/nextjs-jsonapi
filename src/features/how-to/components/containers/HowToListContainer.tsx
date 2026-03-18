@@ -1,8 +1,8 @@
 "use client";
 
-import HowToList from "@/features/essentials/how-to/components/lists/HowToList";
-import { RoundPageContainer } from "@carlonicora/nextjs-jsonapi/components";
-import { Modules } from "@carlonicora/nextjs-jsonapi/core";
+import { RoundPageContainer } from "../../../../components";
+import { Modules } from "../../../../core";
+import HowToList from "../lists/HowToList";
 
 function HowToListContainerInternal() {
   return (

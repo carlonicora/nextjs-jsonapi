@@ -1,14 +1,14 @@
 "use client";
 
-import { HowToInterface } from "@/features/essentials/how-to/data/HowToInterface";
-import { HowToService } from "@/features/essentials/how-to/data/HowToService";
-import { DataListRetriever, useDataListRetriever, useDebounce } from "@carlonicora/nextjs-jsonapi/client";
-import { FormFieldWrapper, MultipleSelector } from "@carlonicora/nextjs-jsonapi/components";
-import { Option } from "@carlonicora/nextjs-jsonapi/components";
-import { Modules } from "@carlonicora/nextjs-jsonapi/core";
-import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useWatch } from "react-hook-form";
+
+import { FormFieldWrapper, MultipleSelector, Option } from "../../../../components";
+import { Modules } from "../../../../core";
+import { DataListRetriever, useDataListRetriever, useDebounce } from "../../../../hooks";
+import { HowToInterface } from "../../data/HowToInterface";
+import { HowToService } from "../../data/HowToService";
 
 type HowToMultiSelectType = {
   id: string;
@@ -61,7 +61,7 @@ export default function HowToMultiSelector({
         data.removeAdditionalParameter("search");
       }
     },
-    [data]
+    [data],
   );
 
   const debouncedUpdateSearch = useDebounce(updateSearch, 500);

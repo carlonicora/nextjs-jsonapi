@@ -1,20 +1,15 @@
 "use client";
 
-import { HowToFields } from "@/features/essentials/how-to/data/HowToFields";
-import { HowToInterface } from "@/features/essentials/how-to/data/HowToInterface";
-import { cellDate, cellId, ContributorsList } from "@carlonicora/nextjs-jsonapi/components";
-import { Modules } from "@carlonicora/nextjs-jsonapi/core";
-import { ContentInterface } from "@carlonicora/nextjs-jsonapi/core";
-import {
-  registerTableGenerator,
-  TableContent,
-  usePageUrlGenerator,
-  UseTableStructureHook,
-} from "@carlonicora/nextjs-jsonapi/client";
-import { Link, Tooltip, TooltipContent, TooltipTrigger } from "@carlonicora/nextjs-jsonapi/components";
 import { ColumnDef } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
+
+import { cellDate, cellId } from "../../../components";
+import { Modules } from "../../../core";
+import { registerTableGenerator, TableContent, usePageUrlGenerator, UseTableStructureHook } from "../../../hooks";
+import { Link } from "../../../shadcnui";
+import { HowToFields } from "../data/HowToFields";
+import { HowToInterface } from "../data/HowToInterface";
 
 export const useHowToTableStructure: UseTableStructureHook<HowToInterface, HowToFields> = (params) => {
   const t = useTranslations();
@@ -43,28 +38,10 @@ export const useHowToTableStructure: UseTableStructureHook<HowToInterface, HowTo
     [HowToFields.name]: () => ({
       id: "name",
       accessorKey: "name",
-      header: t(`features.howTo.fields.name.label`),
+      header: t(`howto.fields.name.label`),
       cell: ({ row }: { row: TableContent<HowToInterface> }) => {
         const howTo: HowToInterface = row.original.jsonApiData;
-        return (
-          <Tooltip>
-            <TooltipTrigger>
-              <Link href={generateUrl({ page: Modules.HowTo, id: howTo.id })}>{howTo.name}</Link>
-            </TooltipTrigger>
-            <TooltipContent>{howTo.tldr}</TooltipContent>
-          </Tooltip>
-        );
-      },
-      enableSorting: false,
-      enableHiding: false,
-    }),
-    [HowToFields.authors]: () => ({
-      id: "authors",
-      accessorKey: "authors",
-      header: t(`generic.relationships.author.label`),
-      cell: ({ row }: { row: TableContent<ContentInterface> }) => {
-        const content: ContentInterface = row.original.jsonApiData;
-        return <ContributorsList content={content} />;
+        return <Link href={generateUrl({ page: Modules.HowTo, id: howTo.id })}>{howTo.name}</Link>;
       },
       enableSorting: false,
       enableHiding: false,
@@ -72,33 +49,16 @@ export const useHowToTableStructure: UseTableStructureHook<HowToInterface, HowTo
     [HowToFields.description]: () => ({
       id: "description",
       accessorKey: "description",
-      header: t(`features.howTo.fields.description.label`),
-      cell: ({ row }: { row: TableContent<HowToInterface> }) => {
-        const howTo: HowToInterface = row.original.jsonApiData;
-        return <span>{howTo.description}</span>;
-      },
+      header: t(`howto.fields.description.label`),
+      cell: ({ row }: { row: TableContent<HowToInterface> }) => <>{row.getValue("description")}</>,
       enableSorting: false,
       enableHiding: false,
     }),
     [HowToFields.pages]: () => ({
       id: "pages",
       accessorKey: "pages",
-      header: t(`features.howTo.fields.pages.label`),
-      cell: ({ row }: { row: TableContent<HowToInterface> }) => {
-        const howTo: HowToInterface = row.original.jsonApiData;
-        return <span>{howTo.pages}</span>;
-      },
-      enableSorting: false,
-      enableHiding: false,
-    }),
-    [HowToFields.aiStatus]: () => ({
-      id: "aiStatus",
-      accessorKey: "aiStatus",
-      header: t(`features.howTo.fields.aiStatus.label`),
-      cell: ({ row }: { row: TableContent<HowToInterface> }) => {
-        const howTo: HowToInterface = row.original.jsonApiData;
-        return <span>{howTo.aiStatus}</span>;
-      },
+      header: t(`howto.fields.pages.label`),
+      cell: ({ row }: { row: TableContent<HowToInterface> }) => <>{row.getValue("pages")}</>,
       enableSorting: false,
       enableHiding: false,
     }),

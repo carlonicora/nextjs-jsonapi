@@ -1,15 +1,15 @@
 "use client";
 
-import HowToEditor from "@/features/essentials/how-to/components/forms/HowToEditor";
-import { HowToFields } from "@/features/essentials/how-to/data/HowToFields";
-import { HowToInterface } from "@/features/essentials/how-to/data/HowToInterface";
-import { HowToService } from "@/features/essentials/how-to/data/HowToService";
-import "@/features/essentials/how-to/hooks/useHowToTableStructure";
-import { ContentListTable } from "@carlonicora/nextjs-jsonapi/components";
-import { Modules } from "@carlonicora/nextjs-jsonapi/core";
-import { DataListRetriever, useDataListRetriever } from "@carlonicora/nextjs-jsonapi/client";
 import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
+import { ContentListTable } from "../../../../components";
+import { Modules } from "../../../../core";
+import { DataListRetriever, useDataListRetriever } from "../../../../hooks";
+import { HowToFields } from "../../data/HowToFields";
+import { HowToInterface } from "../../data/HowToInterface";
+import { HowToService } from "../../data/HowToService";
+import "../../hooks/useHowToTableStructure";
+import HowToEditor from "../forms/HowToEditor";
 
 export default function HowToList() {
   const t = useTranslations();
@@ -25,7 +25,7 @@ export default function HowToList() {
   return (
     <ContentListTable
       data={data}
-      fields={[HowToFields.name, HowToFields.author, HowToFields.updatedAt]}
+      fields={[HowToFields.name, HowToFields.pages, HowToFields.updatedAt]}
       tableGeneratorType={Modules.HowTo}
       functions={functions}
       title={t(`entities.howtos`, { count: 2 })}

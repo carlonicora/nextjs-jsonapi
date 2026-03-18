@@ -1,15 +1,16 @@
 "use client";
 
-import { useHowToContext } from "@/features/essentials/how-to/contexts/HowToContext";
-import { BlockNoteEditorContainer } from "@carlonicora/nextjs-jsonapi/components";
-import { Card } from "@carlonicora/nextjs-jsonapi/components";
+import { BlockNoteEditorContainer } from "../../../../components";
+import { Card } from "../../../../shadcnui";
+import { useHowToContext } from "../../contexts/HowToContext";
 
 export default function HowToContent() {
   const { howTo } = useHowToContext();
+  if (!howTo) return null;
 
   return (
     <Card className="flex w-full flex-col p-4">
-      <BlockNoteEditorContainer id={howTo.id} type="howTo" initialContent={howTo.content} />
+      <BlockNoteEditorContainer id={howTo.id} type="howto" initialContent={howTo.description} />
     </Card>
   );
 }

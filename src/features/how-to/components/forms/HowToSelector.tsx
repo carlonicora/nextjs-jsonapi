@@ -1,24 +1,23 @@
 "use client";
 
+import { CircleX, RefreshCwIcon, SearchIcon, XIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useRef, useState } from "react";
+
 import {
   Command,
   CommandItem,
   CommandList,
-  FormFieldWrapper,
   Input,
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@carlonicora/nextjs-jsonapi/components";
-import { HowToInterface } from "@/features/essentials/how-to/data/HowToInterface";
-import { HowToService } from "@/features/essentials/how-to/data/HowToService";
-import { DataListRetriever, useDataListRetriever } from "@carlonicora/nextjs-jsonapi/client";
-import { useDebounce } from "@carlonicora/nextjs-jsonapi/client";
-import { Modules } from "@carlonicora/nextjs-jsonapi/core";
-
-import { CircleX, RefreshCwIcon, SearchIcon, XIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
+} from "../../../../shadcnui";
+import { FormFieldWrapper } from "../../../../components";
+import { Modules } from "../../../../core";
+import { DataListRetriever, useDataListRetriever, useDebounce } from "../../../../hooks";
+import { HowToInterface } from "../../data/HowToInterface";
+import { HowToService } from "../../data/HowToService";
 
 type HowToSelectorProps = {
   id: string;
@@ -94,7 +93,7 @@ export default function HowToSelector({
   return (
     <div className="flex w-full flex-col">
       <FormFieldWrapper form={form} name={id} label={label} isRequired={isRequired}>
-        {(field) => (
+        {(field: any) => (
           <Popover open={open} onOpenChange={setOpen} modal={true}>
             <div className="flex w-full flex-row items-center justify-between">
               <PopoverTrigger className="w-full">
@@ -125,7 +124,7 @@ export default function HowToSelector({
                     placeholder={t(`generic.search.placeholder`, { type: t(`entities.howtos`, { count: 1 }) })}
                     type="text"
                     className="w-full pr-8 pl-8"
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                     value={searchTerm}
                   />
                   {isSearching ? (

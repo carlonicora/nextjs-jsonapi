@@ -1,14 +1,13 @@
 "use client";
 
-import HowToDeleter from "@/features/essentials/how-to/components/forms/HowToDeleter";
-import HowToEditor from "@/features/essentials/how-to/components/forms/HowToEditor";
-import { HowToInterface } from "@/features/essentials/how-to/data/HowToInterface";
-import { HowToService } from "@/features/essentials/how-to/data/HowToService";
-import { SharedProvider } from "@carlonicora/nextjs-jsonapi/contexts";
-import { usePageUrlGenerator } from "@carlonicora/nextjs-jsonapi/client";
-import { BreadcrumbItemData } from "@carlonicora/nextjs-jsonapi/core";
-
-import { JsonApiHydratedDataInterface, Modules, rehydrate } from "@carlonicora/nextjs-jsonapi/core";
+import { JsonApiHydratedDataInterface, Modules, rehydrate } from "../../../core";
+import { BreadcrumbItemData } from "../../../interfaces";
+import { usePageUrlGenerator } from "../../../hooks";
+import { SharedProvider } from "../../../contexts/SharedContext";
+import { HowToInterface } from "../data/HowToInterface";
+import { HowToService } from "../data/HowToService";
+import HowToDeleter from "../components/forms/HowToDeleter";
+import HowToEditor from "../components/forms/HowToEditor";
 import { useTranslations } from "next-intl";
 import { createContext, ReactNode, useContext, useState } from "react";
 

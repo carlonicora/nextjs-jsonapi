@@ -1,12 +1,11 @@
 "use client";
 
-import { HowToInterface } from "@/features/essentials/how-to/data/HowToInterface";
-import { HowToService } from "@/features/essentials/how-to/data/HowToService";
-import { CommonDeleter } from "@carlonicora/nextjs-jsonapi/components";
-import { usePageUrlGenerator } from "@carlonicora/nextjs-jsonapi/client";
-
-import { Modules } from "@carlonicora/nextjs-jsonapi/core";
 import { useTranslations } from "next-intl";
+import { CommonDeleter } from "../../../../components";
+import { Modules } from "../../../../core";
+import { usePageUrlGenerator } from "../../../../hooks";
+import { HowToInterface } from "../../data/HowToInterface";
+import { HowToService } from "../../data/HowToService";
 
 type HowToDeleterProps = {
   howTo: HowToInterface;
