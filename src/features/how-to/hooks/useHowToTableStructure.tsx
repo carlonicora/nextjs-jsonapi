@@ -83,4 +83,4 @@ export const useHowToTableStructure: UseTableStructureHook<HowToInterface, HowTo
   return useMemo(() => ({ data: tableData, columns: columns }), [tableData, columns]);
 };
 
-registerTableGenerator(Modules.HowTo, useHowToTableStructure);
+registerTableGenerator("howtos", useHowToTableStructure);
