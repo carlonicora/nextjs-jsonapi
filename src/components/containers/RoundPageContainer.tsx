@@ -49,7 +49,9 @@ export function RoundPageContainer({
 
   return (
     <>
-      <Header leftContent={headerLeftContent} className="bg-sidebar border-0">{headerChildren}</Header>
+      <Header leftContent={headerLeftContent} className="bg-sidebar border-0">
+        {headerChildren}
+      </Header>
       <div className="flex h-[calc(100vh-3rem)] w-full flex-col p-2 pt-0 pl-0">
         <div className="bg-background flex h-full w-full rounded-lg border p-0">
           <div className="flex w-full flex-col">
