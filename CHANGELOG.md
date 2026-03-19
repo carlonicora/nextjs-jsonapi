@@ -1,3 +1,10 @@
+## [1.70.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.69.0...v1.70.0) (2026-03-19)
+
+### 🚀 Features
+
+* add isRequired prop to FormSelect ([73a7742](https://github.com/carlonicora/nextjs-jsonapi/commit/73a77421e598ecd786020787903f1337317d11fc))
+* **nextjs-jsonapi:** add inlineContentSpecs and renderOverlays props to BlockNoteEditor ([df9cc07](https://github.com/carlonicora/nextjs-jsonapi/commit/df9cc07cae80c47e10d294585caae204a0e0e5ac))
+
 ## [1.69.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.68.0...v1.69.0) (2026-03-18)
 
 ### 🚀 Features
