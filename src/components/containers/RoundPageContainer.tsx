@@ -5,6 +5,7 @@ import { Tab } from "@/components/containers";
 import { RoundPageContainerTitle } from "@/components/containers/RoundPageContainerTitle";
 import { Header } from "@/components/navigations";
 import { useHeaderChildren } from "@/contexts";
+import { useHeaderLeftContent } from "@/contexts";
 import { useUrlRewriter } from "@/hooks";
 import { cn } from "@/index";
 import { ModuleWithPermissions } from "@/permissions";
@@ -31,6 +32,7 @@ export function RoundPageContainer({
   forceHeader,
 }: RoundPageContainerProps) {
   const headerChildren = useHeaderChildren();
+  const headerLeftContent = useHeaderLeftContent();
   const [showDetails, setShowDetails] = useState(false);
 
   const searchParams = useSearchParams();
@@ -47,7 +49,7 @@ export function RoundPageContainer({
 
   return (
     <>
-      <Header className="bg-sidebar border-0">{headerChildren}</Header>
+      <Header leftContent={headerLeftContent} className="bg-sidebar border-0">{headerChildren}</Header>
       <div className="flex h-[calc(100vh-3rem)] w-full flex-col p-2 pt-0 pl-0">
         <div className="bg-background flex h-full w-full rounded-lg border p-0">
           <div className="flex w-full flex-col">

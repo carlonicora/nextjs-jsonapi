@@ -1,6 +1,7 @@
 "use client";
 
 import { useHeaderChildren } from "../../contexts/HeaderChildrenContext";
+import { useHeaderLeftContent } from "../../contexts/HeaderLeftContentContext";
 import { cn } from "../../utils";
 import { Header } from "../navigations";
 
@@ -8,10 +9,11 @@ type PageContainerProps = { children: React.ReactNode; testId?: string; classNam
 
 export function PageContainer({ children, testId, className }: PageContainerProps) {
   const headerChildren = useHeaderChildren();
+  const headerLeftContent = useHeaderLeftContent();
 
   return (
     <div className={`flex h-full w-full flex-col`} data-testid={testId}>
-      <Header>{headerChildren}</Header>
+      <Header leftContent={headerLeftContent}>{headerChildren}</Header>
       <main className={cn(`flex w-full flex-1 flex-col gap-y-4 pt-4 pl-4 pr-0`, className)}>{children}</main>
     </div>
   );
