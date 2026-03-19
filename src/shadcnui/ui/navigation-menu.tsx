@@ -45,18 +45,28 @@ const navigationMenuTriggerStyle = cva(
   "bg-background hover:bg-muted focus:bg-muted data-open:hover:bg-muted data-open:focus:bg-muted data-open:bg-muted/50 focus-visible:ring-ring/30 data-popup-open:bg-muted/50 data-popup-open:hover:bg-muted rounded-md px-2.5 py-1.5 text-xs/relaxed font-medium transition-all focus-visible:ring-[2px] focus-visible:outline-1 disabled:opacity-50 group/navigation-menu-trigger inline-flex h-9 w-max items-center justify-center disabled:pointer-events-none outline-none",
 );
 
-function NavigationMenuTrigger({ className, children, ...props }: NavigationMenuPrimitive.Trigger.Props) {
+function NavigationMenuTrigger({
+  className,
+  children,
+  hideChevron,
+  ...props
+}: NavigationMenuPrimitive.Trigger.Props & { hideChevron?: boolean }) {
   return (
     <NavigationMenuPrimitive.Trigger
       data-slot="navigation-menu-trigger"
       className={cn(navigationMenuTriggerStyle(), "group", className)}
       {...props}
     >
-      {children}{" "}
-      <ChevronDownIcon
-        className="relative top-[1px] ml-1 size-3 transition duration-300 group-data-open/navigation-menu-trigger:rotate-180 group-data-popup-open/navigation-menu-trigger:rotate-180"
-        aria-hidden="true"
-      />
+      {children}
+      {!hideChevron && (
+        <>
+          {" "}
+          <ChevronDownIcon
+            className="relative top-[1px] ml-1 size-3 transition duration-300 group-data-open/navigation-menu-trigger:rotate-180 group-data-popup-open/navigation-menu-trigger:rotate-180"
+            aria-hidden="true"
+          />
+        </>
+      )}
     </NavigationMenuPrimitive.Trigger>
   );
 }
