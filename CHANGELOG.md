@@ -1,3 +1,16 @@
+## [1.71.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.70.0...v1.71.0) (2026-03-19)
+
+### 🚀 Features
+
+* **lib:** add HeaderLeftContentContext for header left slot ([94d9b91](https://github.com/carlonicora/nextjs-jsonapi/commit/94d9b91fd79d1a601560f8c7819319226f9bdc8f))
+* **lib:** add hideChevron prop to NavigationMenuTrigger ([ea4efbf](https://github.com/carlonicora/nextjs-jsonapi/commit/ea4efbfca861a8995fb265a1b050af673244c45a))
+* **lib:** add leftContent prop to Header component ([283d0fb](https://github.com/carlonicora/nextjs-jsonapi/commit/283d0fb13815dcdd609e133493d93794cfabfe75))
+* **lib:** wire HeaderLeftContentContext into page containers ([129202e](https://github.com/carlonicora/nextjs-jsonapi/commit/129202ef621c17299e7499c3ec8b37eac99a328c))
+
+### 💎 Styles
+
+* format Header component for better readability ([52514b5](https://github.com/carlonicora/nextjs-jsonapi/commit/52514b5b0a5c03b9ea88327767077e43e8381fa3))
+
 ## [1.70.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.69.0...v1.70.0) (2026-03-19)
 
 ### 🚀 Features
