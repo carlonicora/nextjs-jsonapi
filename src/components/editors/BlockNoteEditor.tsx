@@ -27,6 +27,8 @@ export type BlockNoteEditorProps = {
   diffContent?: PartialBlock[];
   placeholder?: string;
   bordered?: boolean;
+  inlineContentSpecs?: Record<string, any>;
+  renderOverlays?: (editor: any) => React.ReactNode;
 };
 
 const createDiffActionsInlineContentSpec = (
@@ -88,6 +90,8 @@ export default function BlockNoteEditor({
   diffContent,
   placeholder,
   bordered,
+  inlineContentSpecs,
+  renderOverlays,
 }: BlockNoteEditorProps): React.JSX.Element {
   const t = useTranslations();
   const { company } = useCurrentUserContext<UserInterface>();
@@ -141,9 +145,10 @@ export default function BlockNoteEditor({
         inlineContentSpecs: {
           ...defaultInlineContentSpecs,
           diffActions: DiffActionsInlineContent,
+          ...inlineContentSpecs,
         },
       } as any),
-    [DiffActionsInlineContent],
+    [DiffActionsInlineContent, inlineContentSpecs],
   );
 
   const uploadImage = useCallback(
@@ -422,6 +427,7 @@ export default function BlockNoteEditor({
         className={cn(`BlockNoteView flex-1 ${onChange ? "p-4" : ""}`, size === "sm" && "small")}
       >
         <BlockNoteEditorFormattingToolbar />
+        {renderOverlays?.(editor)}
       </BlockNoteView>
     </div>
   );

@@ -14,6 +14,8 @@ export function FormBlockNote({
   description,
   testId,
   onEmptyChange,
+  inlineContentSpecs,
+  renderOverlays,
 }: {
   form: any;
   id: string;
@@ -24,6 +26,8 @@ export function FormBlockNote({
   description?: string;
   testId?: string;
   onEmptyChange?: (isEmpty: boolean) => void;
+  inlineContentSpecs?: Record<string, any>;
+  renderOverlays?: (editor: any) => React.ReactNode;
 }) {
   return (
     <div className="flex w-full flex-col">
@@ -46,6 +50,8 @@ export function FormBlockNote({
             }}
             placeholder={placeholder}
             bordered
+            inlineContentSpecs={inlineContentSpecs}
+            renderOverlays={renderOverlays}
           />
         )}
       </FormFieldWrapper>
