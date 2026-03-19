@@ -16,6 +16,7 @@ export function FormSelect({
   useRows,
   testId,
   allowEmpty,
+  isRequired,
 }: {
   form: any;
   id: string;
@@ -27,6 +28,7 @@ export function FormSelect({
   useRows?: boolean;
   testId?: string;
   allowEmpty?: boolean;
+  isRequired?: boolean;
 }) {
   return (
     <div className="flex w-full flex-col">
@@ -34,6 +36,7 @@ export function FormSelect({
         form={form}
         name={id}
         label={name}
+        isRequired={isRequired}
         orientation={useRows ? "horizontal" : "vertical"}
         testId={testId}
       >
