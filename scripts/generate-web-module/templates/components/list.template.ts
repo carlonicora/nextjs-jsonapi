@@ -32,7 +32,11 @@ import { DataListRetriever, useDataListRetriever } from "@carlonicora/nextjs-jso
 import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
 
-export default function ${names.pascalCase}List() {
+type ${names.pascalCase}ListProps = {
+  fullWidth?: boolean;
+};
+
+export default function ${names.pascalCase}List({ fullWidth }: ${names.pascalCase}ListProps) {
   const t = useTranslations();
 
   const data: DataListRetriever<${names.pascalCase}Interface> = useDataListRetriever({
@@ -50,6 +54,7 @@ export default function ${names.pascalCase}List() {
       tableGeneratorType={Modules.${names.pascalCase}}
       functions={functions}
       title={t(\`entities.${names.pluralCamel.toLowerCase()}\`, { count: 2 })}
+      fullWidth={fullWidth}
     />
   );
 }

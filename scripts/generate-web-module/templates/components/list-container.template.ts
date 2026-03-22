@@ -23,8 +23,8 @@ import { Modules } from "@carlonicora/nextjs-jsonapi/core";
 
 function ${names.pascalCase}ListContainerInternal() {
   return (
-    <RoundPageContainer module={Modules.${names.pascalCase}}>
-      <${names.pascalCase}List />
+    <RoundPageContainer module={Modules.${names.pascalCase}} fullWidth>
+      <${names.pascalCase}List fullWidth />
     </RoundPageContainer>
   );
 }

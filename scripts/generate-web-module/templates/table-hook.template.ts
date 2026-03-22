@@ -104,7 +104,7 @@ function generateFieldColumnEntries(data: FrontendTemplateData): string {
     entries.push(`    [${names.pascalCase}Fields.name]: () => ({
       id: "name",
       accessorKey: "name",
-      header: t(\`features.${names.camelCase}.fields.name.label\`),
+      header: t(\`features.${names.camelCase.toLowerCase()}.fields.name.label\`),
       cell: ({ row }: { row: TableContent<${names.pascalCase}Interface> }) => {
         const ${names.camelCase}: ${names.pascalCase}Interface = row.original.jsonApiData;
         return (
@@ -151,7 +151,7 @@ function generateFieldColumnEntries(data: FrontendTemplateData): string {
       entries.push(`    [${names.pascalCase}Fields.${field.name}]: () => ({
       id: "${field.name}",
       accessorKey: "${field.name}",
-      header: t(\`features.${names.camelCase}.fields.${field.name}.label\`),
+      header: t(\`features.${names.camelCase.toLowerCase()}.fields.${field.name}.label\`),
       cell: ({ row }: { row: TableContent<${names.pascalCase}Interface> }) => {
         const ${names.camelCase}: ${names.pascalCase}Interface = row.original.jsonApiData;
         return <span>{${names.camelCase}.${field.name}}</span>;
@@ -163,7 +163,7 @@ function generateFieldColumnEntries(data: FrontendTemplateData): string {
       entries.push(`    [${names.pascalCase}Fields.${field.name}]: () => ({
       id: "${field.name}",
       accessorKey: "${field.name}",
-      header: t(\`features.${names.camelCase}.fields.${field.name}.label\`),
+      header: t(\`features.${names.camelCase.toLowerCase()}.fields.${field.name}.label\`),
       cell: ({ row }: { row: TableContent<${names.pascalCase}Interface> }) => {
         const ${names.camelCase}: ${names.pascalCase}Interface = row.original.jsonApiData;
         return <span>{${names.camelCase}.${field.name} ? t(\`generic.yes\`) : t(\`generic.no\`)}</span>;
@@ -175,7 +175,7 @@ function generateFieldColumnEntries(data: FrontendTemplateData): string {
       entries.push(`    [${names.pascalCase}Fields.${field.name}]: () => ({
       id: "${field.name}",
       accessorKey: "${field.name}",
-      header: t(\`features.${names.camelCase}.fields.${field.name}.label\`),
+      header: t(\`features.${names.camelCase.toLowerCase()}.fields.${field.name}.label\`),
       cell: ({ row }: { row: TableContent<${names.pascalCase}Interface> }) => {
         const ${names.camelCase}: ${names.pascalCase}Interface = row.original.jsonApiData;
         return <span>{${names.camelCase}.${field.name}?.toString()}</span>;

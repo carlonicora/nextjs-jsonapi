@@ -338,18 +338,27 @@ function generateAllFiles(data: FrontendTemplateData, schema: JsonModuleDefiniti
     type: "component",
   });
 
-  files.push({
-    path: paths.details,
-    content: generateDetailsTemplate(data),
-    type: "component",
-  });
+  if (data.extendsContent) {
+    // Content-extending modules: Details sidebar + BlockNote Content
+    files.push({
+      path: paths.details,
+      content: generateDetailsTemplate(data),
+      type: "component",
+    });
 
-  // Content component only for Content-extending modules
-  const contentTemplate = generateContentTemplate(data);
-  if (contentTemplate) {
+    const contentTemplate = generateContentTemplate(data);
+    if (contentTemplate) {
+      files.push({
+        path: paths.content,
+        content: contentTemplate,
+        type: "component",
+      });
+    }
+  } else {
+    // Non-content modules: Content display component (no Details)
     files.push({
       path: paths.content,
-      content: contentTemplate,
+      content: generateDetailsTemplate(data),
       type: "component",
     });
   }

@@ -73,7 +73,9 @@ export function toPascalCase(str: string): string {
  */
 export function toTitleCase(str: string): string {
   return str
+    .replace(/_/g, " ")
     .replace(/([A-Z])/g, " $1")
+    .replace(/\s+/g, " ")
     .replace(/^./, (char) => char.toUpperCase())
     .trim();
 }
