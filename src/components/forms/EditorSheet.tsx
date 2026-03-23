@@ -157,14 +157,16 @@ export function EditorSheet<T extends FieldValues>({
         <SheetContent side="right" className={sizeClasses[size]}>
           <SheetHeader className="border-b px-6 py-4">
             <SheetTitle>
-              {titleOverride ?? (isEdit
-                ? t("common.edit.update.title", { type: entityType })
-                : t("common.edit.create.title", { type: entityType }))}
+              {titleOverride ??
+                (isEdit
+                  ? t("common.edit.update.title", { type: entityType })
+                  : t("common.edit.create.title", { type: entityType }))}
             </SheetTitle>
             <SheetDescription>
-              {descriptionOverride ?? (isEdit
-                ? t("common.edit.update.description", { type: entityType, name: entityName ?? "" })
-                : t("common.edit.create.description", { type: entityType }))}
+              {descriptionOverride ??
+                (isEdit
+                  ? t("common.edit.update.description", { type: entityType, name: entityName ?? "" })
+                  : t("common.edit.create.description", { type: entityType }))}
             </SheetDescription>
           </SheetHeader>
           <Form {...form}>
