@@ -39,6 +39,8 @@ export type EditorSheetProps<T extends FieldValues> = {
 
   entityType: string;
   entityName?: string;
+  title?: string;
+  description?: string;
 
   isEdit: boolean;
   module: ModuleWithPermissions;
@@ -66,6 +68,8 @@ export function EditorSheet<T extends FieldValues>({
   isFormDirty: isFormDirtyProp,
   entityType,
   entityName,
+  title: titleOverride,
+  description: descriptionOverride,
   isEdit,
   module,
   propagateChanges,
@@ -153,14 +157,14 @@ export function EditorSheet<T extends FieldValues>({
         <SheetContent side="right" className={sizeClasses[size]}>
           <SheetHeader className="border-b px-6 py-4">
             <SheetTitle>
-              {isEdit
+              {titleOverride ?? (isEdit
                 ? t("common.edit.update.title", { type: entityType })
-                : t("common.edit.create.title", { type: entityType })}
+                : t("common.edit.create.title", { type: entityType }))}
             </SheetTitle>
             <SheetDescription>
-              {isEdit
+              {descriptionOverride ?? (isEdit
                 ? t("common.edit.update.description", { type: entityType, name: entityName ?? "" })
-                : t("common.edit.create.description", { type: entityType })}
+                : t("common.edit.create.description", { type: entityType }))}
             </SheetDescription>
           </SheetHeader>
           <Form {...form}>
