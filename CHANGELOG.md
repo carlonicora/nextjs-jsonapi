@@ -1,3 +1,13 @@
+## [1.72.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.71.0...v1.72.0) (2026-03-23)
+
+### 🚀 Features
+
+* add optional title and description override props to EditorSheet ([8ea473a](https://github.com/carlonicora/nextjs-jsonapi/commit/8ea473a116910775a8a14dfc1e3efb18eda41077))
+
+### 💎 Styles
+
+* auto-format EditorSheet ([f18aaf4](https://github.com/carlonicora/nextjs-jsonapi/commit/f18aaf45aa128960a434c21152e05671189e2a0c))
+
 ## [1.71.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.70.0...v1.71.0) (2026-03-19)
 
 ### 🚀 Features
