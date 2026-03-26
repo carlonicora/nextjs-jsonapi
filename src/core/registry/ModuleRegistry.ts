@@ -158,6 +158,19 @@ class ModuleRegistryClass {
     }
     return module as ModuleWithPermissions;
   }
+
+  findByFeature(feature: string): ModuleWithPermissions[] {
+    const response: ModuleWithPermissions[] = [];
+
+    for (const module of this._modules.values()) {
+      const m = module as ModuleWithPermissions;
+      if (m.feature === feature) {
+        response.push(m);
+      }
+    }
+
+    return response;
+  }
 }
 
 export const ModuleRegistry = new ModuleRegistryClass();
@@ -171,9 +184,13 @@ export const Modules = new Proxy({} as ModuleDefinitions, {
     if (prop === "findByModelName") {
       return (name: string) => ModuleRegistry.findByModelName(name);
     }
+    if (prop === "findByFeature") {
+      return (feature: string) => ModuleRegistry.findByFeature(feature);
+    }
     return ModuleRegistry.get(prop as keyof ModuleDefinitions);
   },
 }) as ModuleDefinitions & {
   findByName: (name: string) => ModuleWithPermissions;
   findByModelName: (name: string) => ModuleWithPermissions;
+  findByFeature: (feature: string) => ModuleWithPermissions[];
 };
