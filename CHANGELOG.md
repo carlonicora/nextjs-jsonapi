@@ -1,3 +1,10 @@
+## [1.73.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.72.0...v1.73.0) (2026-03-26)
+
+### 🚀 Features
+
+* add findByFeature method to ModuleRegistryClass for module retrieval by feature ([8859fd5](https://github.com/carlonicora/nextjs-jsonapi/commit/8859fd563e25e73bb35b569c174c87a9b1ce2c06))
+* add optional icon field to SharedContext title ([e518a3e](https://github.com/carlonicora/nextjs-jsonapi/commit/e518a3e6d16f22ee3fad5272f820f133161a2370))
+
 ## [1.72.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.71.0...v1.72.0) (2026-03-23)
 
 ### 🚀 Features
