@@ -13,6 +13,7 @@ const mockModule: ModuleInterface = {
   included: [],
   createdAt: new Date(),
   updatedAt: new Date(),
+  identifier: "pipelines",
   name: "pipelines",
   permissions: { create: true, read: true, update: true, delete: false },
 } as ModuleInterface;
@@ -24,6 +25,7 @@ const mockFeatures: FeatureInterface[] = [
     included: [],
     createdAt: new Date(),
     updatedAt: new Date(),
+    identifier: "CRM",
     name: "CRM",
     isCore: false,
     modules: [mockModule],
