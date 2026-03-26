@@ -83,13 +83,10 @@ export function EntityMultiSelector<T extends { id: string }>({
     return fn ? fn(v) : defaultFormValueLabel(v);
   }, []);
 
-  const stableToFormValue = useCallback(
-    (entity: T) => {
-      const fn = toFormValueRef.current;
-      return fn ? fn(entity) : { id: entity.id, name: getLabelRef.current(entity) };
-    },
-    [],
-  );
+  const stableToFormValue = useCallback((entity: T) => {
+    const fn = toFormValueRef.current;
+    return fn ? fn(entity) : { id: entity.id, name: getLabelRef.current(entity) };
+  }, []);
 
   const selectedValues: { id: string; [key: string]: any }[] = useWatch({ control: form.control, name: id }) || [];
   const selectedIds = useMemo(() => new Set(selectedValues.map((v) => v.id)), [selectedValues]);
