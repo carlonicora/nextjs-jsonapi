@@ -103,6 +103,7 @@ export type ModuleFactory = (params: {
   feature?: string;
   moduleId?: string;
   icon?: LucideIcon;
+  identifier?: string[];
   inclusions?: Record<
     string,
     {
