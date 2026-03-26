@@ -1,4 +1,5 @@
 export * from "./CommonAssociationForm";
+export * from "./EntityMultiSelector";
 export * from "./CommonDeleter";
 export * from "./CommonEditorButtons";
 export * from "./CommonEditorHeader";
