@@ -1,3 +1,20 @@
+## [1.74.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.73.0...v1.74.0) (2026-03-26)
+
+### 🚀 Features
+
+* add identifier getter to ApiDataInterface ([b9fc43c](https://github.com/carlonicora/nextjs-jsonapi/commit/b9fc43c2c21101506e677f63bf92a9eab5aadab0))
+* add identifier getter to mock classes and update createMockApiData function ([645fb48](https://github.com/carlonicora/nextjs-jsonapi/commit/645fb485a668d7e02b630e0b40d6d2f2ebcd7a8e))
+* add identifier param to ModuleFactory type ([c40544c](https://github.com/carlonicora/nextjs-jsonapi/commit/c40544c7669130ea212ecaf14734edb0fedb51c4))
+
+### 🐛 Bug Fixes
+
+* add identifier to mock objects in useRbacState test ([a2b9681](https://github.com/carlonicora/nextjs-jsonapi/commit/a2b9681bf698385de6f5cba3a6337309b2948b5a))
+* wrap RecentPagesNavigator dropdown in DropdownMenuGroup ([3b9dc06](https://github.com/carlonicora/nextjs-jsonapi/commit/3b9dc06bce505f037c1ffc57fa5da139dda6403c))
+
+### 🚨 Tests
+
+* add unit tests for AbstractApiData.identifier getter ([05b401b](https://github.com/carlonicora/nextjs-jsonapi/commit/05b401b7396a587ff80ba471dd1f32c7dce7c465))
+
 ## [1.73.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.72.0...v1.73.0) (2026-03-26)
 
 ### 🚀 Features
