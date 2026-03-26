@@ -8,6 +8,7 @@ export interface ApiDataInterface {
   get updatedAt(): Date;
   get self(): string | undefined;
   get jsonApi(): any;
+  get identifier(): string;
   generateApiUrl(params?: any): string;
   dehydrate(): JsonApiHydratedDataInterface;
   rehydrate(data: JsonApiHydratedDataInterface): this;
