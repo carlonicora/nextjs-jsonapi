@@ -1,3 +1,10 @@
+## [1.75.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.74.0...v1.75.0) (2026-03-26)
+
+### 🚀 Features
+
+* implement EntityMultiSelector component and integrate into forms ([f3cbf8e](https://github.com/carlonicora/nextjs-jsonapi/commit/f3cbf8e0721d7ef8e479e67e97db6e1e5870b842))
+* refactor HowToMultiSelector and UserMultiSelect to use EntityMultiSelector component ([8f7eb68](https://github.com/carlonicora/nextjs-jsonapi/commit/8f7eb688836206d6f4ee968979442a3159f2ccec))
+
 ## [1.74.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.73.0...v1.74.0) (2026-03-26)
 
 ### 🚀 Features
