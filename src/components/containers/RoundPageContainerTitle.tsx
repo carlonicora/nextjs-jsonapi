@@ -27,7 +27,7 @@ export function RoundPageContainerTitle({
     <div className="flex w-full flex-row items-center justify-between border-b p-4">
       <div className="flex w-full gap-x-4">
         <div className={"text-muted-foreground flex items-center gap-x-2 text-lg font-light whitespace-nowrap"}>
-          {module && module.icon && <module.icon className="text-primary h-6 w-6" />}
+          {module && module.icon ? <module.icon className="text-primary h-6 w-6" /> : title.icon}
           {title.type}
         </div>
         <div className={cn("text-primary w-full text-xl font-semibold")}>{title.element}</div>
