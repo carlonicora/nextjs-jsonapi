@@ -7,6 +7,7 @@ import { recentPagesAtom } from "../../atoms";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -32,20 +33,22 @@ export function RecentPagesNavigator() {
         </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-96">
-        <DropdownMenuLabel>{t(`common.recent_pages`)}</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        {recentPages.map((page, index) => (
-          <DropdownMenuItem key={`${page.url}-${index}`}>
-            <Link href={page.url} className="flex items-center gap-2">
-              <div className="flex flex-col">
-                <div className="truncate text-sm">{page.title}</div>
-                <div className="text-muted-foreground text-xs font-normal">
-                  {t(`entities.${page.moduleType}`, { count: 1 })}
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>{t(`common.recent_pages`)}</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {recentPages.map((page, index) => (
+            <DropdownMenuItem key={`${page.url}-${index}`}>
+              <Link href={page.url} className="flex items-center gap-2">
+                <div className="flex flex-col">
+                  <div className="truncate text-sm">{page.title}</div>
+                  <div className="text-muted-foreground text-xs font-normal">
+                    {t(`entities.${page.moduleType}`, { count: 1 })}
+                  </div>
                 </div>
-              </div>
-            </Link>
-          </DropdownMenuItem>
-        ))}
+              </Link>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );
