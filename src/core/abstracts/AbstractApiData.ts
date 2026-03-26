@@ -4,6 +4,16 @@ import { ApiRequestDataTypeInterface } from "../interfaces/ApiRequestDataTypeInt
 import { JsonApiHydratedDataInterface } from "../interfaces/JsonApiHydratedDataInterface";
 
 export abstract class AbstractApiData implements ApiDataInterface {
+  static identifierFields: string[] = ["name"];
+
+  get identifier(): string {
+    const fields = (this.constructor as typeof AbstractApiData).identifierFields;
+    return fields
+      .map((field) => this._jsonApi?.attributes?.[field])
+      .filter((v) => v != null && v !== "")
+      .join(" ");
+  }
+
   protected _jsonApi?: any;
   protected _included?: any[];
 

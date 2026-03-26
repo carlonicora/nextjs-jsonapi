@@ -34,6 +34,9 @@ class MockUser implements Partial<ApiDataInterface> {
   createJsonApi(data: any) {
     return { type: this.type, attributes: data };
   }
+  get identifier() {
+    return "MockUser";
+  }
 }
 
 class MockArticle implements Partial<ApiDataInterface> {
@@ -65,6 +68,9 @@ class MockArticle implements Partial<ApiDataInterface> {
   }
   createJsonApi(data: any) {
     return { type: this.type, attributes: data };
+  }
+  get identifier() {
+    return "MockArticle";
   }
 }
 

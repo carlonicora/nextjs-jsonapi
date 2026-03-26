@@ -34,6 +34,9 @@ class MockArticle implements Partial<ApiDataInterface> {
   createJsonApi(data: any) {
     return { type: this.type, attributes: data };
   }
+  get identifier() {
+    return "MockArticle";
+  }
 }
 
 describe("DataClassRegistry", () => {

@@ -40,6 +40,9 @@ class MockTaxonomy implements ApiDataInterface {
   dehydrate(): any {
     return {};
   }
+  get identifier(): string {
+    return "MockTaxonomy";
+  }
 }
 
 class MockLeafTaxonomy implements ApiDataInterface {
@@ -78,6 +81,9 @@ class MockLeafTaxonomy implements ApiDataInterface {
   }
   dehydrate(): any {
     return {};
+  }
+  get identifier(): string {
+    return "MockLeafTaxonomy";
   }
 }
 

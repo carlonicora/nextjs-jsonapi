@@ -40,6 +40,9 @@ class MockArticle implements Partial<ApiDataInterface> {
   createJsonApi(data: any) {
     return { type: this.type, attributes: data };
   }
+  get identifier() {
+    return "MockArticle";
+  }
 }
 
 const mockModule = { name: "articles", model: MockArticle };

@@ -103,6 +103,13 @@ export function createMockApiData(options: CreateMockApiDataOptions): ApiDataInt
       id,
       attributes: data,
     }),
+    get identifier() {
+      const identifierFields = ["name"];
+      return identifierFields
+        .map((field) => attributes[field])
+        .filter((v) => v != null && v !== "")
+        .join(" ");
+    },
   };
 
   // Add attribute accessors to the mock object

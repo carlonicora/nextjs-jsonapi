@@ -37,6 +37,9 @@ class MockDataClass implements Partial<ApiDataInterface> {
   rehydrate(data: any) {
     return this;
   }
+  get identifier() {
+    return "MockDataClass";
+  }
 }
 
 describe("JsonApiDataFactory", () => {
