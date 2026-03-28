@@ -1,3 +1,9 @@
+## [1.76.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.75.0...v1.76.0) (2026-03-28)
+
+### 🚀 Features
+
+* add useRef to track dialog open state in EditorSheet and reset form accordingly ([e472bb5](https://github.com/carlonicora/nextjs-jsonapi/commit/e472bb5c93264c71fa63b865796df5dd1857e628))
+
 ## [1.75.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.74.0...v1.75.0) (2026-03-26)
 
 ### 🚀 Features
