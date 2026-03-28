@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { ReactNode, useCallback, useEffect } from "react";
+import { ReactNode, useCallback, useEffect, useRef } from "react";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 import { PencilIcon } from "lucide-react";
 import { ModuleWithPermissions } from "../../permissions/types";
@@ -97,8 +97,12 @@ export function EditorSheet<T extends FieldValues>({
     { dialogOpen, onDialogOpenChange, forceShow },
   );
 
+  const hasBeenOpen = useRef(false);
+
   useEffect(() => {
-    if (!open) {
+    if (open) {
+      hasBeenOpen.current = true;
+    } else if (hasBeenOpen.current) {
       form.reset(onReset());
       onClose?.();
     }
