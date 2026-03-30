@@ -1,3 +1,9 @@
+## [1.77.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.76.0...v1.77.0) (2026-03-30)
+
+### 🚀 Features
+
+* update EditorSheetProps to use ReactNode for title and description ([3fbdf96](https://github.com/carlonicora/nextjs-jsonapi/commit/3fbdf9693d610f68466dc11a253094a626ec975d))
+
 ## [1.76.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.75.0...v1.76.0) (2026-03-28)
 
 ### 🚀 Features
