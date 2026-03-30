@@ -39,8 +39,8 @@ export type EditorSheetProps<T extends FieldValues> = {
 
   entityType: string;
   entityName?: string;
-  title?: string;
-  description?: string;
+  title?: ReactNode;
+  description?: ReactNode;
 
   isEdit: boolean;
   module: ModuleWithPermissions;
