@@ -4,8 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components";
 import { Tab } from "@/components/containers";
 import { RoundPageContainerTitle } from "@/components/containers/RoundPageContainerTitle";
 import { Header } from "@/components/navigations";
-import { useHeaderChildren } from "@/contexts";
-import { useHeaderLeftContent } from "@/contexts";
+import { useHeaderChildren, useHeaderLeftContent } from "@/contexts";
 import { useUrlRewriter } from "@/hooks";
 import { cn } from "@/index";
 import { ModuleWithPermissions } from "@/permissions";
@@ -66,7 +65,7 @@ export function RoundPageContainer({
             )}
             <div className="flex h-full w-full overflow-hidden">
               <div className={cn(`grow overflow-y-auto p-4`, fullWidth && `p-0`)}>
-                <div className={cn(`mx-auto max-w-6xl space-y-12 p-8`, fullWidth && `max-w-full w-full p-0 h-full`)}>
+                <div className={cn(`mx-auto max-w-6xl space-y-8`, fullWidth && `max-w-full w-full p-0 h-full`)}>
                   {tabs ? (
                     <Tabs
                       value={activeTab}
