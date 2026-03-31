@@ -1,3 +1,9 @@
+## [1.77.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.77.0...v1.77.1) (2026-03-31)
+
+### 📦 Code Refactoring
+
+* consolidate imports from contexts and adjust spacing in RoundPageContainer ([672fbbc](https://github.com/carlonicora/nextjs-jsonapi/commit/672fbbc798bf58be2a6dd14c5040e7f3d1ff10e5))
+
 ## [1.77.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.76.0...v1.77.0) (2026-03-30)
 
 ### 🚀 Features
