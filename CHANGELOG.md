@@ -1,3 +1,9 @@
+## [1.77.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.77.1...v1.77.2) (2026-04-14)
+
+### ♻️ Chores
+
+* update Node.js version to 24 and remove npm upgrade step ([fc60455](https://github.com/carlonicora/nextjs-jsonapi/commit/fc604551bacab5c85df142785d233a8dcfb60fa8))
+
 ## [1.77.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.77.0...v1.77.1) (2026-03-31)
 
 ### 📦 Code Refactoring
