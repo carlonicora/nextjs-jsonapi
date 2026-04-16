@@ -1,3 +1,9 @@
+## [1.77.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.77.2...v1.77.3) (2026-04-16)
+
+### 🐛 Bug Fixes
+
+* avoid errors on empty vapid keys ([1e75d01](https://github.com/carlonicora/nextjs-jsonapi/commit/1e75d01366ebe11609bf0970d11e3ac5227ec5b9))
+
 ## [1.77.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.77.1...v1.77.2) (2026-04-14)
 
 ### ♻️ Chores
