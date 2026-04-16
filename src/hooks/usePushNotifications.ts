@@ -44,6 +44,9 @@ export default function usePushNotifications(): void {
           }
 
           const vapidPublicKey = (process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "").trim();
+          if (!vapidPublicKey) {
+            return;
+          }
           const convertedKey = urlBase64ToUint8Array(vapidPublicKey);
 
           await navigator.serviceWorker.ready;
