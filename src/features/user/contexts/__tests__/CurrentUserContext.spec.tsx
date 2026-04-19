@@ -47,11 +47,7 @@ import { UserService } from "../../data";
 
 function Consumer() {
   const { currentUser } = useCurrentUserContext();
-  return (
-    <div data-testid="current-user-id">
-      {currentUser ? (currentUser as { id: string }).id : "null"}
-    </div>
-  );
+  return <div data-testid="current-user-id">{currentUser ? (currentUser as { id: string }).id : "null"}</div>;
 }
 
 describe("CurrentUserProvider", () => {
@@ -113,9 +109,7 @@ describe("CurrentUserProvider", () => {
       const ctx = useCurrentUserContext();
       capturedRefreshUser = ctx.refreshUser;
       return (
-        <div data-testid="current-user-id">
-          {ctx.currentUser ? (ctx.currentUser as { id: string }).id : "null"}
-        </div>
+        <div data-testid="current-user-id">{ctx.currentUser ? (ctx.currentUser as { id: string }).id : "null"}</div>
       );
     }
 
