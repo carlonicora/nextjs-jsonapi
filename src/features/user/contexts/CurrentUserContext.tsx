@@ -1,6 +1,5 @@
 "use client";
 
-import { getCookie } from "cookies-next";
 import { useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { usePathname } from "next/navigation";
@@ -45,11 +44,6 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
   const path = usePathname();
 
   const [dehydratedUser, setDehydratedUser] = useAtom(userAtom);
-
-  useEffect(() => {
-    const token = getCookie("token");
-    if (!token && dehydratedUser) setDehydratedUser(null);
-  }, [dehydratedUser, setDehydratedUser]);
 
   const matchUrlToModule = (_params?: { path: string }): ModuleWithPermissions | undefined => {
     const moduleKeys = Object.getOwnPropertyNames(Modules).filter(
