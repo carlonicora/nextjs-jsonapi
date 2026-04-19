@@ -142,13 +142,9 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
       try {
         const fullUser = await UserService.findFullUser();
         if (fullUser) {
-          const dehydrated = fullUser.dehydrate();
-
-          setDehydratedUser(dehydrated as any);
-          setUser(fullUser);
-
-          // Update authentication cookies with fresh user data
-          // Skip when triggered by WebSocket to prevent page reload (Server Actions modify cookies)
+          // Update authentication cookies with fresh user data BEFORE writing the atom,
+          // so downstream observers see cookies-then-user, never user-then-cookies.
+          // Skip when triggered by WebSocket to prevent page reload (Server Actions modify cookies).
           if (!options?.skipCookieUpdate) {
             await getTokenHandler()?.updateToken({
               userId: fullUser.id,
@@ -161,6 +157,8 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
               })),
             });
           }
+
+          setDehydratedUser(fullUser.dehydrate() as any);
         }
       } catch (error) {
         console.error("Failed to refresh user data:", error);
