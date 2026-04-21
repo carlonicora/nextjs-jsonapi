@@ -2,10 +2,7 @@ import { AbstractService, EndpointCreator, HttpMethod, Modules, NextRef } from "
 import { AssistantMessageInterface } from "./AssistantMessageInterface";
 
 export class AssistantMessageService extends AbstractService {
-  static async findByAssistant(params: {
-    assistantId: string;
-    next?: NextRef;
-  }): Promise<AssistantMessageInterface[]> {
+  static async findByAssistant(params: { assistantId: string; next?: NextRef }): Promise<AssistantMessageInterface[]> {
     const endpoint = new EndpointCreator({
       endpoint: Modules.Assistant,
       id: params.assistantId,

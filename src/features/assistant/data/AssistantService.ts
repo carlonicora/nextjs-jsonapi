@@ -34,10 +34,7 @@ export class AssistantService extends AbstractService {
    * Sends a new user message to an existing assistant thread. The agent turn
    * runs synchronously; the response is a two-element list: [user, assistant].
    */
-  static async appendMessage(params: {
-    assistantId: string;
-    content: string;
-  }): Promise<AssistantMessageInterface[]> {
+  static async appendMessage(params: { assistantId: string; content: string }): Promise<AssistantMessageInterface[]> {
     return this.callApi<AssistantMessageInterface[]>({
       type: Modules.AssistantMessage,
       method: HttpMethod.POST,
