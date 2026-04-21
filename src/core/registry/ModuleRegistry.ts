@@ -16,6 +16,8 @@ export interface FoundationModuleDefinitions {
   Module: ModuleWithPermissions;
   Content: ModuleWithPermissions;
   HowTo: ModuleWithPermissions;
+  Assistant: ModuleWithPermissions;
+  AssistantMessage: ModuleWithPermissions;
   // Billing modules - READ: all users, UPDATE: CompanyAdministrator, ADMIN: Administrator
   Billing: ModuleWithPermissions;
   StripeCustomer: ModuleWithPermissions;
