@@ -7,6 +7,7 @@ import { AssistantService } from "../data/AssistantService";
 import { AssistantMessageService } from "../../assistant-message/data/AssistantMessageService";
 import { useSocketContext } from "../../../contexts/SocketContext";
 import { JsonApiHydratedDataInterface, Modules, rehydrate, rehydrateList } from "../../../core";
+import { AssistantMessage } from "../../assistant-message/data/AssistantMessage";
 
 interface AssistantContextValue {
   assistant?: AssistantInterface;
@@ -30,6 +31,14 @@ interface Props {
   children: React.ReactNode;
   dehydratedAssistant?: JsonApiHydratedDataInterface;
   dehydratedMessages?: JsonApiHydratedDataInterface[];
+}
+
+function stripOptimistic(list: AssistantMessageInterface[]): AssistantMessageInterface[] {
+  return list.filter((m) => !m.id.startsWith("tmp-"));
+}
+
+function nextPosition(list: AssistantMessageInterface[]): number {
+  return list.reduce((max, m) => (m.position > max ? m.position : max), 0) + 1;
 }
 
 function withPatchedTitle(source: AssistantInterface, title: string): AssistantInterface {
@@ -61,13 +70,22 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
     async (content: string) => {
       const trimmed = content.trim();
       if (!trimmed) return;
+
+      const optimistic = AssistantMessage.buildOptimistic({
+        content: trimmed,
+        assistantId: assistant?.id,
+        position: nextPosition(messages),
+      });
+      setMessages((prev) => [...prev, optimistic]);
       setSending(true);
+
       const handler = (payload: { assistantId?: string; status?: string }) => {
         if (!payload) return;
         if (assistant && payload.assistantId && payload.assistantId !== assistant.id) return;
         if (typeof payload.status === "string") setStatus(payload.status);
       };
       socket?.on("assistant:status", handler);
+
       try {
         if (!assistant) {
           const created = await AssistantService.create({ firstMessage: trimmed });
@@ -83,8 +101,7 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
             assistantId: assistant.id,
             content: trimmed,
           });
-          const [userMsg, assistantMsg] = result;
-          setMessages((prev) => [...prev, userMsg, assistantMsg]);
+          setMessages((prev) => [...stripOptimistic(prev), ...result]);
         }
       } finally {
         socket?.off("assistant:status", handler);
@@ -92,7 +109,7 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
         setStatus(undefined);
       }
     },
-    [assistant, socket],
+    [assistant, messages, socket],
   );
 
   const retrySend = useCallback(async (_tempId: string) => {

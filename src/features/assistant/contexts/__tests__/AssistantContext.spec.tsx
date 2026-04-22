@@ -1,10 +1,14 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { AssistantProvider, useAssistantContext } from "../AssistantContext";
 import { AssistantService } from "../../data/AssistantService";
 import { AssistantMessageService } from "../../../assistant-message/data/AssistantMessageService";
 import { useSocketContext } from "../../../../contexts/SocketContext";
 import type { JsonApiHydratedDataInterface } from "../../../../core";
+import { ModuleRegistry } from "../../../../core/registry/ModuleRegistry";
+import { DataClassRegistry } from "../../../../core/registry/DataClassRegistry";
+import { AssistantMessage } from "../../../assistant-message/data/AssistantMessage";
+import { Assistant } from "../../data/Assistant";
 
 vi.mock("../../../../contexts/SocketContext", () => ({
   useSocketContext: vi.fn(() => ({ socket: null, isConnected: false })),
@@ -40,6 +44,15 @@ function buildMessageStub({ role, content = "hi" }: { role: "user" | "assistant"
 }
 
 describe("AssistantContext", () => {
+  beforeAll(() => {
+    const assistantMessageModule = { name: "assistant-messages", model: AssistantMessage } as any;
+    const assistantModule = { name: "assistants", model: Assistant } as any;
+    ModuleRegistry.register("AssistantMessage", assistantMessageModule);
+    ModuleRegistry.register("Assistant", assistantModule);
+    DataClassRegistry.registerObjectClass(assistantMessageModule, AssistantMessage);
+    DataClassRegistry.registerObjectClass(assistantModule, Assistant);
+  });
+
   beforeEach(() => {
     vi.mocked(useSocketContext).mockReturnValue({ socket: null, isConnected: false } as any);
     AssistantService.findMany = vi.fn().mockResolvedValue([]);
@@ -186,5 +199,39 @@ describe("AssistantContext", () => {
     expect(result.current.failedMessageIds).toBeInstanceOf(Set);
     expect(result.current.failedMessageIds.size).toBe(0);
     expect(typeof result.current.retrySend).toBe("function");
+  });
+
+  it("sendMessage (existing assistant): shows the user bubble synchronously before the server responds", async () => {
+    const existing = buildAssistantDehydrated({ id: "a-2", title: "Existing" });
+    let resolveAppend!: (value: any) => void;
+    AssistantService.appendMessage = vi.fn().mockImplementation(
+      () => new Promise((resolve) => { resolveAppend = resolve; }),
+    );
+    const { result } = renderHook(() => useAssistantContext(), {
+      wrapper: ({ children }) => <AssistantProvider dehydratedAssistant={existing}>{children}</AssistantProvider>,
+    });
+
+    let sendPromise: Promise<void>;
+    act(() => {
+      sendPromise = result.current.sendMessage("follow-up");
+    });
+
+    // Before the server responds, the optimistic user bubble must be visible.
+    expect(result.current.messages.map((m) => m.content)).toContain("follow-up");
+    expect(result.current.messages.some((m) => m.id.startsWith("tmp-") && m.role === "user")).toBe(true);
+    expect(result.current.sending).toBe(true);
+
+    await act(async () => {
+      resolveAppend([
+        buildMessageStub({ role: "user", content: "follow-up" }),
+        buildMessageStub({ role: "assistant", content: "reply" }),
+      ]);
+      await sendPromise!;
+    });
+
+    // After reconciliation, no tmp-* remains, and server messages are appended.
+    expect(result.current.messages.some((m) => m.id.startsWith("tmp-"))).toBe(false);
+    expect(result.current.messages.map((m) => m.content)).toEqual(["follow-up", "reply"]);
+    expect(result.current.sending).toBe(false);
   });
 });
