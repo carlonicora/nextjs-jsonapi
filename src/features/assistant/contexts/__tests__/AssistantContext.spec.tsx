@@ -274,4 +274,53 @@ describe("AssistantContext", () => {
     expect(result.current.messages).toHaveLength(2);
     expect(replaceState).toHaveBeenCalledWith(null, "", "/assistants/a-1");
   });
+
+  it("sendMessage failure: optimistic message stays and its id lands in failedMessageIds", async () => {
+    const existing = buildAssistantDehydrated({ id: "a-x", title: "Ex" });
+    AssistantService.appendMessage = vi.fn().mockRejectedValue(new Error("boom"));
+    const { result } = renderHook(() => useAssistantContext(), {
+      wrapper: ({ children }) => <AssistantProvider dehydratedAssistant={existing}>{children}</AssistantProvider>,
+    });
+
+    await act(async () => {
+      await result.current.sendMessage("oops").catch(() => {});
+    });
+
+    const optimistic = result.current.messages.find((m) => m.id.startsWith("tmp-"));
+    expect(optimistic).toBeDefined();
+    expect(optimistic!.content).toBe("oops");
+    expect(result.current.failedMessageIds.has(optimistic!.id)).toBe(true);
+    expect(result.current.sending).toBe(false);
+  });
+
+  it("retrySend: clears the failed id, removes the old tmp message, and resends the content", async () => {
+    const existing = buildAssistantDehydrated({ id: "a-y", title: "Ey" });
+    const appendMock = vi
+      .fn()
+      .mockRejectedValueOnce(new Error("fail-1"))
+      .mockResolvedValueOnce([
+        buildMessageStub({ role: "user", content: "retry-me" }),
+        buildMessageStub({ role: "assistant", content: "ok" }),
+      ]);
+    AssistantService.appendMessage = appendMock;
+
+    const { result } = renderHook(() => useAssistantContext(), {
+      wrapper: ({ children }) => <AssistantProvider dehydratedAssistant={existing}>{children}</AssistantProvider>,
+    });
+
+    await act(async () => {
+      await result.current.sendMessage("retry-me").catch(() => {});
+    });
+    const failedId = [...result.current.failedMessageIds][0];
+    expect(failedId).toBeDefined();
+
+    await act(async () => {
+      await result.current.retrySend(failedId!);
+    });
+
+    expect(result.current.failedMessageIds.has(failedId!)).toBe(false);
+    expect(result.current.messages.some((m) => m.id.startsWith("tmp-"))).toBe(false);
+    expect(result.current.messages.map((m) => m.content)).toEqual(["retry-me", "ok"]);
+    expect(appendMock).toHaveBeenCalledTimes(2);
+  });
 });

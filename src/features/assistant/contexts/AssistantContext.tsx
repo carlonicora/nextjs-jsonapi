@@ -103,6 +103,12 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
           });
           setMessages((prev) => [...stripOptimistic(prev), ...result]);
         }
+      } catch {
+        setFailedMessageIds((prev) => {
+          const next = new Set(prev);
+          next.add(optimistic.id);
+          return next;
+        });
       } finally {
         socket?.off("assistant:status", handler);
         setSending(false);
@@ -112,9 +118,23 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
     [assistant, messages, socket],
   );
 
-  const retrySend = useCallback(async (_tempId: string) => {
-    // Implemented in Task 5.
-  }, []);
+  const retrySend = useCallback(
+    async (tempId: string) => {
+      const failed = messages.find((m) => m.id === tempId);
+      if (!failed) return;
+      const content = failed.content;
+
+      setMessages((prev) => prev.filter((m) => m.id !== tempId));
+      setFailedMessageIds((prev) => {
+        const next = new Set(prev);
+        next.delete(tempId);
+        return next;
+      });
+
+      await sendMessage(content);
+    },
+    [messages, sendMessage],
+  );
 
   const selectThread = useCallback(async (id: string) => {
     const [target, msgs] = await Promise.all([
