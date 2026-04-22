@@ -1,1 +1,1 @@
-export * from "./AssistantsView";
+export * from "./containers/AssistantContainer";

@@ -4,6 +4,7 @@ import { AssistantProvider, useAssistantContext } from "../AssistantContext";
 import { AssistantService } from "../../data/AssistantService";
 import { AssistantMessageService } from "../../../assistant-message/data/AssistantMessageService";
 import { useSocketContext } from "../../../../contexts/SocketContext";
+import type { JsonApiHydratedDataInterface } from "../../../../core";
 
 vi.mock("../../../../contexts/SocketContext", () => ({
   useSocketContext: vi.fn(() => ({ socket: null, isConnected: false })),
@@ -15,6 +16,23 @@ function wrapper({ children }: { children: React.ReactNode }) {
 
 function buildAssistantStub({ id, title = "Stub" }: { id: string; title?: string }) {
   return { id, title, messageCount: 0, type: "assistants", createdAt: new Date(), updatedAt: new Date() } as any;
+}
+
+function buildAssistantDehydrated({
+  id,
+  title = "Stub",
+}: {
+  id: string;
+  title?: string;
+}): JsonApiHydratedDataInterface {
+  return {
+    jsonApi: {
+      type: "assistants",
+      id,
+      attributes: { title, messageCount: 0 },
+    },
+    included: [],
+  };
 }
 
 function buildMessageStub({ role, content = "hi" }: { role: "user" | "assistant"; content?: string }) {
@@ -57,7 +75,7 @@ describe("AssistantContext", () => {
   });
 
   it("sendMessage with existing assistant: appends [user, assistant]", async () => {
-    const existing = buildAssistantStub({ id: "a-2", title: "Existing" });
+    const existing = buildAssistantDehydrated({ id: "a-2", title: "Existing" });
     AssistantService.appendMessage = vi
       .fn()
       .mockResolvedValue([
@@ -94,7 +112,7 @@ describe("AssistantContext", () => {
 
   it("renameThread calls the service + updates active assistant title", async () => {
     AssistantService.rename = vi.fn().mockResolvedValue(undefined);
-    const active = buildAssistantStub({ id: "a-1", title: "Old" });
+    const active = buildAssistantDehydrated({ id: "a-1", title: "Old" });
     const { result } = renderHook(() => useAssistantContext(), {
       wrapper: ({ children }) => <AssistantProvider dehydratedAssistant={active}>{children}</AssistantProvider>,
     });
@@ -107,7 +125,7 @@ describe("AssistantContext", () => {
 
   it("deleteThread calls the service + clears active if deleted was active", async () => {
     AssistantService.delete = vi.fn().mockResolvedValue(undefined);
-    const active = buildAssistantStub({ id: "a-1", title: "A" });
+    const active = buildAssistantDehydrated({ id: "a-1", title: "A" });
     const { result } = renderHook(() => useAssistantContext(), {
       wrapper: ({ children }) => <AssistantProvider dehydratedAssistant={active}>{children}</AssistantProvider>,
     });

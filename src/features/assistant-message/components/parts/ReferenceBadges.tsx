@@ -32,6 +32,8 @@ export function ReferenceBadges({ references }: Props) {
           <Link
             key={`${ref.type}/${ref.id}`}
             href={href}
+            target="_blank"
+            rel="noopener noreferrer"
             className="bg-background border-border text-foreground hover:bg-accent inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs"
           >
             <span className="text-muted-foreground text-[10px]">{module.name}</span>

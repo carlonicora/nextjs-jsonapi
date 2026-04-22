@@ -6,7 +6,7 @@ import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { AssistantProvider } from "../../../contexts/AssistantContext";
 import { AssistantService } from "../../../data/AssistantService";
-import type { AssistantInterface } from "../../../data/AssistantInterface";
+import type { JsonApiHydratedDataInterface } from "../../../../../core";
 import { AssistantContainer } from "../AssistantContainer";
 
 beforeAll(() => {
@@ -17,15 +17,21 @@ beforeEach(() => {
   AssistantService.findMany = vi.fn().mockResolvedValue([]);
 });
 
-function buildAssistantStub({ id, title = "Stub" }: { id: string; title?: string }): AssistantInterface {
+function buildAssistantDehydrated({
+  id,
+  title = "Stub",
+}: {
+  id: string;
+  title?: string;
+}): JsonApiHydratedDataInterface {
   return {
-    id,
-    title,
-    messageCount: 0,
-    type: "assistants",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  } as unknown as AssistantInterface;
+    jsonApi: {
+      type: "assistants",
+      id,
+      attributes: { title, messageCount: 0 },
+    },
+    included: [],
+  };
 }
 
 describe("AssistantContainer", () => {
@@ -42,7 +48,7 @@ describe("AssistantContainer", () => {
   });
 
   it("shows thread header + composer when an assistant is active", async () => {
-    const active = buildAssistantStub({ id: "a1", title: "T" });
+    const active = buildAssistantDehydrated({ id: "a1", title: "T" });
     render(
       <AssistantProvider dehydratedAssistant={active}>
         <AssistantContainer />

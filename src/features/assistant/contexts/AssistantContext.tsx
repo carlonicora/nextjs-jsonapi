@@ -6,6 +6,7 @@ import type { AssistantMessageInterface } from "../../assistant-message/data/Ass
 import { AssistantService } from "../data/AssistantService";
 import { AssistantMessageService } from "../../assistant-message/data/AssistantMessageService";
 import { useSocketContext } from "../../../contexts/SocketContext";
+import { JsonApiHydratedDataInterface, Modules, rehydrate, rehydrateList } from "../../../core";
 
 interface AssistantContextValue {
   assistant?: AssistantInterface;
@@ -25,13 +26,28 @@ const AssistantContext = createContext<AssistantContextValue | undefined>(undefi
 
 interface Props {
   children: React.ReactNode;
-  dehydratedAssistant?: AssistantInterface;
-  dehydratedMessages?: AssistantMessageInterface[];
+  dehydratedAssistant?: JsonApiHydratedDataInterface;
+  dehydratedMessages?: JsonApiHydratedDataInterface[];
+}
+
+function withPatchedTitle(source: AssistantInterface, title: string): AssistantInterface {
+  const dehydrated = source.dehydrate();
+  return rehydrate<AssistantInterface>(Modules.Assistant, {
+    jsonApi: {
+      ...dehydrated.jsonApi,
+      attributes: { ...(dehydrated.jsonApi?.attributes ?? {}), title },
+    },
+    included: dehydrated.included,
+  });
 }
 
 export function AssistantProvider({ children, dehydratedAssistant, dehydratedMessages }: Props) {
-  const [assistant, setAssistant] = useState<AssistantInterface | undefined>(dehydratedAssistant);
-  const [messages, setMessages] = useState<AssistantMessageInterface[]>(dehydratedMessages ?? []);
+  const [assistant, setAssistant] = useState<AssistantInterface | undefined>(() =>
+    dehydratedAssistant ? rehydrate<AssistantInterface>(Modules.Assistant, dehydratedAssistant) : undefined,
+  );
+  const [messages, setMessages] = useState<AssistantMessageInterface[]>(() =>
+    dehydratedMessages ? rehydrateList<AssistantMessageInterface>(Modules.AssistantMessage, dehydratedMessages) : [],
+  );
   const [threads, setThreads] = useState<AssistantInterface[]>([]);
   const [threadsLoading, setThreadsLoading] = useState<boolean>(true);
   const [sending, setSending] = useState<boolean>(false);
@@ -90,18 +106,8 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
 
   const renameThread = useCallback(async (id: string, title: string) => {
     await AssistantService.rename({ id, title });
-    setAssistant((prev) =>
-      prev && prev.id === id
-        ? (Object.assign(Object.create(Object.getPrototypeOf(prev)), prev, { _title: title, title }) as typeof prev)
-        : prev,
-    );
-    setThreads((prev) =>
-      prev.map((t) =>
-        t.id === id
-          ? (Object.assign(Object.create(Object.getPrototypeOf(t)), t, { _title: title, title }) as typeof t)
-          : t,
-      ),
-    );
+    setAssistant((prev) => (prev && prev.id === id ? withPatchedTitle(prev, title) : prev));
+    setThreads((prev) => prev.map((t) => (t.id === id ? withPatchedTitle(t, title) : t)));
   }, []);
 
   const deleteThread = useCallback(async (id: string) => {
