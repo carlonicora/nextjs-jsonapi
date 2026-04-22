@@ -46,3 +46,7 @@ export { showToast, showError, dismissToast, showCustomToast, type ToastOptions 
 // RBAC feature (data + modules only; components via /components, hooks via /client)
 export * from "./features/rbac/data";
 export * from "./features/rbac/rbac.module";
+
+// Assistant + AssistantMessage feature data
+export * from "./features/assistant/data";
+export * from "./features/assistant-message/data";

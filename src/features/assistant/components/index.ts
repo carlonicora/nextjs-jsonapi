@@ -1,2 +1,1 @@
-export * from "./ChatContainer";
-export * from "./AssistantList";
+export * from "./AssistantsView";

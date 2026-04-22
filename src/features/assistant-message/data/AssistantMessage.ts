@@ -1,10 +1,6 @@
-import { AbstractApiData, JsonApiHydratedDataInterface, Modules } from "../../../core";
-import {
-  AssistantMessageInput,
-  AssistantMessageInterface,
-  AssistantMessageReference,
-  AssistantMessageRole,
-} from "./AssistantMessageInterface";
+import { AbstractApiData, ApiDataInterface, JsonApiHydratedDataInterface, Modules } from "../../../core";
+import { AssistantMessageInput, AssistantMessageInterface, AssistantMessageRole } from "./AssistantMessageInterface";
+import { resolveReferenceableModules } from "../../assistant/utils/resolveReferenceableModules";
 
 export class AssistantMessage extends AbstractApiData implements AssistantMessageInterface {
   private _role?: AssistantMessageRole;
@@ -13,7 +9,7 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
   private _suggestedQuestions?: string[];
   private _inputTokens?: number;
   private _outputTokens?: number;
-  private _references?: AssistantMessageReference[];
+  private _references?: ApiDataInterface[];
 
   get role(): AssistantMessageRole {
     return this._role ?? "assistant";
@@ -39,7 +35,7 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
     return this._outputTokens;
   }
 
-  get references(): AssistantMessageReference[] {
+  get references(): ApiDataInterface[] {
     return this._references ?? [];
   }
 
@@ -52,21 +48,9 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
     this._suggestedQuestions = Array.isArray(attrs.suggestedQuestions) ? attrs.suggestedQuestions : [];
     this._inputTokens = attrs.inputTokens;
     this._outputTokens = attrs.outputTokens;
-    this._references = this.parseReferences(attrs.references);
+    const refs = this._readIncludedPolymorphic<ApiDataInterface>(data, "references", resolveReferenceableModules());
+    this._references = Array.isArray(refs) ? refs : refs ? [refs] : [];
     return this;
-  }
-
-  private parseReferences(raw: unknown): AssistantMessageReference[] {
-    if (Array.isArray(raw)) return raw as AssistantMessageReference[];
-    if (typeof raw === "string" && raw.length > 0) {
-      try {
-        const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? (parsed as AssistantMessageReference[]) : [];
-      } catch {
-        return [];
-      }
-    }
-    return [];
   }
 
   createJsonApi(data: AssistantMessageInput) {

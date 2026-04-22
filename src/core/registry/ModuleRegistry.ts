@@ -173,6 +173,13 @@ class ModuleRegistryClass {
 
     return response;
   }
+
+  getAll(): ApiRequestDataTypeInterface[] {
+    if (this._modules.size === 0) {
+      tryBootstrap();
+    }
+    return Array.from(this._modules.values());
+  }
 }
 
 export const ModuleRegistry = new ModuleRegistryClass();

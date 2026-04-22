@@ -26,7 +26,6 @@ export class Assistant extends AbstractApiData implements AssistantInterface {
     return {
       data: {
         type: Modules.Assistant.name,
-        id: data.id,
         attributes: {
           content: data.firstMessage,
           ...(data.title !== undefined ? { title: data.title } : {}),

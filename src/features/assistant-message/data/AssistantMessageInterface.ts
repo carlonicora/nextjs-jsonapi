@@ -2,12 +2,6 @@ import { ApiDataInterface } from "../../../core";
 
 export type AssistantMessageRole = "user" | "assistant" | "system";
 
-export type AssistantMessageReference = {
-  type: string;
-  id: string;
-  reason: string;
-};
-
 export type AssistantMessageInput = {
   id: string;
   role: AssistantMessageRole;
@@ -23,5 +17,5 @@ export interface AssistantMessageInterface extends ApiDataInterface {
   get suggestedQuestions(): string[];
   get inputTokens(): number | undefined;
   get outputTokens(): number | undefined;
-  get references(): AssistantMessageReference[];
+  get references(): ApiDataInterface[];
 }

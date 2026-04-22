@@ -1,9 +1,8 @@
 import { ApiDataInterface } from "../../../core";
 
 export type AssistantInput = {
-  id: string;
-  title?: string;
   firstMessage: string;
+  title?: string;
 };
 
 export interface AssistantInterface extends ApiDataInterface {

@@ -53,6 +53,22 @@ export class AssistantService extends AbstractService {
     });
   }
 
+  static async rename(params: { id: string; title: string }): Promise<void> {
+    await this.callApi({
+      type: Modules.Assistant,
+      method: HttpMethod.PATCH,
+      endpoint: new EndpointCreator({ endpoint: Modules.Assistant, id: params.id }).generate(),
+      input: {
+        data: {
+          type: Modules.Assistant.name,
+          id: params.id,
+          attributes: { title: params.title },
+        },
+      },
+      overridesJsonApiCreation: true,
+    });
+  }
+
   static async delete(params: { id: string }): Promise<void> {
     await this.callApi({
       type: Modules.Assistant,
