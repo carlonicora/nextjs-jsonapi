@@ -234,4 +234,44 @@ describe("AssistantContext", () => {
     expect(result.current.messages.map((m) => m.content)).toEqual(["follow-up", "reply"]);
     expect(result.current.sending).toBe(false);
   });
+
+  it("sendMessage (no assistant): shows the user bubble synchronously before create resolves", async () => {
+    const replaceState = vi.spyOn(window.history, "replaceState").mockImplementation(() => {});
+    const created = buildAssistantStub({ id: "a-1", title: "Test" });
+    const userMsg = buildMessageStub({ role: "user", content: "first question" });
+    const assistantMsg = buildMessageStub({ role: "assistant", content: "answer" });
+
+    let resolveCreate!: (value: any) => void;
+    AssistantService.create = vi.fn().mockImplementation(
+      () => new Promise((resolve) => { resolveCreate = resolve; }),
+    );
+    AssistantMessageService.findByAssistant = vi.fn().mockResolvedValue([userMsg, assistantMsg]);
+
+    const { result } = renderHook(() => useAssistantContext(), {
+      wrapper: ({ children }) => <AssistantProvider>{children}</AssistantProvider>,
+    });
+
+    let sendPromise: Promise<void>;
+    act(() => {
+      sendPromise = result.current.sendMessage("first question");
+    });
+
+    // Before the server responds: thread has exactly the optimistic user bubble.
+    expect(result.current.messages).toHaveLength(1);
+    expect(result.current.messages[0].id.startsWith("tmp-")).toBe(true);
+    expect(result.current.messages[0].content).toBe("first question");
+    expect(result.current.assistant).toBeUndefined();
+    expect(result.current.sending).toBe(true);
+
+    await act(async () => {
+      resolveCreate(created);
+      await sendPromise!;
+    });
+
+    // After reconciliation: assistant set, URL replaced, server messages only.
+    expect(result.current.assistant?.id).toBe("a-1");
+    expect(result.current.messages.some((m) => m.id.startsWith("tmp-"))).toBe(false);
+    expect(result.current.messages).toHaveLength(2);
+    expect(replaceState).toHaveBeenCalledWith(null, "", "/assistants/a-1");
+  });
 });
