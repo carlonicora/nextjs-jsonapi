@@ -38,40 +38,43 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
   const [status, setStatus] = useState<string | undefined>(undefined);
   const { socket } = useSocketContext();
 
-  const sendMessage = useCallback(async (content: string) => {
-    const trimmed = content.trim();
-    if (!trimmed) return;
-    setSending(true);
-    const handler = (payload: { assistantId?: string; status?: string }) => {
-      if (!payload) return;
-      if (assistant && payload.assistantId && payload.assistantId !== assistant.id) return;
-      if (typeof payload.status === "string") setStatus(payload.status);
-    };
-    socket?.on("assistant:status", handler);
-    try {
-      if (!assistant) {
-        const created = await AssistantService.create({ firstMessage: trimmed });
-        const msgs = await AssistantMessageService.findByAssistant({ assistantId: created.id });
-        setAssistant(created);
-        setMessages(msgs);
-        setThreads((prev) => [created, ...prev]);
-        if (typeof window !== "undefined") {
-          window.history.replaceState(null, "", `/assistants/${created.id}`);
+  const sendMessage = useCallback(
+    async (content: string) => {
+      const trimmed = content.trim();
+      if (!trimmed) return;
+      setSending(true);
+      const handler = (payload: { assistantId?: string; status?: string }) => {
+        if (!payload) return;
+        if (assistant && payload.assistantId && payload.assistantId !== assistant.id) return;
+        if (typeof payload.status === "string") setStatus(payload.status);
+      };
+      socket?.on("assistant:status", handler);
+      try {
+        if (!assistant) {
+          const created = await AssistantService.create({ firstMessage: trimmed });
+          const msgs = await AssistantMessageService.findByAssistant({ assistantId: created.id });
+          setAssistant(created);
+          setMessages(msgs);
+          setThreads((prev) => [created, ...prev]);
+          if (typeof window !== "undefined") {
+            window.history.replaceState(null, "", `/assistants/${created.id}`);
+          }
+        } else {
+          const result = await AssistantService.appendMessage({
+            assistantId: assistant.id,
+            content: trimmed,
+          });
+          const [userMsg, assistantMsg] = result;
+          setMessages((prev) => [...prev, userMsg, assistantMsg]);
         }
-      } else {
-        const result = await AssistantService.appendMessage({
-          assistantId: assistant.id,
-          content: trimmed,
-        });
-        const [userMsg, assistantMsg] = result;
-        setMessages((prev) => [...prev, userMsg, assistantMsg]);
+      } finally {
+        socket?.off("assistant:status", handler);
+        setSending(false);
+        setStatus(undefined);
       }
-    } finally {
-      socket?.off("assistant:status", handler);
-      setSending(false);
-      setStatus(undefined);
-    }
-  }, [assistant, socket]);
+    },
+    [assistant, socket],
+  );
 
   const selectThread = useCallback(async (id: string) => {
     const [target, msgs] = await Promise.all([
@@ -113,7 +116,6 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
     });
   }, []);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -125,7 +127,9 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
         if (!cancelled) setThreadsLoading(false);
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const value = useMemo<AssistantContextValue>(
@@ -142,7 +146,18 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
       renameThread,
       deleteThread,
     }),
-    [assistant, messages, threads, threadsLoading, sending, status, sendMessage, selectThread, renameThread, deleteThread],
+    [
+      assistant,
+      messages,
+      threads,
+      threadsLoading,
+      sending,
+      status,
+      sendMessage,
+      selectThread,
+      renameThread,
+      deleteThread,
+    ],
   );
 
   return <AssistantContext.Provider value={value}>{children}</AssistantContext.Provider>;
