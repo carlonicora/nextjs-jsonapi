@@ -6,9 +6,11 @@ import { MessageItem } from "./MessageItem";
 interface Props {
   messages: AssistantMessageInterface[];
   onSelectFollowUp: (q: string) => void;
+  failedMessageIds?: Set<string>;
+  onRetry?: (tempId: string) => void;
 }
 
-export function MessageList({ messages, onSelectFollowUp }: Props) {
+export function MessageList({ messages, onSelectFollowUp, failedMessageIds, onRetry }: Props) {
   const ordered = [...messages].sort((a, b) => a.position - b.position);
 
   let lastAssistantIndex = -1;
@@ -27,6 +29,8 @@ export function MessageList({ messages, onSelectFollowUp }: Props) {
           message={m}
           isLatestAssistant={i === lastAssistantIndex}
           onSelectFollowUp={onSelectFollowUp}
+          failedMessageIds={failedMessageIds}
+          onRetry={onRetry}
         />
       ))}
     </div>

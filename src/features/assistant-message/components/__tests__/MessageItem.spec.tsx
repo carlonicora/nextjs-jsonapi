@@ -84,4 +84,25 @@ describe("MessageItem", () => {
     render(<MessageItem message={msg} isLatestAssistant={false} onSelectFollowUp={vi.fn()} />);
     expect(screen.queryByRole("button", { name: /show_suggestions/ })).not.toBeInTheDocument();
   });
+
+  it("failed user message: renders retry control and calls onRetry with the id", async () => {
+    const msg = buildMessageStub({ role: "user", content: "oops" });
+    (msg as any).id = "tmp-123";
+    const onRetry = vi.fn();
+
+    render(
+      <MessageItem
+        message={msg}
+        isLatestAssistant={false}
+        onSelectFollowUp={vi.fn()}
+        failedMessageIds={new Set(["tmp-123"])}
+        onRetry={onRetry}
+      />,
+    );
+
+    expect(screen.getByText("features.assistant.send_failed")).toBeInTheDocument();
+    const retryBtn = screen.getByRole("button", { name: "features.assistant.retry" });
+    retryBtn.click();
+    expect(onRetry).toHaveBeenCalledWith("tmp-123");
+  });
 });

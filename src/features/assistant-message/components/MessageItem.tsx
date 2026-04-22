@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Sparkles } from "lucide-react";
+import { Sparkles, AlertCircle } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { AssistantMessageInterface } from "../data/AssistantMessageInterface";
@@ -12,18 +12,34 @@ interface Props {
   message: AssistantMessageInterface;
   isLatestAssistant: boolean;
   onSelectFollowUp: (q: string) => void;
+  failedMessageIds?: Set<string>;
+  onRetry?: (tempId: string) => void;
 }
 
-export function MessageItem({ message, isLatestAssistant, onSelectFollowUp }: Props) {
+export function MessageItem({ message, isLatestAssistant, onSelectFollowUp, failedMessageIds, onRetry }: Props) {
   const t = useTranslations();
   const isUser = message.role === "user";
+  const isFailed = isUser && !!failedMessageIds?.has(message.id);
 
   if (isUser) {
     return (
-      <div className="flex justify-end">
+      <div className="flex flex-col items-end gap-1">
         <div className="bg-primary text-primary-foreground max-w-[72%] rounded-2xl rounded-br-sm px-3.5 py-2 text-sm">
           {message.content}
         </div>
+        {isFailed && (
+          <div className="text-destructive flex items-center gap-2 text-xs">
+            <AlertCircle className="h-3.5 w-3.5" />
+            <span>{t("features.assistant.send_failed")}</span>
+            <button
+              type="button"
+              className="underline"
+              onClick={() => onRetry?.(message.id)}
+            >
+              {t("features.assistant.retry")}
+            </button>
+          </div>
+        )}
       </div>
     );
   }

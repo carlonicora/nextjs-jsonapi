@@ -10,9 +10,11 @@ interface Props {
   sending: boolean;
   status?: string;
   onSelectFollowUp: (q: string) => void;
+  failedMessageIds?: Set<string>;
+  onRetry?: (tempId: string) => void;
 }
 
-export function AssistantThread({ messages, sending, status, onSelectFollowUp }: Props) {
+export function AssistantThread({ messages, sending, status, onSelectFollowUp, failedMessageIds, onRetry }: Props) {
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -21,7 +23,12 @@ export function AssistantThread({ messages, sending, status, onSelectFollowUp }:
 
   return (
     <div className="flex-1 overflow-y-auto px-6 py-5">
-      <MessageList messages={messages} onSelectFollowUp={onSelectFollowUp} />
+      <MessageList
+        messages={messages}
+        onSelectFollowUp={onSelectFollowUp}
+        failedMessageIds={failedMessageIds}
+        onRetry={onRetry}
+      />
       {sending && <AssistantStatusLine status={status} />}
       <div ref={endRef} />
     </div>
