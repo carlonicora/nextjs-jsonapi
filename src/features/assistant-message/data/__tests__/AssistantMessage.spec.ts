@@ -31,10 +31,22 @@ const testAccountModule: ApiRequestDataTypeInterface = {
 // ---------------------------------------------------------------------------
 // Setup / teardown
 // ---------------------------------------------------------------------------
+const assistantMessageModule: ApiRequestDataTypeInterface = {
+  name: "assistant-messages",
+  model: AssistantMessage,
+} as any;
+
+const assistantModule: ApiRequestDataTypeInterface = {
+  name: "assistants",
+  model: class {},
+} as any;
+
 beforeAll(() => {
   DataClassRegistry.clear();
   DataClassRegistry.registerObjectClass(testAccountModule, TestAccount);
   ModuleRegistry.register("TestAccount", testAccountModule);
+  ModuleRegistry.register("AssistantMessage", assistantMessageModule);
+  ModuleRegistry.register("Assistant", assistantModule);
 });
 
 afterAll(() => {
@@ -112,5 +124,35 @@ describe("AssistantMessage.rehydrate", () => {
 
     // THEN
     expect(message.references).toEqual([]);
+  });
+});
+
+describe("AssistantMessage.buildOptimistic", () => {
+  it("creates a user message with a tmp-prefixed id and the given content + position", () => {
+    const msg = AssistantMessage.buildOptimistic({
+      content: "hello",
+      assistantId: "a-1",
+      position: 3,
+    });
+
+    expect(msg.id.startsWith("tmp-")).toBe(true);
+    expect(msg.role).toBe("user");
+    expect(msg.content).toBe("hello");
+    expect(msg.position).toBe(3);
+  });
+
+  it("allows an omitted assistantId (first-message case)", () => {
+    const msg = AssistantMessage.buildOptimistic({ content: "first", position: 1 });
+
+    expect(msg.id.startsWith("tmp-")).toBe(true);
+    expect(msg.role).toBe("user");
+    expect(msg.content).toBe("first");
+    expect(msg.position).toBe(1);
+  });
+
+  it("produces distinct ids across successive calls", () => {
+    const a = AssistantMessage.buildOptimistic({ content: "x", position: 1 });
+    const b = AssistantMessage.buildOptimistic({ content: "x", position: 2 });
+    expect(a.id).not.toEqual(b.id);
   });
 });

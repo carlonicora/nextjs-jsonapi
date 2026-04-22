@@ -72,4 +72,24 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
       included: [],
     };
   }
+
+  static buildOptimistic(params: { content: string; position: number; assistantId?: string }): AssistantMessage {
+    const msg = new AssistantMessage();
+    const jsonApi: Record<string, unknown> = {
+      id: `tmp-${crypto.randomUUID()}`,
+      type: Modules.AssistantMessage.name,
+      attributes: {
+        role: "user",
+        content: params.content,
+        position: params.position,
+      },
+    };
+    if (params.assistantId) {
+      jsonApi.relationships = {
+        assistant: { data: { type: Modules.Assistant.name, id: params.assistantId } },
+      };
+    }
+    msg.rehydrate({ jsonApi: jsonApi as any, included: [] });
+    return msg;
+  }
 }
