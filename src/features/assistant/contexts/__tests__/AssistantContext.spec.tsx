@@ -180,4 +180,11 @@ describe("AssistantContext", () => {
     });
     expect(socket.off).toHaveBeenCalledWith("assistant:status", expect.any(Function));
   });
+
+  it("exposes an empty failedMessageIds set and a retrySend callback", () => {
+    const { result } = renderHook(() => useAssistantContext(), { wrapper });
+    expect(result.current.failedMessageIds).toBeInstanceOf(Set);
+    expect(result.current.failedMessageIds.size).toBe(0);
+    expect(typeof result.current.retrySend).toBe("function");
+  });
 });

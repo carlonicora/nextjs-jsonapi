@@ -15,7 +15,9 @@ interface AssistantContextValue {
   threadsLoading: boolean;
   sending: boolean;
   status?: string;
+  failedMessageIds: Set<string>;
   sendMessage(content: string): Promise<void>;
+  retrySend(tempId: string): Promise<void>;
   selectThread(id: string): Promise<void>;
   startNew(): void;
   renameThread(id: string, title: string): Promise<void>;
@@ -52,6 +54,7 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
   const [threadsLoading, setThreadsLoading] = useState<boolean>(true);
   const [sending, setSending] = useState<boolean>(false);
   const [status, setStatus] = useState<string | undefined>(undefined);
+  const [failedMessageIds, setFailedMessageIds] = useState<Set<string>>(() => new Set());
   const { socket } = useSocketContext();
 
   const sendMessage = useCallback(
@@ -91,6 +94,10 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
     },
     [assistant, socket],
   );
+
+  const retrySend = useCallback(async (_tempId: string) => {
+    // Implemented in Task 5.
+  }, []);
 
   const selectThread = useCallback(async (id: string) => {
     const [target, msgs] = await Promise.all([
@@ -146,7 +153,9 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
       threadsLoading,
       sending,
       status,
+      failedMessageIds,
       sendMessage,
+      retrySend,
       selectThread,
       startNew: () => setAssistant(undefined),
       renameThread,
@@ -159,7 +168,9 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
       threadsLoading,
       sending,
       status,
+      failedMessageIds,
       sendMessage,
+      retrySend,
       selectThread,
       renameThread,
       deleteThread,
