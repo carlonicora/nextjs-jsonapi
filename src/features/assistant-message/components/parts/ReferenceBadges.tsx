@@ -18,9 +18,7 @@ export function ReferenceBadges({ references }: Props) {
 
   return (
     <div className="mt-2 flex flex-wrap items-center gap-2">
-      <span className="text-muted-foreground text-xs">
-        {t("features.assistant.references_label")}
-      </span>
+      <span className="text-muted-foreground text-xs">{t("features.assistant.references_label")}</span>
       {references.map((ref) => {
         // ref.type is the JSON:API type string (same as module.name)
         let module;

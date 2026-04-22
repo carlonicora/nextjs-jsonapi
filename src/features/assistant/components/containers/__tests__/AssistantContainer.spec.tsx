@@ -37,9 +37,7 @@ describe("AssistantContainer", () => {
     );
     // AssistantEmptyState renders heading with translation key
     await waitFor(() =>
-      expect(
-        screen.getByRole("heading", { name: "features.assistant.empty_state.title" }),
-      ).toBeInTheDocument(),
+      expect(screen.getByRole("heading", { name: "features.assistant.empty_state.title" })).toBeInTheDocument(),
     );
   });
 

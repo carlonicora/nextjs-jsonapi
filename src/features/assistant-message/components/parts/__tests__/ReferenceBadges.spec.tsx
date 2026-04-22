@@ -9,8 +9,13 @@ import { ReferenceBadges } from "../ReferenceBadges";
 
 class TestAccount extends AbstractApiData {
   static identifierFields: string[] = ["name"];
-  rehydrate(data: any): this { super.rehydrate(data); return this; }
-  createJsonApi(): any { return {}; }
+  rehydrate(data: any): this {
+    super.rehydrate(data);
+    return this;
+  }
+  createJsonApi(): any {
+    return {};
+  }
 }
 
 const testAccountModule = {
@@ -25,7 +30,9 @@ beforeAll(() => {
   ModuleRegistry.register("TestAccount" as any, testAccountModule as any);
 });
 
-afterAll(() => { DataClassRegistry.clear(); });
+afterAll(() => {
+  DataClassRegistry.clear();
+});
 
 function makeRehydratedAccount({ id, name }: { id: string; name: string }): ApiDataInterface {
   const acct = new TestAccount();

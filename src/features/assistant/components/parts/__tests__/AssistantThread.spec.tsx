@@ -26,27 +26,13 @@ function buildMessageStub(p: { role: "user" | "assistant"; content?: string }): 
 describe("AssistantThread", () => {
   it("renders message list + status line when sending", () => {
     const msgs = [buildMessageStub({ role: "user", content: "hi" })];
-    render(
-      <AssistantThread
-        messages={msgs}
-        sending={true}
-        status="Searching..."
-        onSelectFollowUp={vi.fn()}
-      />,
-    );
+    render(<AssistantThread messages={msgs} sending={true} status="Searching..." onSelectFollowUp={vi.fn()} />);
     expect(screen.getByText("hi")).toBeInTheDocument();
     expect(screen.getByText(/Searching/)).toBeInTheDocument();
   });
 
   it("hides status line when not sending", () => {
-    render(
-      <AssistantThread
-        messages={[]}
-        sending={false}
-        status={undefined}
-        onSelectFollowUp={vi.fn()}
-      />,
-    );
+    render(<AssistantThread messages={[]} sending={false} status={undefined} onSelectFollowUp={vi.fn()} />);
     // When not sending, AssistantStatusLine should not render → the default "thinking" key should be absent
     expect(screen.queryByText("features.assistant.thinking")).not.toBeInTheDocument();
   });

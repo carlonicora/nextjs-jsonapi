@@ -6,12 +6,8 @@ import { AssistantEmptyState } from "../AssistantEmptyState";
 describe("AssistantEmptyState", () => {
   it("renders the heading + 4 starter prompts", () => {
     render(<AssistantEmptyState onSend={vi.fn()} />);
-    expect(
-      screen.getByRole("heading", { name: "features.assistant.empty_state.title" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("features.assistant.empty_state.subtitle"),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "features.assistant.empty_state.title" })).toBeInTheDocument();
+    expect(screen.getByText("features.assistant.empty_state.subtitle")).toBeInTheDocument();
     expect(screen.getByText("features.assistant.starters.a")).toBeInTheDocument();
     expect(screen.getByText("features.assistant.starters.b")).toBeInTheDocument();
     expect(screen.getByText("features.assistant.starters.c")).toBeInTheDocument();

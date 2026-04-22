@@ -31,9 +31,7 @@ export function AssistantSidebar({ threads, activeId, onSelect, onNew }: Props) 
             onClick={() => onSelect(thread.id)}
             className={
               "block w-full truncate rounded-md px-2 py-1.5 text-left text-sm " +
-              (activeId === thread.id
-                ? "bg-primary/10 text-primary"
-                : "hover:bg-muted text-foreground")
+              (activeId === thread.id ? "bg-primary/10 text-primary" : "hover:bg-muted text-foreground")
             }
           >
             {thread.title}
@@ -52,9 +50,7 @@ export function AssistantSidebar({ threads, activeId, onSelect, onNew }: Props) 
       </div>
       <div className="flex-1 overflow-y-auto p-2">
         {threads.length === 0 ? (
-          <div className="text-muted-foreground mt-6 text-center text-xs">
-            {t("features.assistant.empty_sidebar")}
-          </div>
+          <div className="text-muted-foreground mt-6 text-center text-xs">{t("features.assistant.empty_sidebar")}</div>
         ) : (
           <>
             {renderSection(t("features.assistant.bucket_today"), groups.today)}

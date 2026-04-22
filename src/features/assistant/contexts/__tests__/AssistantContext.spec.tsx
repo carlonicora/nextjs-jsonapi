@@ -58,14 +58,18 @@ describe("AssistantContext", () => {
 
   it("sendMessage with existing assistant: appends [user, assistant]", async () => {
     const existing = buildAssistantStub({ id: "a-2", title: "Existing" });
-    AssistantService.appendMessage = vi.fn().mockResolvedValue([
-      buildMessageStub({ role: "user", content: "follow-up" }),
-      buildMessageStub({ role: "assistant", content: "reply" }),
-    ]);
+    AssistantService.appendMessage = vi
+      .fn()
+      .mockResolvedValue([
+        buildMessageStub({ role: "user", content: "follow-up" }),
+        buildMessageStub({ role: "assistant", content: "reply" }),
+      ]);
     const { result } = renderHook(() => useAssistantContext(), {
       wrapper: ({ children }) => <AssistantProvider dehydratedAssistant={existing}>{children}</AssistantProvider>,
     });
-    await act(async () => { await result.current.sendMessage("follow-up"); });
+    await act(async () => {
+      await result.current.sendMessage("follow-up");
+    });
     expect(AssistantService.appendMessage).toHaveBeenCalledWith({ assistantId: "a-2", content: "follow-up" });
     expect(result.current.messages.map((m) => m.content)).toEqual(["follow-up", "reply"]);
   });
@@ -78,7 +82,9 @@ describe("AssistantContext", () => {
     const { result } = renderHook(() => useAssistantContext(), {
       wrapper: ({ children }) => <AssistantProvider>{children}</AssistantProvider>,
     });
-    await act(async () => { await result.current.selectThread("a-3"); });
+    await act(async () => {
+      await result.current.selectThread("a-3");
+    });
     expect(AssistantService.findOne).toHaveBeenCalledWith({ id: "a-3" });
     expect(AssistantMessageService.findByAssistant).toHaveBeenCalledWith({ assistantId: "a-3" });
     expect(result.current.assistant?.id).toBe("a-3");
@@ -92,7 +98,9 @@ describe("AssistantContext", () => {
     const { result } = renderHook(() => useAssistantContext(), {
       wrapper: ({ children }) => <AssistantProvider dehydratedAssistant={active}>{children}</AssistantProvider>,
     });
-    await act(async () => { await result.current.renameThread("a-1", "New"); });
+    await act(async () => {
+      await result.current.renameThread("a-1", "New");
+    });
     expect(AssistantService.rename).toHaveBeenCalledWith({ id: "a-1", title: "New" });
     expect(result.current.assistant?.title).toBe("New");
   });
@@ -103,7 +111,9 @@ describe("AssistantContext", () => {
     const { result } = renderHook(() => useAssistantContext(), {
       wrapper: ({ children }) => <AssistantProvider dehydratedAssistant={active}>{children}</AssistantProvider>,
     });
-    await act(async () => { await result.current.deleteThread("a-1"); });
+    await act(async () => {
+      await result.current.deleteThread("a-1");
+    });
     expect(AssistantService.delete).toHaveBeenCalledWith({ id: "a-1" });
     expect(result.current.assistant).toBeUndefined();
     expect(result.current.messages).toEqual([]);
@@ -121,8 +131,12 @@ describe("AssistantContext", () => {
   it("subscribes to assistant:status while sending and unsubscribes after", async () => {
     const handlers: Record<string, (payload: any) => void> = {};
     const socket = {
-      on: vi.fn((evt: string, h: any) => { handlers[evt] = h; }),
-      off: vi.fn((evt: string) => { delete handlers[evt]; }),
+      on: vi.fn((evt: string, h: any) => {
+        handlers[evt] = h;
+      }),
+      off: vi.fn((evt: string) => {
+        delete handlers[evt];
+      }),
     };
     vi.mocked(useSocketContext).mockReturnValue({ socket, isConnected: true } as any);
 
@@ -143,7 +157,9 @@ describe("AssistantContext", () => {
     });
     await waitFor(() => expect(socket.on).toHaveBeenCalledWith("assistant:status", expect.any(Function)));
     handlers["assistant:status"]?.({ assistantId: "a-4", status: "Searching accounts", at: new Date().toISOString() });
-    await act(async () => { await sendPromise!; });
+    await act(async () => {
+      await sendPromise!;
+    });
     expect(socket.off).toHaveBeenCalledWith("assistant:status", expect.any(Function));
   });
 });

@@ -50,9 +50,7 @@ export function AssistantComposer({ onSend, disabled, value: controlled, onValue
           <ArrowUp className="mr-1 h-4 w-4" /> {t("ui.buttons.save")}
         </Button>
       </div>
-      <div className="text-muted-foreground text-right text-xs">
-        {t("features.assistant.keyboard_hint")}
-      </div>
+      <div className="text-muted-foreground text-right text-xs">{t("features.assistant.keyboard_hint")}</div>
     </div>
   );
 }

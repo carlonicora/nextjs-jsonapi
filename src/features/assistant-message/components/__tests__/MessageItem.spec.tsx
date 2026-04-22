@@ -11,8 +11,13 @@ import { MessageItem } from "../MessageItem";
 // Test-only account model to exercise ReferenceBadges
 class TestAccount extends AbstractApiData {
   static identifierFields: string[] = ["name"];
-  rehydrate(data: any): this { super.rehydrate(data); return this; }
-  createJsonApi(): any { return {}; }
+  rehydrate(data: any): this {
+    super.rehydrate(data);
+    return this;
+  }
+  createJsonApi(): any {
+    return {};
+  }
 }
 const testAccountModule = {
   name: "test-accounts",

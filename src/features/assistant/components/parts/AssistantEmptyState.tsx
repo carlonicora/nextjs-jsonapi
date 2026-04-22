@@ -22,12 +22,8 @@ export function AssistantEmptyState({ onSend }: Props) {
           <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-violet-500 text-white">
             <Sparkles className="h-5 w-5" />
           </div>
-          <h3 className="text-foreground text-xl font-semibold">
-            {t("features.assistant.empty_state.title")}
-          </h3>
-          <p className="text-muted-foreground mt-1 text-sm">
-            {t("features.assistant.empty_state.subtitle")}
-          </p>
+          <h3 className="text-foreground text-xl font-semibold">{t("features.assistant.empty_state.title")}</h3>
+          <p className="text-muted-foreground mt-1 text-sm">{t("features.assistant.empty_state.subtitle")}</p>
         </div>
         <AssistantComposer value={draft} onValueChange={setDraft} onSend={onSend} />
         <div className="grid grid-cols-2 gap-2">

@@ -15,10 +15,7 @@ interface Props {
 export function AssistantsView({ dehydratedAssistant, dehydratedMessages }: Props) {
   return (
     <RoundPageContainer module={Modules.Assistant} fullWidth>
-      <AssistantProvider
-        dehydratedAssistant={dehydratedAssistant}
-        dehydratedMessages={dehydratedMessages}
-      >
+      <AssistantProvider dehydratedAssistant={dehydratedAssistant} dehydratedMessages={dehydratedMessages}>
         <AssistantContainer />
       </AssistantProvider>
     </RoundPageContainer>
