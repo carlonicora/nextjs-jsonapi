@@ -11,6 +11,7 @@ import { AssistantComposer } from "../parts/AssistantComposer";
 
 export function AssistantContainer() {
   const ctx = useAssistantContext();
+  const showThread = !!ctx.assistant || ctx.sending || ctx.messages.length > 0;
 
   return (
     <RoundPageContainer module={Modules.Assistant} fullWidth>
@@ -22,20 +23,28 @@ export function AssistantContainer() {
           onNew={ctx.startNew}
         />
         <main className="flex flex-1 flex-col">
-          {!ctx.assistant ? (
+          {!showThread ? (
             <AssistantEmptyState onSend={ctx.sendMessage} />
           ) : (
             <>
-              <AssistantThreadHeader
-                assistant={ctx.assistant}
-                onRename={(title) => ctx.renameThread(ctx.assistant!.id, title)}
-                onDelete={() => ctx.deleteThread(ctx.assistant!.id)}
-              />
+              {ctx.assistant ? (
+                <AssistantThreadHeader
+                  assistant={ctx.assistant}
+                  onRename={(title) => ctx.renameThread(ctx.assistant!.id, title)}
+                  onDelete={() => ctx.deleteThread(ctx.assistant!.id)}
+                />
+              ) : (
+                <div className="flex items-center justify-between border-b px-5 py-3" aria-hidden>
+                  <div className="h-5" />
+                </div>
+              )}
               <AssistantThread
                 messages={ctx.messages}
                 sending={ctx.sending}
                 status={ctx.status}
                 onSelectFollowUp={ctx.sendMessage}
+                failedMessageIds={ctx.failedMessageIds}
+                onRetry={ctx.retrySend}
               />
               <AssistantComposer onSend={ctx.sendMessage} disabled={ctx.sending} />
             </>
