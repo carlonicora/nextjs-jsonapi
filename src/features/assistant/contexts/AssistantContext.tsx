@@ -160,6 +160,15 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
     setThreads((prev) => prev.map((t) => (t.id === id ? withPatchedTitle(t, title) : t)));
   }, []);
 
+  const startNew = useCallback(() => {
+    setAssistant(undefined);
+    setMessages([]);
+    setFailedMessageIds(new Set());
+    if (typeof window !== "undefined") {
+      window.history.replaceState(null, "", "/assistants");
+    }
+  }, []);
+
   const deleteThread = useCallback(async (id: string) => {
     await AssistantService.delete({ id });
     setThreads((prev) => prev.filter((t) => t.id !== id));
@@ -200,7 +209,7 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
       sendMessage,
       retrySend,
       selectThread,
-      startNew: () => setAssistant(undefined),
+      startNew,
       renameThread,
       deleteThread,
     }),
@@ -215,6 +224,7 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
       sendMessage,
       retrySend,
       selectThread,
+      startNew,
       renameThread,
       deleteThread,
     ],

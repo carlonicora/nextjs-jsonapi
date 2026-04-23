@@ -150,6 +150,49 @@ describe("AssistantContext", () => {
     expect(result.current.messages).toEqual([]);
   });
 
+  it("startNew clears the active assistant, messages, failed ids, and resets URL to /assistants", async () => {
+    const replaceState = vi.spyOn(window.history, "replaceState").mockImplementation(() => {});
+    const existing = buildAssistantDehydrated({ id: "a-9", title: "Hydrated" });
+    const msg = buildMessageStub({ role: "user", content: "hi" });
+    const { result } = renderHook(() => useAssistantContext(), {
+      wrapper: ({ children }) => (
+        <AssistantProvider
+          dehydratedAssistant={existing}
+          dehydratedMessages={[
+            {
+              jsonApi: {
+                type: "assistant-messages",
+                id: msg.id,
+                attributes: { role: "user", content: "hi", position: 0 },
+              },
+              included: [],
+            },
+          ]}
+        >
+          {children}
+        </AssistantProvider>
+      ),
+    });
+
+    // Seed a failed message id by forcing an append failure.
+    AssistantService.appendMessage = vi.fn().mockRejectedValue(new Error("boom"));
+    await act(async () => {
+      await result.current.sendMessage("will fail").catch(() => {});
+    });
+    expect(result.current.failedMessageIds.size).toBeGreaterThan(0);
+    expect(result.current.assistant?.id).toBe("a-9");
+    expect(result.current.messages.length).toBeGreaterThan(0);
+
+    act(() => {
+      result.current.startNew();
+    });
+
+    expect(result.current.assistant).toBeUndefined();
+    expect(result.current.messages).toEqual([]);
+    expect(result.current.failedMessageIds.size).toBe(0);
+    expect(replaceState).toHaveBeenCalledWith(null, "", "/assistants");
+  });
+
   it("loads threads on mount", async () => {
     const t1 = buildAssistantStub({ id: "t1", title: "T1" });
     AssistantService.findMany = vi.fn().mockResolvedValue([t1]);
