@@ -6,13 +6,7 @@ import { Loader2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRbacContext } from "../contexts/RbacContext";
-import {
-  ACTION_TYPES,
-  ActionType,
-  PermissionValue,
-  type PermToken,
-  type RbacModuleBlock,
-} from "../data/RbacTypes";
+import { ACTION_TYPES, ActionType, PermissionValue, type PermToken, type RbacModuleBlock } from "../data/RbacTypes";
 import RbacPermissionCell from "./RbacPermissionCell";
 import { RbacPermissionPicker } from "./RbacPermissionPicker";
 
@@ -124,14 +118,9 @@ const ModuleEditor = memo(function ModuleEditor({
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b bg-muted/50">
-              <th className="w-40 px-4 py-2 text-left text-xs font-medium text-muted-foreground">
-                {t("rbac.role")}
-              </th>
+              <th className="w-40 px-4 py-2 text-left text-xs font-medium text-muted-foreground">{t("rbac.role")}</th>
               {ACTION_TYPES.map((action) => (
-                <th
-                  key={action}
-                  className="min-w-28 px-2 py-2 text-center text-xs font-medium text-muted-foreground"
-                >
+                <th key={action} className="min-w-28 px-2 py-2 text-center text-xs font-medium text-muted-foreground">
                   {ACTION_LABELS[action]}
                 </th>
               ))}
@@ -140,9 +129,7 @@ const ModuleEditor = memo(function ModuleEditor({
           <tbody>
             {/* Defaults row */}
             <tr className={cn("border-b bg-muted/30")}>
-              <td className="px-4 py-1 text-xs font-bold text-muted-foreground">
-                {t("rbac.defaults")}
-              </td>
+              <td className="px-4 py-1 text-xs font-bold text-muted-foreground">{t("rbac.defaults")}</td>
               {ACTION_TYPES.map((action) => (
                 <td key={action} className="px-2 py-1">
                   <CellButton
@@ -163,9 +150,7 @@ const ModuleEditor = memo(function ModuleEditor({
               const roleLabel = roleNames?.[roleId] ?? roleId;
               return (
                 <tr key={roleId} className="border-b last:border-b-0">
-                  <td className="px-4 py-1 text-xs font-medium text-muted-foreground">
-                    {roleLabel}
-                  </td>
+                  <td className="px-4 py-1 text-xs font-medium text-muted-foreground">{roleLabel}</td>
                   {ACTION_TYPES.map((action) => (
                     <td key={action} className="px-2 py-1">
                       <CellButton
@@ -195,16 +180,7 @@ const ModuleEditor = memo(function ModuleEditor({
 
 export default function RbacContainer() {
   const t = useTranslations();
-  const {
-    matrix,
-    modulePaths,
-    loading,
-    error,
-    roleNames,
-    moduleNames,
-    updateCell,
-    clearCell,
-  } = useRbacContext();
+  const { matrix, modulePaths, loading, error, roleNames, moduleNames, updateCell, clearCell } = useRbacContext();
 
   // Which module is visible in the right pane.
   const [selectedModuleId, setSelectedModuleId] = useState<string | null>(null);
@@ -228,9 +204,7 @@ export default function RbacContainer() {
   /** Module IDs sorted by display name (fallback to UUID). */
   const sortedModuleIds = useMemo(() => {
     if (!matrix) return [];
-    return Object.keys(matrix).sort((a, b) =>
-      (moduleNames?.[a] ?? a).localeCompare(moduleNames?.[b] ?? b),
-    );
+    return Object.keys(matrix).sort((a, b) => (moduleNames?.[a] ?? a).localeCompare(moduleNames?.[b] ?? b));
   }, [matrix, moduleNames]);
 
   /**
@@ -240,9 +214,7 @@ export default function RbacContainer() {
    */
   const roleIds = useMemo(() => {
     if (roleNames) {
-      return Object.keys(roleNames).sort((a, b) =>
-        (roleNames[a] ?? a).localeCompare(roleNames[b] ?? b),
-      );
+      return Object.keys(roleNames).sort((a, b) => (roleNames[a] ?? a).localeCompare(roleNames[b] ?? b));
     }
     if (!matrix) return [];
     const set = new Set<string>();
@@ -268,9 +240,7 @@ export default function RbacContainer() {
     const block = matrix[activePicker.moduleId];
     if (!block) return undefined;
     const tokens =
-      activePicker.rowKey === "default"
-        ? block.default
-        : (block as Record<string, PermToken[]>)[activePicker.rowKey];
+      activePicker.rowKey === "default" ? block.default : (block as Record<string, PermToken[]>)[activePicker.rowKey];
     return cellValue(tokens, activePicker.action);
   }, [activePicker, matrix]);
 
@@ -319,9 +289,7 @@ export default function RbacContainer() {
 
   if (!matrix) return null;
 
-  const selectedBlock: RbacModuleBlock | undefined = selectedModuleId
-    ? matrix[selectedModuleId]
-    : undefined;
+  const selectedBlock: RbacModuleBlock | undefined = selectedModuleId ? matrix[selectedModuleId] : undefined;
 
   return (
     <RoundPageContainer fullWidth forceHeader>
@@ -360,9 +328,7 @@ export default function RbacContainer() {
               onOpenPicker={openPicker}
             />
           ) : (
-            <p className="text-muted-foreground text-sm">
-              {t("rbac.select_module_prompt")}
-            </p>
+            <p className="text-muted-foreground text-sm">{t("rbac.select_module_prompt")}</p>
           )}
         </section>
       </div>

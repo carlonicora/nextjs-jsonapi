@@ -54,8 +54,7 @@ export function RbacPermissionPicker({
     if (!open) setCustomSegment("");
   }, [open]);
 
-  const currentSegments: string[] =
-    typeof value === "string" ? value.split("|").filter(Boolean) : [];
+  const currentSegments: string[] = typeof value === "string" ? value.split("|").filter(Boolean) : [];
 
   const toggleSegment = useCallback(
     (segment: string) => {
@@ -92,22 +91,15 @@ export function RbacPermissionPicker({
           sideOffset={4}
           className="isolate z-50"
         >
-          <PopoverPrimitive.Popup
-            className="bg-popover text-popover-foreground ring-foreground/10 z-50 flex w-96 flex-col gap-3 rounded-lg p-3 text-xs shadow-md outline-hidden ring-1 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 duration-100"
-          >
+          <PopoverPrimitive.Popup className="bg-popover text-popover-foreground ring-foreground/10 z-50 flex w-96 flex-col gap-3 rounded-lg p-3 text-xs shadow-md outline-hidden ring-1 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 duration-100">
             {/* Quick value */}
             <div>
-              <p className="text-muted-foreground mb-2 text-xs font-medium">
-                {t("rbac.quick_value")}
-              </p>
+              <p className="text-muted-foreground mb-2 text-xs font-medium">{t("rbac.quick_value")}</p>
               <div className="flex gap-2">
                 <Button
                   size="sm"
                   variant={value === true ? "default" : "outline"}
-                  className={cn(
-                    "flex-1 gap-1",
-                    value === true && "bg-emerald-600 hover:bg-emerald-700",
-                  )}
+                  className={cn("flex-1 gap-1", value === true && "bg-emerald-600 hover:bg-emerald-700")}
                   onClick={() => {
                     onSetValue(true);
                     onClose();
@@ -153,9 +145,7 @@ export function RbacPermissionPicker({
             {/* Relationship-path builder — always visible so users can type custom paths */}
             <Separator />
             <div>
-              <p className="text-muted-foreground mb-2 text-xs font-medium">
-                {t("rbac.relationships")}
-              </p>
+              <p className="text-muted-foreground mb-2 text-xs font-medium">{t("rbac.relationships")}</p>
               {knownSegments.length > 0 && (
                 <div className="max-h-40 space-y-1 overflow-y-auto">
                   {knownSegments.map((segment) => (
@@ -197,12 +187,8 @@ export function RbacPermissionPicker({
               </div>
               {currentSegments.length > 0 && (
                 <div className="bg-muted mt-2 rounded p-2">
-                  <p className="text-muted-foreground mb-1 text-xs">
-                    {t("rbac.preview")}
-                  </p>
-                  <p className="font-mono text-xs break-all">
-                    {currentSegments.join("|")}
-                  </p>
+                  <p className="text-muted-foreground mb-1 text-xs">{t("rbac.preview")}</p>
+                  <p className="font-mono text-xs break-all">{currentSegments.join("|")}</p>
                 </div>
               )}
             </div>

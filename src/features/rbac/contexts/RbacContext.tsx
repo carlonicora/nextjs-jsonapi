@@ -10,21 +10,11 @@ import { BreadcrumbItemData } from "../../../interfaces";
 import { Button } from "../../../shadcnui";
 import { showError, showToast } from "../../../utils/toast";
 import { RbacService } from "../data/RbacService";
-import type {
-  ActionType,
-  PermissionValue,
-  PermToken,
-  RbacMatrix,
-  RbacModuleBlock,
-} from "../data/RbacTypes";
+import type { ActionType, PermissionValue, PermToken, RbacMatrix, RbacModuleBlock } from "../data/RbacTypes";
 
 const DEFAULT_OUTPUT_PATH = "apps/api/src/rbac/permissions.ts";
 
-function upsertToken(
-  tokens: PermToken[] | undefined,
-  action: ActionType,
-  scope: PermissionValue,
-): PermToken[] {
+function upsertToken(tokens: PermToken[] | undefined, action: ActionType, scope: PermissionValue): PermToken[] {
   const next = (tokens ?? []).filter((t) => t.action !== action);
   // `scope === false` has no representation in the matrix — absence of a
   // token for an action IS the "deny" semantics. See RbacContainer helpers.
@@ -45,12 +35,7 @@ interface RbacContextType {
   saving: boolean;
   roleNames?: Record<string, string>;
   moduleNames?: Record<string, string>;
-  updateCell: (
-    moduleId: string,
-    rowKey: "default" | string,
-    action: ActionType,
-    value: PermissionValue,
-  ) => void;
+  updateCell: (moduleId: string, rowKey: "default" | string, action: ActionType, value: PermissionValue) => void;
   clearCell: (moduleId: string, roleId: string, action: ActionType) => void;
 }
 
@@ -117,20 +102,17 @@ export const RbacProvider = ({
     };
   }, [t]);
 
-  const updateCell = useCallback<RbacContextType["updateCell"]>(
-    (moduleId, rowKey, action, value) => {
-      setMatrix((prev) => {
-        if (!prev) return prev;
-        const prevBlock: RbacModuleBlock = prev[moduleId] ?? { default: [] };
-        const prevTokens: PermToken[] | undefined =
-          rowKey === "default" ? prevBlock.default : (prevBlock as Record<string, PermToken[]>)[rowKey];
-        const nextTokens = upsertToken(prevTokens, action, value);
-        const nextBlock: RbacModuleBlock = { ...prevBlock, [rowKey]: nextTokens } as RbacModuleBlock;
-        return { ...prev, [moduleId]: nextBlock };
-      });
-    },
-    [],
-  );
+  const updateCell = useCallback<RbacContextType["updateCell"]>((moduleId, rowKey, action, value) => {
+    setMatrix((prev) => {
+      if (!prev) return prev;
+      const prevBlock: RbacModuleBlock = prev[moduleId] ?? { default: [] };
+      const prevTokens: PermToken[] | undefined =
+        rowKey === "default" ? prevBlock.default : (prevBlock as Record<string, PermToken[]>)[rowKey];
+      const nextTokens = upsertToken(prevTokens, action, value);
+      const nextBlock: RbacModuleBlock = { ...prevBlock, [rowKey]: nextTokens } as RbacModuleBlock;
+      return { ...prev, [moduleId]: nextBlock };
+    });
+  }, []);
 
   const clearCell = useCallback<RbacContextType["clearCell"]>((moduleId, roleId, action) => {
     setMatrix((prev) => {
@@ -184,18 +166,8 @@ export const RbacProvider = ({
 
     const functions: ReactNode[] = [];
     functions.push(
-      <Button
-        key="rbacSave"
-        size="sm"
-        onClick={handleSave}
-        disabled={!canSave}
-        className="gap-1"
-      >
-        {saving ? (
-          <Loader2Icon className="h-3.5 w-3.5 animate-spin" />
-        ) : (
-          <DownloadIcon className="h-3.5 w-3.5" />
-        )}
+      <Button key="rbacSave" size="sm" onClick={handleSave} disabled={!canSave} className="gap-1">
+        {saving ? <Loader2Icon className="h-3.5 w-3.5 animate-spin" /> : <DownloadIcon className="h-3.5 w-3.5" />}
         Save to permissions.ts
       </Button>,
     );
