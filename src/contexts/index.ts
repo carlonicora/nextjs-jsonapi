@@ -4,6 +4,7 @@ export * from "../features/onboarding/contexts";
 export * from "../features/role/contexts/RoleContext";
 export * from "../features/user/contexts";
 export * from "../features/how-to/contexts/HowToContext";
+export * from "../features/rbac/contexts/RbacContext";
 export * from "../features/assistant/contexts/AssistantContext";
 export * from "./CommonContext";
 export * from "./HeaderChildrenContext";

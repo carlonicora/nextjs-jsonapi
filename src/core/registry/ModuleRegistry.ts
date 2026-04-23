@@ -54,6 +54,7 @@ export interface FoundationModuleDefinitions {
   // RBAC modules
   PermissionMapping: ModuleWithPermissions;
   ModulePaths: ModuleWithPermissions;
+  RbacMatrix: ModuleWithPermissions;
   // Audit modules
   AuditLog: ModuleWithPermissions;
 }
