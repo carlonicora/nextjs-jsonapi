@@ -1,3 +1,39 @@
+## [1.78.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.77.3...v1.78.0) (2026-04-23)
+
+### 🚀 Features
+
+* **assistant-message:** add buildOptimistic factory for optimistic UI echo ([d99495c](https://github.com/carlonicora/nextjs-jsonapi/commit/d99495c5dac2d310b7b99db707d3c8cf9bbedf14))
+* **assistant:** add failedMessageIds + retrySend to context value ([467f883](https://github.com/carlonicora/nextjs-jsonapi/commit/467f883920b6e307d8fe043811eb5be68ec5a920))
+* **assistant:** chat UI redesign — polymorphic refs, thread context, sidebar ([271698c](https://github.com/carlonicora/nextjs-jsonapi/commit/271698c0d25d4cf43b2592058b4609967e6df7a9))
+* **assistant:** error affordance + retry control on failed user messages ([6907c40](https://github.com/carlonicora/nextjs-jsonapi/commit/6907c4078a9b42f3e4183856a9349bd856667840))
+* **assistant:** optimistic user-message echo on append ([edce9dd](https://github.com/carlonicora/nextjs-jsonapi/commit/edce9dd773c6bb4b7d1b26f0bb6a5056875c5079))
+* **assistant:** track failed optimistic sends + support retrySend ([3546f1b](https://github.com/carlonicora/nextjs-jsonapi/commit/3546f1b3406438bb5bb085c76ad55eba4802e7d9))
+* **features/assistant:** chat UI as library feature ([281225b](https://github.com/carlonicora/nextjs-jsonapi/commit/281225bf3991be129b4fa2589954e0d17a388d2f))
+
+### 🐛 Bug Fixes
+
+* **assistant:** clear messages and reset URL on startNew ([264d80d](https://github.com/carlonicora/nextjs-jsonapi/commit/264d80d2129474a9e7d95e21e9ab3d436efb3001))
+* **assistant:** enhance AssistantProvider with breadcrumbs and title generation ([60751b6](https://github.com/carlonicora/nextjs-jsonapi/commit/60751b60397eb7912c51fab7716cfbb58243e947))
+* **assistant:** resolve current user null issue on token update and enhance thread view logic ([c712961](https://github.com/carlonicora/nextjs-jsonapi/commit/c7129614bf6ffce974521b184406089f5d10dd12))
+* **auth:** stop wiping currentUser when token cookie is absent ([5782632](https://github.com/carlonicora/nextjs-jsonapi/commit/578263208d1e0b269bb6174ab320b3328460d508))
+* **MessageItem:** streamline retry button implementation for failed messages ([3ec6755](https://github.com/carlonicora/nextjs-jsonapi/commit/3ec6755f04e9417fd8e2f693e2f87ca7dd7a6660))
+
+### 💎 Styles
+
+* **assistant-context:** drop unused react-hooks/exhaustive-deps disable ([69ac00e](https://github.com/carlonicora/nextjs-jsonapi/commit/69ac00ef173e2b143b466cd852ade836b6a74a98))
+* **assistant:** prettier auto-format carry-over from lint --fix ([a335f38](https://github.com/carlonicora/nextjs-jsonapi/commit/a335f385f34c1e8002a5e01a75ffb39e8260be56))
+* **features/assistant:** format via lint --fix ([cc99ed0](https://github.com/carlonicora/nextjs-jsonapi/commit/cc99ed031e8a23ab89781f523ea0476d2263eae8))
+
+### 📦 Code Refactoring
+
+* **assistant:** fix server/client boundary — dehydrate props, drop AssistantsView middleman ([42dcc88](https://github.com/carlonicora/nextjs-jsonapi/commit/42dcc887e3405bf4552c461efcf8a99289c0d993))
+* **auth:** await updateToken before writing userAtom in refreshUser ([ccc425d](https://github.com/carlonicora/nextjs-jsonapi/commit/ccc425dac55ff0f7ba74d2f132a1f25093b1a607))
+* **tests:** simplify JSX structure in CurrentUserContext tests ([337a0c7](https://github.com/carlonicora/nextjs-jsonapi/commit/337a0c79ca6db9c82cace8c592920521d1f09fd5))
+
+### 🚨 Tests
+
+* **assistant:** lock in optimistic echo for first-message (new-thread) flow ([502b738](https://github.com/carlonicora/nextjs-jsonapi/commit/502b7384165338217d24d8f99b3c0337c29f68bf))
+
 ## [1.77.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.77.2...v1.77.3) (2026-04-16)
 
 ### 🐛 Bug Fixes
