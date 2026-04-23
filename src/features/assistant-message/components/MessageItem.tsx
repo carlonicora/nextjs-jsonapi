@@ -31,11 +31,7 @@ export function MessageItem({ message, isLatestAssistant, onSelectFollowUp, fail
           <div className="text-destructive flex items-center gap-2 text-xs">
             <AlertCircle className="h-3.5 w-3.5" />
             <span>{t("features.assistant.send_failed")}</span>
-            <button
-              type="button"
-              className="underline"
-              onClick={() => onRetry?.(message.id)}
-            >
+            <button type="button" className="underline" onClick={() => onRetry?.(message.id)}>
               {t("features.assistant.retry")}
             </button>
           </div>
