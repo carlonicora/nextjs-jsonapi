@@ -205,7 +205,10 @@ describe("AssistantContext", () => {
     const existing = buildAssistantDehydrated({ id: "a-2", title: "Existing" });
     let resolveAppend!: (value: any) => void;
     AssistantService.appendMessage = vi.fn().mockImplementation(
-      () => new Promise((resolve) => { resolveAppend = resolve; }),
+      () =>
+        new Promise((resolve) => {
+          resolveAppend = resolve;
+        }),
     );
     const { result } = renderHook(() => useAssistantContext(), {
       wrapper: ({ children }) => <AssistantProvider dehydratedAssistant={existing}>{children}</AssistantProvider>,
@@ -243,7 +246,10 @@ describe("AssistantContext", () => {
 
     let resolveCreate!: (value: any) => void;
     AssistantService.create = vi.fn().mockImplementation(
-      () => new Promise((resolve) => { resolveCreate = resolve; }),
+      () =>
+        new Promise((resolve) => {
+          resolveCreate = resolve;
+        }),
     );
     AssistantMessageService.findByAssistant = vi.fn().mockResolvedValue([userMsg, assistantMsg]);
 

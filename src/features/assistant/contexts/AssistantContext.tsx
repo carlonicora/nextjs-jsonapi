@@ -1,13 +1,16 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import type { AssistantInterface } from "../data/AssistantInterface";
-import type { AssistantMessageInterface } from "../../assistant-message/data/AssistantMessageInterface";
-import { AssistantService } from "../data/AssistantService";
-import { AssistantMessageService } from "../../assistant-message/data/AssistantMessageService";
+import { SharedProvider } from "../../../contexts";
 import { useSocketContext } from "../../../contexts/SocketContext";
-import { JsonApiHydratedDataInterface, Modules, rehydrate, rehydrateList } from "../../../core";
+import { BreadcrumbItemData, JsonApiHydratedDataInterface, Modules, rehydrate, rehydrateList } from "../../../core";
+import { usePageUrlGenerator } from "../../../hooks";
 import { AssistantMessage } from "../../assistant-message/data/AssistantMessage";
+import type { AssistantMessageInterface } from "../../assistant-message/data/AssistantMessageInterface";
+import { AssistantMessageService } from "../../assistant-message/data/AssistantMessageService";
+import type { AssistantInterface } from "../data/AssistantInterface";
+import { AssistantService } from "../data/AssistantService";
 
 interface AssistantContextValue {
   assistant?: AssistantInterface;
@@ -53,6 +56,9 @@ function withPatchedTitle(source: AssistantInterface, title: string): AssistantI
 }
 
 export function AssistantProvider({ children, dehydratedAssistant, dehydratedMessages }: Props) {
+  const t = useTranslations();
+  const generateUrl = usePageUrlGenerator();
+
   const [assistant, setAssistant] = useState<AssistantInterface | undefined>(() =>
     dehydratedAssistant ? rehydrate<AssistantInterface>(Modules.Assistant, dehydratedAssistant) : undefined,
   );
@@ -214,7 +220,22 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
     ],
   );
 
-  return <AssistantContext.Provider value={value}>{children}</AssistantContext.Provider>;
+  const breadcrumbs: BreadcrumbItemData[] = [
+    {
+      name: t("entities.assistants", { count: 2 }),
+      href: generateUrl({ page: Modules.Assistant }),
+    },
+  ];
+
+  const title = {
+    type: t("entities.tasks", { count: 2 }),
+  };
+
+  return (
+    <AssistantContext.Provider value={value}>
+      <SharedProvider value={{ breadcrumbs, title }}>{children}</SharedProvider>
+    </AssistantContext.Provider>
+  );
 }
 
 export function useAssistantContext(): AssistantContextValue {
