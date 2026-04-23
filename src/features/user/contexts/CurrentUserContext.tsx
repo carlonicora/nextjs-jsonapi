@@ -1,6 +1,5 @@
 "use client";
 
-import { getCookie } from "cookies-next";
 import { useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { usePathname } from "next/navigation";
@@ -45,11 +44,6 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
   const path = usePathname();
 
   const [dehydratedUser, setDehydratedUser] = useAtom(userAtom);
-
-  useEffect(() => {
-    const token = getCookie("token");
-    if (!token && dehydratedUser) setDehydratedUser(null);
-  }, [dehydratedUser, setDehydratedUser]);
 
   const matchUrlToModule = (_params?: { path: string }): ModuleWithPermissions | undefined => {
     const moduleKeys = Object.getOwnPropertyNames(Modules).filter(
@@ -148,13 +142,9 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
       try {
         const fullUser = await UserService.findFullUser();
         if (fullUser) {
-          const dehydrated = fullUser.dehydrate();
-
-          setDehydratedUser(dehydrated as any);
-          setUser(fullUser);
-
-          // Update authentication cookies with fresh user data
-          // Skip when triggered by WebSocket to prevent page reload (Server Actions modify cookies)
+          // Update authentication cookies with fresh user data BEFORE writing the atom,
+          // so downstream observers see cookies-then-user, never user-then-cookies.
+          // Skip when triggered by WebSocket to prevent page reload (Server Actions modify cookies).
           if (!options?.skipCookieUpdate) {
             await getTokenHandler()?.updateToken({
               userId: fullUser.id,
@@ -167,6 +157,8 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
               })),
             });
           }
+
+          setDehydratedUser(fullUser.dehydrate() as any);
         }
       } catch (error) {
         console.error("Failed to refresh user data:", error);
