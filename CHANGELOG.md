@@ -1,3 +1,13 @@
+## [1.79.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.78.0...v1.79.0) (2026-04-25)
+
+### 🚀 Features
+
+* **rbac:** declarative matrix UI with sidebar + detail layout ([dc72151](https://github.com/carlonicora/nextjs-jsonapi/commit/dc72151aedda7f02b7ae7f4a071ead0954ed309a))
+
+### 💎 Styles
+
+* **rbac:** prettier reformat ([38e5d39](https://github.com/carlonicora/nextjs-jsonapi/commit/38e5d39839efcccec4046b225f8f52c833df34cc))
+
 ## [1.78.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.77.3...v1.78.0) (2026-04-23)
 
 ### 🚀 Features
