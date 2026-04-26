@@ -1,3 +1,10 @@
+## [1.80.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.79.0...v1.80.0) (2026-04-26)
+
+### 🚀 Features
+
+* **assistant-message:** tabbed message sources panel with library-side fetch ([66d874d](https://github.com/carlonicora/nextjs-jsonapi/commit/66d874d0e5a65f7723b06dcd93cba130eaea6c96))
+* group assistant and responder agents in a single call ([31fbc4b](https://github.com/carlonicora/nextjs-jsonapi/commit/31fbc4be72add6123fb23a50cbd813fe716766ae))
+
 ## [1.79.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.78.0...v1.79.0) (2026-04-25)
 
 ### 🚀 Features
