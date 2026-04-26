@@ -39,7 +39,7 @@ export function CitationsTab({ citations, sources }: Props) {
   };
 
   return (
-    <Table>
+    <Table className="table-fixed">
       <TableHeader>
         <TableRow>
           <TableHead>{t("features.assistant.message.sources.source")}</TableHead>
@@ -90,7 +90,7 @@ export function CitationsTab({ citations, sources }: Props) {
               {isOpen && (
                 <TableRow>
                   <TableCell colSpan={2} className="border-t-0 p-4">
-                    <div className="bg-card w-full overflow-hidden rounded border p-4 text-sm break-words">
+                    <div className="bg-card w-full max-w-full overflow-x-auto rounded border p-4 text-sm break-words">
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>{chunk.content}</ReactMarkdown>
                     </div>
                   </TableCell>

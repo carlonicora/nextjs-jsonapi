@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import type { ApiDataInterface } from "../../../../core";
+import { ModuleRegistry } from "../../../../core/registry/ModuleRegistry";
 import type { AssistantMessageInterface } from "../../data/AssistantMessageInterface";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../../shadcnui/ui/tabs";
 import { ReferencesTab } from "./tabs/ReferencesTab";
@@ -34,7 +35,22 @@ type TabKey = "suggested" | "references" | "citations" | "contents" | "users";
 export function MessageSourcesPanel({ message, isLatestAssistant, onSelectFollowUp, sources, users }: Props) {
   const t = useTranslations();
 
-  const refsCount = message.references.length;
+  // Filter out references whose module has no pageUrl: those are
+  // intermediary/relational nodes (e.g., BomItem, BomTreeNode) that the user
+  // shouldn't navigate to directly.
+  const visibleReferences = useMemo(
+    () =>
+      message.references.filter((ref) => {
+        try {
+          return !!ModuleRegistry.findByName(ref.type).pageUrl;
+        } catch {
+          return false;
+        }
+      }),
+    [message.references],
+  );
+
+  const refsCount = visibleReferences.length;
   const citationsCount = message.citations.length;
   const suggestionsCount = isLatestAssistant ? message.suggestedQuestions.length : 0;
 
@@ -85,7 +101,7 @@ export function MessageSourcesPanel({ message, isLatestAssistant, onSelectFollow
       </button>
 
       {open && (
-        <div id={panelId} className="mt-2 w-full min-w-0 overflow-hidden">
+        <div id={panelId} className="mt-2 w-full min-w-0">
           <Tabs value={active} onValueChange={(v) => setActive(v as TabKey)}>
             <TabsList>
               {visibleTabs.map((key) => (
@@ -109,7 +125,7 @@ export function MessageSourcesPanel({ message, isLatestAssistant, onSelectFollow
             )}
             {refsCount > 0 && (
               <TabsContent value="references">
-                <ReferencesTab references={message.references} />
+                <ReferencesTab references={visibleReferences} />
               </TabsContent>
             )}
             {citationsCount > 0 && (
