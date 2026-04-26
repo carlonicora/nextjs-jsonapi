@@ -31,6 +31,7 @@ export * from "../features/user/components";
 export * from "../features/oauth/components";
 export * from "../features/waitlist/components";
 export { RbacContainer } from "../features/rbac/components/RbacContainer";
+export { RbacByRoleContainer } from "../features/rbac/components/RbacByRoleContainer";
 export { RbacPermissionCell } from "../features/rbac/components/RbacPermissionCell";
 export { RbacPermissionPicker } from "../features/rbac/components/RbacPermissionPicker";
 
