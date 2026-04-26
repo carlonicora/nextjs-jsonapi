@@ -1,3 +1,9 @@
+## [1.81.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.80.0...v1.81.0) (2026-04-26)
+
+### 🚀 Features
+
+* **rbac:** add role-centric RBAC administration container ([ebb246d](https://github.com/carlonicora/nextjs-jsonapi/commit/ebb246d74f1f53dd569861b0b92489f3b0bdc40b))
+
 ## [1.80.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.79.0...v1.80.0) (2026-04-26)
 
 ### 🚀 Features
