@@ -22,7 +22,7 @@ export function AssistantThread({ messages, sending, status, onSelectFollowUp, f
   }, [messages.length, sending]);
 
   return (
-    <div className="flex-1 overflow-y-auto px-6 py-5">
+    <div className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto px-6 py-5">
       <MessageList
         messages={messages}
         onSelectFollowUp={onSelectFollowUp}

@@ -22,7 +22,7 @@ export function MessageList({ messages, onSelectFollowUp, failedMessageIds, onRe
   }
 
   return (
-    <div className="flex flex-col gap-y-3">
+    <div className="flex min-w-0 flex-col gap-y-3">
       {ordered.map((m, i) => (
         <MessageItem
           key={m.id}

@@ -5,6 +5,7 @@ import { ModuleRegistry } from "../../../../core/registry/ModuleRegistry";
 import { JsonApiHydratedDataInterface } from "../../../../core/interfaces/JsonApiHydratedDataInterface";
 import { ApiRequestDataTypeInterface } from "../../../../core/interfaces/ApiRequestDataTypeInterface";
 import { AssistantMessage } from "../AssistantMessage";
+import { Chunk } from "../../../chunk/data/Chunk";
 
 // ---------------------------------------------------------------------------
 // Minimal test-only model — avoids collision with any real app module.
@@ -41,12 +42,19 @@ const assistantModule: ApiRequestDataTypeInterface = {
   model: class {},
 } as any;
 
+const chunkModule: ApiRequestDataTypeInterface = {
+  name: "chunks",
+  model: Chunk,
+} as any;
+
 beforeAll(() => {
   DataClassRegistry.clear();
   DataClassRegistry.registerObjectClass(testAccountModule, TestAccount);
+  DataClassRegistry.registerObjectClass(chunkModule, Chunk);
   ModuleRegistry.register("TestAccount", testAccountModule);
   ModuleRegistry.register("AssistantMessage", assistantMessageModule);
   ModuleRegistry.register("Assistant", assistantModule);
+  ModuleRegistry.register("Chunk", chunkModule);
 });
 
 afterAll(() => {

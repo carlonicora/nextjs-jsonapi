@@ -1,4 +1,5 @@
 import { ApiDataInterface } from "../../../core";
+import { ChunkInterface, ChunkRelationshipMeta } from "../../chunk/data/ChunkInterface";
 
 export type AssistantMessageRole = "user" | "assistant" | "system";
 
@@ -18,4 +19,5 @@ export interface AssistantMessageInterface extends ApiDataInterface {
   get inputTokens(): number | undefined;
   get outputTokens(): number | undefined;
   get references(): ApiDataInterface[];
+  get citations(): (ChunkInterface & ChunkRelationshipMeta)[];
 }
