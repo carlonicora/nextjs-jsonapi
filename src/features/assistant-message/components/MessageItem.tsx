@@ -1,12 +1,18 @@
 "use client";
 
+import { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { Sparkles, AlertCircle } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { AssistantMessageInterface } from "../data/AssistantMessageInterface";
-import { ReferenceBadges } from "./parts/ReferenceBadges";
-import { SuggestedFollowUps } from "./parts/SuggestedFollowUps";
+import { MessageSourcesPanel } from "./parts/MessageSourcesPanel";
+
+export type RenderMessageSources = (
+  message: AssistantMessageInterface,
+  isLatestAssistant: boolean,
+  onSelectFollowUp: (q: string) => void,
+) => ReactNode;
 
 interface Props {
   message: AssistantMessageInterface;
@@ -14,9 +20,23 @@ interface Props {
   onSelectFollowUp: (q: string) => void;
   failedMessageIds?: Set<string>;
   onRetry?: (tempId: string) => void;
+  /**
+   * App-level override for the sources panel. When provided, the app is
+   * responsible for fetching source entities and rendering its own panel.
+   * When omitted, the library default `MessageSourcesPanel` (without sources)
+   * is rendered.
+   */
+  renderSources?: RenderMessageSources;
 }
 
-export function MessageItem({ message, isLatestAssistant, onSelectFollowUp, failedMessageIds, onRetry }: Props) {
+export function MessageItem({
+  message,
+  isLatestAssistant,
+  onSelectFollowUp,
+  failedMessageIds,
+  onRetry,
+  renderSources,
+}: Props) {
   const t = useTranslations();
   const isUser = message.role === "user";
   const isFailed = isUser && !!failedMessageIds?.has(message.id);
@@ -51,9 +71,14 @@ export function MessageItem({ message, isLatestAssistant, onSelectFollowUp, fail
       <div className="bg-muted text-foreground rounded-2xl rounded-bl-sm px-3.5 py-2.5 text-sm leading-relaxed">
         <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
       </div>
-      <ReferenceBadges references={message.references} />
-      {isLatestAssistant && (
-        <SuggestedFollowUps questions={message.suggestedQuestions ?? []} onSelect={onSelectFollowUp} />
+      {renderSources ? (
+        renderSources(message, isLatestAssistant, onSelectFollowUp)
+      ) : (
+        <MessageSourcesPanel
+          message={message}
+          isLatestAssistant={isLatestAssistant}
+          onSelectFollowUp={onSelectFollowUp}
+        />
       )}
     </div>
   );

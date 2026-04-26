@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { AssistantMessageInterface } from "../../../assistant-message/data/AssistantMessageInterface";
+import type { RenderMessageSources } from "../../../assistant-message/components/MessageItem";
 import { MessageList } from "../../../assistant-message/components/MessageList";
 import { AssistantStatusLine } from "./AssistantStatusLine";
 
@@ -12,9 +13,18 @@ interface Props {
   onSelectFollowUp: (q: string) => void;
   failedMessageIds?: Set<string>;
   onRetry?: (tempId: string) => void;
+  renderMessageSources?: RenderMessageSources;
 }
 
-export function AssistantThread({ messages, sending, status, onSelectFollowUp, failedMessageIds, onRetry }: Props) {
+export function AssistantThread({
+  messages,
+  sending,
+  status,
+  onSelectFollowUp,
+  failedMessageIds,
+  onRetry,
+  renderMessageSources,
+}: Props) {
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,6 +38,7 @@ export function AssistantThread({ messages, sending, status, onSelectFollowUp, f
         onSelectFollowUp={onSelectFollowUp}
         failedMessageIds={failedMessageIds}
         onRetry={onRetry}
+        renderMessageSources={renderMessageSources}
       />
       {sending && <AssistantStatusLine status={status} />}
       <div ref={endRef} />

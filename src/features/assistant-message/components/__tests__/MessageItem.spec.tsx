@@ -8,7 +8,7 @@ import type { ApiDataInterface } from "../../../../core";
 import type { AssistantMessageInterface } from "../../data/AssistantMessageInterface";
 import { MessageItem } from "../MessageItem";
 
-// Test-only account model to exercise ReferenceBadges
+// Test-only account model to exercise the sources panel references list
 class TestAccount extends AbstractApiData {
   static identifierFields: string[] = ["name"];
   rehydrate(data: any): this {
@@ -51,6 +51,7 @@ function buildMessageStub(p: {
     content: p.content ?? "",
     position: 0,
     references: p.references ?? [],
+    citations: [],
     suggestedQuestions: p.suggestedQuestions ?? [],
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -66,7 +67,7 @@ describe("MessageItem", () => {
     expect(screen.queryByText("features.assistant.agent_name")).not.toBeInTheDocument();
   });
 
-  it("assistant message renders bubble, references, and suggestions toggle when latest", () => {
+  it("assistant message renders agent label and the sources panel toggle when sources exist", () => {
     const msg = buildMessageStub({
       role: "assistant",
       content: "**bold** reply",
@@ -75,14 +76,17 @@ describe("MessageItem", () => {
     });
     render(<MessageItem message={msg} isLatestAssistant={true} onSelectFollowUp={vi.fn()} />);
     expect(screen.getByText("features.assistant.agent_name")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /acme/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /show_suggestions/ })).toBeInTheDocument();
+    // The MessageSourcesPanel toggle uses the message.sources.toggle translation key.
+    expect(screen.getByRole("button", { name: /sources\.toggle/i })).toBeInTheDocument();
   });
 
-  it("assistant message NOT latest: no suggestions toggle", () => {
+  it("assistant message NOT latest with only suggestions: no sources panel rendered", () => {
     const msg = buildMessageStub({ role: "assistant", content: "prior", suggestedQuestions: ["x"] });
-    render(<MessageItem message={msg} isLatestAssistant={false} onSelectFollowUp={vi.fn()} />);
-    expect(screen.queryByRole("button", { name: /show_suggestions/ })).not.toBeInTheDocument();
+    const { container } = render(<MessageItem message={msg} isLatestAssistant={false} onSelectFollowUp={vi.fn()} />);
+    // No sources/citations/references and suggestions are gated by isLatestAssistant -> panel renders nothing.
+    expect(screen.queryByRole("button", { name: /sources\.toggle/i })).not.toBeInTheDocument();
+    // Sanity: the assistant bubble itself still rendered.
+    expect(container).not.toBeEmptyDOMElement();
   });
 
   it("failed user message: renders retry control and calls onRetry with the id", async () => {

@@ -1,6 +1,7 @@
 import { AbstractApiData, ApiDataInterface, JsonApiHydratedDataInterface, Modules } from "../../../core";
 import { AssistantMessageInput, AssistantMessageInterface, AssistantMessageRole } from "./AssistantMessageInterface";
 import { resolveReferenceableModules } from "../../assistant/utils/resolveReferenceableModules";
+import { ChunkInterface, ChunkRelationshipMeta } from "../../chunk/data/ChunkInterface";
 
 export class AssistantMessage extends AbstractApiData implements AssistantMessageInterface {
   private _role?: AssistantMessageRole;
@@ -10,6 +11,7 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
   private _inputTokens?: number;
   private _outputTokens?: number;
   private _references?: ApiDataInterface[];
+  private _citations?: (ChunkInterface & ChunkRelationshipMeta)[];
 
   get role(): AssistantMessageRole {
     return this._role ?? "assistant";
@@ -39,6 +41,10 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
     return this._references ?? [];
   }
 
+  get citations(): (ChunkInterface & ChunkRelationshipMeta)[] {
+    return this._citations ?? [];
+  }
+
   rehydrate(data: JsonApiHydratedDataInterface): this {
     super.rehydrate(data);
     const attrs = data.jsonApi.attributes ?? {};
@@ -50,6 +56,20 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
     this._outputTokens = attrs.outputTokens;
     const refs = this._readIncludedPolymorphic<ApiDataInterface>(data, "references", resolveReferenceableModules());
     this._references = Array.isArray(refs) ? refs : refs ? [refs] : [];
+    if (data.jsonApi.relationships?.citations?.data) {
+      const citations = this._readIncludedWithMeta<ChunkInterface, ChunkRelationshipMeta>(
+        data,
+        "citations",
+        Modules.Chunk,
+      );
+      this._citations = Array.isArray(citations)
+        ? (citations as (ChunkInterface & ChunkRelationshipMeta)[])
+        : citations
+          ? [citations as ChunkInterface & ChunkRelationshipMeta]
+          : [];
+    } else {
+      this._citations = [];
+    }
     return this;
   }
 

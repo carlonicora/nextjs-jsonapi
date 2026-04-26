@@ -65,6 +65,8 @@ export * from "../features/assistant/AssistantModule";
 export * from "../features/assistant/data";
 export * from "../features/assistant-message/AssistantMessageModule";
 export * from "../features/assistant-message/data";
+export * from "../features/chunk/ChunkModule";
+export * from "../features/chunk/data";
 export * from "../features/feature/data";
 export * from "../features/feature/feature.module";
 export * from "../features/module";

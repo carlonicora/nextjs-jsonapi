@@ -1,16 +1,17 @@
 "use client";
 
 import { AssistantMessageInterface } from "../data/AssistantMessageInterface";
-import { MessageItem } from "./MessageItem";
+import { MessageItem, RenderMessageSources } from "./MessageItem";
 
 interface Props {
   messages: AssistantMessageInterface[];
   onSelectFollowUp: (q: string) => void;
   failedMessageIds?: Set<string>;
   onRetry?: (tempId: string) => void;
+  renderMessageSources?: RenderMessageSources;
 }
 
-export function MessageList({ messages, onSelectFollowUp, failedMessageIds, onRetry }: Props) {
+export function MessageList({ messages, onSelectFollowUp, failedMessageIds, onRetry, renderMessageSources }: Props) {
   const ordered = [...messages].sort((a, b) => a.position - b.position);
 
   let lastAssistantIndex = -1;
@@ -31,6 +32,7 @@ export function MessageList({ messages, onSelectFollowUp, failedMessageIds, onRe
           onSelectFollowUp={onSelectFollowUp}
           failedMessageIds={failedMessageIds}
           onRetry={onRetry}
+          renderSources={renderMessageSources}
         />
       ))}
     </div>

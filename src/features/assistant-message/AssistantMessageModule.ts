@@ -12,6 +12,7 @@ export const AssistantMessageModule = (factory: ModuleFactory) =>
     icon: MessageSquareIcon,
     inclusions: {
       lists: {
+        types: [`citations`, `citations.source`, `citations.source.author`],
         fields: [
           createJsonApiInclusion("assistant-messages", [
             `role`,
@@ -21,7 +22,10 @@ export const AssistantMessageModule = (factory: ModuleFactory) =>
             `inputTokens`,
             `outputTokens`,
             `references`,
+            `citations`,
           ]),
+          createJsonApiInclusion("chunks", [`content`, `nodeId`, `nodeType`, `imagePath`, `source`]),
+          createJsonApiInclusion("users", [`name`, `avatar`]),
         ],
       },
     },
