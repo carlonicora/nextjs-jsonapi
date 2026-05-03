@@ -1,3 +1,9 @@
+## [1.82.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.81.0...v1.82.0) (2026-05-03)
+
+### 🚀 Features
+
+* **components:** add ContentListGrid primitive and onSuccess on CommonDeleter ([15669d7](https://github.com/carlonicora/nextjs-jsonapi/commit/15669d75d4f020777f88b99c99bf207650d4ddc7))
+
 ## [1.81.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.80.0...v1.81.0) (2026-04-26)
 
 ### 🚀 Features
