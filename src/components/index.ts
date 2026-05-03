@@ -11,6 +11,7 @@ export * from "./forms";
 export * from "./navigations";
 export * from "./pages";
 export * from "./tables";
+export * from "./grids";
 export * from "./fiscal";
 export { parseFiscalData } from "../utils/fiscal-utils";
 

@@ -20,9 +20,10 @@ type CommonDeleterProps = {
   redirectTo?: string;
   forceShow?: boolean;
   testId?: string;
+  onSuccess?: () => void | Promise<void>;
 };
 
-export function CommonDeleter({ deleteFunction, redirectTo, type, forceShow, testId }: CommonDeleterProps) {
+export function CommonDeleter({ deleteFunction, redirectTo, type, forceShow, testId, onSuccess }: CommonDeleterProps) {
   const t = useI18nTranslations();
   const router = useI18nRouter();
   const [open, setOpen] = useState<boolean>(forceShow || false);
@@ -34,7 +35,8 @@ export function CommonDeleter({ deleteFunction, redirectTo, type, forceShow, tes
       await deleteFunction();
 
       setOpen(false);
-      if (redirectTo) router.push(redirectTo);
+      if (onSuccess) await onSuccess();
+      else if (redirectTo) router.push(redirectTo);
     } catch (error) {
       errorToast({ title: t(`common.errors.delete`), error: error });
     }
