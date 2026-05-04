@@ -67,31 +67,35 @@ export function RoundPageContainer({
               <div className={cn(`grow overflow-y-auto p-4`, fullWidth && `p-0`)}>
                 <div className={cn(`mx-auto max-w-6xl space-y-8`, fullWidth && `max-w-full w-full p-0 h-full`)}>
                   {tabs ? (
-                    <Tabs
-                      value={activeTab}
-                      className="w-full"
-                      onValueChange={(key) => {
-                        setActiveTab(key);
-                        if (module && id) rewriteUrl({ page: module, id: id, additionalParameters: { section: key } });
-                      }}
-                    >
-                      <div className="p-4">
-                        <TabsList className={``}>
+                    <>
+                      <Tabs
+                        value={activeTab}
+                        className="w-full"
+                        onValueChange={(key) => {
+                          setActiveTab(key);
+                          if (module && id)
+                            rewriteUrl({ page: module, id: id, additionalParameters: { section: key } });
+                        }}
+                      >
+                        <div className="p-4">
+                          <TabsList className={``}>
+                            {tabs.map((tab) => (
+                              <TabsTrigger key={tab.label} value={tab.key?.name ?? tab.label} className={`px-4`}>
+                                {tab.contentLabel ?? tab.label}
+                              </TabsTrigger>
+                            ))}
+                          </TabsList>
+                        </div>
+                        <div className="flex w-full overflow-y-auto px-4">
                           {tabs.map((tab) => (
-                            <TabsTrigger key={tab.label} value={tab.key?.name ?? tab.label} className={`px-4`}>
-                              {tab.contentLabel ?? tab.label}
-                            </TabsTrigger>
+                            <TabsContent key={tab.label} value={tab.key?.name ?? tab.label} className={`pb-20`}>
+                              {tab.content}
+                            </TabsContent>
                           ))}
-                        </TabsList>
-                      </div>
-                      <div className="flex w-full overflow-y-auto px-4">
-                        {tabs.map((tab) => (
-                          <TabsContent key={tab.label} value={tab.key?.name ?? tab.label} className={`pb-20`}>
-                            {tab.content}
-                          </TabsContent>
-                        ))}
-                      </div>
-                    </Tabs>
+                        </div>
+                      </Tabs>
+                      {children && <div className="flex px-4">{children}</div>}
+                    </>
                   ) : (
                     children
                   )}
