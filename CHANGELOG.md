@@ -1,3 +1,9 @@
+## [1.83.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.82.0...v1.83.0) (2026-05-04)
+
+### 🚀 Features
+
+* **components:** enhance RoundPageContainer with improved tab structure and child rendering ([94c7b57](https://github.com/carlonicora/nextjs-jsonapi/commit/94c7b57803dd5f6764eedce33eb939523bffc069))
+
 ## [1.82.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.81.0...v1.82.0) (2026-05-03)
 
 ### 🚀 Features
