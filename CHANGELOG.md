@@ -1,3 +1,9 @@
+## [1.84.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.83.0...v1.84.0) (2026-05-04)
+
+### 🚀 Features
+
+* **components:** enhance RoundPageContainer with cookie management for details visibility ([900801b](https://github.com/carlonicora/nextjs-jsonapi/commit/900801bfa12878bea95419ece37aa09861fe0237))
+
 ## [1.83.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.82.0...v1.83.0) (2026-05-04)
 
 ### 🚀 Features
