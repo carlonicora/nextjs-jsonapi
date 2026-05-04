@@ -89,7 +89,7 @@ export async function serverRequest(params: ServerRequestParams): Promise<ApiDat
     }
   } else {
     // Default to short caching
-    nextOptions.revalidate = 1;
+    nextOptions.revalidate = 0;
   }
 
   const options: RequestInit & { next?: { revalidate?: number; tags?: string[] } } = {
