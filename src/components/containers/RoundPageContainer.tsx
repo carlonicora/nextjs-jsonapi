@@ -9,7 +9,10 @@ import { useUrlRewriter } from "@/hooks";
 import { cn } from "@/index";
 import { ModuleWithPermissions } from "@/permissions";
 import { useSearchParams } from "next/navigation";
-import { ReactNode, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
+
+const DETAILS_COOKIE_NAME = "round_page_details_state";
+const DETAILS_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 
 type RoundPageContainerProps = {
   module?: ModuleWithPermissions;
@@ -32,7 +35,17 @@ export function RoundPageContainer({
 }: RoundPageContainerProps) {
   const headerChildren = useHeaderChildren();
   const headerLeftContent = useHeaderLeftContent();
-  const [showDetails, setShowDetails] = useState(false);
+  const [showDetails, setShowDetailsState] = useState(false);
+
+  useEffect(() => {
+    const match = document.cookie.split("; ").find((row) => row.startsWith(`${DETAILS_COOKIE_NAME}=`));
+    if (match?.split("=")[1] === "true") setShowDetailsState(true);
+  }, []);
+
+  const setShowDetails = useCallback((value: boolean) => {
+    setShowDetailsState(value);
+    document.cookie = `${DETAILS_COOKIE_NAME}=${value}; path=/; max-age=${DETAILS_COOKIE_MAX_AGE}`;
+  }, []);
 
   const searchParams = useSearchParams();
   const section = searchParams.get("section");
