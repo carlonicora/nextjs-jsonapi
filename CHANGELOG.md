@@ -1,3 +1,9 @@
+## [1.85.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.84.0...v1.85.0) (2026-05-04)
+
+### 🚀 Features
+
+* **forms:** add hideSubmit prop to EditorSheet ([77a52fc](https://github.com/carlonicora/nextjs-jsonapi/commit/77a52fc09bd049d6f871a87dc85abc5d28d87b2f))
+
 ## [1.84.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.83.0...v1.84.0) (2026-05-04)
 
 ### 🚀 Features
