@@ -51,6 +51,7 @@ export type EditorSheetProps<T extends FieldValues> = {
 
   size?: EditorSheetSize;
   disabled?: boolean;
+  hideSubmit?: boolean;
 
   trigger?: ReactNode;
   forceShow?: boolean;
@@ -78,6 +79,7 @@ export function EditorSheet<T extends FieldValues>({
   onNavigate,
   size = "xl",
   disabled,
+  hideSubmit,
   trigger,
   forceShow,
   onClose,
@@ -177,7 +179,13 @@ export function EditorSheet<T extends FieldValues>({
             <form onSubmit={form.handleSubmit(wrappedOnSubmit)} className="flex min-h-0 flex-1 flex-col">
               <div className="flex-1 overflow-y-auto px-6 py-4">{children}</div>
               <SheetFooter className="shrink-0 border-t px-6 py-4">
-                <CommonEditorButtons form={form} setOpen={handleOpenChange} isEdit={isEdit} disabled={disabled} />
+                <CommonEditorButtons
+                  form={form}
+                  setOpen={handleOpenChange}
+                  isEdit={isEdit}
+                  disabled={disabled}
+                  hideSubmit={hideSubmit}
+                />
               </SheetFooter>
             </form>
           </Form>

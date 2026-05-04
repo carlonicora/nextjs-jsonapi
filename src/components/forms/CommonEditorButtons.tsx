@@ -6,8 +6,9 @@ type CommonEditorButtonsProps = {
   form: any;
   disabled?: boolean;
   setOpen: (open: boolean) => void;
+  hideSubmit?: boolean;
 };
-export function CommonEditorButtons({ isEdit, form, disabled, setOpen }: CommonEditorButtonsProps) {
+export function CommonEditorButtons({ isEdit, form, disabled, setOpen, hideSubmit }: CommonEditorButtonsProps) {
   const t = useTranslations();
 
   return (
@@ -22,9 +23,11 @@ export function CommonEditorButtons({ isEdit, form, disabled, setOpen }: CommonE
         {t(`ui.buttons.cancel`)}
       </Button>
 
-      <Button type="submit" disabled={form.formState.isSubmitting || disabled} data-testid={`modal-button-create`}>
-        {isEdit ? t(`ui.buttons.confirm_update`) : t(`ui.buttons.confirm_create`)}
-      </Button>
+      {!hideSubmit && (
+        <Button type="submit" disabled={form.formState.isSubmitting || disabled} data-testid={`modal-button-create`}>
+          {isEdit ? t(`ui.buttons.confirm_update`) : t(`ui.buttons.confirm_create`)}
+        </Button>
+      )}
     </div>
   );
 }
