@@ -1,3 +1,9 @@
+## [1.86.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.85.0...v1.86.0) (2026-05-04)
+
+### 🚀 Features
+
+* **auth:** replace getApiUrl with getPublicApiUrl for OAuth links ([62fe70e](https://github.com/carlonicora/nextjs-jsonapi/commit/62fe70e794c23cc9dce49bc3f97b6bbfbf384a6a))
+
 ## [1.85.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.84.0...v1.85.0) (2026-05-04)
 
 ### 🚀 Features
