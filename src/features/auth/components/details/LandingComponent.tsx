@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { getApiUrl } from "../../../../client/config";
+import { getPublicApiUrl } from "../../../../client/config";
 import {
   isDiscordAuthEnabled,
   isGoogleAuthEnabled,
@@ -53,7 +53,7 @@ export function LandingComponent() {
         )}
         {isGoogleAuthEnabled() && <GoogleSignInButton />}
         {isDiscordAuthEnabled() && (
-          <Link href={`${getApiUrl()}auth/discord`} className="flex w-full justify-end">
+          <Link href={`${getPublicApiUrl()}auth/discord`} className="flex w-full justify-end">
             <Button className="w-full" variant={`outline`} data-testid="page-login-button-initial-login">
               Login with Discord
             </Button>

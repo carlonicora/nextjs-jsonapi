@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import { z } from "zod";
-import { getApiUrl } from "../../../../client/config";
+import { getPublicApiUrl } from "../../../../client/config";
 import { errorToast, FormInput, FormPassword } from "../../../../components";
 import { getRegistrationMode, isDiscordAuthEnabled, isGoogleAuthEnabled } from "../../../../login/config";
 import {
@@ -296,7 +296,7 @@ export default function Register() {
                     <div className="space-y-2">
                       {isGoogleAuthEnabled() && (
                         <Link
-                          href={`${getApiUrl()}auth/google${buildOAuthQueryParams(inviteCode, referralCode)}`}
+                          href={`${getPublicApiUrl()}auth/google${buildOAuthQueryParams(inviteCode, referralCode)}`}
                           className="flex w-full"
                         >
                           <Button
@@ -328,7 +328,7 @@ export default function Register() {
                       )}
                       {isDiscordAuthEnabled() && (
                         <Link
-                          href={`${getApiUrl()}auth/discord${buildOAuthQueryParams(inviteCode, referralCode)}`}
+                          href={`${getPublicApiUrl()}auth/discord${buildOAuthQueryParams(inviteCode, referralCode)}`}
                           className="flex w-full"
                         >
                           <Button className="w-full" variant="outline" type="button">

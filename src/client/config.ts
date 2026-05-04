@@ -47,11 +47,31 @@ export function configureClientConfig(config: {
 
 /**
  * Get the configured API URL.
+ *
+ * This may resolve to an internal/private host (e.g. a docker-network
+ * hostname) when configured to do so for SSR fetches. Do NOT use this for
+ * URLs that are rendered into HTML and followed by the browser — use
+ * `getPublicApiUrl()` instead.
  */
 export function getApiUrl(): string {
   if (_clientConfig?.apiUrl) {
     return _clientConfig.apiUrl;
   }
+  if (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  return "";
+}
+
+/**
+ * Get the public-facing API URL.
+ *
+ * Always sourced from `NEXT_PUBLIC_API_URL` so it is identical on server
+ * and client, and reachable from the user's browser. Use for any URL that
+ * gets rendered into HTML the browser will navigate to (links, redirects,
+ * OAuth hrefs).
+ */
+export function getPublicApiUrl(): string {
   if (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_API_URL) {
     return process.env.NEXT_PUBLIC_API_URL;
   }

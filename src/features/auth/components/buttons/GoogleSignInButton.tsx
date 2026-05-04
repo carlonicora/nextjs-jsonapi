@@ -1,6 +1,6 @@
 "use client";
 
-import { getApiUrl } from "../../../../client/config";
+import { getPublicApiUrl } from "../../../../client/config";
 import { isGoogleAuthEnabled } from "../../../../login";
 import { Button, Link } from "../../../../shadcnui";
 
@@ -15,7 +15,7 @@ export function GoogleSignInButton({ referralCode }: GoogleSignInButtonProps) {
 
   // Build OAuth URL with referral parameter if available
   const buildGoogleOAuthUrl = (): string => {
-    const baseUrl = `${getApiUrl()}auth/google`;
+    const baseUrl = `${getPublicApiUrl()}auth/google`;
     if (!referralCode) return baseUrl;
     return `${baseUrl}?referral=${encodeURIComponent(referralCode)}`;
   };

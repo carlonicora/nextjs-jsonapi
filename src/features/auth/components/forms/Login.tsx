@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { getApiUrl } from "../../../../client/config";
+import { getPublicApiUrl } from "../../../../client/config";
 import { errorToast, FormInput, FormPassword } from "../../../../components";
 import { useI18nRouter, usePageUrlGenerator } from "../../../../hooks";
 import { isDiscordAuthEnabled, isGoogleAuthEnabled, isInternalAuthEnabled } from "../../../../login";
@@ -55,7 +55,7 @@ export function Login() {
 
   // Helper function to build OAuth URL with referral
   const buildDiscordOAuthUrl = (): string => {
-    const baseUrl = `${getApiUrl()}auth/discord`;
+    const baseUrl = `${getPublicApiUrl()}auth/discord`;
     if (!referralCode) return baseUrl;
     return `${baseUrl}?referral=${encodeURIComponent(referralCode)}`;
   };

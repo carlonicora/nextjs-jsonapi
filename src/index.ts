@@ -9,7 +9,14 @@ export * from "./core";
 export * from "./permissions";
 
 // JSON:API configuration (client-safe)
-export { configureJsonApi, getApiUrl, getAppUrl, getTrackablePages, getStripePublishableKey } from "./client/config";
+export {
+  configureJsonApi,
+  getApiUrl,
+  getPublicApiUrl,
+  getAppUrl,
+  getTrackablePages,
+  getStripePublishableKey,
+} from "./client/config";
 
 // I18n configuration (NOT hooks - those are in /hooks with "use client")
 export { configureI18n } from "./i18n";
