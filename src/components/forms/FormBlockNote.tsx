@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { cn } from "../../utils/cn";
 import { BlockNoteEditorContainer } from "../editors/BlockNoteEditorContainer";
 import { FormFieldWrapper } from "./FormFieldWrapper";
 
@@ -16,6 +17,8 @@ export function FormBlockNote({
   onEmptyChange,
   inlineContentSpecs,
   renderOverlays,
+  className,
+  stretch = false,
 }: {
   form: any;
   id: string;
@@ -28,9 +31,15 @@ export function FormBlockNote({
   onEmptyChange?: (isEmpty: boolean) => void;
   inlineContentSpecs?: Record<string, any>;
   renderOverlays?: (editor: any) => React.ReactNode;
+  className?: string;
+  /**
+   * When true, the field grows to fill available vertical space in a flex-col parent.
+   * Applies flex-1 + min-h-0 to the outer wrapper, the inner Field, and the editor.
+   */
+  stretch?: boolean;
 }) {
   return (
-    <div className="flex w-full flex-col">
+    <div className={cn("flex w-full flex-col", stretch && className)}>
       <FormFieldWrapper
         form={form}
         name={id}
@@ -52,6 +61,7 @@ export function FormBlockNote({
             bordered
             inlineContentSpecs={inlineContentSpecs}
             renderOverlays={renderOverlays}
+            className={cn(stretch && "min-h-0 flex-1")}
           />
         )}
       </FormFieldWrapper>
