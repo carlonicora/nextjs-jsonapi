@@ -1,3 +1,9 @@
+## [1.87.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.87.1...v1.87.2) (2026-05-05)
+
+### 📦 Code Refactoring
+
+* **FormBlockNote:** enhance className and stretch props for better layout control ([bcea3f8](https://github.com/carlonicora/nextjs-jsonapi/commit/bcea3f8126a25a93d4c4d3a54b39247ad51234ba))
+
 ## [1.87.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.87.0...v1.87.1) (2026-05-05)
 
 ### 📦 Code Refactoring
