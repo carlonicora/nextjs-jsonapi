@@ -50,7 +50,13 @@ export function FormBlockNote({
   mentionResolveFn?: (id: string, entityType: string, alias: string) => { url: string; name: string } | null;
 }) {
   return (
-    <div className={cn("flex w-full flex-col", stretch && "min-h-0 flex-1 [&>[data-slot=field]]:min-h-0 [&>[data-slot=field]]:flex-1", className)}>
+    <div
+      className={cn(
+        "flex w-full flex-col",
+        stretch && "min-h-0 flex-1 [&>[data-slot=field]]:min-h-0 [&>[data-slot=field]]:flex-1",
+        className,
+      )}
+    >
       <FormFieldWrapper
         form={form}
         name={id}
