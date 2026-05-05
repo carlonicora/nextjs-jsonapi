@@ -1,3 +1,9 @@
+## [1.87.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.87.0...v1.87.1) (2026-05-05)
+
+### 📦 Code Refactoring
+
+* **url.rewriter:** remove unused locale import and dependency ([a47df2b](https://github.com/carlonicora/nextjs-jsonapi/commit/a47df2b82c292f628a9c96a5d62f68a93e987770))
+
 ## [1.87.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.86.0...v1.87.0) (2026-05-05)
 
 ### 🚀 Features
