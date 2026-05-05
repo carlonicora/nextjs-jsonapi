@@ -1,3 +1,18 @@
+## [1.87.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.86.0...v1.87.0) (2026-05-05)
+
+### 🚀 Features
+
+* **editor:** add mention support with inline content and suggestion menu ([68891b4](https://github.com/carlonicora/nextjs-jsonapi/commit/68891b45ebef405130369a93e05abfced42b59f4))
+* **editor:** integrate floating-ui for improved suggestion menu positioning ([b24c499](https://github.com/carlonicora/nextjs-jsonapi/commit/b24c4990e5000104845d7cdf28436a78764798c0))
+
+### 🐛 Bug Fixes
+
+* **request:** set default revalidation to 0 for caching options ([192bc81](https://github.com/carlonicora/nextjs-jsonapi/commit/192bc81cf9d8489fcedf8f4584cd5fac662b4752))
+
+### 📦 Code Refactoring
+
+* **editor:** improve mention search function and clean up props ([b15a3fd](https://github.com/carlonicora/nextjs-jsonapi/commit/b15a3fd18177ffa85f55ee54d19c199293fcc2e0))
+
 ## [1.86.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.85.0...v1.86.0) (2026-05-04)
 
 ### 🚀 Features
