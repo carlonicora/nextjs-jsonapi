@@ -1,7 +1,8 @@
 "use client";
 
+import { BlockNoteEditor } from "@blocknote/core";
 import { DefaultReactSuggestionItem, SuggestionMenuController, SuggestionMenuProps } from "@blocknote/react";
-import React, { useCallback } from "react";
+import React, { useCallback, useRef } from "react";
 
 export interface MentionItem {
   id: string;
@@ -10,17 +11,15 @@ export interface MentionItem {
   icon?: React.ReactNode;
 }
 
-export type MentionSearchFn = (
-  query: string,
-  params?: Record<string, string>,
-) => Promise<MentionItem[]>;
+export type MentionSearchFn = (query: string, params?: Record<string, string>) => Promise<MentionItem[]>;
 
 interface BlockNoteEditorSuggestionMenuControllerProps {
-  editor: any;
+  editor: BlockNoteEditor<any, any, any>;
   mentionSearchFn: MentionSearchFn;
   mentionSearchParams?: Record<string, string>;
-  mentionResolveFn?: any;
 }
+
+const DEBOUNCE_MS = 300;
 
 function MentionSuggestionMenu(props: SuggestionMenuProps<DefaultReactSuggestionItem>) {
   if (props.items.length === 0) return null;
@@ -50,12 +49,19 @@ export function BlockNoteEditorMentionSuggestionMenu({
   mentionSearchFn,
   mentionSearchParams,
 }: BlockNoteEditorSuggestionMenuControllerProps) {
+  const lastQueryRef = useRef<string>("");
+
   const getItems = useCallback(
     async (query: string): Promise<DefaultReactSuggestionItem[]> => {
       if (!query || query.length === 0) return [];
 
+      lastQueryRef.current = query;
+      await new Promise((resolve) => setTimeout(resolve, DEBOUNCE_MS));
+      if (lastQueryRef.current !== query) return [];
+
       try {
         const results = await mentionSearchFn(query, mentionSearchParams);
+        if (lastQueryRef.current !== query) return [];
         return results.map((item) => ({
           title: item.name,
           subtext: item.entityType,

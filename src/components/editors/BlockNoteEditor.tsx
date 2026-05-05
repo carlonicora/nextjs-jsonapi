@@ -32,7 +32,10 @@ export type BlockNoteEditorProps = {
   inlineContentSpecs?: Record<string, any>;
   renderOverlays?: (editor: any) => React.ReactNode;
   enableMentions?: boolean;
-  mentionSearchFn?: (query: string, params?: Record<string, string>) => Promise<import("./BlockNoteEditorSuggestionMenuController").MentionItem[]>;
+  mentionSearchFn?: (
+    query: string,
+    params?: Record<string, string>,
+  ) => Promise<import("./BlockNoteEditorSuggestionMenuController").MentionItem[]>;
   mentionSearchParams?: Record<string, string>;
   mentionResolveFn?: (id: string, entityType: string, alias: string) => { url: string; name: string } | null;
 };
@@ -150,10 +153,7 @@ export default function BlockNoteEditor({
   );
 
   const mentionSpec = useMemo(
-    () =>
-      enableMentions
-        ? createMentionInlineContentSpec(mentionResolveFn)
-        : null,
+    () => (enableMentions ? createMentionInlineContentSpec(mentionResolveFn) : null),
     [enableMentions, mentionResolveFn],
   );
 
@@ -451,7 +451,6 @@ export default function BlockNoteEditor({
             editor={editor}
             mentionSearchFn={mentionSearchFn}
             mentionSearchParams={mentionSearchParams}
-            mentionResolveFn={mentionResolveFn}
           />
         )}
         {renderOverlays?.(editor)}
