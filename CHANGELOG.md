@@ -1,3 +1,9 @@
+## [1.87.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.87.2...v1.87.3) (2026-05-05)
+
+### 📦 Code Refactoring
+
+* **FormBlockNote:** add enableMentions and related props for enhanced functionality ([acb39af](https://github.com/carlonicora/nextjs-jsonapi/commit/acb39affdd6892ac0c40d16865bd5084304173ca))
+
 ## [1.87.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.87.1...v1.87.2) (2026-05-05)
 
 ### 📦 Code Refactoring
