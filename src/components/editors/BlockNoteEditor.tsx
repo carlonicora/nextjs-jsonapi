@@ -15,6 +15,8 @@ import { Button } from "../../shadcnui";
 import { BlockNoteDiffUtil, BlockNoteWordDiffRendererUtil, cn } from "../../utils";
 import { errorToast } from "../errors";
 import { BlockNoteEditorFormattingToolbar } from "./BlockNoteEditorFormattingToolbar";
+import { createMentionInlineContentSpec } from "./BlockNoteEditorMentionInlineContent";
+import { BlockNoteEditorMentionSuggestionMenu } from "./BlockNoteEditorSuggestionMenuController";
 
 export type BlockNoteEditorProps = {
   id: string;
@@ -29,6 +31,10 @@ export type BlockNoteEditorProps = {
   bordered?: boolean;
   inlineContentSpecs?: Record<string, any>;
   renderOverlays?: (editor: any) => React.ReactNode;
+  enableMentions?: boolean;
+  mentionSearchFn?: (query: string, params?: Record<string, string>) => Promise<import("./BlockNoteEditorSuggestionMenuController").MentionItem[]>;
+  mentionSearchParams?: Record<string, string>;
+  mentionResolveFn?: (id: string, entityType: string, alias: string) => { url: string; name: string } | null;
 };
 
 const createDiffActionsInlineContentSpec = (
@@ -92,6 +98,10 @@ export default function BlockNoteEditor({
   bordered,
   inlineContentSpecs,
   renderOverlays,
+  enableMentions,
+  mentionSearchFn,
+  mentionSearchParams,
+  mentionResolveFn,
 }: BlockNoteEditorProps): React.JSX.Element {
   const t = useTranslations();
   const { company } = useCurrentUserContext<UserInterface>();
@@ -139,16 +149,25 @@ export default function BlockNoteEditor({
     [handleAcceptChange, handleRejectChange],
   );
 
+  const mentionSpec = useMemo(
+    () =>
+      enableMentions
+        ? createMentionInlineContentSpec(mentionResolveFn)
+        : null,
+    [enableMentions, mentionResolveFn],
+  );
+
   const schema = useMemo(
     () =>
       BlockNoteSchema.create({
         inlineContentSpecs: {
           ...defaultInlineContentSpecs,
           diffActions: DiffActionsInlineContent,
+          ...(mentionSpec ? { mention: mentionSpec } : {}),
           ...inlineContentSpecs,
         },
       } as any),
-    [DiffActionsInlineContent, inlineContentSpecs],
+    [DiffActionsInlineContent, mentionSpec, inlineContentSpecs],
   );
 
   const uploadImage = useCallback(
@@ -427,6 +446,14 @@ export default function BlockNoteEditor({
         className={cn(`BlockNoteView flex-1 ${onChange ? "p-4" : ""}`, size === "sm" && "small")}
       >
         <BlockNoteEditorFormattingToolbar />
+        {enableMentions && mentionSearchFn && (
+          <BlockNoteEditorMentionSuggestionMenu
+            editor={editor}
+            mentionSearchFn={mentionSearchFn}
+            mentionSearchParams={mentionSearchParams}
+            mentionResolveFn={mentionResolveFn}
+          />
+        )}
         {renderOverlays?.(editor)}
       </BlockNoteView>
     </div>
