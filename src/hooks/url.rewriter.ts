@@ -1,12 +1,10 @@
 "use client";
 
-import { useLocale } from "next-intl";
 import { useCallback } from "react";
 import { ModuleWithPermissions } from "../permissions";
 import { usePageUrlGenerator } from "./usePageUrlGenerator";
 
 export function useUrlRewriter() {
-  const locale = useLocale();
   const generateUrl = usePageUrlGenerator();
 
   return useCallback(
@@ -25,11 +23,10 @@ export function useUrlRewriter() {
           id: params.id,
           childPage: params.childPage,
           childId: params.childId,
-          language: locale,
           additionalParameters: params.additionalParameters,
         }),
       );
     },
-    [locale, generateUrl],
+    [generateUrl],
   );
 }
