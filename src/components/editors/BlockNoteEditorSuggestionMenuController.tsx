@@ -1,7 +1,8 @@
 "use client";
 
 import { BlockNoteEditor } from "@blocknote/core";
-import { DefaultReactSuggestionItem, SuggestionMenuController, SuggestionMenuProps } from "@blocknote/react";
+import { DefaultReactSuggestionItem, SuggestionMenuController } from "@blocknote/react";
+import { autoUpdate, flip, shift } from "@floating-ui/react";
 import React, { useCallback, useRef } from "react";
 
 export interface MentionItem {
@@ -21,29 +22,6 @@ interface BlockNoteEditorSuggestionMenuControllerProps {
 
 const DEBOUNCE_MS = 300;
 
-function MentionSuggestionMenu(props: SuggestionMenuProps<DefaultReactSuggestionItem>) {
-  if (props.items.length === 0) return null;
-
-  return (
-    <div className="z-50 max-h-80 min-w-80 overflow-auto rounded-md border bg-popover p-1 shadow-md">
-      {props.items.map((item, index) => (
-        <div
-          key={item.title + item.subtext}
-          className={`flex cursor-pointer items-center gap-2 rounded-sm px-3 py-2 text-sm ${
-            index === props.selectedIndex ? "bg-accent text-accent-foreground" : "hover:bg-accent/50"
-          }`}
-          onClick={() => props.onItemClick?.(item)}
-        >
-          <div className="flex-1">
-            <div className="font-medium">{item.title}</div>
-            <div className="text-xs text-muted-foreground">{item.subtext}</div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export function BlockNoteEditorMentionSuggestionMenu({
   editor,
   mentionSearchFn,
@@ -53,11 +31,15 @@ export function BlockNoteEditorMentionSuggestionMenu({
 
   const getItems = useCallback(
     async (query: string): Promise<DefaultReactSuggestionItem[]> => {
-      if (!query || query.length === 0) return [];
-
       lastQueryRef.current = query;
-      await new Promise((resolve) => setTimeout(resolve, DEBOUNCE_MS));
-      if (lastQueryRef.current !== query) return [];
+
+      // Empty query (the moment `@` is typed) is served immediately so the menu
+      // appears with the most-recently-updated browse list — the user sees the
+      // affordance without having to guess what to type.
+      if (query.length > 0) {
+        await new Promise((resolve) => setTimeout(resolve, DEBOUNCE_MS));
+        if (lastQueryRef.current !== query) return [];
+      }
 
       try {
         const results = await mentionSearchFn(query, mentionSearchParams);
@@ -87,10 +69,19 @@ export function BlockNoteEditorMentionSuggestionMenu({
   );
 
   return (
-    <SuggestionMenuController
-      triggerCharacter={"@"}
-      getItems={getItems}
-      suggestionMenuComponent={MentionSuggestionMenu}
-    />
+    <div className="blocknote-suggestion-container" style={{ position: "static" }}>
+      <SuggestionMenuController
+        triggerCharacter={"@"}
+        getItems={getItems}
+        floatingUIOptions={{
+          useFloatingOptions: {
+            strategy: "fixed",
+            placement: "bottom-start",
+            middleware: [flip(), shift()],
+            whileElementsMounted: autoUpdate,
+          },
+        }}
+      />
+    </div>
   );
 }
