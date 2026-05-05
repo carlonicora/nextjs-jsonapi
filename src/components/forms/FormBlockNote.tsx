@@ -19,6 +19,10 @@ export function FormBlockNote({
   renderOverlays,
   className,
   stretch = false,
+  enableMentions,
+  mentionSearchFn,
+  mentionSearchParams,
+  mentionResolveFn,
 }: {
   form: any;
   id: string;
@@ -37,9 +41,16 @@ export function FormBlockNote({
    * Applies flex-1 + min-h-0 to the outer wrapper, the inner Field, and the editor.
    */
   stretch?: boolean;
+  enableMentions?: boolean;
+  mentionSearchFn?: (
+    query: string,
+    params?: Record<string, string>,
+  ) => Promise<import("../editors/BlockNoteEditorSuggestionMenuController").MentionItem[]>;
+  mentionSearchParams?: Record<string, string>;
+  mentionResolveFn?: (id: string, entityType: string, alias: string) => { url: string; name: string } | null;
 }) {
   return (
-    <div className={cn("flex w-full flex-col", stretch && className)}>
+    <div className={cn("flex w-full flex-col", stretch && "min-h-0 flex-1 [&>[data-slot=field]]:min-h-0 [&>[data-slot=field]]:flex-1", className)}>
       <FormFieldWrapper
         form={form}
         name={id}
@@ -61,6 +72,10 @@ export function FormBlockNote({
             bordered
             inlineContentSpecs={inlineContentSpecs}
             renderOverlays={renderOverlays}
+            enableMentions={enableMentions}
+            mentionSearchFn={mentionSearchFn}
+            mentionSearchParams={mentionSearchParams}
+            mentionResolveFn={mentionResolveFn}
             className={cn(stretch && "min-h-0 flex-1")}
           />
         )}
