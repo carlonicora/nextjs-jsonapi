@@ -1,3 +1,9 @@
+## [1.88.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.88.0...v1.88.1) (2026-05-07)
+
+### 🐛 Bug Fixes
+
+* sync active tab with section search param on client-side navigation ([99c8f52](https://github.com/carlonicora/nextjs-jsonapi/commit/99c8f52ee5f317e4d5ffd67ec62de8027db0f4af))
+
 ## [1.88.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.87.4...v1.88.0) (2026-05-07)
 
 ### 🚀 Features
