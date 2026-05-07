@@ -1,3 +1,14 @@
+## [1.89.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.89.0...v1.89.1) (2026-05-07)
+
+### 🐛 Bug Fixes
+
+* reorder imports and remove unused keyboard shortcut constant in Sidebar component ([6692787](https://github.com/carlonicora/nextjs-jsonapi/commit/6692787266e0bd0533cbf81a94bb1e656f99f748))
+
+### 📦 Code Refactoring
+
+* simplify handleClick assignment in createMentionInlineContentSpec for improved readability ([4c6b9cf](https://github.com/carlonicora/nextjs-jsonapi/commit/4c6b9cf334e671c7f37b6901548a1afc4c0b7bf0))
+* update mention handling to use MentionResolveFn type for better type safety ([9f9dcef](https://github.com/carlonicora/nextjs-jsonapi/commit/9f9dcef2d83f43bd65663fc7a8def0f6f9481f0c))
+
 ## [1.89.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.88.1...v1.89.0) (2026-05-07)
 
 ### 🚀 Features
