@@ -13,6 +13,16 @@ export type Tab = {
   content: React.ReactNode;
   modules?: ModuleWithPermissions[];
   action?: Action;
+  /**
+   * When true, the tab content fills the available viewport height inside its
+   * container. The tab's wrapper chain switches to a flex-column layout with
+   * `flex-1 min-h-0`, the outer page scroll is suppressed, and the tab content
+   * becomes the only scroll context. The tabs strip stays sticky at the top.
+   *
+   * Honoured by `RoundPageContainer`. `TabsContainer` (this file) ignores it
+   * because it doesn't own the surrounding scroll container.
+   */
+  fillHeight?: boolean;
 };
 
 type TabsContainerProps = {

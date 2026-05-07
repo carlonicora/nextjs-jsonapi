@@ -59,6 +59,12 @@ export function RoundPageContainer({
 
   const [activeTab, setActiveTab] = useState(initialValue);
 
+  // When the active tab is marked `fillHeight`, the tab system collapses to a
+  // flex-col chain that exactly fills the page chrome's available area, the
+  // outer page scroll is suppressed, and only the tab content scrolls — so
+  // the tabs strip stays sticky at the top of the viewport.
+  const activeFillHeight = tabs?.find((t) => (t.key?.name ?? t.label) === activeTab)?.fillHeight === true;
+
   return (
     <>
       <Header leftContent={headerLeftContent} className="bg-sidebar border-0">
@@ -77,13 +83,25 @@ export function RoundPageContainer({
               />
             )}
             <div className="flex h-full w-full overflow-hidden">
-              <div className={cn(`grow overflow-y-auto p-4`, fullWidth && `p-0`)}>
-                <div className={cn(`mx-auto max-w-6xl space-y-8`, fullWidth && `max-w-full w-full p-0 h-full`)}>
+              <div
+                className={cn(
+                  `grow p-4`,
+                  activeFillHeight ? `flex flex-col overflow-hidden` : `overflow-y-auto`,
+                  fullWidth && `p-0`,
+                )}
+              >
+                <div
+                  className={cn(
+                    `mx-auto max-w-6xl space-y-8`,
+                    activeFillHeight && `flex w-full flex-1 min-h-0 flex-col space-y-0`,
+                    fullWidth && `max-w-full w-full p-0 h-full`,
+                  )}
+                >
                   {tabs ? (
                     <>
                       <Tabs
                         value={activeTab}
-                        className="w-full"
+                        className={cn(`w-full`, activeFillHeight && `flex flex-1 min-h-0 flex-col`)}
                         onValueChange={(key) => {
                           setActiveTab(key);
                           if (module && id)
@@ -99,9 +117,15 @@ export function RoundPageContainer({
                             ))}
                           </TabsList>
                         </div>
-                        <div className="flex w-full overflow-y-auto px-4">
+                        <div
+                          className={cn(`flex w-full px-4`, activeFillHeight ? `flex-1 min-h-0` : `overflow-y-auto`)}
+                        >
                           {tabs.map((tab) => (
-                            <TabsContent key={tab.label} value={tab.key?.name ?? tab.label} className={`pb-20`}>
+                            <TabsContent
+                              key={tab.label}
+                              value={tab.key?.name ?? tab.label}
+                              className={tab.fillHeight ? `flex flex-1 min-h-0 w-full flex-col` : `pb-20`}
+                            >
                               {tab.content}
                             </TabsContent>
                           ))}
