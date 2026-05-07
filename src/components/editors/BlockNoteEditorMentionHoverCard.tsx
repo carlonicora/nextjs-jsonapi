@@ -75,9 +75,9 @@ export function BlockNoteEditorMentionHoverCard({
   if (!hovered || !mentionResolveFn) return null;
 
   const resolved = mentionResolveFn(hovered.id, hovered.entityType, hovered.alias);
-  if (!resolved?.HoverCardContent) return null;
+  if (!resolved?.HoverContent) return null;
 
-  const ContentComponent = resolved.HoverCardContent;
+  const ContentComponent = resolved.HoverContent;
   const rect = hovered.element.getBoundingClientRect();
 
   return createPortal(

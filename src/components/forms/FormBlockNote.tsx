@@ -3,6 +3,7 @@
 import React from "react";
 import { cn } from "../../utils/cn";
 import { BlockNoteEditorContainer } from "../editors/BlockNoteEditorContainer";
+import type { MentionResolveFn } from "../editors/BlockNoteEditorMentionInlineContent";
 import { FormFieldWrapper } from "./FormFieldWrapper";
 
 export function FormBlockNote({
@@ -47,7 +48,7 @@ export function FormBlockNote({
     params?: Record<string, string>,
   ) => Promise<import("../editors/BlockNoteEditorSuggestionMenuController").MentionItem[]>;
   mentionSearchParams?: Record<string, string>;
-  mentionResolveFn?: (id: string, entityType: string, alias: string) => { url: string; name: string } | null;
+  mentionResolveFn?: MentionResolveFn;
 }) {
   return (
     <div

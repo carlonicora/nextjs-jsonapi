@@ -16,7 +16,7 @@ import { BlockNoteDiffUtil, BlockNoteWordDiffRendererUtil, cn } from "../../util
 import { errorToast } from "../errors";
 import { BlockNoteEditorFormattingToolbar } from "./BlockNoteEditorFormattingToolbar";
 import { BlockNoteEditorMentionHoverCard } from "./BlockNoteEditorMentionHoverCard";
-import { createMentionInlineContentSpec } from "./BlockNoteEditorMentionInlineContent";
+import { createMentionInlineContentSpec, type MentionResolveFn } from "./BlockNoteEditorMentionInlineContent";
 import { BlockNoteEditorMentionSuggestionMenu } from "./BlockNoteEditorSuggestionMenuController";
 
 export type BlockNoteEditorProps = {
@@ -38,7 +38,7 @@ export type BlockNoteEditorProps = {
     params?: Record<string, string>,
   ) => Promise<import("./BlockNoteEditorSuggestionMenuController").MentionItem[]>;
   mentionSearchParams?: Record<string, string>;
-  mentionResolveFn?: (id: string, entityType: string, alias: string) => { url: string; name: string } | null;
+  mentionResolveFn?: MentionResolveFn;
 };
 
 function isBlockEmpty(block: any): boolean {
