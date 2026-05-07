@@ -59,6 +59,15 @@ export function RoundPageContainer({
 
   const [activeTab, setActiveTab] = useState(initialValue);
 
+  useEffect(() => {
+    if (tabs && section) {
+      const tab = tabs.find((i) => (i.key?.name ?? i.label) === section);
+      if (tab) {
+        setActiveTab(section);
+      }
+    }
+  }, [section, tabs]);
+
   // When the active tab is marked `fillHeight`, the tab system collapses to a
   // flex-col chain that exactly fills the page chrome's available area, the
   // outer page scroll is suppressed, and only the tab content scrolls — so
