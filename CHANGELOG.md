@@ -1,3 +1,9 @@
+## [1.88.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.87.4...v1.88.0) (2026-05-07)
+
+### 🚀 Features
+
+* **RoundPageContainer:** per-tab fillHeight to keep tabs strip sticky ([742e6a3](https://github.com/carlonicora/nextjs-jsonapi/commit/742e6a362d59c8b042fcd4c5eb29e54cc276c537))
+
 ## [1.87.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.87.3...v1.87.4) (2026-05-05)
 
 ### 📦 Code Refactoring
