@@ -15,6 +15,7 @@ import { Button } from "../../shadcnui";
 import { BlockNoteDiffUtil, BlockNoteWordDiffRendererUtil, cn } from "../../utils";
 import { errorToast } from "../errors";
 import { BlockNoteEditorFormattingToolbar } from "./BlockNoteEditorFormattingToolbar";
+import { BlockNoteEditorMentionHoverCard } from "./BlockNoteEditorMentionHoverCard";
 import { createMentionInlineContentSpec } from "./BlockNoteEditorMentionInlineContent";
 import { BlockNoteEditorMentionSuggestionMenu } from "./BlockNoteEditorSuggestionMenuController";
 
@@ -39,6 +40,32 @@ export type BlockNoteEditorProps = {
   mentionSearchParams?: Record<string, string>;
   mentionResolveFn?: (id: string, entityType: string, alias: string) => { url: string; name: string } | null;
 };
+
+function isBlockEmpty(block: any): boolean {
+  if (!block || typeof block !== "object") return true;
+  if (block.type !== "paragraph") return false;
+  if (Array.isArray(block.children) && block.children.length > 0 && !isDocumentEmpty(block.children)) {
+    return false;
+  }
+  if (Array.isArray(block.content)) {
+    for (const inline of block.content) {
+      if (typeof inline === "string") {
+        if (inline.trim()) return false;
+      } else if (inline && typeof inline === "object") {
+        if (inline.type !== "text") return false;
+        if (typeof inline.text === "string" && inline.text.trim()) return false;
+      }
+    }
+  } else if (typeof block.content === "string" && block.content.trim()) {
+    return false;
+  }
+  return true;
+}
+
+function isDocumentEmpty(blocks: any[]): boolean {
+  if (!Array.isArray(blocks) || blocks.length === 0) return true;
+  return blocks.every(isBlockEmpty);
+}
 
 const createDiffActionsInlineContentSpec = (
   handleAcceptChange: (diffId: string) => void,
@@ -305,8 +332,7 @@ export default function BlockNoteEditor({
   const handleChange = useCallback(async () => {
     if (!onChange) return;
     const newBlocks = editor.document;
-
-    const markdownFromBlocks = (await editor.blocksToMarkdownLossy(editor.document)).trim();
+    const isEmpty = isDocumentEmpty(newBlocks);
 
     function hasUnresolvedDiffsRecursive(block: any): boolean {
       if (!block || typeof block !== "object") return false;
@@ -358,7 +384,7 @@ export default function BlockNoteEditor({
       hasUnresolvedDiff = newBlocks.some((block: any) => hasUnresolvedDiffsRecursive(block));
     }
 
-    onChange(newBlocks, !markdownFromBlocks.length, hasUnresolvedDiff);
+    onChange(newBlocks, isEmpty, hasUnresolvedDiff);
   }, [editor, onChange, id, acceptedChanges, rejectedChanges]);
 
   // Utility: deep equality for arrays of blocks
@@ -454,6 +480,9 @@ export default function BlockNoteEditor({
           />
         )}
         {renderOverlays?.(editor)}
+        {enableMentions && mentionResolveFn && (
+          <BlockNoteEditorMentionHoverCard containerRef={editorRef} mentionResolveFn={mentionResolveFn} />
+        )}
       </BlockNoteView>
     </div>
   );

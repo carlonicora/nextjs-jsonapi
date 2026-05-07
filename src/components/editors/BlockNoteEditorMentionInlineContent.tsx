@@ -1,18 +1,42 @@
 "use client";
 
-import { Link } from "@/shadcnui";
 import { createReactInlineContentSpec } from "@blocknote/react";
+import Link from "next/link";
 import React from "react";
+
+export interface MentionHoverCardProps {
+  id: string;
+  entityType: string;
+  alias: string;
+}
 
 export interface MentionResolveResult {
   url: string;
   name: string;
+  HoverCardContent?: React.ComponentType<MentionHoverCardProps>;
 }
 
 export type MentionResolveFn = (id: string, entityType: string, alias: string) => MentionResolveResult | null;
 
-export const createMentionInlineContentSpec = (resolveFn?: MentionResolveFn) =>
-  createReactInlineContentSpec(
+export const createMentionInlineContentSpec = (resolveFn?: MentionResolveFn) => {
+  const Mention = React.memo(function Mention({ id, entityType, alias }: MentionHoverCardProps) {
+    const resolved = resolveFn?.(id, entityType, alias);
+    const href = resolved?.url ?? "#";
+
+    return (
+      <Link
+        href={href}
+        className="text-primary"
+        data-mention-id={id}
+        data-mention-type={entityType}
+        data-mention-alias={alias}
+      >
+        @{alias}
+      </Link>
+    );
+  });
+
+  return createReactInlineContentSpec(
     {
       type: "mention",
       propSchema: {
@@ -23,32 +47,13 @@ export const createMentionInlineContentSpec = (resolveFn?: MentionResolveFn) =>
       content: "none",
     },
     {
-      render: (props) => {
-        const alias = props.inlineContent.props.alias;
-        const id = props.inlineContent.props.id;
-        const entityType = props.inlineContent.props.entityType;
-
-        if (resolveFn) {
-          const resolved = resolveFn(id, entityType, alias);
-          if (resolved) {
-            return (
-              <Link
-                href={resolved.url}
-                className="text-primary"
-                style={{ textDecoration: "none" }}
-                onClick={(e: React.MouseEvent) => e.stopPropagation()}
-              >
-                @{resolved.name || alias}
-              </Link>
-            );
-          }
-        }
-
-        return (
-          <span className="text-primary" style={{ textDecoration: "none" }}>
-            @{alias}
-          </span>
-        );
-      },
+      render: (props) => (
+        <Mention
+          id={props.inlineContent.props.id}
+          entityType={props.inlineContent.props.entityType}
+          alias={props.inlineContent.props.alias}
+        />
+      ),
     },
   );
+};
