@@ -1,3 +1,17 @@
+## [1.89.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.88.1...v1.89.0) (2026-05-07)
+
+### 🚀 Features
+
+* add mention hover card functionality to BlockNoteEditor ([9b5e443](https://github.com/carlonicora/nextjs-jsonapi/commit/9b5e443bc8df18c00387ec337cea84a803282717))
+
+### 🐛 Bug Fixes
+
+* remove underline from links ([22e2b56](https://github.com/carlonicora/nextjs-jsonapi/commit/22e2b567901ddc180bbadaa23b11762eeae43fdb))
+
+### 📦 Code Refactoring
+
+* optimize usePageUrlGenerator with useCallback for better performance ([5acc324](https://github.com/carlonicora/nextjs-jsonapi/commit/5acc3246e1eba6925ae8e8c3e203398e073e535e))
+
 ## [1.88.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.88.0...v1.88.1) (2026-05-07)
 
 ### 🐛 Bug Fixes
