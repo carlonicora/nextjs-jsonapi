@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import type { ApiDataInterface } from "../../../../../core";
 import { ModuleRegistry } from "../../../../../core/registry/ModuleRegistry";
 import { usePageUrlGenerator } from "../../../../../hooks";
@@ -37,7 +37,7 @@ export function ReferencesTab({ references }: Props) {
           return (
             <TableRow key={`${ref.type}/${ref.id}`}>
               <TableCell>
-                <Link href={href} target="_blank" rel="noopener noreferrer" className="font-medium hover:underline">
+                <Link href={href} target="_blank" rel="noopener noreferrer" className="font-medium">
                   {ref.identifier}
                 </Link>
               </TableCell>

@@ -1,13 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import type { ApiDataInterface } from "../../../../../core";
 import { ModuleRegistry } from "../../../../../core/registry/ModuleRegistry";
 import { usePageUrlGenerator } from "../../../../../hooks";
-import type { ChunkInterface, ChunkRelationshipMeta } from "../../../../chunk/data/ChunkInterface";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../../shadcnui/ui/avatar";
 import { Table, TableBody, TableCell, TableRow } from "../../../../../shadcnui/ui/table";
+import type { ChunkInterface, ChunkRelationshipMeta } from "../../../../chunk/data/ChunkInterface";
 
 interface Props {
   /** Pre-deduplicated list of authors derived from the resolved sources. */
@@ -107,12 +107,7 @@ export function UsersTab({ users, citations, sources }: Props) {
           return (
             <TableRow key={user.id}>
               <TableCell>
-                <Link
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 hover:underline"
-                >
+                <Link href={href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3">
                   <Avatar className="h-7 w-7">
                     <AvatarImage src={avatarUrl} aria-label={name} />
                     <AvatarFallback aria-label={name}>{getInitials(name)}</AvatarFallback>

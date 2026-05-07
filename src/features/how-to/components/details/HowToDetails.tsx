@@ -2,12 +2,12 @@
 
 import { useTranslations } from "next-intl";
 import { AttributeElement, ContentTitle } from "../../../../components";
-import { Modules } from "../../../../core";
 import { useSharedContext } from "../../../../contexts/SharedContext";
+import { Modules } from "../../../../core";
 import { Link } from "../../../../shadcnui";
+import { useHowToContext } from "../../contexts/HowToContext";
 import { HowTo } from "../../data/HowTo";
 import { HowToInterface } from "../../data/HowToInterface";
-import { useHowToContext } from "../../contexts/HowToContext";
 
 type HowToDetailsProps = {
   howTo: HowToInterface;
@@ -30,7 +30,7 @@ function HowToDetailsInternal({ howTo }: HowToDetailsProps) {
               <ul className="flex flex-col gap-y-1">
                 {pagesList.map((page, index) => (
                   <li key={index}>
-                    <Link href={page} className="text-primary hover:underline">
+                    <Link href={page} className="text-primary">
                       {page}
                     </Link>
                   </li>

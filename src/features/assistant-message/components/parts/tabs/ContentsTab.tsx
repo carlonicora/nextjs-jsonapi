@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import type { ApiDataInterface } from "../../../../../core";
 import { ModuleRegistry } from "../../../../../core/registry/ModuleRegistry";
 import { usePageUrlGenerator } from "../../../../../hooks";
-import type { ChunkInterface, ChunkRelationshipMeta } from "../../../../chunk/data/ChunkInterface";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../shadcnui/ui/table";
+import type { ChunkInterface, ChunkRelationshipMeta } from "../../../../chunk/data/ChunkInterface";
 
 interface Props {
   citations: (ChunkInterface & ChunkRelationshipMeta)[];
@@ -69,7 +69,7 @@ export function ContentsTab({ citations, sources }: Props) {
           return (
             <TableRow key={`${source.type}/${source.id}`}>
               <TableCell>
-                <Link href={href} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                <Link href={href} target="_blank" rel="noopener noreferrer">
                   <span className="font-medium">{name}</span>{" "}
                   <span className="text-muted-foreground text-xs">
                     {t("features.assistant.message.sources.citations_count", {
