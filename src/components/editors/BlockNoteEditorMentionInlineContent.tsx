@@ -44,9 +44,7 @@ export const createMentionInlineContentSpec = (resolveFn?: MentionResolveFn) => 
     }
 
     const href = resolved?.url ?? "#";
-    const handleClick = resolved?.onActivate
-      ? (e: React.MouseEvent) => resolved.onActivate!(e, props)
-      : undefined;
+    const handleClick = resolved?.onActivate ? (e: React.MouseEvent) => resolved.onActivate!(e, props) : undefined;
 
     return (
       <Link href={href} className="text-primary" onClick={handleClick} {...mentionDataAttrs(props)}>
