@@ -34,8 +34,17 @@ export const mentionDataAttrs = (p: MentionRenderProps) => ({
   "data-mention-alias": p.alias,
 });
 
-export const createMentionInlineContentSpec = (resolveFn?: MentionResolveFn) => {
+export const createMentionInlineContentSpec = (resolveFn?: MentionResolveFn, disableMention?: boolean) => {
   const Mention = React.memo(function Mention(props: MentionRenderProps) {
+    if (disableMention) {
+      const resolved = resolveFn?.(props.id, props.entityType, props.alias);
+      return (
+        <Link href={resolved?.url ?? "#"} className="text-primary">
+          @{props.alias}
+        </Link>
+      );
+    }
+
     const resolved = resolveFn?.(props.id, props.entityType, props.alias);
 
     if (resolved?.Inline) {

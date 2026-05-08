@@ -33,6 +33,7 @@ export type BlockNoteEditorProps = {
   inlineContentSpecs?: Record<string, any>;
   renderOverlays?: (editor: any) => React.ReactNode;
   enableMentions?: boolean;
+  disableMentions?: boolean;
   mentionSearchFn?: (
     query: string,
     params?: Record<string, string>,
@@ -129,6 +130,7 @@ export default function BlockNoteEditor({
   inlineContentSpecs,
   renderOverlays,
   enableMentions,
+  disableMentions,
   mentionSearchFn,
   mentionSearchParams,
   mentionResolveFn,
@@ -180,8 +182,8 @@ export default function BlockNoteEditor({
   );
 
   const mentionSpec = useMemo(
-    () => (enableMentions ? createMentionInlineContentSpec(mentionResolveFn) : null),
-    [enableMentions, mentionResolveFn],
+    () => createMentionInlineContentSpec(mentionResolveFn, disableMentions),
+    [disableMentions, mentionResolveFn],
   );
 
   const schema = useMemo(
@@ -190,7 +192,7 @@ export default function BlockNoteEditor({
         inlineContentSpecs: {
           ...defaultInlineContentSpecs,
           diffActions: DiffActionsInlineContent,
-          ...(mentionSpec ? { mention: mentionSpec } : {}),
+          mention: mentionSpec,
           ...inlineContentSpecs,
         },
       } as any),
