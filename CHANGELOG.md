@@ -1,3 +1,9 @@
+## [1.90.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.89.1...v1.90.0) (2026-05-08)
+
+### 🚀 Features
+
+* add cellDateTime component for formatted date-time display ([b098f86](https://github.com/carlonicora/nextjs-jsonapi/commit/b098f866fd837187802e9bbe2174db5fd22a9d22))
+
 ## [1.89.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.89.0...v1.89.1) (2026-05-07)
 
 ### 🐛 Bug Fixes
