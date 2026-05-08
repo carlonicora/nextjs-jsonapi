@@ -1,3 +1,9 @@
+## [1.91.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.90.0...v1.91.0) (2026-05-08)
+
+### 🚀 Features
+
+* add disableMentions prop to render mentions as simple links without overlays ([57615eb](https://github.com/carlonicora/nextjs-jsonapi/commit/57615ebe9833439de8b6012ce2d96454c2d0ee92))
+
 ## [1.90.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.89.1...v1.90.0) (2026-05-08)
 
 ### 🚀 Features
