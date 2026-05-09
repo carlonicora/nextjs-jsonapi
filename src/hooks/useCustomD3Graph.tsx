@@ -390,6 +390,7 @@ export function useCustomD3Graph(
       .data(visibleNodes)
       .join("g")
       .attr("class", "node-group")
+      .attr("data-id", (d) => d.id)
       .attr("cursor", "pointer")
       .attr("transform", (d) => `translate(${d.x || 0}, ${d.y || 0})`)
       .call(
@@ -523,7 +524,29 @@ export function useCustomD3Graph(
       });
 
     node.each(function (d: D3Node) {
-      if (d.icon) {
+      if (d.imageUrl) {
+        // Clipped image inside the circle — replaces the icon when the
+        // entity has artwork. Uses a per-node clipPath so the image
+        // matches the circle exactly.
+        const clipId = `clip-${d.id}`;
+        const defs = d3.select(this).append("defs");
+        defs.append("clipPath").attr("id", clipId).append("circle").attr("r", nodeRadius);
+
+        d3.select(this)
+          .append("image")
+          .attr("href", d.imageUrl)
+          .attr("x", -nodeRadius)
+          .attr("y", -nodeRadius)
+          .attr("width", nodeRadius * 2)
+          .attr("height", nodeRadius * 2)
+          .attr("preserveAspectRatio", "xMidYMid slice")
+          .attr("clip-path", `url(#${clipId})`)
+          .style("pointer-events", "all")
+          .on("click", (event) => {
+            event.stopPropagation();
+            onNodeClick(d.id);
+          });
+      } else if (d.icon) {
         const Icon = d.icon as React.FC<{ size: number; color: string }>;
         const iconSvg = renderToStaticMarkup(<Icon size={nodeRadius / 2} color="white" />);
 
@@ -585,10 +608,16 @@ export function useCustomD3Graph(
             .text(word);
         });
       } else {
-        // Non-root nodes: single line text above the circle
+        // Non-root nodes: single line text above the circle. The
+        // optional `bold` flag lets the consumer highlight a focal
+        // node (e.g. the page's own entity in narr8's graph tab).
+        // Bold rendering uses 700 weight + larger font size so it
+        // reads as clearly distinct from the surrounding nodes.
         textElement
           .attr("dy", -nodeRadius - 5)
           .attr("fill", "currentColor")
+          .attr("font-size", d.bold ? 16 : 12)
+          .attr("font-weight", d.bold ? 700 : null)
           .text(d.name);
       }
     });
