@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef } from "react";
+import { DefaultReactSuggestionItem, SuggestionMenuProps } from "@blocknote/react";
 import { cn } from "../../utils/cn";
 import { BlockNoteEditorContainer } from "../editors/BlockNoteEditorContainer";
 import type { MentionResolveFn } from "../editors/BlockNoteEditorMentionInlineContent";
@@ -24,6 +25,7 @@ export function FormBlockNote({
   mentionSearchFn,
   mentionSearchParams,
   mentionResolveFn,
+  suggestionMenuComponent,
 }: {
   form: any;
   id: string;
@@ -49,6 +51,7 @@ export function FormBlockNote({
   ) => Promise<import("../editors/BlockNoteEditorSuggestionMenuController").MentionItem[]>;
   mentionSearchParams?: Record<string, string>;
   mentionResolveFn?: MentionResolveFn;
+  suggestionMenuComponent?: React.FC<SuggestionMenuProps<DefaultReactSuggestionItem>>;
 }) {
   const initialContentRef = useRef<any>(null);
   const lastEditorContentRef = useRef<any>(undefined);
@@ -95,6 +98,7 @@ export function FormBlockNote({
               mentionSearchFn={mentionSearchFn}
               mentionSearchParams={mentionSearchParams}
               mentionResolveFn={mentionResolveFn}
+              suggestionMenuComponent={suggestionMenuComponent}
               className={cn(stretch && "min-h-0 flex-1")}
             />
           );

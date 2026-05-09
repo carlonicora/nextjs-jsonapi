@@ -1,7 +1,12 @@
 "use client";
 
 import { BlockNoteSchema, defaultInlineContentSpecs, PartialBlock } from "@blocknote/core";
-import { createReactInlineContentSpec, useCreateBlockNote } from "@blocknote/react";
+import {
+  createReactInlineContentSpec,
+  DefaultReactSuggestionItem,
+  SuggestionMenuProps,
+  useCreateBlockNote,
+} from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
 import "@blocknote/shadcn/style.css";
 import { CheckIcon, XIcon } from "lucide-react";
@@ -40,6 +45,7 @@ export type BlockNoteEditorProps = {
   ) => Promise<import("./BlockNoteEditorSuggestionMenuController").MentionItem[]>;
   mentionSearchParams?: Record<string, string>;
   mentionResolveFn?: MentionResolveFn;
+  suggestionMenuComponent?: React.FC<SuggestionMenuProps<DefaultReactSuggestionItem>>;
 };
 
 function isBlockEmpty(block: any): boolean {
@@ -134,6 +140,7 @@ export default function BlockNoteEditor({
   mentionSearchFn,
   mentionSearchParams,
   mentionResolveFn,
+  suggestionMenuComponent,
 }: BlockNoteEditorProps): React.JSX.Element {
   const t = useTranslations();
   const { company } = useCurrentUserContext<UserInterface>();
@@ -494,6 +501,7 @@ export default function BlockNoteEditor({
             editor={editor}
             mentionSearchFn={mentionSearchFn}
             mentionSearchParams={mentionSearchParams}
+            suggestionMenuComponent={suggestionMenuComponent}
           />
         )}
         {renderOverlays?.(editor)}
