@@ -1,3 +1,9 @@
+## [1.92.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.91.0...v1.92.0) (2026-05-09)
+
+### 🚀 Features
+
+* update mobile view ([5e269cf](https://github.com/carlonicora/nextjs-jsonapi/commit/5e269cfb197c3ec565ac79434bfb5497af82baca))
+
 ## [1.91.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.90.0...v1.91.0) (2026-05-08)
 
 ### 🚀 Features
