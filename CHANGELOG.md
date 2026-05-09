@@ -1,3 +1,9 @@
+## [1.92.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.92.1...v1.92.2) (2026-05-09)
+
+### 💎 Styles
+
+* collapse FormBlockNote isInternalChange condition (lint --fix) ([7f8e6cc](https://github.com/carlonicora/nextjs-jsonapi/commit/7f8e6ccbc55d09009567006ab98869b123bfd888))
+
 ## [1.92.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.92.0...v1.92.1) (2026-05-09)
 
 ### 🐛 Bug Fixes
