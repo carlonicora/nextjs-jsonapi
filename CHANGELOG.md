@@ -1,3 +1,9 @@
+## [1.95.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.94.0...v1.95.0) (2026-05-09)
+
+### 🚀 Features
+
+* add mention insert context and functionality to BlockNoteEditorSuggestionMenu ([f3a7f0c](https://github.com/carlonicora/nextjs-jsonapi/commit/f3a7f0c717ea20273acf6af48fc080a59977eef2))
+
 ## [1.94.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.93.0...v1.94.0) (2026-05-09)
 
 ### 🚀 Features
