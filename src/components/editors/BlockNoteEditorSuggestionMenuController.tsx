@@ -14,6 +14,11 @@ export interface MentionItem {
 
 export type MentionSearchFn = (query: string, params?: Record<string, string>) => Promise<MentionItem[]>;
 
+export type MentionInsertFn = (id: string, name: string, entityType: string) => void;
+
+const MentionInsertContext = React.createContext<MentionInsertFn | null>(null);
+export const useMentionInsert = () => React.useContext(MentionInsertContext);
+
 interface BlockNoteEditorSuggestionMenuControllerProps {
   editor: BlockNoteEditor<any, any, any>;
   mentionSearchFn: MentionSearchFn;
@@ -27,6 +32,19 @@ export function BlockNoteEditorMentionSuggestionMenu({
   mentionSearchParams,
   suggestionMenuComponent,
 }: BlockNoteEditorSuggestionMenuControllerProps) {
+  const onMentionInsert = useCallback(
+    (id: string, name: string, entityType: string) => {
+      editor.insertInlineContent([
+        {
+          type: "mention",
+          props: { alias: name, id, entityType },
+        },
+        " ",
+      ]);
+    },
+    [editor],
+  );
+
   const getItems = useCallback(
     async (query: string): Promise<DefaultReactSuggestionItem[]> => {
       const results = await mentionSearchFn(query, mentionSearchParams);
@@ -53,20 +71,22 @@ export function BlockNoteEditorMentionSuggestionMenu({
   );
 
   return (
-    <div className="blocknote-suggestion-container" style={{ position: "static" }}>
-      <SuggestionMenuController
-        triggerCharacter={"@"}
-        getItems={getItems}
-        suggestionMenuComponent={suggestionMenuComponent}
-        floatingUIOptions={{
-          useFloatingOptions: {
-            strategy: "fixed",
-            placement: "bottom-start",
-            middleware: [flip(), shift()],
-            whileElementsMounted: autoUpdate,
-          },
-        }}
-      />
-    </div>
+    <MentionInsertContext.Provider value={onMentionInsert}>
+      <div className="blocknote-suggestion-container" style={{ position: "static" }}>
+        <SuggestionMenuController
+          triggerCharacter={"@"}
+          getItems={getItems}
+          suggestionMenuComponent={suggestionMenuComponent}
+          floatingUIOptions={{
+            useFloatingOptions: {
+              strategy: "fixed",
+              placement: "bottom-start",
+              middleware: [flip(), shift()],
+              whileElementsMounted: autoUpdate,
+            },
+          }}
+        />
+      </div>
+    </MentionInsertContext.Provider>
   );
 }
