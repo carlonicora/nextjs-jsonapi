@@ -1,5 +1,6 @@
 "use client";
 
+import { useIsMobile } from "@/utils";
 import { useSharedContext } from "../../contexts/SharedContext";
 import { SidebarTrigger } from "../../shadcnui";
 import { BreadcrumbNavigation } from "./Breadcrumb";
@@ -12,6 +13,7 @@ type HeaderProps = {
 
 export function Header({ children, leftContent, className }: HeaderProps) {
   const { breadcrumbs } = useSharedContext();
+  const isMobile = useIsMobile();
 
   return (
     <header className={`sticky top-0 z-10 flex h-12 flex-col items-center justify-start gap-x-4 ${className ?? ""}`}>
@@ -21,11 +23,11 @@ export function Header({ children, leftContent, className }: HeaderProps) {
         <div className="flex w-full flex-row items-center justify-start">
           <BreadcrumbNavigation items={breadcrumbs} />
         </div>
-        <div className="flex w-64 flex-row items-center justify-end gap-x-4 whitespace-nowrap">
-          <div className="flex flex-row items-center justify-end gap-x-4 whitespace-nowrap">
-            {children ? children : null}
+        {!isMobile && children && (
+          <div className="flex w-64 flex-row items-center justify-end gap-x-4 whitespace-nowrap">
+            <div className="flex flex-row items-center justify-end gap-x-4 whitespace-nowrap">{children}</div>
           </div>
-        </div>
+        )}
       </div>
     </header>
   );
