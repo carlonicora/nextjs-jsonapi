@@ -331,9 +331,15 @@ export default function BlockNoteEditor({
     ),
   );
 
+  // Tracks the hash of the document the editor itself just emitted via onChange.
+  // The sync effect below uses it to skip replaceBlocks when the parent's
+  // initialContent is just an echo of our own emission (form-controlled flow).
+  const lastEmittedHashRef = useRef<string | null>(null);
+
   const handleChange = useCallback(async () => {
     if (!onChange) return;
     const newBlocks = editor.document;
+    lastEmittedHashRef.current = JSON.stringify(newBlocks);
     const isEmpty = isDocumentEmpty(newBlocks);
 
     function hasUnresolvedDiffsRecursive(block: any): boolean {
@@ -417,6 +423,15 @@ export default function BlockNoteEditor({
     if (!processedContent || !editor) return;
     const hash = JSON.stringify(processedContent);
     if (previousContentHashRef.current === hash) return; // no changes
+    // Skip replaceBlocks when the new initialContent is just an echo of what
+    // the editor itself emitted. Without this, a form-controlled parent
+    // (FormBlockNote) round-trips field.value back as initialContent on every
+    // keystroke and triggers replaceBlocks, which resets the cursor and can
+    // strip just-inserted inline content like mentions.
+    if (lastEmittedHashRef.current === hash) {
+      previousContentHashRef.current = hash;
+      return;
+    }
     const currentHash = JSON.stringify(editor.document);
     if (currentHash === hash) {
       previousContentHashRef.current = hash;

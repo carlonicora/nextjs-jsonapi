@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import { cn } from "../../utils/cn";
 import { BlockNoteEditorContainer } from "../editors/BlockNoteEditorContainer";
 import type { MentionResolveFn } from "../editors/BlockNoteEditorMentionInlineContent";
@@ -50,6 +50,9 @@ export function FormBlockNote({
   mentionSearchParams?: Record<string, string>;
   mentionResolveFn?: MentionResolveFn;
 }) {
+  const initialContentRef = useRef<any>(null);
+  const lastEditorContentRef = useRef<any>(undefined);
+
   return (
     <div
       className={cn(
@@ -66,26 +69,37 @@ export function FormBlockNote({
         description={description}
         testId={testId}
       >
-        {(field) => (
-          <BlockNoteEditorContainer
-            id={form.getValues("id")}
-            type={type}
-            initialContent={field.value}
-            onChange={(content, isEmpty) => {
-              field.onChange(content);
-              onEmptyChange?.(isEmpty);
-            }}
-            placeholder={placeholder}
-            bordered
-            inlineContentSpecs={inlineContentSpecs}
-            renderOverlays={renderOverlays}
-            enableMentions={enableMentions}
-            mentionSearchFn={mentionSearchFn}
-            mentionSearchParams={mentionSearchParams}
-            mentionResolveFn={mentionResolveFn}
-            className={cn(stretch && "min-h-0 flex-1")}
-          />
-        )}
+        {(field) => {
+          const isInternalChange =
+            lastEditorContentRef.current !== undefined &&
+            field.value === lastEditorContentRef.current;
+
+          if (!isInternalChange) {
+            initialContentRef.current = field.value;
+          }
+
+          return (
+            <BlockNoteEditorContainer
+              id={form.getValues("id")}
+              type={type}
+              initialContent={initialContentRef.current}
+              onChange={(content, isEmpty) => {
+                lastEditorContentRef.current = content;
+                field.onChange(content);
+                onEmptyChange?.(isEmpty);
+              }}
+              placeholder={placeholder}
+              bordered
+              inlineContentSpecs={inlineContentSpecs}
+              renderOverlays={renderOverlays}
+              enableMentions={enableMentions}
+              mentionSearchFn={mentionSearchFn}
+              mentionSearchParams={mentionSearchParams}
+              mentionResolveFn={mentionResolveFn}
+              className={cn(stretch && "min-h-0 flex-1")}
+            />
+          );
+        }}
       </FormFieldWrapper>
     </div>
   );
