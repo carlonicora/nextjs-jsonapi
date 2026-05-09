@@ -71,8 +71,7 @@ export function FormBlockNote({
       >
         {(field) => {
           const isInternalChange =
-            lastEditorContentRef.current !== undefined &&
-            field.value === lastEditorContentRef.current;
+            lastEditorContentRef.current !== undefined && field.value === lastEditorContentRef.current;
 
           if (!isInternalChange) {
             initialContentRef.current = field.value;
