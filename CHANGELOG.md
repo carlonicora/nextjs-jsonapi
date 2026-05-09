@@ -1,3 +1,9 @@
+## [1.93.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.92.2...v1.93.0) (2026-05-09)
+
+### 🚀 Features
+
+* add suggestion menu component prop to BlockNoteEditor and related components ([39e44bc](https://github.com/carlonicora/nextjs-jsonapi/commit/39e44bcbf4d188647649641c74741208cd112b7f))
+
 ## [1.92.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.92.1...v1.92.2) (2026-05-09)
 
 ### 💎 Styles
