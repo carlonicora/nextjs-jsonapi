@@ -1,3 +1,9 @@
+## [1.94.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.93.0...v1.94.0) (2026-05-09)
+
+### 🚀 Features
+
+* **d3-graph:** support per-node image, bold label, and data-id ([f58e4e2](https://github.com/carlonicora/nextjs-jsonapi/commit/f58e4e208027c778161e00975da8b844f593d4be))
+
 ## [1.93.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.92.2...v1.93.0) (2026-05-09)
 
 ### 🚀 Features
