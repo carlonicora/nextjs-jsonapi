@@ -1,3 +1,9 @@
+## [1.92.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.92.0...v1.92.1) (2026-05-09)
+
+### 🐛 Bug Fixes
+
+* **blocknote:** prevent form-controlled echo from resetting cursor and stripping mentions ([e2a18ad](https://github.com/carlonicora/nextjs-jsonapi/commit/e2a18ad241d1cb6832da08f214f6b25fd3e4f0dd))
+
 ## [1.92.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.91.0...v1.92.0) (2026-05-09)
 
 ### 🚀 Features
