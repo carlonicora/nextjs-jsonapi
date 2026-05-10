@@ -13,6 +13,7 @@ vi.mock("../../../hooks", async () => {
     useTableGenerator: vi.fn((_, params) => ({
       data: params.data.map((item: any, index: number) => ({
         ...item,
+        jsonApiData: item,
         _rowIndex: index,
       })),
       columns: [
@@ -332,9 +333,169 @@ describe("ContentListTable", () => {
 
       render(<ContentListTable data={dataRetriever} tableGeneratorType={mockModule as any} fields={["id", "title"]} />);
 
-      // Should have navigation buttons in footer
       const buttons = screen.getAllByRole("button");
       expect(buttons.length).toBeGreaterThanOrEqual(2);
+    });
+  });
+
+  describe("grouping", () => {
+    it("should not group rows when groupBy is not provided", () => {
+      const dataRetriever = createMockDataRetriever({
+        data: [
+          { id: "1", title: "Article 1", category: "A" },
+          { id: "2", title: "Article 2", category: "B" },
+          { id: "3", title: "Article 3", category: "A" },
+        ],
+      });
+
+      render(<ContentListTable data={dataRetriever} tableGeneratorType={mockModule as any} fields={["id", "title"]} />);
+
+      expect(screen.getByText("Article 1")).toBeInTheDocument();
+      expect(screen.getByText("Article 2")).toBeInTheDocument();
+      expect(screen.getByText("Article 3")).toBeInTheDocument();
+    });
+
+    it("should group rows by attribute and show group headers", () => {
+      const dataRetriever = createMockDataRetriever({
+        data: [
+          { id: "1", title: "Article 1", category: "B" },
+          { id: "2", title: "Article 2", category: "A" },
+          { id: "3", title: "Article 3", category: "B" },
+        ],
+      });
+
+      render(
+        <ContentListTable
+          data={dataRetriever}
+          tableGeneratorType={mockModule as any}
+          fields={["id", "title"]}
+          groupBy="category"
+        />,
+      );
+
+      expect(screen.getByText("A")).toBeInTheDocument();
+      expect(screen.getByText("B")).toBeInTheDocument();
+      expect(screen.getByText("Article 1")).toBeInTheDocument();
+      expect(screen.getByText("Article 2")).toBeInTheDocument();
+      expect(screen.getByText("Article 3")).toBeInTheDocument();
+    });
+
+    it("should sort groups alphabetically", () => {
+      const dataRetriever = createMockDataRetriever({
+        data: [
+          { id: "1", title: "C Article", category: "C" },
+          { id: "2", title: "A Article", category: "A" },
+          { id: "3", title: "B Article", category: "B" },
+        ],
+      });
+
+      render(
+        <ContentListTable
+          data={dataRetriever}
+          tableGeneratorType={mockModule as any}
+          fields={["id", "title"]}
+          groupBy="category"
+        />,
+      );
+
+      const allCells = screen.getAllByRole("cell");
+      const texts = allCells.map((cell) => cell.textContent);
+      const groupIndices = ["A", "B", "C"].map((g) => texts.indexOf(g));
+      expect(groupIndices[0]).toBeLessThan(groupIndices[1]);
+      expect(groupIndices[1]).toBeLessThan(groupIndices[2]);
+    });
+
+    it("should group by relationship using the name property", () => {
+      const dataRetriever = createMockDataRetriever({
+        data: [
+          { id: "1", title: "Article 1", campaign: { id: "c1", name: "Campaign Alpha" } },
+          { id: "2", title: "Article 2", campaign: { id: "c2", name: "Campaign Beta" } },
+          { id: "3", title: "Article 3", campaign: { id: "c1", name: "Campaign Alpha" } },
+        ],
+      });
+
+      render(
+        <ContentListTable
+          data={dataRetriever}
+          tableGeneratorType={mockModule as any}
+          fields={["id", "title"]}
+          groupBy="campaign"
+        />,
+      );
+
+      expect(screen.getByText("Campaign Alpha")).toBeInTheDocument();
+      expect(screen.getByText("Campaign Beta")).toBeInTheDocument();
+    });
+
+    it("should handle null/undefined group values", () => {
+      const dataRetriever = createMockDataRetriever({
+        data: [
+          { id: "1", title: "Article 1", category: null },
+          { id: "2", title: "Article 2", category: "A" },
+          { id: "3", title: "Article 3", category: undefined },
+        ],
+      });
+
+      render(
+        <ContentListTable
+          data={dataRetriever}
+          tableGeneratorType={mockModule as any}
+          fields={["id", "title"]}
+          groupBy="category"
+        />,
+      );
+
+      expect(screen.getByText("A")).toBeInTheDocument();
+      const groupHeaders = screen
+        .getAllByRole("cell")
+        .filter((cell) => cell.textContent === "" && cell.classList.contains("bg-muted"));
+      expect(groupHeaders.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it("should handle empty data with groupBy", () => {
+      const dataRetriever = createMockDataRetriever({ data: [] });
+
+      render(
+        <ContentListTable
+          data={dataRetriever}
+          tableGeneratorType={mockModule as any}
+          fields={["id", "title"]}
+          groupBy="category"
+        />,
+      );
+
+      expect(screen.getByText("No results.")).toBeInTheDocument();
+    });
+
+    it("should group by to-many relationship, duplicating rows across groups", () => {
+      const dataRetriever = createMockDataRetriever({
+        data: [
+          { id: "1", title: "Article 1", tags: [{ id: "t1", name: "Alpha" }, { id: "t2", name: "Beta" }] },
+          { id: "2", title: "Article 2", tags: [{ id: "t1", name: "Alpha" }] },
+          { id: "3", title: "Article 3", tags: [{ id: "t2", name: "Beta" }, { id: "t3", name: "Gamma" }] },
+        ],
+      });
+
+      render(
+        <ContentListTable
+          data={dataRetriever}
+          tableGeneratorType={mockModule as any}
+          fields={["id", "title"]}
+          groupBy="tags"
+        />,
+      );
+
+      expect(screen.getByText("Alpha")).toBeInTheDocument();
+      expect(screen.getByText("Beta")).toBeInTheDocument();
+      expect(screen.getByText("Gamma")).toBeInTheDocument();
+
+      const allText = screen.getAllByRole("cell").map((c) => c.textContent);
+      const article1Count = allText.filter((t) => t === "Article 1").length;
+      expect(article1Count).toBe(2);
+      const article2Count = allText.filter((t) => t === "Article 2").length;
+      expect(article2Count).toBe(1);
+      const article3Count = allText.filter((t) => t === "Article 3").length;
+      expect(article3Count).toBe(2);
     });
   });
 });

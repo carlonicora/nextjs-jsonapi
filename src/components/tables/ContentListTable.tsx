@@ -5,13 +5,26 @@ import { ExpandedState, flexRender, getCoreRowModel, getExpandedRowModel, useRea
 
 import { cn } from "@/index";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { ReactNode, memo, useMemo, useState } from "react";
-import { DataListRetriever, useTableGenerator } from "../../hooks";
+import React, { ReactNode, memo, useMemo, useState } from "react";
+import { DataListRetriever, TableContent, useTableGenerator } from "../../hooks";
 import { ModuleWithPermissions } from "../../permissions";
 import { Button, Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "../../shadcnui";
 import { ContentTableSearch } from "./ContentTableSearch";
 
 const EMPTY_ARRAY: any[] = [];
+
+function getGroupKeys(item: TableContent<any>, field: string): string[] {
+  const value = item.jsonApiData[field];
+  if (Array.isArray(value)) {
+    return value
+      .filter((v: any) => v && typeof v === "object" && "name" in v)
+      .map((v: any) => v.name ?? String(v.id));
+  }
+  if (value && typeof value === "object" && "name" in value) {
+    return [value.name ?? String(value.id)];
+  }
+  return [String(value ?? "")];
+}
 
 export type GenerateTableStructureParams = {
   data: any[];
@@ -35,6 +48,7 @@ type ContentListTableProps = {
   getSubRows?: (row: any) => any[];
   defaultExpanded?: boolean | ExpandedState;
   fullWidth?: boolean;
+  groupBy?: string;
 };
 
 export const ContentListTable = memo(function ContentListTable(props: ContentListTableProps) {
@@ -84,6 +98,30 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
   // }
 
   const rowModel = tableData ? table.getRowModel() : null;
+
+  const groupedRows = useMemo(() => {
+    if (!props.groupBy || !rowModel?.rows?.length) return null;
+
+    const groupMap = new Map<string, typeof rowModel.rows>();
+    for (const row of rowModel.rows) {
+      const keys = getGroupKeys(row.original, props.groupBy!);
+      for (const key of keys) {
+        let list = groupMap.get(key);
+        if (!list) {
+          list = [];
+          groupMap.set(key, list);
+        }
+        list.push(row);
+      }
+    }
+
+    const sortedKeys = [...groupMap.keys()].sort((a, b) => a.localeCompare(b));
+    return sortedKeys.map((groupKey) => ({
+      groupKey,
+      rows: groupMap.get(groupKey)!,
+    }));
+  }, [props.groupBy, rowModel]);
+
   const showFooter = !!(data.next || data.previous);
 
   return (
@@ -141,18 +179,45 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
           </TableHeader>
           <TableBody>
             {rowModel && rowModel.rows?.length ? (
-              rowModel.rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => {
-                    const meta = cell.column.columnDef.meta as { className?: string } | undefined;
-                    return (
-                      <TableCell key={cell.id} className={meta?.className}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              groupedRows ? (
+                groupedRows.map((group) => (
+                  <React.Fragment key={group.groupKey}>
+                    <TableRow>
+                      <TableCell
+                        colSpan={tableColumns.length}
+                        className="bg-muted text-muted-foreground px-4 py-2 text-sm font-semibold"
+                      >
+                        {group.groupKey}
                       </TableCell>
-                    );
-                  })}
-                </TableRow>
-              ))
+                    </TableRow>
+                    {group.rows.map((row) => (
+                      <TableRow key={row.id}>
+                        {row.getVisibleCells().map((cell) => {
+                          const meta = cell.column.columnDef.meta as { className?: string } | undefined;
+                          return (
+                            <TableCell key={cell.id} className={meta?.className}>
+                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </TableCell>
+                          );
+                        })}
+                      </TableRow>
+                    ))}
+                  </React.Fragment>
+                ))
+              ) : (
+                rowModel.rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => {
+                      const meta = cell.column.columnDef.meta as { className?: string } | undefined;
+                      return (
+                        <TableCell key={cell.id} className={meta?.className}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                ))
+              )
             ) : (
               <TableRow>
                 <TableCell colSpan={tableColumns.length} className="h-24 text-center">
