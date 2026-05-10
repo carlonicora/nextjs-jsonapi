@@ -1,3 +1,9 @@
+## [1.96.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.95.0...v1.96.0) (2026-05-10)
+
+### 🚀 Features
+
+* **mentions:** add nameResolver and onWarmMentions props for cache-based mention name resolution ([e00136d](https://github.com/carlonicora/nextjs-jsonapi/commit/e00136dd4aaec66b93993e84445424a745d648a8))
+
 ## [1.95.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.94.0...v1.95.0) (2026-05-09)
 
 ### 🚀 Features
