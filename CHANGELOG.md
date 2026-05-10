@@ -1,3 +1,10 @@
+## [1.97.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.96.0...v1.97.0) (2026-05-10)
+
+### 🚀 Features
+
+* add suggestion menu component prop to BlockNoteEditor and related components ([46493ec](https://github.com/carlonicora/nextjs-jsonapi/commit/46493ec94e012f857d25660773521637fedd6a6b))
+* **table:** add groupBy prop for row grouping by attribute or relationship ([fcb180b](https://github.com/carlonicora/nextjs-jsonapi/commit/fcb180bbb05e6fe152326d8d629d70fcbac2f92d))
+
 ## [1.96.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.95.0...v1.96.0) (2026-05-10)
 
 ### 🚀 Features
