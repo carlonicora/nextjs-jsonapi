@@ -470,9 +470,23 @@ describe("ContentListTable", () => {
     it("should group by to-many relationship, duplicating rows across groups", () => {
       const dataRetriever = createMockDataRetriever({
         data: [
-          { id: "1", title: "Article 1", tags: [{ id: "t1", name: "Alpha" }, { id: "t2", name: "Beta" }] },
+          {
+            id: "1",
+            title: "Article 1",
+            tags: [
+              { id: "t1", name: "Alpha" },
+              { id: "t2", name: "Beta" },
+            ],
+          },
           { id: "2", title: "Article 2", tags: [{ id: "t1", name: "Alpha" }] },
-          { id: "3", title: "Article 3", tags: [{ id: "t2", name: "Beta" }, { id: "t3", name: "Gamma" }] },
+          {
+            id: "3",
+            title: "Article 3",
+            tags: [
+              { id: "t2", name: "Beta" },
+              { id: "t3", name: "Gamma" },
+            ],
+          },
         ],
       });
 

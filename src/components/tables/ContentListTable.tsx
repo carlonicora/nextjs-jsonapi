@@ -16,9 +16,7 @@ const EMPTY_ARRAY: any[] = [];
 function getGroupKeys(item: TableContent<any>, field: string): string[] {
   const value = item.jsonApiData[field];
   if (Array.isArray(value)) {
-    return value
-      .filter((v: any) => v && typeof v === "object" && "name" in v)
-      .map((v: any) => v.name ?? String(v.id));
+    return value.filter((v: any) => v && typeof v === "object" && "name" in v).map((v: any) => v.name ?? String(v.id));
   }
   if (value && typeof value === "object" && "name" in value) {
     return [value.name ?? String(value.id)];
