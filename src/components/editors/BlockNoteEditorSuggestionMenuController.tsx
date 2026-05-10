@@ -89,8 +89,7 @@ export function BlockNoteEditorMentionSuggestionMenu({
     if (!suggestionMenuComponent) return undefined;
     const Component = suggestionMenuComponent;
     const Wrapped: React.FC<SuggestionMenuProps<DefaultReactSuggestionItem>> = (props) => {
-      const isSentinelOnly =
-        props.items.length === 1 && props.items[0]?.title === KEEP_OPEN_SENTINEL_TITLE;
+      const isSentinelOnly = props.items.length === 1 && props.items[0]?.title === KEEP_OPEN_SENTINEL_TITLE;
       return (
         <Component
           {...props}
