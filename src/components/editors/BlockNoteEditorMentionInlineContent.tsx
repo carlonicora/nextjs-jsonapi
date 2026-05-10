@@ -27,6 +27,8 @@ export interface MentionResolveResult {
 
 export type MentionResolveFn = (id: string, entityType: string, alias: string) => MentionResolveResult | null;
 
+export type MentionNameResolver = (id: string, entityType: string, alias: string) => string;
+
 /** Spread on the root element of a custom Inline so the hovercard can detect hover. */
 export const mentionDataAttrs = (p: MentionRenderProps) => ({
   "data-mention-id": p.id,
@@ -34,30 +36,41 @@ export const mentionDataAttrs = (p: MentionRenderProps) => ({
   "data-mention-alias": p.alias,
 });
 
-export const createMentionInlineContentSpec = (resolveFn?: MentionResolveFn, disableMention?: boolean) => {
+export const createMentionInlineContentSpec = (
+  resolveFn?: MentionResolveFn,
+  disableMention?: boolean,
+  nameResolver?: MentionNameResolver,
+) => {
   const Mention = React.memo(function Mention(props: MentionRenderProps) {
+    const displayName = nameResolver?.(props.id, props.entityType, props.alias) ?? props.alias;
+
     if (disableMention) {
-      const resolved = resolveFn?.(props.id, props.entityType, props.alias);
+      const resolved = resolveFn?.(props.id, props.entityType, displayName);
       return (
         <Link href={resolved?.url ?? "#"} className="text-primary">
-          @{props.alias}
+          @{displayName}
         </Link>
       );
     }
 
-    const resolved = resolveFn?.(props.id, props.entityType, props.alias);
+    const resolved = resolveFn?.(props.id, props.entityType, displayName);
 
     if (resolved?.Inline) {
       const Custom = resolved.Inline;
-      return <Custom {...props} />;
+      return <Custom {...props} alias={displayName} />;
     }
 
     const href = resolved?.url ?? "#";
     const handleClick = resolved?.onActivate ? (e: React.MouseEvent) => resolved.onActivate!(e, props) : undefined;
 
     return (
-      <Link href={href} className="text-primary" onClick={handleClick} {...mentionDataAttrs(props)}>
-        @{props.alias}
+      <Link
+        href={href}
+        className="text-primary"
+        onClick={handleClick}
+        {...mentionDataAttrs({ ...props, alias: displayName })}
+      >
+        @{displayName}
       </Link>
     );
   });

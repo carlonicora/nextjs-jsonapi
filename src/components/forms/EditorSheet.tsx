@@ -48,6 +48,7 @@ export type EditorSheetProps<T extends FieldValues> = {
   onSuccess?: () => void | Promise<void>;
   onRevalidate?: (url: string) => void;
   onNavigate?: (url: string) => void;
+  onSaved?: (entity: { id: string; name?: string }, entityType: string) => void;
 
   size?: EditorSheetSize;
   disabled?: boolean;
@@ -77,6 +78,7 @@ export function EditorSheet<T extends FieldValues>({
   onSuccess,
   onRevalidate,
   onNavigate,
+  onSaved,
   size = "xl",
   disabled,
   hideSubmit,
@@ -115,6 +117,9 @@ export function EditorSheet<T extends FieldValues>({
       try {
         const result = await onSubmit(values);
         setOpen(false);
+        if (isEdit && result && onSaved) {
+          onSaved(result, entityType);
+        }
         if (onSuccess) {
           await onSuccess();
         } else if (result) {
@@ -132,7 +137,7 @@ export function EditorSheet<T extends FieldValues>({
         });
       }
     },
-    [onSubmit, setOpen, onSuccess, onRevalidate, onNavigate, generateUrl, module, isEdit, propagateChanges, t],
+    [onSubmit, setOpen, onSuccess, onSaved, onRevalidate, onNavigate, generateUrl, module, isEdit, propagateChanges, t],
   );
 
   return (

@@ -21,7 +21,11 @@ import { BlockNoteDiffUtil, BlockNoteWordDiffRendererUtil, cn } from "../../util
 import { errorToast } from "../errors";
 import { BlockNoteEditorFormattingToolbar } from "./BlockNoteEditorFormattingToolbar";
 import { BlockNoteEditorMentionHoverCard } from "./BlockNoteEditorMentionHoverCard";
-import { createMentionInlineContentSpec, type MentionResolveFn } from "./BlockNoteEditorMentionInlineContent";
+import {
+  createMentionInlineContentSpec,
+  type MentionNameResolver,
+  type MentionResolveFn,
+} from "./BlockNoteEditorMentionInlineContent";
 import { BlockNoteEditorMentionSuggestionMenu } from "./BlockNoteEditorSuggestionMenuController";
 
 export type BlockNoteEditorProps = {
@@ -46,6 +50,8 @@ export type BlockNoteEditorProps = {
   mentionSearchParams?: Record<string, string>;
   mentionResolveFn?: MentionResolveFn;
   suggestionMenuComponent?: React.FC<SuggestionMenuProps<DefaultReactSuggestionItem>>;
+  mentionNameResolver?: MentionNameResolver;
+  onWarmMentions?: (blocks: PartialBlock[]) => void;
 };
 
 function isBlockEmpty(block: any): boolean {
@@ -141,6 +147,8 @@ export default function BlockNoteEditor({
   mentionSearchParams,
   mentionResolveFn,
   suggestionMenuComponent,
+  mentionNameResolver,
+  onWarmMentions,
 }: BlockNoteEditorProps): React.JSX.Element {
   const t = useTranslations();
   const { company } = useCurrentUserContext<UserInterface>();
@@ -189,8 +197,8 @@ export default function BlockNoteEditor({
   );
 
   const mentionSpec = useMemo(
-    () => createMentionInlineContentSpec(mentionResolveFn, disableMentions),
-    [disableMentions, mentionResolveFn],
+    () => createMentionInlineContentSpec(mentionResolveFn, disableMentions, mentionNameResolver),
+    [disableMentions, mentionResolveFn, mentionNameResolver],
   );
 
   const schema = useMemo(
@@ -447,6 +455,11 @@ export default function BlockNoteEditor({
     editor.replaceBlocks(editor.document, processedContent as PartialBlock[]);
     previousContentHashRef.current = hash;
   }, [processedContent, editor]);
+
+  useEffect(() => {
+    if (!onWarmMentions || !initialContent || !Array.isArray(initialContent) || initialContent.length === 0) return;
+    onWarmMentions(initialContent);
+  }, [onWarmMentions, initialContent]);
 
   // Handle audio received from whisper transcription
   const _handleAudioReceived = useCallback(

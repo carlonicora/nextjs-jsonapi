@@ -4,7 +4,7 @@ import React, { useRef } from "react";
 import { DefaultReactSuggestionItem, SuggestionMenuProps } from "@blocknote/react";
 import { cn } from "../../utils/cn";
 import { BlockNoteEditorContainer } from "../editors/BlockNoteEditorContainer";
-import type { MentionResolveFn } from "../editors/BlockNoteEditorMentionInlineContent";
+import type { MentionNameResolver, MentionResolveFn } from "../editors/BlockNoteEditorMentionInlineContent";
 import { FormFieldWrapper } from "./FormFieldWrapper";
 
 export function FormBlockNote({
@@ -26,6 +26,8 @@ export function FormBlockNote({
   mentionSearchParams,
   mentionResolveFn,
   suggestionMenuComponent,
+  mentionNameResolver,
+  onWarmMentions,
 }: {
   form: any;
   id: string;
@@ -52,6 +54,8 @@ export function FormBlockNote({
   mentionSearchParams?: Record<string, string>;
   mentionResolveFn?: MentionResolveFn;
   suggestionMenuComponent?: React.FC<SuggestionMenuProps<DefaultReactSuggestionItem>>;
+  mentionNameResolver?: MentionNameResolver;
+  onWarmMentions?: (blocks: any[]) => void;
 }) {
   const initialContentRef = useRef<any>(null);
   const lastEditorContentRef = useRef<any>(undefined);
@@ -99,6 +103,8 @@ export function FormBlockNote({
               mentionSearchParams={mentionSearchParams}
               mentionResolveFn={mentionResolveFn}
               suggestionMenuComponent={suggestionMenuComponent}
+              mentionNameResolver={mentionNameResolver}
+              onWarmMentions={onWarmMentions}
               className={cn(stretch && "min-h-0 flex-1")}
             />
           );
