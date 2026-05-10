@@ -1,3 +1,9 @@
+## [1.97.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.97.1...v1.97.2) (2026-05-10)
+
+### 🐛 Bug Fixes
+
+* simplify sentinel check in BlockNoteEditorMentionSuggestionMenu ([2a51ffe](https://github.com/carlonicora/nextjs-jsonapi/commit/2a51ffe49032b68c265b353d087b49c63941cad9))
+
 ## [1.97.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.97.0...v1.97.1) (2026-05-10)
 
 ### 🐛 Bug Fixes
