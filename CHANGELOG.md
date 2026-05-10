@@ -1,3 +1,9 @@
+## [1.97.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.97.0...v1.97.1) (2026-05-10)
+
+### 🐛 Bug Fixes
+
+* **mentions:** keep suggestion menu open when search has no results ([62d6461](https://github.com/carlonicora/nextjs-jsonapi/commit/62d6461c7d5a952d978b9fc8ad8d4a5079bc1645))
+
 ## [1.97.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.96.0...v1.97.0) (2026-05-10)
 
 ### 🚀 Features
