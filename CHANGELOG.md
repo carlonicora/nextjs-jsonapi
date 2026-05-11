@@ -1,3 +1,14 @@
+## [1.98.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.97.2...v1.98.0) (2026-05-11)
+
+### 🚀 Features
+
+* add directed option to useCustomD3Graph and enhance node color handling ([79fc1b1](https://github.com/carlonicora/nextjs-jsonapi/commit/79fc1b1f37b0fca856d44f670f3e85c518de6293))
+* add directed option to useCustomD3Graph and enhance node color handling ([1b973ed](https://github.com/carlonicora/nextjs-jsonapi/commit/1b973ed6c339246952f2ad548c280ab1eef4ac6f))
+
+### 🐛 Bug Fixes
+
+* enhance FormDate and FormDateTime components with defaultMonth and allowEmpty props ([ecd944d](https://github.com/carlonicora/nextjs-jsonapi/commit/ecd944d53c9fd86f9370c76344868529a6bafd2b))
+
 ## [1.97.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.97.1...v1.97.2) (2026-05-10)
 
 ### 🐛 Bug Fixes
