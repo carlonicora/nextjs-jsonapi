@@ -1,3 +1,9 @@
+## [1.100.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.100.1...v1.100.2) (2026-05-11)
+
+### 🐛 Bug Fixes
+
+* align items in the details section of RoundPageContainerTitle component ([bbad2bd](https://github.com/carlonicora/nextjs-jsonapi/commit/bbad2bd07e3b359d1ce135190a0bfc7e40c0c054))
+
 ## [1.100.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.100.0...v1.100.1) (2026-05-11)
 
 ### 🐛 Bug Fixes
