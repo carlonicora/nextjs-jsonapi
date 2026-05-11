@@ -26,6 +26,7 @@ export function FormDateTime({
   minDate,
   onChange,
   allowEmpty,
+  defaultMonth,
 }: {
   form: any;
   id: string;
@@ -34,11 +35,17 @@ export function FormDateTime({
   minDate?: Date;
   onChange?: (date?: Date) => Promise<void>;
   allowEmpty?: boolean;
+  defaultMonth?: Date;
 }) {
   const [open, setOpen] = useState<boolean>(false);
   const t = useI18nTranslations();
   const locale = useI18nLocale();
   const dateFnsLocale = useI18nDateFnsLocale();
+
+  const [displayMonth, setDisplayMonth] = useState<Date>(() => {
+    const currentValue = form.getValues(id);
+    return currentValue || defaultMonth || new Date();
+  });
 
   // Locale-aware date-time formatter
   const dateTimeFormatter = useMemo(
@@ -123,7 +130,10 @@ export function FormDateTime({
                 <div className="flex flex-col space-y-4">
                   <Calendar
                     mode="single"
+                    captionLayout="dropdown"
                     selected={field.value}
+                    month={displayMonth}
+                    onMonthChange={setDisplayMonth}
                     onSelect={(date) => {
                       if (date) {
                         // Preserve the current time when selecting a new date
@@ -135,6 +145,7 @@ export function FormDateTime({
                           newDate.setHours(selectedHours, selectedMinutes);
                         }
                         form.setValue(id, newDate);
+                        setDisplayMonth(newDate);
                         if (onChange) onChange(newDate);
 
                         // Update time state values
@@ -144,6 +155,9 @@ export function FormDateTime({
                     }}
                     disabled={(date) => (minDate && date < minDate ? true : false)}
                     locale={dateFnsLocale}
+                    weekStartsOn={1}
+                    startMonth={new Date(1900, 0)}
+                    endMonth={new Date(new Date().getFullYear() + 10, 11)}
                   />
                   <div className="flex flex-row items-end justify-center space-x-4">
                     <div className="flex flex-col space-y-2">
@@ -201,14 +215,32 @@ export function FormDateTime({
                       </Select>
                     </div>
                   </div>
-                  <Button
-                    className="mt-2"
-                    onClick={() => {
-                      setOpen(false);
-                    }}
-                  >
-                    {t(`ui.buttons.select_date`)}
-                  </Button>
+                  <div className="mt-2 flex flex-row gap-x-2">
+                    {allowEmpty !== false && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="flex-1"
+                        disabled={!field.value}
+                        onClick={() => {
+                          if (onChange) onChange(undefined);
+                          form.setValue(id, "");
+                          setOpen(false);
+                        }}
+                      >
+                        {t(`ui.buttons.clear`)}
+                      </Button>
+                    )}
+                    <Button
+                      type="button"
+                      className="flex-1"
+                      onClick={() => {
+                        setOpen(false);
+                      }}
+                    >
+                      {t(`ui.buttons.select_date`)}
+                    </Button>
+                  </div>
                 </div>
               </PopoverContent>
             </Popover>

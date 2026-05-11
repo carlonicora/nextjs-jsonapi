@@ -3,8 +3,9 @@
 import { isValid, parse } from "date-fns";
 import { Calendar as CalendarIcon, CircleXIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useI18nDateFnsLocale, useI18nLocale } from "../../i18n";
+import { useI18nDateFnsLocale, useI18nLocale, useI18nTranslations } from "../../i18n";
 import {
+  Button,
   Calendar,
   InputGroup,
   InputGroupAddon,
@@ -23,6 +24,8 @@ export function FormDate({
   minDate,
   onChange,
   isRequired = false,
+  defaultMonth,
+  allowEmpty,
 }: {
   form: any;
   id: string;
@@ -31,13 +34,16 @@ export function FormDate({
   minDate?: Date;
   onChange?: (date?: Date) => Promise<void>;
   isRequired?: boolean;
+  defaultMonth?: Date;
+  allowEmpty?: boolean;
 }) {
+  const t = useI18nTranslations();
   const locale = useI18nLocale();
   const dateFnsLocale = useI18nDateFnsLocale();
   const [open, setOpen] = useState<boolean>(false);
   const [displayMonth, setDisplayMonth] = useState<Date>(() => {
     const currentValue = form.getValues(id);
-    return currentValue || new Date();
+    return currentValue || defaultMonth || new Date();
   });
 
   // Locale-aware date formatter
@@ -126,7 +132,7 @@ export function FormDate({
                     <CalendarIcon className="h-4 w-4 opacity-50" />
                   </InputGroupButton>
                 </PopoverTrigger>
-                {field.value && (
+                {field.value && allowEmpty !== false && (
                   <InputGroupButton
                     variant="ghost"
                     size="icon-xs"
@@ -158,6 +164,24 @@ export function FormDate({
                 startMonth={new Date(1900, 0)}
                 endMonth={new Date(new Date().getFullYear() + 10, 11)}
               />
+              {allowEmpty !== false && (
+                <div className="border-t p-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    disabled={!field.value}
+                    onClick={() => {
+                      field.onChange(undefined);
+                      setInputValue("");
+                      if (onChange) onChange(undefined);
+                      setOpen(false);
+                    }}
+                  >
+                    {t(`ui.buttons.clear`)}
+                  </Button>
+                </div>
+              )}
             </PopoverContent>
           </Popover>
         )}
