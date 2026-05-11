@@ -1,3 +1,9 @@
+## [1.100.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.99.0...v1.100.0) (2026-05-11)
+
+### 🚀 Features
+
+* fit layered layout to a target aspect ratio ([bab1bfa](https://github.com/carlonicora/nextjs-jsonapi/commit/bab1bfa33501d6817227f8aa321224b756f89184))
+
 ## [1.99.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.98.0...v1.99.0) (2026-05-11)
 
 ### 🚀 Features
