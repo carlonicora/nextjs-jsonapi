@@ -36,7 +36,7 @@ export function RoundPageContainerTitle({
         </div>
       )}
       {(title.functions || details) && (
-        <div className="flex gap-x-2">
+        <div className="flex items-center gap-x-2">
           {title.functions}
           {details && (
             <Tooltip>
