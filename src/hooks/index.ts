@@ -37,6 +37,8 @@ export * from "./usePushNotifications";
 export * from "./useSocket";
 export {
   computeLayeredLayout,
+  fitLayeredLayoutToAspectRatio,
+  type FitLayeredLayoutOptions,
   type LayeredLayoutOptions,
   type LayeredLayoutPosition,
   type LayeredRankDir,

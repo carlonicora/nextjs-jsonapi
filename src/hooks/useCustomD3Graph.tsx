@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { D3Link, D3Node } from "../interfaces";
-import { computeLayeredLayout, type LayeredRankDir } from "./computeLayeredLayout";
+import { computeLayeredLayout, fitLayeredLayoutToAspectRatio, type LayeredRankDir } from "./computeLayeredLayout";
 
 /**
  * Custom hook for D3 graph visualization with larger circles and more interactive features
@@ -22,6 +22,7 @@ export function useCustomD3Graph(
       rankdir?: LayeredRankDir;
       nodesep?: number;
       ranksep?: number;
+      fitContainer?: boolean;
     };
   },
   loadingNodeIds?: Set<string>,
@@ -244,13 +245,23 @@ export function useCustomD3Graph(
 
     if (layoutMode === "layered") {
       const layeredOpts = options?.layered ?? {};
-      const positions = computeLayeredLayout(visibleNodes, visibleLinks, {
-        rankdir: layeredOpts.rankdir ?? "LR",
-        nodesep: layeredOpts.nodesep,
-        ranksep: layeredOpts.ranksep,
-        minNodeWidth: nodeRadius * 2,
-        minNodeHeight: nodeRadius * 2,
-      });
+      const useFit = layeredOpts.fitContainer === true && width > 0 && height > 0;
+      const positions = useFit
+        ? fitLayeredLayoutToAspectRatio(visibleNodes, visibleLinks, {
+            rankdir: layeredOpts.rankdir ?? "LR",
+            nodesep: layeredOpts.nodesep,
+            ranksep: layeredOpts.ranksep,
+            minNodeWidth: nodeRadius * 2,
+            minNodeHeight: nodeRadius * 2,
+            targetAspectRatio: width / height,
+          })
+        : computeLayeredLayout(visibleNodes, visibleLinks, {
+            rankdir: layeredOpts.rankdir ?? "LR",
+            nodesep: layeredOpts.nodesep,
+            ranksep: layeredOpts.ranksep,
+            minNodeWidth: nodeRadius * 2,
+            minNodeHeight: nodeRadius * 2,
+          });
 
       if (positions) {
         visibleNodes.forEach((node) => {
@@ -785,6 +796,7 @@ export function useCustomD3Graph(
     options?.layered?.rankdir,
     options?.layered?.nodesep,
     options?.layered?.ranksep,
+    options?.layered?.fitContainer,
     loadingNodeIds,
     onNodeClick,
   ]);

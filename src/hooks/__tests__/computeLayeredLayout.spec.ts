@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeLayeredLayout } from "../computeLayeredLayout";
+import { computeLayeredLayout, fitLayeredLayoutToAspectRatio } from "../computeLayeredLayout";
 import type { D3Link, D3Node } from "../../interfaces";
 
 function makeNode(id: string, name = id, extra: Partial<D3Node> = {}): D3Node {
@@ -148,5 +148,139 @@ describe("computeLayeredLayout", () => {
     });
     expect(result).not.toBeNull();
     expect(result!.size).toBe(2);
+  });
+});
+
+function boundingBoxAspect(positions: Map<string, { x: number; y: number }>): number {
+  if (positions.size <= 1) return NaN;
+  let xMin = Infinity;
+  let xMax = -Infinity;
+  let yMin = Infinity;
+  let yMax = -Infinity;
+  positions.forEach((p) => {
+    xMin = Math.min(xMin, p.x);
+    xMax = Math.max(xMax, p.x);
+    yMin = Math.min(yMin, p.y);
+    yMax = Math.max(yMax, p.y);
+  });
+  const w = xMax - xMin;
+  const h = yMax - yMin;
+  if (h === 0) return Infinity;
+  return w / h;
+}
+
+describe("fitLayeredLayoutToAspectRatio", () => {
+  it("returns an empty map for an empty graph", () => {
+    const result = fitLayeredLayoutToAspectRatio([], [], {
+      minNodeWidth: MIN_WIDTH,
+      minNodeHeight: MIN_HEIGHT,
+      targetAspectRatio: 1.5,
+    });
+    expect(result).not.toBeNull();
+    expect(result!.size).toBe(0);
+  });
+
+  it("returns a single node at finite coords without crashing", () => {
+    const result = fitLayeredLayoutToAspectRatio([makeNode("a")], [], {
+      minNodeWidth: MIN_WIDTH,
+      minNodeHeight: MIN_HEIGHT,
+      targetAspectRatio: 1.5,
+    });
+    expect(result).not.toBeNull();
+    const pos = result!.get("a")!;
+    expect(Number.isFinite(pos.x)).toBe(true);
+    expect(Number.isFinite(pos.y)).toBe(true);
+  });
+
+  it("nudges aspect ratio toward a wider target than single-pass", () => {
+    // A branchy DAG with vertical structure under TB: a -> b1,b2,b3,b4,b5
+    // Single-pass TB makes this tall (5 siblings stacked vertically below a).
+    const nodes = [makeNode("a"), makeNode("b1"), makeNode("b2"), makeNode("b3"), makeNode("b4"), makeNode("b5")];
+    const links = [
+      makeLink("a", "b1"),
+      makeLink("a", "b2"),
+      makeLink("a", "b3"),
+      makeLink("a", "b4"),
+      makeLink("a", "b5"),
+    ];
+    const baseline = computeLayeredLayout(nodes, links, {
+      rankdir: "TB",
+      minNodeWidth: MIN_WIDTH,
+      minNodeHeight: MIN_HEIGHT,
+    });
+    const fitted = fitLayeredLayoutToAspectRatio(nodes, links, {
+      rankdir: "TB",
+      minNodeWidth: MIN_WIDTH,
+      minNodeHeight: MIN_HEIGHT,
+      targetAspectRatio: 4.0,
+    });
+    expect(baseline).not.toBeNull();
+    expect(fitted).not.toBeNull();
+    const baseAspect = boundingBoxAspect(baseline!);
+    const fitAspect = boundingBoxAspect(fitted!);
+    expect(Math.abs(fitAspect - 4.0)).toBeLessThan(Math.abs(baseAspect - 4.0));
+  });
+
+  it("nudges aspect ratio toward a narrower target than single-pass", () => {
+    // A wide LR chain (single rank deep, multi-rank wide); single-pass is
+    // very wide. Target 0.5 (taller than wide) should reduce ranksep and
+    // increase nodesep — though with no siblings the height grows slowly.
+    // We use a graph with one branching point to give the fitter vertical
+    // structure to expand into.
+    const nodes = [makeNode("a"), makeNode("b"), makeNode("c"), makeNode("d"), makeNode("e")];
+    const links = [makeLink("a", "b"), makeLink("a", "c"), makeLink("b", "d"), makeLink("c", "e")];
+    const baseline = computeLayeredLayout(nodes, links, {
+      rankdir: "LR",
+      minNodeWidth: MIN_WIDTH,
+      minNodeHeight: MIN_HEIGHT,
+    });
+    const fitted = fitLayeredLayoutToAspectRatio(nodes, links, {
+      rankdir: "LR",
+      minNodeWidth: MIN_WIDTH,
+      minNodeHeight: MIN_HEIGHT,
+      targetAspectRatio: 0.6,
+    });
+    expect(baseline).not.toBeNull();
+    expect(fitted).not.toBeNull();
+    const baseAspect = boundingBoxAspect(baseline!);
+    const fitAspect = boundingBoxAspect(fitted!);
+    expect(Math.abs(fitAspect - 0.6)).toBeLessThan(Math.abs(baseAspect - 0.6));
+  });
+
+  it("skips fitting for single-rank graphs (zero height in LR)", () => {
+    // Linear LR chain: all nodes on the same y (single rank tall),
+    // bbox height collapses to 0 — fitter should return positions
+    // unchanged from single-pass.
+    const nodes = [makeNode("a"), makeNode("b"), makeNode("c")];
+    const links = [makeLink("a", "b"), makeLink("b", "c")];
+    const fitted = fitLayeredLayoutToAspectRatio(nodes, links, {
+      rankdir: "LR",
+      minNodeWidth: MIN_WIDTH,
+      minNodeHeight: MIN_HEIGHT,
+      targetAspectRatio: 0.5,
+    });
+    expect(fitted).not.toBeNull();
+    expect(fitted!.size).toBe(3);
+  });
+
+  it("treats invalid targetAspectRatio (zero or NaN) as a no-op fit", () => {
+    const nodes = [makeNode("a"), makeNode("b")];
+    const links = [makeLink("a", "b")];
+    const zero = fitLayeredLayoutToAspectRatio(nodes, links, {
+      rankdir: "LR",
+      minNodeWidth: MIN_WIDTH,
+      minNodeHeight: MIN_HEIGHT,
+      targetAspectRatio: 0,
+    });
+    const nan = fitLayeredLayoutToAspectRatio(nodes, links, {
+      rankdir: "LR",
+      minNodeWidth: MIN_WIDTH,
+      minNodeHeight: MIN_HEIGHT,
+      targetAspectRatio: NaN,
+    });
+    expect(zero).not.toBeNull();
+    expect(zero!.size).toBe(2);
+    expect(nan).not.toBeNull();
+    expect(nan!.size).toBe(2);
   });
 });
