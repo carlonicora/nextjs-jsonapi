@@ -1,3 +1,9 @@
+## [1.100.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.100.0...v1.100.1) (2026-05-11)
+
+### 🐛 Bug Fixes
+
+* enhance label width estimation and adjust force simulation parameters in useCustomD3Graph ([643502a](https://github.com/carlonicora/nextjs-jsonapi/commit/643502a006012b30189a88397a10fa4ac6386812))
+
 ## [1.100.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.99.0...v1.100.0) (2026-05-11)
 
 ### 🚀 Features
