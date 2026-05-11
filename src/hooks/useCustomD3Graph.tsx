@@ -7,6 +7,27 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { D3Link, D3Node } from "../interfaces";
 import { computeLayeredLayout, fitLayeredLayoutToAspectRatio, type LayeredRankDir } from "./computeLayeredLayout";
 
+// Heuristic estimate of a node label's rendered width, used to size the
+// force-collision radius so that long titles like "Investigative Journalism
+// Class" do not overlap neighbouring circles. Mirrors the constants in
+// computeLayeredLayout.ts — the small duplication is intentional, the
+// heuristic may evolve per-layout-context.
+const TITLE_PX_PER_CHAR_16 = 8;
+const NAME_PX_PER_CHAR_12 = 6.5;
+const NAME_PX_PER_CHAR_16_BOLD = 8;
+const SUBTITLE_PX_PER_CHAR_11 = 6;
+const LABEL_PADDING_PX = 16;
+
+function estimateLabelWidth(node: D3Node): number {
+  if (node.subtitle) {
+    const titleWidth = (node.name?.length ?? 0) * TITLE_PX_PER_CHAR_16;
+    const subtitleWidth = node.subtitle.length * SUBTITLE_PX_PER_CHAR_11;
+    return Math.max(titleWidth, subtitleWidth) + LABEL_PADDING_PX;
+  }
+  const perChar = node.bold ? NAME_PX_PER_CHAR_16_BOLD : NAME_PX_PER_CHAR_12;
+  return (node.name?.length ?? 0) * perChar + LABEL_PADDING_PX;
+}
+
 /**
  * Custom hook for D3 graph visualization with larger circles and more interactive features
  */
@@ -456,12 +477,15 @@ export function useCustomD3Graph(
             .distance(nodeRadius * 3)
             .strength(0.1),
         )
-        .force("charge", d3.forceManyBody().strength(-500).distanceMax(300))
-        .force("collision", d3.forceCollide().radius(nodeRadius * 1.2))
+        .force("charge", d3.forceManyBody().strength(-2500).distanceMax(800))
+        .force(
+          "collision",
+          d3.forceCollide<D3Node>().radius((d) => Math.max(nodeRadius * 1.1, estimateLabelWidth(d) / 2 + 8)),
+        )
         .force("center", d3.forceCenter(width / 2, height / 2).strength(0.1));
 
       simulation.stop();
-      for (let i = 0; i < 100; i++) {
+      for (let i = 0; i < 300; i++) {
         simulation.tick();
       }
 
