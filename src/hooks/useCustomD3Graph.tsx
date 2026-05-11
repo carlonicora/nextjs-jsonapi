@@ -680,12 +680,7 @@ export function useCustomD3Graph(
         const subtitleSize = 11;
         const lineGap = titleSize; // px between baselines
         textElement.attr("dy", -nodeRadius - 5 - lineGap).attr("fill", "currentColor");
-        textElement
-          .append("tspan")
-          .attr("x", 0)
-          .attr("font-size", titleSize)
-          .attr("font-weight", 700)
-          .text(d.name);
+        textElement.append("tspan").attr("x", 0).attr("font-size", titleSize).attr("font-weight", 700).text(d.name);
         textElement
           .append("tspan")
           .attr("x", 0)
