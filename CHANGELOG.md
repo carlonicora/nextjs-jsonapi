@@ -1,3 +1,9 @@
+## [1.99.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.98.0...v1.99.0) (2026-05-11)
+
+### 🚀 Features
+
+* add opt-in layered (DAG) layout to useCustomD3Graph ([5c9d4f2](https://github.com/carlonicora/nextjs-jsonapi/commit/5c9d4f2f11ee3c496e76bbc41f7dfffe93bb96f7))
+
 ## [1.98.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.97.2...v1.98.0) (2026-05-11)
 
 ### 🚀 Features
