@@ -35,3 +35,9 @@ export * from "./useNotificationSync";
 export * from "./usePageTracker";
 export * from "./usePushNotifications";
 export * from "./useSocket";
+export {
+  computeLayeredLayout,
+  type LayeredLayoutOptions,
+  type LayeredLayoutPosition,
+  type LayeredRankDir,
+} from "./computeLayeredLayout";

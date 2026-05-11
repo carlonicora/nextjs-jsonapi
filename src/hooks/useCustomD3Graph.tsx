@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { D3Link, D3Node } from "../interfaces";
+import { computeLayeredLayout, type LayeredRankDir } from "./computeLayeredLayout";
 
 /**
  * Custom hook for D3 graph visualization with larger circles and more interactive features
@@ -14,7 +15,15 @@ export function useCustomD3Graph(
   links: D3Link[],
   onNodeClick: (nodeId: string) => void,
   visibleNodeIds?: Set<string>,
-  options?: { directed?: boolean },
+  options?: {
+    directed?: boolean;
+    layout?: "radial" | "layered";
+    layered?: {
+      rankdir?: LayeredRankDir;
+      nodesep?: number;
+      ranksep?: number;
+    };
+  },
   loadingNodeIds?: Set<string>,
   containerKey?: string | number,
 ) {
@@ -230,168 +239,228 @@ export function useCustomD3Graph(
       .on("wheel.zoom", null)
       .on("dblclick.zoom", null);
 
-    const childDistanceFromRoot = Math.min(width, height) * 0.4;
-    const grandchildDistanceFromChild = nodeRadius * 10;
+    const layoutMode = options?.layout ?? "radial";
+    let layeredPositionsApplied = false;
 
-    const centralNodeId = nodes[0].id;
+    if (layoutMode === "layered") {
+      const layeredOpts = options?.layered ?? {};
+      const positions = computeLayeredLayout(visibleNodes, visibleLinks, {
+        rankdir: layeredOpts.rankdir ?? "LR",
+        nodesep: layeredOpts.nodesep,
+        ranksep: layeredOpts.ranksep,
+        minNodeWidth: nodeRadius * 2,
+        minNodeHeight: nodeRadius * 2,
+      });
 
-    const nodeHierarchy = new Map<
-      string,
-      {
-        depth: number;
-        parent: string | null;
-        children: string[];
-        angle?: number;
-        x?: number;
-        y?: number;
-      }
-    >();
-
-    nodeHierarchy.set(centralNodeId, {
-      depth: 0,
-      parent: null,
-      children: [],
-    });
-
-    visibleLinks.forEach((link) => {
-      const sourceId = typeof link.source === "string" ? link.source : link.source.id;
-      const targetId = typeof link.target === "string" ? link.target : link.target.id;
-
-      if (sourceId === centralNodeId) {
-        nodeHierarchy.set(targetId, { depth: 1, parent: centralNodeId, children: [] });
-        const rootNode = nodeHierarchy.get(centralNodeId);
-        if (rootNode) {
-          rootNode.children.push(targetId);
-        }
-      }
-    });
-
-    visibleLinks.forEach((link) => {
-      const sourceId = typeof link.source === "string" ? link.source : link.source.id;
-      const targetId = typeof link.target === "string" ? link.target : link.target.id;
-
-      const sourceNode = nodeHierarchy.get(sourceId);
-      if (sourceNode && sourceNode.depth === 1 && !nodeHierarchy.has(targetId)) {
-        nodeHierarchy.set(targetId, { depth: 2, parent: sourceId, children: [] });
-        sourceNode.children.push(targetId);
-      }
-    });
-
-    const rootChildren = nodeHierarchy.get(centralNodeId)?.children || [];
-
-    const childAngleStep = (2 * Math.PI) / Math.max(rootChildren.length, 1);
-
-    rootChildren.forEach((childId, index) => {
-      const childNode = nodeHierarchy.get(childId);
-      if (childNode) {
-        const angle = index * childAngleStep;
-        childNode.angle = angle;
-        childNode.x = width / 2 + childDistanceFromRoot * Math.cos(angle);
-        childNode.y = height / 2 + childDistanceFromRoot * Math.sin(angle);
-      }
-    });
-
-    for (const [_nodeId, node] of nodeHierarchy.entries()) {
-      if (node.depth === 1 && node.angle !== undefined && node.x !== undefined && node.y !== undefined) {
-        const childAngle = node.angle;
-        const childX = node.x;
-        const childY = node.y;
-        const grandchildren = node.children;
-
-        if (grandchildren.length === 0) continue;
-
-        const dirX = childX - width / 2;
-        const dirY = childY - height / 2;
-        const dirLength = Math.sqrt(dirX * dirX + dirY * dirY);
-
-        const normDirX = dirX / dirLength;
-        const normDirY = dirY / dirLength;
-
-        if (grandchildren.length === 1) {
-          const grandchildId = grandchildren[0];
-          const grandchildNode = nodeHierarchy.get(grandchildId);
-          if (grandchildNode) {
-            grandchildNode.x = childX + normDirX * grandchildDistanceFromChild;
-            grandchildNode.y = childY + normDirY * grandchildDistanceFromChild;
-            grandchildNode.angle = childAngle;
+      if (positions) {
+        visibleNodes.forEach((node) => {
+          const saved = nodePositionsRef.current.get(node.id);
+          if (saved) {
+            node.fx = saved.x;
+            node.fy = saved.y;
+            node.x = saved.x;
+            node.y = saved.y;
+            return;
           }
-        } else {
-          // Multiple grandchildren - arrange in semicircular arc
-          const numChildren = grandchildren.length;
-
-          // Dynamic arc span: scale from 60° (2 children) to 180° (7+ children)
-          const minArc = Math.PI / 3; // 60 degrees
-          const maxArc = Math.PI; // 180 degrees
-          const arcProgress = Math.min(1, (numChildren - 2) / 5);
-          const arcSpan = minArc + arcProgress * (maxArc - minArc);
-
-          // Calculate starting angle (center the arc around the radial direction)
-          const startAngle = childAngle - arcSpan / 2;
-
-          grandchildren.forEach((grandchildId, index) => {
-            const grandchildNode = nodeHierarchy.get(grandchildId);
-            if (!grandchildNode) return;
-
-            // Calculate angle for this child
-            const angleOffset = numChildren > 1 ? (index / (numChildren - 1)) * arcSpan : 0;
-            const angle = startAngle + angleOffset;
-
-            // Position at constant radius from parent
-            grandchildNode.x = childX + grandchildDistanceFromChild * Math.cos(angle);
-            grandchildNode.y = childY + grandchildDistanceFromChild * Math.sin(angle);
-            grandchildNode.angle = angle;
-          });
-        }
-      }
-    }
-
-    visibleNodes.forEach((node) => {
-      const savedPosition = nodePositionsRef.current.get(node.id);
-
-      if (savedPosition) {
-        node.fx = savedPosition.x;
-        node.fy = savedPosition.y;
+          const pos = positions.get(node.id);
+          if (pos) {
+            node.fx = pos.x;
+            node.fy = pos.y;
+            node.x = pos.x;
+            node.y = pos.y;
+            nodePositionsRef.current.set(node.id, { x: pos.x, y: pos.y });
+          }
+        });
+        // d3.forceLink normally mutates link.source/link.target from string
+        // IDs to D3Node references when the simulation initializes. The
+        // layered branch skips the simulation, so we resolve those refs
+        // ourselves — otherwise the downstream link rendering reads
+        // `(d.source as D3Node).x` against a string and draws every line
+        // at (0,0)→(0,0).
+        const nodeById = new Map<string, D3Node>();
+        visibleNodes.forEach((n) => nodeById.set(n.id, n));
+        visibleLinks.forEach((link) => {
+          if (typeof link.source === "string") {
+            const src = nodeById.get(link.source);
+            if (src) link.source = src;
+          }
+          if (typeof link.target === "string") {
+            const tgt = nodeById.get(link.target);
+            if (tgt) link.target = tgt;
+          }
+        });
+        layeredPositionsApplied = true;
       } else {
-        const hierarchyNode = nodeHierarchy.get(node.id);
-        if (hierarchyNode && hierarchyNode.x !== undefined && hierarchyNode.y !== undefined) {
-          node.fx = hierarchyNode.x;
-          node.fy = hierarchyNode.y;
-          // Save the calculated position so it persists across re-renders
-          nodePositionsRef.current.set(node.id, { x: hierarchyNode.x, y: hierarchyNode.y });
-        } else if (node.id === centralNodeId) {
-          node.fx = width / 2;
-          node.fy = height / 2;
-          // Save the center position
-          nodePositionsRef.current.set(node.id, { x: width / 2, y: height / 2 });
-        }
+        console.warn("[useCustomD3Graph] Layered layout failed; falling back to radial.");
       }
-    });
-
-    const simulation = d3
-      .forceSimulation<D3Node>(visibleNodes)
-      .force(
-        "link",
-        d3
-          .forceLink<D3Node, D3Link>(visibleLinks)
-          .id((d) => d.id)
-          .distance(nodeRadius * 3)
-          .strength(0.1),
-      )
-      .force("charge", d3.forceManyBody().strength(-500).distanceMax(300))
-      .force("collision", d3.forceCollide().radius(nodeRadius * 1.2))
-      .force("center", d3.forceCenter(width / 2, height / 2).strength(0.1));
-
-    simulation.stop();
-    for (let i = 0; i < 100; i++) {
-      simulation.tick();
     }
 
-    visibleNodes.forEach((node) => {
-      if (node.fx === undefined) {
-        node.fx = node.x;
-        node.fy = node.y;
+    let simulation: d3.Simulation<D3Node, D3Link> | null = null;
+
+    if (!layeredPositionsApplied) {
+      const childDistanceFromRoot = Math.min(width, height) * 0.4;
+      const grandchildDistanceFromChild = nodeRadius * 10;
+
+      const centralNodeId = nodes[0].id;
+
+      const nodeHierarchy = new Map<
+        string,
+        {
+          depth: number;
+          parent: string | null;
+          children: string[];
+          angle?: number;
+          x?: number;
+          y?: number;
+        }
+      >();
+
+      nodeHierarchy.set(centralNodeId, {
+        depth: 0,
+        parent: null,
+        children: [],
+      });
+
+      visibleLinks.forEach((link) => {
+        const sourceId = typeof link.source === "string" ? link.source : link.source.id;
+        const targetId = typeof link.target === "string" ? link.target : link.target.id;
+
+        if (sourceId === centralNodeId) {
+          nodeHierarchy.set(targetId, { depth: 1, parent: centralNodeId, children: [] });
+          const rootNode = nodeHierarchy.get(centralNodeId);
+          if (rootNode) {
+            rootNode.children.push(targetId);
+          }
+        }
+      });
+
+      visibleLinks.forEach((link) => {
+        const sourceId = typeof link.source === "string" ? link.source : link.source.id;
+        const targetId = typeof link.target === "string" ? link.target : link.target.id;
+
+        const sourceNode = nodeHierarchy.get(sourceId);
+        if (sourceNode && sourceNode.depth === 1 && !nodeHierarchy.has(targetId)) {
+          nodeHierarchy.set(targetId, { depth: 2, parent: sourceId, children: [] });
+          sourceNode.children.push(targetId);
+        }
+      });
+
+      const rootChildren = nodeHierarchy.get(centralNodeId)?.children || [];
+
+      const childAngleStep = (2 * Math.PI) / Math.max(rootChildren.length, 1);
+
+      rootChildren.forEach((childId, index) => {
+        const childNode = nodeHierarchy.get(childId);
+        if (childNode) {
+          const angle = index * childAngleStep;
+          childNode.angle = angle;
+          childNode.x = width / 2 + childDistanceFromRoot * Math.cos(angle);
+          childNode.y = height / 2 + childDistanceFromRoot * Math.sin(angle);
+        }
+      });
+
+      for (const [_nodeId, node] of nodeHierarchy.entries()) {
+        if (node.depth === 1 && node.angle !== undefined && node.x !== undefined && node.y !== undefined) {
+          const childAngle = node.angle;
+          const childX = node.x;
+          const childY = node.y;
+          const grandchildren = node.children;
+
+          if (grandchildren.length === 0) continue;
+
+          const dirX = childX - width / 2;
+          const dirY = childY - height / 2;
+          const dirLength = Math.sqrt(dirX * dirX + dirY * dirY);
+
+          const normDirX = dirX / dirLength;
+          const normDirY = dirY / dirLength;
+
+          if (grandchildren.length === 1) {
+            const grandchildId = grandchildren[0];
+            const grandchildNode = nodeHierarchy.get(grandchildId);
+            if (grandchildNode) {
+              grandchildNode.x = childX + normDirX * grandchildDistanceFromChild;
+              grandchildNode.y = childY + normDirY * grandchildDistanceFromChild;
+              grandchildNode.angle = childAngle;
+            }
+          } else {
+            // Multiple grandchildren - arrange in semicircular arc
+            const numChildren = grandchildren.length;
+
+            // Dynamic arc span: scale from 60° (2 children) to 180° (7+ children)
+            const minArc = Math.PI / 3; // 60 degrees
+            const maxArc = Math.PI; // 180 degrees
+            const arcProgress = Math.min(1, (numChildren - 2) / 5);
+            const arcSpan = minArc + arcProgress * (maxArc - minArc);
+
+            // Calculate starting angle (center the arc around the radial direction)
+            const startAngle = childAngle - arcSpan / 2;
+
+            grandchildren.forEach((grandchildId, index) => {
+              const grandchildNode = nodeHierarchy.get(grandchildId);
+              if (!grandchildNode) return;
+
+              // Calculate angle for this child
+              const angleOffset = numChildren > 1 ? (index / (numChildren - 1)) * arcSpan : 0;
+              const angle = startAngle + angleOffset;
+
+              // Position at constant radius from parent
+              grandchildNode.x = childX + grandchildDistanceFromChild * Math.cos(angle);
+              grandchildNode.y = childY + grandchildDistanceFromChild * Math.sin(angle);
+              grandchildNode.angle = angle;
+            });
+          }
+        }
       }
-    });
+
+      visibleNodes.forEach((node) => {
+        const savedPosition = nodePositionsRef.current.get(node.id);
+
+        if (savedPosition) {
+          node.fx = savedPosition.x;
+          node.fy = savedPosition.y;
+        } else {
+          const hierarchyNode = nodeHierarchy.get(node.id);
+          if (hierarchyNode && hierarchyNode.x !== undefined && hierarchyNode.y !== undefined) {
+            node.fx = hierarchyNode.x;
+            node.fy = hierarchyNode.y;
+            // Save the calculated position so it persists across re-renders
+            nodePositionsRef.current.set(node.id, { x: hierarchyNode.x, y: hierarchyNode.y });
+          } else if (node.id === centralNodeId) {
+            node.fx = width / 2;
+            node.fy = height / 2;
+            // Save the center position
+            nodePositionsRef.current.set(node.id, { x: width / 2, y: height / 2 });
+          }
+        }
+      });
+
+      simulation = d3
+        .forceSimulation<D3Node>(visibleNodes)
+        .force(
+          "link",
+          d3
+            .forceLink<D3Node, D3Link>(visibleLinks)
+            .id((d) => d.id)
+            .distance(nodeRadius * 3)
+            .strength(0.1),
+        )
+        .force("charge", d3.forceManyBody().strength(-500).distanceMax(300))
+        .force("collision", d3.forceCollide().radius(nodeRadius * 1.2))
+        .force("center", d3.forceCenter(width / 2, height / 2).strength(0.1));
+
+      simulation.stop();
+      for (let i = 0; i < 100; i++) {
+        simulation.tick();
+      }
+
+      visibleNodes.forEach((node) => {
+        if (node.fx === undefined) {
+          node.fx = node.x;
+          node.fy = node.y;
+        }
+      });
+    } // end if (!layeredPositionsApplied)
 
     // When directed, stop the line at the target node boundary so the
     // arrowhead tip sits just outside the circle rather than inside it.
@@ -704,9 +773,21 @@ export function useCustomD3Graph(
     });
 
     return () => {
-      simulation.stop();
+      simulation?.stop();
     };
-  }, [nodes, links, colorScale, visibleNodeIds, options?.directed, loadingNodeIds, onNodeClick]);
+  }, [
+    nodes,
+    links,
+    colorScale,
+    visibleNodeIds,
+    options?.directed,
+    options?.layout,
+    options?.layered?.rankdir,
+    options?.layered?.nodesep,
+    options?.layered?.ranksep,
+    loadingNodeIds,
+    onNodeClick,
+  ]);
 
   const zoomIn = useCallback(() => {
     if (!svgRef.current || !zoomBehaviorRef.current) return;
