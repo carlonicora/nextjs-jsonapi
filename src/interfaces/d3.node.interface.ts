@@ -11,4 +11,6 @@ export interface D3Node extends d3.SimulationNodeDatum {
   visible?: boolean;
   washedOut?: boolean;
   bold?: boolean;
+  color?: string;
+  subtitle?: string;
 }

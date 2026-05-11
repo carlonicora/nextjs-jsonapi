@@ -14,6 +14,7 @@ export function useCustomD3Graph(
   links: D3Link[],
   onNodeClick: (nodeId: string) => void,
   visibleNodeIds?: Set<string>,
+  options?: { directed?: boolean },
   loadingNodeIds?: Set<string>,
   containerKey?: string | number,
 ) {
@@ -154,6 +155,9 @@ export function useCustomD3Graph(
 
   const getNodeColor = useCallback(
     (node: D3Node) => {
+      if (node.color) {
+        return node.washedOut ? washOutColor(node.color) : node.color;
+      }
       const baseColor = colorScale.get(node.instanceType) || "gray";
       if (node.washedOut) {
         return washOutColor(baseColor);
@@ -190,6 +194,26 @@ export function useCustomD3Graph(
 
     const graphGroup = svg.append("g").attr("class", "graph-content");
 
+    const nodeRadius = 40;
+    const directed = options?.directed === true;
+
+    if (directed) {
+      const defs = svg.append("defs");
+      defs
+        .append("marker")
+        .attr("id", "narr8-arrow")
+        .attr("viewBox", "-10 -10 20 20")
+        .attr("markerWidth", 14)
+        .attr("markerHeight", 14)
+        .attr("markerUnits", "userSpaceOnUse")
+        .attr("orient", "auto")
+        .attr("refX", 0)
+        .attr("refY", 0)
+        .append("path")
+        .attr("d", "M-10,-10 L0,0 L-10,10 z")
+        .attr("fill", "#999");
+    }
+
     const zoom = d3
       .zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.1, 4])
@@ -205,8 +229,6 @@ export function useCustomD3Graph(
       .call(zoom as any)
       .on("wheel.zoom", null)
       .on("dblclick.zoom", null);
-
-    const nodeRadius = 40;
 
     const childDistanceFromRoot = Math.min(width, height) * 0.4;
     const grandchildDistanceFromChild = nodeRadius * 10;
@@ -371,6 +393,23 @@ export function useCustomD3Graph(
       }
     });
 
+    // When directed, stop the line at the target node boundary so the
+    // arrowhead tip sits just outside the circle rather than inside it.
+    const linkX2 = (sx: number, sy: number, tx: number, ty: number): number => {
+      if (!directed) return tx;
+      const dx = tx - sx;
+      const dy = ty - sy;
+      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      return tx - (dx / dist) * nodeRadius;
+    };
+    const linkY2 = (sx: number, sy: number, tx: number, ty: number): number => {
+      if (!directed) return ty;
+      const dx = tx - sx;
+      const dy = ty - sy;
+      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      return ty - (dy / dist) * nodeRadius;
+    };
+
     const link = graphGroup
       .append("g")
       .attr("stroke", "#999")
@@ -380,9 +419,18 @@ export function useCustomD3Graph(
       .join("line")
       .attr("x1", (d) => (d.source as D3Node).x || 0)
       .attr("y1", (d) => (d.source as D3Node).y || 0)
-      .attr("x2", (d) => (d.target as D3Node).x || 0)
-      .attr("y2", (d) => (d.target as D3Node).y || 0)
-      .attr("stroke-width", 1.5);
+      .attr("x2", (d) => {
+        const s = d.source as D3Node;
+        const t = d.target as D3Node;
+        return linkX2(s.x || 0, s.y || 0, t.x || 0, t.y || 0);
+      })
+      .attr("y2", (d) => {
+        const s = d.source as D3Node;
+        const t = d.target as D3Node;
+        return linkY2(s.x || 0, s.y || 0, t.x || 0, t.y || 0);
+      })
+      .attr("stroke-width", 1.5)
+      .attr("marker-end", directed ? "url(#narr8-arrow)" : null);
 
     const node = graphGroup
       .append("g")
@@ -423,12 +471,22 @@ export function useCustomD3Graph(
                 return source.fy || source.y || 0;
               })
               .attr("x2", (l) => {
+                const source = l.source as D3Node;
                 const target = l.target as D3Node;
-                return target.fx || target.x || 0;
+                const sx = source.fx || source.x || 0;
+                const sy = source.fy || source.y || 0;
+                const tx = target.fx || target.x || 0;
+                const ty = target.fy || target.y || 0;
+                return linkX2(sx, sy, tx, ty);
               })
               .attr("y2", (l) => {
+                const source = l.source as D3Node;
                 const target = l.target as D3Node;
-                return target.fy || target.y || 0;
+                const sx = source.fx || source.x || 0;
+                const sy = source.fy || source.y || 0;
+                const tx = target.fx || target.x || 0;
+                const ty = target.fy || target.y || 0;
+                return linkY2(sx, sy, tx, ty);
               });
           })
           .on("end", function (event, d) {
@@ -489,8 +547,13 @@ export function useCustomD3Graph(
           .attr("r", nodeRadius)
           .attr("filter", null);
 
-        // Return text to normal size with smooth transform
-        const normalOffset = nodeRadius + 5;
+        // Return text to normal size with smooth transform. Two-line labels
+        // (when `d.subtitle` is set) sit one line-gap higher than the single
+        // line case — restoring to the bare `nodeRadius + 5` offset would
+        // shift the title down by that gap (visibly jumping after the first
+        // hover). The 16 here matches the `lineGap` used when the two-line
+        // text is first rendered (see the `d.subtitle` branch below).
+        const normalOffset = nodeRadius + 5 + (d.subtitle ? 16 : 0);
         currentNode
           .select("text")
           .transition()
@@ -607,6 +670,29 @@ export function useCustomD3Graph(
             .attr("dy", index === 0 ? `${startY}em` : `${lineHeight}em`)
             .text(word);
         });
+      } else if (d.subtitle) {
+        // Two-line label: name (bigger, bolder) on line 1, subtitle
+        // (smaller, dimmed) on line 2. Used by the scene graph to show
+        // the HAPPENS_AT location name beneath the scene title. The
+        // whole text block is lifted above the circle so the lower line
+        // sits at the same baseline the single-line case uses.
+        const titleSize = 16;
+        const subtitleSize = 11;
+        const lineGap = titleSize; // px between baselines
+        textElement.attr("dy", -nodeRadius - 5 - lineGap).attr("fill", "currentColor");
+        textElement
+          .append("tspan")
+          .attr("x", 0)
+          .attr("font-size", titleSize)
+          .attr("font-weight", 700)
+          .text(d.name);
+        textElement
+          .append("tspan")
+          .attr("x", 0)
+          .attr("dy", lineGap)
+          .attr("font-size", subtitleSize)
+          .attr("fill-opacity", 0.7)
+          .text(d.subtitle);
       } else {
         // Non-root nodes: single line text above the circle. The
         // optional `bold` flag lets the consumer highlight a focal
@@ -625,7 +711,7 @@ export function useCustomD3Graph(
     return () => {
       simulation.stop();
     };
-  }, [nodes, links, colorScale, visibleNodeIds, loadingNodeIds, onNodeClick]);
+  }, [nodes, links, colorScale, visibleNodeIds, options?.directed, loadingNodeIds, onNodeClick]);
 
   const zoomIn = useCallback(() => {
     if (!svgRef.current || !zoomBehaviorRef.current) return;
