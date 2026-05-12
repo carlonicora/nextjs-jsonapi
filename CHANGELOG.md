@@ -1,3 +1,9 @@
+## [1.101.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.100.2...v1.101.0) (2026-05-12)
+
+### 🚀 Features
+
+* **EditorSheet:** fire onSaved on create as well as edit ([d74da06](https://github.com/carlonicora/nextjs-jsonapi/commit/d74da060e9c3701674e2163613823b9ca432471d))
+
 ## [1.100.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.100.1...v1.100.2) (2026-05-11)
 
 ### 🐛 Bug Fixes
