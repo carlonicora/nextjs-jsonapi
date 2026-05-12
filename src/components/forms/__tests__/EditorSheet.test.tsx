@@ -207,6 +207,23 @@ describe("EditorSheet", () => {
     });
   });
 
+  describe("onSaved callback", () => {
+    it("calls onSaved on create (no isEdit gate)", async () => {
+      const onSaved = vi.fn();
+      const onSubmit = vi.fn().mockResolvedValue({ id: "123", name: "New Thing" });
+      render(<TestEditor dialogOpen={true} isEdit={false} onSubmit={onSubmit} entityType="things" onSaved={onSaved} />);
+
+      const input = screen.getByTestId("name-input");
+      await userEvent.type(input, "Test Name");
+
+      const submitButton = screen.getByTestId("modal-button-create");
+      await userEvent.click(submitButton);
+
+      expect(onSaved).toHaveBeenCalledTimes(1);
+      expect(onSaved.mock.calls[0][1]).toBe("things");
+    });
+  });
+
   describe("disabled prop", () => {
     it("should disable submit button when disabled prop is true", () => {
       render(<TestEditor dialogOpen={true} disabled={true} />);

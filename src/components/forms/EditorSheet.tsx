@@ -117,7 +117,7 @@ export function EditorSheet<T extends FieldValues>({
       try {
         const result = await onSubmit(values);
         setOpen(false);
-        if (isEdit && result && onSaved) {
+        if (result && onSaved) {
           onSaved(result, entityType);
         }
         if (onSuccess) {
