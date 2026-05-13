@@ -1,3 +1,9 @@
+## [1.101.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.101.0...v1.101.1) (2026-05-13)
+
+### ♻️ Chores
+
+* **deps:** May 2026 sweep ([41058cd](https://github.com/carlonicora/nextjs-jsonapi/commit/41058cd2302a214bbdc99f82603203d38917be5c))
+
 ## [1.101.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.100.2...v1.101.0) (2026-05-12)
 
 ### 🚀 Features
