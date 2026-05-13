@@ -1,3 +1,9 @@
+## [1.101.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.101.1...v1.101.2) (2026-05-13)
+
+### ♻️ Chores
+
+* **deps:** update next-intl to version 4.12.0 ([30c7bfa](https://github.com/carlonicora/nextjs-jsonapi/commit/30c7bfa5ddd9a6ff165f11bd81157b1702e200db))
+
 ## [1.101.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.101.0...v1.101.1) (2026-05-13)
 
 ### ♻️ Chores
