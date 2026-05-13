@@ -1,3 +1,9 @@
+## [1.101.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.101.2...v1.101.3) (2026-05-13)
+
+### 🐛 Bug Fixes
+
+* **sidebar:** render TooltipTrigger as a component in SidebarMenuButton ([cdb089c](https://github.com/carlonicora/nextjs-jsonapi/commit/cdb089c88c8d19f839c5437f0b1937307b164edb))
+
 ## [1.101.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.101.1...v1.101.2) (2026-05-13)
 
 ### ♻️ Chores
