@@ -1,3 +1,9 @@
+## [1.101.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.101.3...v1.101.4) (2026-05-14)
+
+### 📦 Code Refactoring
+
+* **ui:** replace arbitrary text-[Npx] sizes with text-xs ([f585064](https://github.com/carlonicora/nextjs-jsonapi/commit/f5850647306324af940342012adbd12b1ce4b2c3))
+
 ## [1.101.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.101.2...v1.101.3) (2026-05-13)
 
 ### 🐛 Bug Fixes
