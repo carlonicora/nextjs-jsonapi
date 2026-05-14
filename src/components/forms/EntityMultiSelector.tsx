@@ -220,7 +220,7 @@ export function EntityMultiSelector<T extends { id: string }>({
                   {selectedValues.length > 0 ? (
                     <>
                       <span className="text-foreground min-w-0 flex-1 truncate text-left">{triggerSummary}</span>
-                      <span className="bg-primary/10 text-primary shrink-0 rounded-full px-1.5 py-0.5 text-[0.625rem] font-medium">
+                      <span className="bg-primary/10 text-primary shrink-0 rounded-full px-1.5 py-0.5 text-xs font-medium">
                         {selectedValues.length}
                       </span>
                     </>

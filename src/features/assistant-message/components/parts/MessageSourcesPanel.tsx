@@ -107,7 +107,7 @@ export function MessageSourcesPanel({ message, isLatestAssistant, onSelectFollow
               {visibleTabs.map((key) => (
                 <TabsTrigger key={key} value={key}>
                   {t(`features.assistant.message.sources.tabs.${key === "suggested" ? "suggested_questions" : key}`)}
-                  <span className="text-muted-foreground ml-1.5 text-[10px]">
+                  <span className="text-muted-foreground ml-1.5 text-xs">
                     {key === "suggested" && suggestionsCount}
                     {key === "references" && refsCount}
                     {key === "citations" && citationsCount}

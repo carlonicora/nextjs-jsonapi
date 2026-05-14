@@ -97,7 +97,7 @@ const FilePreviewItem = ({ file, onRemoveClick }: { file: File; onRemoveClick: (
       ) : (
         <div className="bg-muted/30 flex h-full w-full flex-col items-center justify-center p-2">
           {getFileIcon()}
-          <span className="text-foreground/80 mt-2 w-full truncate px-1 text-center text-[10px] sm:text-xs">
+          <span className="text-foreground/80 mt-2 w-full truncate px-1 text-center text-xs sm:text-xs">
             {file.name}
           </span>
         </div>

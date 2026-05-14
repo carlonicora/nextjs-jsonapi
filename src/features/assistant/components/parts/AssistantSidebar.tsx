@@ -21,9 +21,7 @@ export function AssistantSidebar({ threads, activeId, onSelect, onNew }: Props) 
     if (items.length === 0) return null;
     return (
       <div className="mb-2">
-        <div className="text-muted-foreground px-2 py-1 text-[10px] font-semibold uppercase tracking-wider">
-          {label}
-        </div>
+        <div className="text-muted-foreground px-2 py-1 text-xs font-semibold uppercase tracking-wider">{label}</div>
         {items.map((thread) => (
           <button
             key={thread.id}

@@ -207,15 +207,15 @@ export default function HowToCommand({ pathname, extraGroups, onStartChat }: How
               {/* Keyboard hints footer */}
               <div className="text-muted-foreground flex items-center justify-center gap-4 border-t px-3 py-2 text-xs">
                 <span className="flex items-center gap-1">
-                  <kbd className="bg-muted rounded border px-1.5 py-0.5 font-mono text-[10px]">&#9166;</kbd>
+                  <kbd className="bg-muted rounded border px-1.5 py-0.5 font-mono text-xs">&#9166;</kbd>
                   {t(`howto.command.keyboard.select`)}
                 </span>
                 <span className="flex items-center gap-1">
-                  <kbd className="bg-muted rounded border px-1.5 py-0.5 font-mono text-[10px]">&#8593;&#8595;</kbd>
+                  <kbd className="bg-muted rounded border px-1.5 py-0.5 font-mono text-xs">&#8593;&#8595;</kbd>
                   {t(`howto.command.keyboard.navigate`)}
                 </span>
                 <span className="flex items-center gap-1">
-                  <kbd className="bg-muted rounded border px-1.5 py-0.5 font-mono text-[10px]">
+                  <kbd className="bg-muted rounded border px-1.5 py-0.5 font-mono text-xs">
                     {t(`howto.keyboard.esc`)}
                   </kbd>
                   {t(`howto.command.keyboard.close`)}
