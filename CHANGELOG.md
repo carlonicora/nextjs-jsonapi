@@ -1,3 +1,10 @@
+## [1.102.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.101.4...v1.102.0) (2026-05-16)
+
+### 🚀 Features
+
+* **buttons:** add centerButtons prop to CommonEditorButtons and EditorSheet for flexible layout ([3b93986](https://github.com/carlonicora/nextjs-jsonapi/commit/3b93986a93a788ff90c79268a4a7c0e007fe5bc2))
+* **buttons:** add centerButtons prop to CommonEditorButtons and EditorSheet for flexible layout ([e17d756](https://github.com/carlonicora/nextjs-jsonapi/commit/e17d756b5539f64a8dab59f46d34565dd328e4e6))
+
 ## [1.101.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.101.3...v1.101.4) (2026-05-14)
 
 ### 📦 Code Refactoring
