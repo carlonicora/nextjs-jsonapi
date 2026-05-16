@@ -53,6 +53,7 @@ export type EditorSheetProps<T extends FieldValues> = {
   size?: EditorSheetSize;
   disabled?: boolean;
   hideSubmit?: boolean;
+  centerButtons?: ReactNode;
 
   trigger?: ReactNode;
   forceShow?: boolean;
@@ -82,6 +83,7 @@ export function EditorSheet<T extends FieldValues>({
   size = "xl",
   disabled,
   hideSubmit,
+  centerButtons,
   trigger,
   forceShow,
   onClose,
@@ -190,6 +192,7 @@ export function EditorSheet<T extends FieldValues>({
                   isEdit={isEdit}
                   disabled={disabled}
                   hideSubmit={hideSubmit}
+                  centerButtons={centerButtons}
                 />
               </SheetFooter>
             </form>
