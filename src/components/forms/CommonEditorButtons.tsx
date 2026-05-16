@@ -10,18 +10,20 @@ type CommonEditorButtonsProps = {
   hideSubmit?: boolean;
   centerButtons?: ReactNode;
 };
-export function CommonEditorButtons({ isEdit, form, disabled, setOpen, hideSubmit, centerButtons }: CommonEditorButtonsProps) {
+export function CommonEditorButtons({
+  isEdit,
+  form,
+  disabled,
+  setOpen,
+  hideSubmit,
+  centerButtons,
+}: CommonEditorButtonsProps) {
   const t = useTranslations();
 
   if (centerButtons) {
     return (
       <div className="flex w-full items-center justify-between gap-x-2">
-        <Button
-          variant={"outline"}
-          type={`button`}
-          onClick={() => setOpen(false)}
-          data-testid={`modal-button-cancel`}
-        >
+        <Button variant={"outline"} type={`button`} onClick={() => setOpen(false)} data-testid={`modal-button-cancel`}>
           {t(`ui.buttons.cancel`)}
         </Button>
 
