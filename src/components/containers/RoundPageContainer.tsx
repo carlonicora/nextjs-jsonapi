@@ -36,6 +36,7 @@ type RoundPageContainerProps = {
   children?: ReactNode;
   fullWidth?: boolean;
   forceHeader?: boolean;
+  header?: ReactNode;
 };
 
 export function RoundPageContainer({
@@ -46,6 +47,7 @@ export function RoundPageContainer({
   children,
   fullWidth,
   forceHeader,
+  header,
 }: RoundPageContainerProps) {
   const headerChildren = useHeaderChildren();
   const headerLeftContent = useHeaderLeftContent();
@@ -148,6 +150,7 @@ export function RoundPageContainer({
                     fullWidth && `max-w-full w-full p-0 h-full`,
                   )}
                 >
+                  {header}
                   {tabs ? (
                     <>
                       <Tabs
