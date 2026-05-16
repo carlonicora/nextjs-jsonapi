@@ -4,7 +4,7 @@ export { composeRefs, useComposedRefs } from "./compose-refs";
 export { useIsMobile } from "./use-mobile";
 
 // New utilities
-export { formatDate, type FormatOption } from "./date-formatter";
+export { formatDate, formatLocalDate, type FormatOption } from "./date-formatter";
 export { exists } from "./exists";
 export { getTableComponents, getTableOptions, TableOptions } from "./table-options";
 

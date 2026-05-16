@@ -1,5 +1,23 @@
 type FormatOption = "date" | "time" | "dateTime" | "timeSince" | "default";
 
+/**
+ * Format a `Date` as `YYYY-MM-DD` using the value's local-time components.
+ *
+ * Use for JSON:API attributes whose backend field type is `"date"` (calendar
+ * date with no time component). `JSON.stringify(new Date(...))` would call
+ * `.toISOString()`, which UTC-shifts and can lose a day west of UTC; this
+ * helper avoids that by emitting the local-date components verbatim.
+ *
+ * For `"datetime"` fields use `.toISOString()` instead — those represent an
+ * instant in time and the UTC shift is correct.
+ */
+export const formatLocalDate = (d: Date): string => {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
 export const formatDate = (eventDate: Date, formatOption: FormatOption, locale: string = "en-GB"): string => {
   const formatPart = (date: Date, options: Intl.DateTimeFormatOptions): string =>
     new Intl.DateTimeFormat(locale, options).format(date);
