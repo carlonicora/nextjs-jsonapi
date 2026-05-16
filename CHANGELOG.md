@@ -1,3 +1,9 @@
+## [1.103.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.102.0...v1.103.0) (2026-05-16)
+
+### 🚀 Features
+
+* **RoundPageContainer:** add header prop for customizable header content ([11412df](https://github.com/carlonicora/nextjs-jsonapi/commit/11412dfe77883bf665561d19f147ec5202010710))
+
 ## [1.102.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.101.4...v1.102.0) (2026-05-16)
 
 ### 🚀 Features
