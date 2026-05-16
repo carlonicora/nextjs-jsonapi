@@ -1,3 +1,9 @@
+## [1.104.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.103.0...v1.104.0) (2026-05-16)
+
+### 🚀 Features
+
+* **date-formatter:** implement formatLocalDate function for local date formatting ([5c3cd5c](https://github.com/carlonicora/nextjs-jsonapi/commit/5c3cd5c0c6c0f5aa8f69b7f9ddaf26c1510ab990))
+
 ## [1.103.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.102.0...v1.103.0) (2026-05-16)
 
 ### 🚀 Features
