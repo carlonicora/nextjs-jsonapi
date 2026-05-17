@@ -1,3 +1,9 @@
+## [1.104.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.104.0...v1.104.1) (2026-05-17)
+
+### 🐛 Bug Fixes
+
+* **HowToList:** remove updatedAt field from ContentListTable ([7afb7d2](https://github.com/carlonicora/nextjs-jsonapi/commit/7afb7d2040d39db876105e314565fc4edda0cddd))
+
 ## [1.104.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.103.0...v1.104.0) (2026-05-16)
 
 ### 🚀 Features
