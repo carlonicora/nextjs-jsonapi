@@ -1,3 +1,9 @@
+## [1.104.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.104.1...v1.104.2) (2026-05-17)
+
+### 🐛 Bug Fixes
+
+* **SidebarMenuButton:** pass render prop to TooltipTrigger for improved functionality ([dd7ebaa](https://github.com/carlonicora/nextjs-jsonapi/commit/dd7ebaa96088c9861f892b57b392b380df863778))
+
 ## [1.104.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.104.0...v1.104.1) (2026-05-17)
 
 ### 🐛 Bug Fixes
