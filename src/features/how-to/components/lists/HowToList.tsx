@@ -29,7 +29,7 @@ export default function HowToList({ fullWidth }: HowToListProps) {
   return (
     <ContentListTable
       data={data}
-      fields={[HowToFields.name, HowToFields.pages, HowToFields.updatedAt]}
+      fields={[HowToFields.name, HowToFields.pages]}
       tableGeneratorType={Modules.HowTo}
       functions={functions}
       title={t(`entities.howtos`, { count: 2 })}
