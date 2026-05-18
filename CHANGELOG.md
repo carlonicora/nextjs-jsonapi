@@ -1,3 +1,9 @@
+## [1.105.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.104.2...v1.105.0) (2026-05-18)
+
+### 🚀 Features
+
+* **EditorSheet:** add 2xl size class ([8845db3](https://github.com/carlonicora/nextjs-jsonapi/commit/8845db353f601d2b91ba986eba518dde5b5c22fa))
+
 ## [1.104.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.104.1...v1.104.2) (2026-05-17)
 
 ### 🐛 Bug Fixes
