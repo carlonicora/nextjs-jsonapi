@@ -1,3 +1,9 @@
+## [1.106.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.105.0...v1.106.0) (2026-05-18)
+
+### 🚀 Features
+
+* **CurrencyInput:** add standalone currency input component ([9799911](https://github.com/carlonicora/nextjs-jsonapi/commit/97999116e528fa4c1c1b16c9c342a314a24255d4))
+
 ## [1.105.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.104.2...v1.105.0) (2026-05-18)
 
 ### 🚀 Features
