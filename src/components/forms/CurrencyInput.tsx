@@ -106,12 +106,7 @@ export function CurrencyInput({
   };
 
   if (!currencySymbol) {
-    return (
-      <Input
-        {...sharedProps}
-        className={`text-end ${className ?? ""}`.trim()}
-      />
-    );
+    return <Input {...sharedProps} className={`text-end ${className ?? ""}`.trim()} />;
   }
 
   return (
@@ -119,10 +114,7 @@ export function CurrencyInput({
       <InputGroupAddon>
         <InputGroupText>{currencySymbol}</InputGroupText>
       </InputGroupAddon>
-      <InputGroupInput
-        {...sharedProps}
-        className={`text-end ${className ?? ""}`.trim()}
-      />
+      <InputGroupInput {...sharedProps} className={`text-end ${className ?? ""}`.trim()} />
     </InputGroup>
   );
 }
