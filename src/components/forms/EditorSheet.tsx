@@ -22,13 +22,14 @@ import { CommonEditorDiscardDialog } from "./CommonEditorDiscardDialog";
 import { useEditorDialog } from "./useEditorDialog";
 import { errorToast } from "../errors/errorToast";
 
-type EditorSheetSize = "sm" | "md" | "lg" | "xl";
+type EditorSheetSize = "sm" | "md" | "lg" | "xl" | "2xl";
 
 const sizeClasses: Record<EditorSheetSize, string> = {
   sm: "data-[side=right]:sm:max-w-2xl",
   md: "data-[side=right]:sm:max-w-3xl",
   lg: "data-[side=right]:sm:max-w-5xl",
   xl: "data-[side=right]:sm:max-w-7xl",
+  "2xl": "data-[side=right]:sm:!max-w-[min(96rem,90vw)]",
 };
 
 export type EditorSheetProps<T extends FieldValues> = {
