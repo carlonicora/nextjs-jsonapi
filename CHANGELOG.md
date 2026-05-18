@@ -1,3 +1,9 @@
+## [1.106.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.106.0...v1.106.1) (2026-05-18)
+
+### 📦 Code Refactoring
+
+* **CurrencyInput:** simplify JSX return statements for cleaner code ([541e0f3](https://github.com/carlonicora/nextjs-jsonapi/commit/541e0f3ac4250879545370d4ecfe13eca322f0a8))
+
 ## [1.106.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.105.0...v1.106.0) (2026-05-18)
 
 ### 🚀 Features
