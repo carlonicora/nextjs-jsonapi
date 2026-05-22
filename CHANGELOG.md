@@ -1,3 +1,9 @@
+## [1.106.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.106.1...v1.106.2) (2026-05-22)
+
+### ♻️ Chores
+
+* **deps:** update dependencies to latest versions ([c3f9f33](https://github.com/carlonicora/nextjs-jsonapi/commit/c3f9f3357bca452b2aafb67efed0de6350ab1233))
+
 ## [1.106.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.106.0...v1.106.1) (2026-05-18)
 
 ### 📦 Code Refactoring
