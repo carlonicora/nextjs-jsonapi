@@ -2,6 +2,24 @@
 
 ### 🚀 Features
 
+* **blocknote:** stretch prop for bounded-height containers ([07d3209](https://github.com/carlonicora/nextjs-jsonapi/commit/07d32098521e23c4c1bad96e6519222b5097b4b5))
+* **editor:** add BlockNote AI generation via aiConfig prop ([f6ffd9b](https://github.com/carlonicora/nextjs-jsonapi/commit/f6ffd9b7e96ebccf73bd8f34be212399a1af5efe))
+* **editor:** implement custom AI menu for enhanced writing suggestions ([2d4cca2](https://github.com/carlonicora/nextjs-jsonapi/commit/2d4cca2cc2e8a7f2c038e2ea8429c431e5ca3e21))
+
+### 🐛 Bug Fixes
+
+* **blocknote-ai:** clear stale type-pending across menu sessions + expand selection before invoke ([f11c3da](https://github.com/carlonicora/nextjs-jsonapi/commit/f11c3da0fe428d8bca0308e1ae40c59ed1e274f8))
+* **editor:** prevent phantom scrollbar from BlockNote portal element ([be0d132](https://github.com/carlonicora/nextjs-jsonapi/commit/be0d13230b3439ea7cb06b17726bd4c724531f02))
+* **mentions:** round-trip mention inline content across BlockNote clipboards ([179f548](https://github.com/carlonicora/nextjs-jsonapi/commit/179f548dbd32f366c4f69ad33282cecb1935bf2c))
+
+### ♻️ Chores
+
+* **release:** 1.107.0 [skip ci] ([d4ba964](https://github.com/carlonicora/nextjs-jsonapi/commit/d4ba964775e089d1f886064c369c08449a71007b))
+
+## [1.107.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.106.2...v1.107.0) (2026-05-23)
+
+### 🚀 Features
+
 * **editor:** add BlockNote AI generation via aiConfig prop ([f6ffd9b](https://github.com/carlonicora/nextjs-jsonapi/commit/f6ffd9b7e96ebccf73bd8f34be212399a1af5efe))
 
 ## [1.106.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.106.1...v1.106.2) (2026-05-22)
