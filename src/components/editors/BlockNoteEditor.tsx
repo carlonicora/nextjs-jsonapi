@@ -203,12 +203,7 @@ function NarrAIMenu() {
   const pendingTypeRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (
-      status === "ai-writing" ||
-      status === "user-reviewing" ||
-      status === "error" ||
-      status === "closed"
-    ) {
+    if (status === "ai-writing" || status === "user-reviewing" || status === "error" || status === "closed") {
       setPrompt("");
       pendingTypeRef.current = null;
     }
