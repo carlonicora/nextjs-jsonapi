@@ -8,21 +8,42 @@ import {
   getDefaultReactSlashMenuItems,
   SuggestionMenuController,
   SuggestionMenuProps,
+  useBlockNoteEditor,
   useCreateBlockNote,
+  useExtension,
+  useExtensionState,
 } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
 import "@blocknote/shadcn/style.css";
-import { AIExtension, AIMenu, AIMenuController, getAISlashMenuItems, getDefaultAIMenuItems } from "@blocknote/xl-ai";
+import {
+  AIExtension,
+  AIMenuController,
+  getAISlashMenuItems,
+  getDefaultAIMenuItems,
+  PromptSuggestionMenu,
+  useAIDictionary,
+} from "@blocknote/xl-ai";
 import { en as aiEn } from "@blocknote/xl-ai/locales";
 import "@blocknote/xl-ai/style.css";
 import { DefaultChatTransport } from "ai";
-import { CheckIcon, XIcon } from "lucide-react";
+import {
+  CheckIcon,
+  LanguagesIcon,
+  LayoutTemplateIcon,
+  SparklesIcon,
+  TypeIcon,
+  WandSparklesIcon,
+  XIcon,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { getPublicApiUrl } from "../../client/config";
+import { getClientToken } from "../../client/token";
 import { useCurrentUserContext } from "../../contexts";
 import { S3Interface } from "../../features/s3/data";
 import { S3Service } from "../../features/s3/data/s3.service";
 import { UserInterface } from "../../features/user/data";
+import { useI18nLocale } from "../../i18n/config";
 import { Button } from "../../shadcnui";
 import { BlockNoteDiffUtil, BlockNoteWordDiffRendererUtil, cn } from "../../utils";
 import { errorToast } from "../errors";
@@ -34,9 +55,6 @@ import {
   type MentionResolveFn,
 } from "./BlockNoteEditorMentionInlineContent";
 import { BlockNoteEditorMentionSuggestionMenu } from "./BlockNoteEditorSuggestionMenuController";
-import { getPublicApiUrl } from "../../client/config";
-import { getClientToken } from "../../client/token";
-import { useI18nLocale } from "../../i18n/config";
 
 export type BlockNoteAiConfig = {
   endpoint: string;
@@ -150,6 +168,197 @@ const createDiffActionsInlineContentSpec = (
   );
 };
 
+/**
+ * Custom AI menu wrapper. Surfaces our backend-driven action items
+ * (Improve Writing, Fix Spelling) above the free-form prompt input.
+ *
+ * Why a custom wrapper instead of `<AIMenu items={…}>` with the BlockNote
+ * defaults: BlockNote's `PromptSuggestionMenu` hijacks Enter to pick the
+ * highlighted item whenever `items.length > 0`. We gate items on
+ *   - status === "user-input"
+ *   - editor has a selection
+ *   - prompt input is empty
+ * so the moment the user types, items disappear and Enter falls back to
+ * free-form submission. Outside `user-input` (review / error states) we
+ * keep BlockNote's default review buttons (accept/revert/retry/cancel).
+ *
+ * Each custom item passes a `type` discriminator on `chatRequestOptions.body`.
+ * That field flows through `chat.sendMessage(msg, opts)` to the transport's
+ * `prepareSendMessagesRequest({messages, body})` (see types.ts in
+ * `@blocknote/xl-ai` — `ChatRequestOptions = Parameters<Chat["sendMessage"]>[1]`).
+ * The backend dispatcher reads `body.type` and routes to a per-type handler
+ * with its own canonical prompt. NO prompt text lives in this file.
+ */
+function NarrAIMenu() {
+  const editor = useBlockNoteEditor();
+  const ai = useExtension(AIExtension);
+  const dict = useAIDictionary();
+  const status = useExtensionState(AIExtension, {
+    selector: (s) => (s.aiMenuState !== "closed" ? s.aiMenuState.status : "closed"),
+  });
+  const [prompt, setPrompt] = useState("");
+  // Set by items that pre-fill the input (Translate) so handleSubmit knows
+  // which `type` to attach when the user submits the captured text. Cleared
+  // after submit or on status change.
+  const pendingTypeRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (status === "ai-writing" || status === "user-reviewing" || status === "error") {
+      setPrompt("");
+      pendingTypeRef.current = null;
+    }
+  }, [status]);
+
+  const items = useMemo(() => {
+    // Outside user-input (reviewing / error), use BlockNote's default
+    // review buttons (accept/revert/retry/cancel). Need to wrap onItemClick
+    // because the default items expect a setPrompt argument.
+    if (status !== "user-input") {
+      return getDefaultAIMenuItems(editor, status).map((item) => ({
+        ...item,
+        onItemClick: () => item.onItemClick(setPrompt),
+      }));
+    }
+    const hasSelection = editor.getSelection() !== undefined;
+    const hasTyped = prompt.trim().length > 0;
+    // Once the user starts typing, hide all items so Enter submits the
+    // free-form (or pending-type) prompt instead of being hijacked.
+    if (hasTyped) return [];
+
+    // Generate from Template is shown in BOTH contexts (with and without
+    // selection) because it operates on the whole document — it ignores any
+    // active selection and runs the per-section template-fill flow. Listed
+    // first so it's the default-highlighted item.
+    const generateFromTemplate = {
+      key: "generate_from_template",
+      title: "Generate from Template",
+      aliases: ["generate", "template", "fill"],
+      icon: <LayoutTemplateIcon size={18} />,
+      size: "small" as const,
+      onItemClick: () => {
+        void ai.invokeAI({
+          userPrompt: "fill-template",
+          useSelection: false,
+          chatRequestOptions: { body: { type: "fill-template" } },
+        });
+      },
+    };
+
+    if (hasSelection) {
+      // Selection-edit items + the always-available Generate from Template.
+      // Each selection item invokes ai.invokeAI with chatRequestOptions
+      // carrying the `type` body field. The userPrompt is a short tag — the
+      // backend ignores it and uses the canonical prompt for the type instead.
+      return [
+        generateFromTemplate,
+        {
+          key: "improve_writing",
+          title: "Improve Writing",
+          aliases: ["improve", "rewrite", "polish"],
+          icon: <SparklesIcon size={18} />,
+          size: "small" as const,
+          onItemClick: () => {
+            void ai.invokeAI({
+              userPrompt: "improve-writing",
+              useSelection: true,
+              chatRequestOptions: { body: { type: "improve-writing" } },
+            });
+          },
+        },
+        {
+          key: "fix_spelling",
+          title: "Fix Spelling",
+          aliases: ["spelling", "grammar", "typo"],
+          icon: <TypeIcon size={18} />,
+          size: "small" as const,
+          onItemClick: () => {
+            void ai.invokeAI({
+              userPrompt: "fix-spelling",
+              useSelection: true,
+              chatRequestOptions: { body: { type: "fix-spelling" } },
+            });
+          },
+        },
+        {
+          key: "translate",
+          title: "Translate…",
+          aliases: ["translate", "language"],
+          icon: <LanguagesIcon size={18} />,
+          size: "small" as const,
+          // Pre-fills the input with a placeholder. User appends/replaces
+          // with the target language and submits via Enter. handleSubmit
+          // reads pendingTypeRef and forwards `type: "translate"`.
+          onItemClick: () => {
+            pendingTypeRef.current = "translate";
+            setPrompt("Translate to ");
+          },
+        },
+        {
+          key: "simplify",
+          title: "Simplify",
+          aliases: ["simplify", "easier", "plain"],
+          icon: <WandSparklesIcon size={18} />,
+          size: "small" as const,
+          onItemClick: () => {
+            void ai.invokeAI({
+              userPrompt: "simplify",
+              useSelection: true,
+              chatRequestOptions: { body: { type: "simplify" } },
+            });
+          },
+        },
+      ];
+    }
+
+    // No selection (the /ai slash menu path): just Generate from Template.
+    // Free-form typing still works — once the user types, items hide and
+    // Enter submits with no type (backend defaults to fill-template).
+    return [generateFromTemplate];
+  }, [editor, status, prompt, ai]);
+
+  const handleSubmit = useCallback(
+    async (userPrompt: string) => {
+      if (!userPrompt.trim()) return;
+      const pendingType = pendingTypeRef.current;
+      pendingTypeRef.current = null;
+      const body = pendingType ? { type: pendingType } : undefined;
+      await ai.invokeAI({
+        userPrompt,
+        useSelection: editor.getSelection() !== undefined,
+        ...(body ? { chatRequestOptions: { body } } : {}),
+      });
+    },
+    [ai, editor],
+  );
+
+  const placeholder =
+    status === "thinking"
+      ? dict.ai_menu.status.thinking
+      : status === "ai-writing"
+        ? dict.ai_menu.status.editing
+        : status === "error"
+          ? dict.ai_menu.status.error
+          : dict.ai_menu.input_placeholder;
+
+  const disabled = status === "thinking" || status === "ai-writing";
+
+  return (
+    <PromptSuggestionMenu
+      items={items}
+      onManualPromptSubmit={handleSubmit}
+      promptText={prompt}
+      onPromptTextChange={setPrompt}
+      placeholder={placeholder}
+      disabled={disabled}
+      icon={
+        <div className="bn-combobox-icon">
+          <SparklesIcon size={16} />
+        </div>
+      }
+    />
+  );
+}
+
 export default function BlockNoteEditor({
   id,
   type,
@@ -240,6 +449,10 @@ export default function BlockNoteEditor({
   );
 
   const docRef = useRef<{ getDoc: () => any[] }>({ getDoc: () => [] });
+  // Selection getter used by the AI transport to attach `selectionBlocks` to
+  // the outgoing request metadata. Populated in a useEffect once the editor
+  // instance exists; reads the current BlockNote selection on every send.
+  const selectionRef = useRef<{ getSelectedBlocks: () => any[] }>({ getSelectedBlocks: () => [] });
 
   const companyId = company?.id;
   const aiExtension = useMemo(() => {
@@ -265,6 +478,7 @@ export default function BlockNoteEditor({
               break;
             }
           }
+          const selectedBlocks = selectionRef.current.getSelectedBlocks();
           const augmented = messages.map((m: any, i: number) =>
             i === lastUserIdx
               ? {
@@ -274,6 +488,7 @@ export default function BlockNoteEditor({
                     entityType: aiConfig.entityType,
                     entityId: aiConfig.entityId,
                     blocks: docRef.current.getDoc(),
+                    selectionBlocks: selectedBlocks,
                   },
                 }
               : m,
@@ -535,6 +750,11 @@ export default function BlockNoteEditor({
 
   useEffect(() => {
     docRef.current.getDoc = () => editor?.document ?? [];
+    selectionRef.current.getSelectedBlocks = () => {
+      const sel = editor?.getSelection?.();
+      const blocks = (sel as any)?.blocks;
+      return Array.isArray(blocks) ? blocks : [];
+    };
   }, [editor]);
 
   // Handle audio received from whisper transcription
@@ -626,15 +846,7 @@ export default function BlockNoteEditor({
             }
           />
         )}
-        {aiConfig && (
-          <AIMenuController
-            aiMenu={() => (
-              <AIMenu
-                items={(editor, status) => (status === "user-input" ? [] : getDefaultAIMenuItems(editor, status))}
-              />
-            )}
-          />
-        )}
+        {aiConfig && <AIMenuController aiMenu={() => <NarrAIMenu />} />}
       </BlockNoteView>
     </div>
   );
