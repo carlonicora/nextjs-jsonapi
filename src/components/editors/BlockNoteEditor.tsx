@@ -203,11 +203,35 @@ function NarrAIMenu() {
   const pendingTypeRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (status === "ai-writing" || status === "user-reviewing" || status === "error") {
+    if (
+      status === "ai-writing" ||
+      status === "user-reviewing" ||
+      status === "error" ||
+      status === "closed"
+    ) {
       setPrompt("");
       pendingTypeRef.current = null;
     }
   }, [status]);
+
+  // Selection-edit ops operate per-block. If the user's selection only
+  // covers part of a block (cursor mid-paragraph dragged to mid-next), the
+  // rewrite would silently replace the WHOLE containing blocks — beyond
+  // what the user highlighted. Expand the selection to whole-block bounds
+  // BEFORE invokeAI so the user sees exactly what will be rewritten.
+  const expandSelectionToBlocks = useCallback(() => {
+    const sel = editor.getSelection?.();
+    const blocks = (sel as any)?.blocks;
+    if (!Array.isArray(blocks) || blocks.length === 0) return;
+    const first = blocks[0];
+    const last = blocks[blocks.length - 1];
+    try {
+      (editor as any).setSelection?.(first, last);
+    } catch {
+      // If BlockNote's setSelection signature changes, fail silently — the
+      // backend still operates per-block, so we just lose the visual hint.
+    }
+  }, [editor]);
 
   const items = useMemo(() => {
     // Outside user-input (reviewing / error), use BlockNote's default
@@ -258,6 +282,7 @@ function NarrAIMenu() {
           icon: <SparklesIcon size={18} />,
           size: "small" as const,
           onItemClick: () => {
+            expandSelectionToBlocks();
             void ai.invokeAI({
               userPrompt: "improve-writing",
               useSelection: true,
@@ -272,6 +297,7 @@ function NarrAIMenu() {
           icon: <TypeIcon size={18} />,
           size: "small" as const,
           onItemClick: () => {
+            expandSelectionToBlocks();
             void ai.invokeAI({
               userPrompt: "fix-spelling",
               useSelection: true,
@@ -287,8 +313,11 @@ function NarrAIMenu() {
           size: "small" as const,
           // Pre-fills the input with a placeholder. User appends/replaces
           // with the target language and submits via Enter. handleSubmit
-          // reads pendingTypeRef and forwards `type: "translate"`.
+          // reads pendingTypeRef and forwards `type: "translate"`. We
+          // expand the selection now so the user sees the scope before
+          // typing the language — handleSubmit doesn't re-expand.
           onItemClick: () => {
+            expandSelectionToBlocks();
             pendingTypeRef.current = "translate";
             setPrompt("Translate to ");
           },
@@ -300,6 +329,7 @@ function NarrAIMenu() {
           icon: <WandSparklesIcon size={18} />,
           size: "small" as const,
           onItemClick: () => {
+            expandSelectionToBlocks();
             void ai.invokeAI({
               userPrompt: "simplify",
               useSelection: true,
@@ -314,7 +344,7 @@ function NarrAIMenu() {
     // Free-form typing still works — once the user types, items hide and
     // Enter submits with no type (backend defaults to fill-template).
     return [generateFromTemplate];
-  }, [editor, status, prompt, ai]);
+  }, [editor, status, prompt, ai, expandSelectionToBlocks]);
 
   const handleSubmit = useCallback(
     async (userPrompt: string) => {
