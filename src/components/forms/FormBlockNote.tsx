@@ -108,6 +108,7 @@ export function FormBlockNote({
               mentionNameResolver={mentionNameResolver}
               onWarmMentions={onWarmMentions}
               aiConfig={aiConfig}
+              stretch={stretch}
               className={cn(stretch && "min-h-0 flex-1")}
             />
           );

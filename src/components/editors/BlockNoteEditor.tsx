@@ -69,6 +69,11 @@ export type BlockNoteEditorProps = {
   mentionNameResolver?: MentionNameResolver;
   onWarmMentions?: (blocks: PartialBlock[]) => void;
   aiConfig?: BlockNoteAiConfig;
+  // When the editor is inside a bounded flex column (parent gives it a real
+  // height via flex-1+min-h-0), set this so `.bn-container` shrinks to that
+  // height and scrolls internally. Without it the editor grows to fit its
+  // content and pushes the surrounding form to scroll instead.
+  stretch?: boolean;
 };
 
 function isBlockEmpty(block: any): boolean {
@@ -167,6 +172,7 @@ export default function BlockNoteEditor({
   mentionNameResolver,
   onWarmMentions,
   aiConfig,
+  stretch,
 }: BlockNoteEditorProps): React.JSX.Element {
   const t = useTranslations();
   const locale = useI18nLocale();
@@ -587,7 +593,17 @@ export default function BlockNoteEditor({
         // AND `editor.portalElement` (the floating-UI portal root). Gate `p-4`
         // on `.bn-container` so it doesn't add padding to the empty portal
         // element and produce a phantom scrollbar on the wrapper.
-        className={cn(`BlockNoteView flex-1 ${onChange ? "[&.bn-container]:p-4" : ""}`, size === "sm" && "small")}
+        className={cn(
+          "BlockNoteView flex-1",
+          onChange && "[&.bn-container]:p-4",
+          // In stretch mode the parent chain caps our height via flex; without
+          // these two classes the `.bn-container` keeps `min-height: auto`
+          // (its content's intrinsic height) and pushes the bordered wrapper
+          // — and the surrounding EditorSheet form — to scroll instead of
+          // scrolling internally.
+          onChange && stretch && "[&.bn-container]:min-h-0 [&.bn-container]:overflow-y-auto",
+          size === "sm" && "small",
+        )}
       >
         <BlockNoteEditorFormattingToolbar showAI={!!aiConfig} />
         {enableMentions && mentionSearchFn && (
