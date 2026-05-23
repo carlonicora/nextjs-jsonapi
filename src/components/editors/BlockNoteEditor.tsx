@@ -1,14 +1,21 @@
 "use client";
 
-import { BlockNoteSchema, defaultInlineContentSpecs, PartialBlock } from "@blocknote/core";
+import { BlockNoteSchema, defaultInlineContentSpecs, filterSuggestionItems, PartialBlock } from "@blocknote/core";
+import { en as coreEn } from "@blocknote/core/locales";
 import {
   createReactInlineContentSpec,
   DefaultReactSuggestionItem,
+  getDefaultReactSlashMenuItems,
+  SuggestionMenuController,
   SuggestionMenuProps,
   useCreateBlockNote,
 } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
 import "@blocknote/shadcn/style.css";
+import { AIExtension, AIMenu, AIMenuController, getAISlashMenuItems, getDefaultAIMenuItems } from "@blocknote/xl-ai";
+import { en as aiEn } from "@blocknote/xl-ai/locales";
+import "@blocknote/xl-ai/style.css";
+import { DefaultChatTransport } from "ai";
 import { CheckIcon, XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -27,6 +34,15 @@ import {
   type MentionResolveFn,
 } from "./BlockNoteEditorMentionInlineContent";
 import { BlockNoteEditorMentionSuggestionMenu } from "./BlockNoteEditorSuggestionMenuController";
+import { getPublicApiUrl } from "../../client/config";
+import { getClientToken } from "../../client/token";
+import { useI18nLocale } from "../../i18n/config";
+
+export type BlockNoteAiConfig = {
+  endpoint: string;
+  entityType: string;
+  entityId?: string;
+};
 
 export type BlockNoteEditorProps = {
   id: string;
@@ -52,6 +68,7 @@ export type BlockNoteEditorProps = {
   suggestionMenuComponent?: React.FC<SuggestionMenuProps<DefaultReactSuggestionItem>>;
   mentionNameResolver?: MentionNameResolver;
   onWarmMentions?: (blocks: PartialBlock[]) => void;
+  aiConfig?: BlockNoteAiConfig;
 };
 
 function isBlockEmpty(block: any): boolean {
@@ -149,8 +166,10 @@ export default function BlockNoteEditor({
   suggestionMenuComponent,
   mentionNameResolver,
   onWarmMentions,
+  aiConfig,
 }: BlockNoteEditorProps): React.JSX.Element {
   const t = useTranslations();
+  const locale = useI18nLocale();
   const { company } = useCurrentUserContext<UserInterface>();
 
   const [acceptedChanges, setAcceptedChanges] = useState<Set<string>>(new Set());
@@ -213,6 +232,51 @@ export default function BlockNoteEditor({
       } as any),
     [DiffActionsInlineContent, mentionSpec, inlineContentSpecs],
   );
+
+  const docRef = useRef<{ getDoc: () => any[] }>({ getDoc: () => [] });
+
+  const companyId = company?.id;
+  const aiExtension = useMemo(() => {
+    if (!aiConfig) return undefined;
+    const base = getPublicApiUrl();
+    const url = new URL(aiConfig.endpoint, base.endsWith("/") ? base : base + "/").toString();
+    return AIExtension({
+      transport: new DefaultChatTransport({
+        api: url,
+        credentials: "include",
+        headers: async () => {
+          const headers: Record<string, string> = { "x-language": locale };
+          const token = await getClientToken();
+          if (token) headers["Authorization"] = `Bearer ${token}`;
+          if (companyId) headers["x-companyid"] = companyId;
+          return headers;
+        },
+        prepareSendMessagesRequest: ({ messages, body }: any) => {
+          let lastUserIdx = -1;
+          for (let i = messages.length - 1; i >= 0; i--) {
+            if (messages[i]?.role === "user") {
+              lastUserIdx = i;
+              break;
+            }
+          }
+          const augmented = messages.map((m: any, i: number) =>
+            i === lastUserIdx
+              ? {
+                  ...m,
+                  metadata: {
+                    ...(m.metadata ?? {}),
+                    entityType: aiConfig.entityType,
+                    entityId: aiConfig.entityId,
+                    blocks: docRef.current.getDoc(),
+                  },
+                }
+              : m,
+          );
+          return { body: { ...(body ?? {}), messages: augmented } };
+        },
+      }),
+    });
+  }, [aiConfig, companyId, locale]);
 
   const uploadImage = useCallback(
     async (file: File): Promise<string> => {
@@ -341,8 +405,10 @@ export default function BlockNoteEditor({
         schema,
         initialContent: validatedInitialContent,
         uploadFile: uploadImage,
+        extensions: aiExtension ? [aiExtension] : undefined,
+        dictionary: aiExtension ? { ...coreEn, ai: aiEn } : undefined,
       }),
-      [placeholder, t, schema, validatedInitialContent, uploadImage],
+      [placeholder, t, schema, validatedInitialContent, uploadImage, aiExtension],
     ),
   );
 
@@ -461,6 +527,10 @@ export default function BlockNoteEditor({
     onWarmMentions(initialContent);
   }, [onWarmMentions, initialContent]);
 
+  useEffect(() => {
+    docRef.current.getDoc = () => editor?.document ?? [];
+  }, [editor]);
+
   // Handle audio received from whisper transcription
   const _handleAudioReceived = useCallback(
     (message: string) => {
@@ -497,6 +567,12 @@ export default function BlockNoteEditor({
       className={cn(
         bordered ? "rounded-md border border-input bg-input/20 dark:bg-input/30" : "",
         "flex flex-col w-full",
+        // Pin BlockNote's font-size so it doesn't jump from 14→16px when the
+        // xl-ai AIMenu mounts. The shadcn theme sets `.bn-default-styles {
+        // font-size: 16px }` explicitly; outside AI mode the form's text-sm
+        // wins via cascade, but ForkYDocExtension re-evaluates the style
+        // context on AI activation and the explicit 16px takes over.
+        "[&_.bn-default-styles]:!text-sm",
         className,
       )}
     >
@@ -505,10 +581,11 @@ export default function BlockNoteEditor({
         onChange={handleChange}
         editable={onChange !== undefined}
         formattingToolbar={false}
+        slashMenu={!aiConfig}
         theme="light"
         className={cn(`BlockNoteView flex-1 ${onChange ? "p-4" : ""}`, size === "sm" && "small")}
       >
-        <BlockNoteEditorFormattingToolbar />
+        <BlockNoteEditorFormattingToolbar showAI={!!aiConfig} />
         {enableMentions && mentionSearchFn && (
           <BlockNoteEditorMentionSuggestionMenu
             editor={editor}
@@ -520,6 +597,23 @@ export default function BlockNoteEditor({
         {renderOverlays?.(editor)}
         {enableMentions && mentionResolveFn && (
           <BlockNoteEditorMentionHoverCard containerRef={editorRef} mentionResolveFn={mentionResolveFn} />
+        )}
+        {aiConfig && (
+          <SuggestionMenuController
+            triggerCharacter="/"
+            getItems={async (query: string) =>
+              filterSuggestionItems([...getDefaultReactSlashMenuItems(editor), ...getAISlashMenuItems(editor)], query)
+            }
+          />
+        )}
+        {aiConfig && (
+          <AIMenuController
+            aiMenu={() => (
+              <AIMenu
+                items={(editor, status) => (status === "user-input" ? [] : getDefaultAIMenuItems(editor, status))}
+              />
+            )}
+          />
         )}
       </BlockNoteView>
     </div>

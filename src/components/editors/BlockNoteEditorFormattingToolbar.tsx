@@ -10,8 +10,9 @@ import {
   FormattingToolbarController,
   TextAlignButton,
 } from "@blocknote/react";
+import { AIToolbarButton } from "@blocknote/xl-ai";
 
-export function BlockNoteEditorFormattingToolbar() {
+export function BlockNoteEditorFormattingToolbar({ showAI = false }: { showAI?: boolean }) {
   return (
     <FormattingToolbarController
       formattingToolbar={() => (
@@ -31,6 +32,8 @@ export function BlockNoteEditorFormattingToolbar() {
           <TextAlignButton textAlignment={"right"} key={"textAlignRightButton"} />
 
           <CreateLinkButton key={"createLinkButton"} />
+
+          {showAI ? <AIToolbarButton key={"aiToolbarButton"} /> : null}
         </FormattingToolbar>
       )}
     />

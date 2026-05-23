@@ -28,6 +28,7 @@ export function FormBlockNote({
   suggestionMenuComponent,
   mentionNameResolver,
   onWarmMentions,
+  aiConfig,
 }: {
   form: any;
   id: string;
@@ -56,6 +57,7 @@ export function FormBlockNote({
   suggestionMenuComponent?: React.FC<SuggestionMenuProps<DefaultReactSuggestionItem>>;
   mentionNameResolver?: MentionNameResolver;
   onWarmMentions?: (blocks: any[]) => void;
+  aiConfig?: import("../editors/BlockNoteEditor").BlockNoteAiConfig;
 }) {
   const initialContentRef = useRef<any>(null);
   const lastEditorContentRef = useRef<any>(undefined);
@@ -105,6 +107,7 @@ export function FormBlockNote({
               suggestionMenuComponent={suggestionMenuComponent}
               mentionNameResolver={mentionNameResolver}
               onWarmMentions={onWarmMentions}
+              aiConfig={aiConfig}
               className={cn(stretch && "min-h-0 flex-1")}
             />
           );
