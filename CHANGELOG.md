@@ -1,3 +1,9 @@
+## [1.107.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.107.0...v1.107.1) (2026-05-23)
+
+### 📦 Code Refactoring
+
+* **NarrAIMenu:** simplify conditional statement for resetting prompt ([d37519e](https://github.com/carlonicora/nextjs-jsonapi/commit/d37519ef8eaaf87c905d8bcf15fd434f14bc0a48))
+
 ## [1.107.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.106.2...v1.107.0) (2026-05-23)
 
 ### 🚀 Features
