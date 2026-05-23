@@ -36,11 +36,30 @@ export const mentionDataAttrs = (p: MentionRenderProps) => ({
   "data-mention-alias": p.alias,
 });
 
+export const parseMentionElement = (
+  element: HTMLElement,
+): { id: string; entityType: string; alias: string } | undefined => {
+  const id = element.getAttribute("data-mention-id");
+  const entityType = element.getAttribute("data-mention-type");
+  const alias = element.getAttribute("data-mention-alias");
+  if (!id || !entityType || !alias) return undefined;
+  return { id, entityType, alias };
+};
+
 export const createMentionInlineContentSpec = (
   resolveFn?: MentionResolveFn,
   disableMention?: boolean,
   nameResolver?: MentionNameResolver,
 ) => {
+  const MentionExternalHTML = (props: MentionRenderProps) => {
+    const displayName = nameResolver?.(props.id, props.entityType, props.alias) ?? props.alias;
+    return (
+      <span data-mention-id={props.id} data-mention-type={props.entityType} data-mention-alias={props.alias}>
+        @{displayName}
+      </span>
+    );
+  };
+
   const Mention = React.memo(function Mention(props: MentionRenderProps) {
     const displayName = nameResolver?.(props.id, props.entityType, props.alias) ?? props.alias;
 
@@ -93,6 +112,14 @@ export const createMentionInlineContentSpec = (
           alias={props.inlineContent.props.alias}
         />
       ),
+      toExternalHTML: (props) => (
+        <MentionExternalHTML
+          id={props.inlineContent.props.id}
+          entityType={props.inlineContent.props.entityType}
+          alias={props.inlineContent.props.alias}
+        />
+      ),
+      parse: (element) => parseMentionElement(element),
     },
   );
 };
