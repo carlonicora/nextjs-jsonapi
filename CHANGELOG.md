@@ -1,3 +1,9 @@
+## [1.107.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.106.2...v1.107.0) (2026-05-23)
+
+### 🚀 Features
+
+* **editor:** add BlockNote AI generation via aiConfig prop ([f6ffd9b](https://github.com/carlonicora/nextjs-jsonapi/commit/f6ffd9b7e96ebccf73bd8f34be212399a1af5efe))
+
 ## [1.106.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.106.1...v1.106.2) (2026-05-22)
 
 ### ♻️ Chores
