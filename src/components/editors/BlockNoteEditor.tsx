@@ -583,7 +583,11 @@ export default function BlockNoteEditor({
         formattingToolbar={false}
         slashMenu={!aiConfig}
         theme="light"
-        className={cn(`BlockNoteView flex-1 ${onChange ? "p-4" : ""}`, size === "sm" && "small")}
+        // `className` is applied by BlockNote to both the main `.bn-container`
+        // AND `editor.portalElement` (the floating-UI portal root). Gate `p-4`
+        // on `.bn-container` so it doesn't add padding to the empty portal
+        // element and produce a phantom scrollbar on the wrapper.
+        className={cn(`BlockNoteView flex-1 ${onChange ? "[&.bn-container]:p-4" : ""}`, size === "sm" && "small")}
       >
         <BlockNoteEditorFormattingToolbar showAI={!!aiConfig} />
         {enableMentions && mentionSearchFn && (
