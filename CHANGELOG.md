@@ -1,3 +1,9 @@
+## [1.108.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.107.1...v1.108.0) (2026-05-24)
+
+### 🚀 Features
+
+* **shadcnui:** pass anchor through Popover/ContextMenu wrappers ([21d90a3](https://github.com/carlonicora/nextjs-jsonapi/commit/21d90a3d30c1ebb3ed6eca2a0a421220f2ba09f3))
+
 ## [1.107.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.107.0...v1.107.1) (2026-05-23)
 
 ### 📦 Code Refactoring
