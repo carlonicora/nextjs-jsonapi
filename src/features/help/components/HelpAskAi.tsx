@@ -15,9 +15,7 @@ export function HelpAskAi() {
   if (disabled) {
     return (
       <Tooltip>
-        <TooltipTrigger
-          render={<Button variant="outline" size="sm" disabled />}
-        >
+        <TooltipTrigger render={<Button variant="outline" size="sm" disabled />}>
           <SparklesIcon className="h-4 w-4" />
           {t("help.askAi.button")}
         </TooltipTrigger>

@@ -62,12 +62,7 @@ function withPatchedTitle(source: AssistantInterface, title: string): AssistantI
   });
 }
 
-export function AssistantProvider({
-  children,
-  dehydratedAssistant,
-  dehydratedMessages,
-  manageUrl = true,
-}: Props) {
+export function AssistantProvider({ children, dehydratedAssistant, dehydratedMessages, manageUrl = true }: Props) {
   const t = useTranslations();
   const generateUrl = usePageUrlGenerator();
 
