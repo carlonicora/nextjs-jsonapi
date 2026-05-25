@@ -14,6 +14,4 @@ export interface HelpContentConfig {
   namespaceUuid: string;
   redirects?: readonly HelpRedirect[];
   brand?: HelpBrandConfig;
-  /** Invoked when the user clicks "Ask AI about this" on an article. */
-  onAskAi?: (howToId: string) => void;
 }

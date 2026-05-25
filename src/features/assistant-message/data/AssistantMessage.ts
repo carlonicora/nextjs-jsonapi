@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import { AbstractApiData, ApiDataInterface, JsonApiHydratedDataInterface, Modules } from "../../../core";
 import { AssistantMessageInput, AssistantMessageInterface, AssistantMessageRole } from "./AssistantMessageInterface";
 import { resolveReferenceableModules } from "../../assistant/utils/resolveReferenceableModules";
@@ -12,6 +13,7 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
   private _outputTokens?: number;
   private _references?: ApiDataInterface[];
   private _citations?: (ChunkInterface & ChunkRelationshipMeta)[];
+  private _isOptimistic = false;
 
   get role(): AssistantMessageRole {
     return this._role ?? "assistant";
@@ -43,6 +45,10 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
 
   get citations(): (ChunkInterface & ChunkRelationshipMeta)[] {
     return this._citations ?? [];
+  }
+
+  get isOptimistic(): boolean {
+    return this._isOptimistic;
   }
 
   rehydrate(data: JsonApiHydratedDataInterface): this {
@@ -93,10 +99,29 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
     };
   }
 
+  /**
+   * JSON:API envelope for POST /assistants/:id/assistant-messages.
+   * Different from `createJsonApi` (which expects a full message with role/position/assistant ref);
+   * the append-to-thread endpoint derives those server-side, so we only send `content` and
+   * the optional retrieval-mode flags.
+   */
+  createAppendMessageJsonApi(params: { content: string; howToMode?: boolean; limitToHowToId?: string }) {
+    return {
+      data: {
+        type: Modules.AssistantMessage.name,
+        attributes: {
+          content: params.content,
+          ...(params.howToMode !== undefined ? { howToMode: params.howToMode } : {}),
+          ...(params.limitToHowToId !== undefined ? { limitToHowToId: params.limitToHowToId } : {}),
+        },
+      },
+    };
+  }
+
   static buildOptimistic(params: { content: string; position: number; assistantId?: string }): AssistantMessage {
     const msg = new AssistantMessage();
     const jsonApi: Record<string, unknown> = {
-      id: `tmp-${crypto.randomUUID()}`,
+      id: uuidv4(),
       type: Modules.AssistantMessage.name,
       attributes: {
         role: "user",
@@ -110,6 +135,7 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
       };
     }
     msg.rehydrate({ jsonApi: jsonApi as any, included: [] });
+    msg._isOptimistic = true;
     return msg;
   }
 }

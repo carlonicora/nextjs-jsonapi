@@ -20,4 +20,5 @@ export interface AssistantMessageInterface extends ApiDataInterface {
   get outputTokens(): number | undefined;
   get references(): ApiDataInterface[];
   get citations(): (ChunkInterface & ChunkRelationshipMeta)[];
+  get isOptimistic(): boolean;
 }

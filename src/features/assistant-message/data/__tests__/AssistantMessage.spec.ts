@@ -136,14 +136,17 @@ describe("AssistantMessage.rehydrate", () => {
 });
 
 describe("AssistantMessage.buildOptimistic", () => {
-  it("creates a user message with a tmp-prefixed id and the given content + position", () => {
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+  it("creates a user message with a plain UUID id and the given content + position", () => {
     const msg = AssistantMessage.buildOptimistic({
       content: "hello",
       assistantId: "a-1",
       position: 3,
     });
 
-    expect(msg.id.startsWith("tmp-")).toBe(true);
+    expect(msg.id).toMatch(UUID_RE);
+    expect(msg.isOptimistic).toBe(true);
     expect(msg.role).toBe("user");
     expect(msg.content).toBe("hello");
     expect(msg.position).toBe(3);
@@ -152,7 +155,8 @@ describe("AssistantMessage.buildOptimistic", () => {
   it("allows an omitted assistantId (first-message case)", () => {
     const msg = AssistantMessage.buildOptimistic({ content: "first", position: 1 });
 
-    expect(msg.id.startsWith("tmp-")).toBe(true);
+    expect(msg.id).toMatch(UUID_RE);
+    expect(msg.isOptimistic).toBe(true);
     expect(msg.role).toBe("user");
     expect(msg.content).toBe("first");
     expect(msg.position).toBe(1);

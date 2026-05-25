@@ -8,4 +8,5 @@ export type HowToInput = ContentInput & {
 export interface HowToInterface extends ContentInterface {
   get description(): any;
   get pages(): string | undefined;
+  get helpContentSlug(): string | undefined;
 }

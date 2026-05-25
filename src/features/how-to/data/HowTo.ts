@@ -5,6 +5,7 @@ import { HowToInput, HowToInterface } from "./HowToInterface";
 export class HowTo extends Content implements HowToInterface {
   private _description?: any;
   private _pages?: string;
+  private _helpContentSlug?: string;
 
   /**
    * Parse pages from backend JSON string (handles legacy single string + JSON array)
@@ -36,13 +37,30 @@ export class HowTo extends Content implements HowToInterface {
     return this._pages;
   }
 
+  get helpContentSlug(): string | undefined {
+    return this._helpContentSlug;
+  }
+
   rehydrate(data: JsonApiHydratedDataInterface): this {
     super.rehydrate(data);
 
-    this._description = data.jsonApi.attributes.description
-      ? JSON.parse(data.jsonApi.attributes.description)
-      : undefined;
+    const rawDescription = data.jsonApi.attributes.description;
+    if (rawDescription === undefined || rawDescription === null || rawDescription === "") {
+      this._description = undefined;
+    } else if (typeof rawDescription === "string") {
+      try {
+        this._description = JSON.parse(rawDescription);
+      } catch {
+        // Help-content HowTos store plain-text summaries; admin-created HowTos
+        // store JSON-stringified BlockNote docs. Fall back to the raw string
+        // rather than crashing rehydration for the plain-text case.
+        this._description = rawDescription;
+      }
+    } else {
+      this._description = rawDescription;
+    }
     this._pages = data.jsonApi.attributes.pages;
+    this._helpContentSlug = data.jsonApi.attributes.helpContentSlug;
 
     return this;
   }

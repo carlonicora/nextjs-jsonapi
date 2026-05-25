@@ -5,7 +5,6 @@ import { useFormatter, useTranslations } from "next-intl";
 import type { HelpArticle } from "../types/help-article.types";
 import { usePageUrlGenerator } from "../../../client";
 import { useHelp } from "../contexts/HelpContext";
-import { HelpAskAi } from "./HelpAskAi";
 import { articleUrl } from "../utils/articleUrl";
 import { prevNextWithinMode } from "../utils/helpNavigation";
 
@@ -27,13 +26,12 @@ export function HelpArticleBody({ article, children }: { article: HelpArticle; c
       <p className="text-muted-foreground !mt-0 text-base">{article.summary}</p>
       {children}
       <hr className="my-6" />
-      <div className="text-muted-foreground flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div className="text-muted-foreground text-xs">
         <span>
           {t("help.article.lastUpdated", {
             date: format.dateTime(new Date(article.lastUpdated), { dateStyle: "short" }),
           })}
         </span>
-        <HelpAskAi howToId={article.id} />
       </div>
       <div className="mt-4 flex justify-between text-sm">
         {prev ? (

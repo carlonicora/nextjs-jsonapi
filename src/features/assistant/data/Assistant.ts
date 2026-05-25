@@ -29,6 +29,8 @@ export class Assistant extends AbstractApiData implements AssistantInterface {
         attributes: {
           content: data.firstMessage,
           ...(data.title !== undefined ? { title: data.title } : {}),
+          ...(data.howToMode !== undefined ? { howToMode: data.howToMode } : {}),
+          ...(data.limitToHowToId !== undefined ? { limitToHowToId: data.limitToHowToId } : {}),
         },
       },
       included: [],

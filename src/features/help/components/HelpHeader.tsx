@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useCurrentUserContext } from "../../user/contexts/CurrentUserContext";
 import { Button } from "../../../shadcnui";
 import { useHelp } from "../contexts/HelpContext";
+import { HelpAskAi } from "./HelpAskAi";
 
 export function HelpHeader() {
   const t = useTranslations();
@@ -22,7 +23,8 @@ export function HelpHeader() {
           {label} · {t("help.footerLink")}
         </span>
       </Link>
-      <div>
+      <div className="flex items-center gap-2">
+        <HelpAskAi />
         {currentUser ? (
           <Button render={<Link href={appHref} />} nativeButton={false} variant="outline" size="sm">
             {t("help.header.openApp")}

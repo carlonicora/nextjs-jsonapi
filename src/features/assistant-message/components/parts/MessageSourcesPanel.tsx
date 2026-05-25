@@ -55,12 +55,14 @@ export function MessageSourcesPanel({ message, isLatestAssistant, onSelectFollow
   const suggestionsCount = isLatestAssistant ? message.suggestedQuestions.length : 0;
 
   const contentsCount = useMemo(() => {
-    if (sources) return sources.size;
-    // Fallback: derive from unique nodeId on chunks when sources haven't been
-    // supplied yet (e.g., during the initial fetch).
+    // Count unique nodeIds across citations. Mirrors what ContentsTab actually
+    // renders (one row per cited source), instead of `sources.size` which can
+    // include entities the fetch returned but no citation references.
     const ids = new Set<string>();
     for (const c of message.citations) {
-      if (c.nodeId) ids.add(c.nodeId);
+      if (!c.nodeId) continue;
+      if (sources && !sources.has(c.nodeId)) continue;
+      ids.add(c.nodeId);
     }
     return ids.size;
   }, [message.citations, sources]);

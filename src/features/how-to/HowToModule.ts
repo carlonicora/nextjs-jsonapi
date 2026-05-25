@@ -12,7 +12,7 @@ export const HowToModule = (factory: ModuleFactory) =>
     icon: LifeBuoyIcon,
     inclusions: {
       lists: {
-        fields: [createJsonApiInclusion("howtos", [`name`, `description`, `pages`])],
+        fields: [createJsonApiInclusion("howtos", [`name`, `description`, `pages`, `helpContentSlug`])],
       },
     },
   });

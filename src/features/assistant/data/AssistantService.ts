@@ -1,6 +1,7 @@
 import { AbstractService, EndpointCreator, HttpMethod, Modules } from "../../../core";
-import { AssistantInput, AssistantInterface } from "./AssistantInterface";
+import { AssistantMessage } from "../../assistant-message/data/AssistantMessage";
 import { AssistantMessageInterface } from "../../assistant-message/data/AssistantMessageInterface";
+import { AssistantInput, AssistantInterface } from "./AssistantInterface";
 
 export class AssistantService extends AbstractService {
   static async findOne(params: { id: string }): Promise<AssistantInterface> {
@@ -33,8 +34,18 @@ export class AssistantService extends AbstractService {
   /**
    * Sends a new user message to an existing assistant thread. The agent turn
    * runs synchronously; the response is a two-element list: [user, assistant].
+   *
+   * Uses the dedicated AssistantMessage.createAppendMessageJsonApi method to
+   * build the JSON:API envelope; this is the architecture-compliant pairing
+   * with `overridesJsonApiCreation: true`.
    */
-  static async appendMessage(params: { assistantId: string; content: string }): Promise<AssistantMessageInterface[]> {
+  static async appendMessage(params: {
+    assistantId: string;
+    content: string;
+    howToMode?: boolean;
+    limitToHowToId?: string;
+  }): Promise<AssistantMessageInterface[]> {
+    const message = new AssistantMessage();
     return this.callApi<AssistantMessageInterface[]>({
       type: Modules.AssistantMessage,
       method: HttpMethod.POST,
@@ -43,12 +54,11 @@ export class AssistantService extends AbstractService {
         id: params.assistantId,
         childEndpoint: Modules.AssistantMessage,
       }).generate(),
-      input: {
-        data: {
-          type: Modules.AssistantMessage.name,
-          attributes: { content: params.content },
-        },
-      },
+      input: message.createAppendMessageJsonApi({
+        content: params.content,
+        howToMode: params.howToMode,
+        limitToHowToId: params.limitToHowToId,
+      }),
       overridesJsonApiCreation: true,
     });
   }

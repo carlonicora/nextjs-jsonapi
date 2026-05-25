@@ -1,59 +1,68 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { configureJsonApi } from "../../../../client/config";
 import { HelpProvider } from "../../contexts/HelpContext";
 import { HelpAskAi } from "../HelpAskAi";
 
-// Mock the current-user context to control auth state per test.
-// HelpAskAi imports directly from the user-feature path (not the contexts barrel)
-// to avoid pulling in OnboardingContext at bundle time.
 vi.mock("../../../user/contexts/CurrentUserContext", () => ({
-  useCurrentUserContext: () => ({ currentUser: globalThis.__mockUser ?? null }),
+  useCurrentUserContext: () => ({ currentUser: (globalThis as any).__mockUser ?? null }),
 }));
 
+// HelpAssistantSheet is intentionally rendered ONLY when logged-in to keep the
+// disabled-state DOM minimal. We mock it to a marker so the test asserts presence.
+vi.mock("../HelpAssistantSheet", () => ({
+  HelpAssistantSheet: ({ open }: { open: boolean }) => (open ? <div data-testid="sheet" /> : null),
+}));
+
+function setupConfig() {
+  configureJsonApi({
+    apiUrl: "http://localhost",
+    helpContent: { manifest: [], namespaceUuid: "00000000-0000-5000-8000-000000000000" },
+  });
+}
+
 describe("HelpAskAi", () => {
-  it("renders the login CTA for anonymous users", () => {
-    globalThis.__mockUser = null;
-    configureJsonApi({
-      apiUrl: "http://localhost",
-      helpContent: { manifest: [], namespaceUuid: "00000000-0000-5000-8000-000000000000" },
-    });
+  it("renders a disabled button + tooltip for anonymous users", () => {
+    (globalThis as any).__mockUser = null;
+    setupConfig();
+
     render(
       <HelpProvider>
-        <HelpAskAi howToId="x" />
+        <HelpAskAi />
       </HelpProvider>,
     );
+
+    const button = screen.getByRole("button");
+    expect(button).toHaveAttribute("disabled");
     // vitest.setup.ts stubs next-intl's useTranslations to return the key as-is.
-    expect(screen.getByText("help.askAi.loginCta")).toBeTruthy();
+    // The TooltipTrigger renders as a <span>, so the disabled <button> is the
+    // only <button> in the DOM (no nested-button hydration risk).
+    expect(screen.queryByTestId("sheet")).toBeNull();
   });
 
-  it("renders null for logged-in users when onAskAi is missing", () => {
-    globalThis.__mockUser = { id: "u" };
-    configureJsonApi({
-      apiUrl: "http://localhost",
-      helpContent: { manifest: [], namespaceUuid: "00000000-0000-5000-8000-000000000000" },
-    });
-    const { container } = render(
-      <HelpProvider>
-        <HelpAskAi howToId="x" />
-      </HelpProvider>,
-    );
-    expect(container.querySelector("button")).toBeNull();
-  });
-
-  it("invokes onAskAi(howToId) when the button is clicked", () => {
-    globalThis.__mockUser = { id: "u" };
-    const cb = vi.fn();
-    configureJsonApi({
-      apiUrl: "http://localhost",
-      helpContent: { manifest: [], namespaceUuid: "00000000-0000-5000-8000-000000000000", onAskAi: cb },
-    });
+  it("clicking the disabled button does not open the sheet", () => {
+    (globalThis as any).__mockUser = null;
+    setupConfig();
     render(
       <HelpProvider>
-        <HelpAskAi howToId="article-1" />
+        <HelpAskAi />
       </HelpProvider>,
     );
     fireEvent.click(screen.getByRole("button"));
-    expect(cb).toHaveBeenCalledWith("article-1");
+    expect(screen.queryByTestId("sheet")).toBeNull();
+  });
+
+  it("renders an enabled button for logged-in users; clicking opens the sheet", () => {
+    (globalThis as any).__mockUser = { id: "u-1" };
+    setupConfig();
+    render(
+      <HelpProvider>
+        <HelpAskAi />
+      </HelpProvider>,
+    );
+    const button = screen.getByRole("button");
+    expect(button).not.toHaveAttribute("disabled");
+    fireEvent.click(button);
+    expect(screen.getByTestId("sheet")).toBeInTheDocument();
   });
 });

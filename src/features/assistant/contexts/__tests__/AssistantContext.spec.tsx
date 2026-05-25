@@ -264,7 +264,7 @@ describe("AssistantContext", () => {
 
     // Before the server responds, the optimistic user bubble must be visible.
     expect(result.current.messages.map((m) => m.content)).toContain("follow-up");
-    expect(result.current.messages.some((m) => m.id.startsWith("tmp-") && m.role === "user")).toBe(true);
+    expect(result.current.messages.some((m) => m.isOptimistic && m.role === "user")).toBe(true);
     expect(result.current.sending).toBe(true);
 
     await act(async () => {
@@ -276,7 +276,7 @@ describe("AssistantContext", () => {
     });
 
     // After reconciliation, no tmp-* remains, and server messages are appended.
-    expect(result.current.messages.some((m) => m.id.startsWith("tmp-"))).toBe(false);
+    expect(result.current.messages.some((m) => m.isOptimistic)).toBe(false);
     expect(result.current.messages.map((m) => m.content)).toEqual(["follow-up", "reply"]);
     expect(result.current.sending).toBe(false);
   });
@@ -307,7 +307,7 @@ describe("AssistantContext", () => {
 
     // Before the server responds: thread has exactly the optimistic user bubble.
     expect(result.current.messages).toHaveLength(1);
-    expect(result.current.messages[0].id.startsWith("tmp-")).toBe(true);
+    expect(result.current.messages[0].isOptimistic).toBe(true);
     expect(result.current.messages[0].content).toBe("first question");
     expect(result.current.assistant).toBeUndefined();
     expect(result.current.sending).toBe(true);
@@ -319,9 +319,69 @@ describe("AssistantContext", () => {
 
     // After reconciliation: assistant set, URL replaced, server messages only.
     expect(result.current.assistant?.id).toBe("a-1");
-    expect(result.current.messages.some((m) => m.id.startsWith("tmp-"))).toBe(false);
+    expect(result.current.messages.some((m) => m.isOptimistic)).toBe(false);
     expect(result.current.messages).toHaveLength(2);
     expect(replaceState).toHaveBeenCalledWith(null, "", "/assistants/a-1");
+  });
+
+  it("forwards howToMode to AssistantService.create on first send", async () => {
+    const replaceState = vi.spyOn(window.history, "replaceState").mockImplementation(() => {});
+    const created = buildAssistantStub({ id: "a-1" });
+    AssistantService.create = vi.fn().mockResolvedValue(created);
+    AssistantMessageService.findByAssistant = vi.fn().mockResolvedValue([]);
+
+    const { result } = renderHook(() => useAssistantContext(), {
+      wrapper: ({ children }) => <AssistantProvider>{children}</AssistantProvider>,
+    });
+    await act(async () => {
+      await result.current.sendMessage("hi", { howToMode: true });
+    });
+
+    expect(AssistantService.create).toHaveBeenCalledWith(
+      expect.objectContaining({ firstMessage: "hi", howToMode: true }),
+    );
+    replaceState.mockRestore();
+  });
+
+  it("forwards howToMode to AssistantService.appendMessage on follow-up send", async () => {
+    const existing = buildAssistantDehydrated({ id: "a-2", title: "Existing" });
+    AssistantService.appendMessage = vi.fn().mockResolvedValue([]);
+
+    const { result } = renderHook(() => useAssistantContext(), {
+      wrapper: ({ children }) => <AssistantProvider dehydratedAssistant={existing}>{children}</AssistantProvider>,
+    });
+    await act(async () => {
+      await result.current.sendMessage("follow up", { howToMode: true, limitToHowToId: "ht-1" });
+    });
+
+    expect(AssistantService.appendMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        assistantId: "a-2",
+        content: "follow up",
+        howToMode: true,
+        limitToHowToId: "ht-1",
+      }),
+    );
+  });
+
+  it("calls service without opts when called with content only (regression)", async () => {
+    const replaceState = vi.spyOn(window.history, "replaceState").mockImplementation(() => {});
+    const created = buildAssistantStub({ id: "a-1" });
+    AssistantService.create = vi.fn().mockResolvedValue(created);
+    AssistantMessageService.findByAssistant = vi.fn().mockResolvedValue([]);
+
+    const { result } = renderHook(() => useAssistantContext(), {
+      wrapper: ({ children }) => <AssistantProvider>{children}</AssistantProvider>,
+    });
+    await act(async () => {
+      await result.current.sendMessage("hi");
+    });
+
+    expect(AssistantService.create).toHaveBeenCalledWith(expect.objectContaining({ firstMessage: "hi" }));
+    const call = (AssistantService.create as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(call.howToMode).toBeUndefined();
+    expect(call.limitToHowToId).toBeUndefined();
+    replaceState.mockRestore();
   });
 
   it("sendMessage failure: optimistic message stays and its id lands in failedMessageIds", async () => {
@@ -335,7 +395,7 @@ describe("AssistantContext", () => {
       await result.current.sendMessage("oops").catch(() => {});
     });
 
-    const optimistic = result.current.messages.find((m) => m.id.startsWith("tmp-"));
+    const optimistic = result.current.messages.find((m) => m.isOptimistic);
     expect(optimistic).toBeDefined();
     expect(optimistic!.content).toBe("oops");
     expect(result.current.failedMessageIds.has(optimistic!.id)).toBe(true);
@@ -368,7 +428,7 @@ describe("AssistantContext", () => {
     });
 
     expect(result.current.failedMessageIds.has(failedId!)).toBe(false);
-    expect(result.current.messages.some((m) => m.id.startsWith("tmp-"))).toBe(false);
+    expect(result.current.messages.some((m) => m.isOptimistic)).toBe(false);
     expect(result.current.messages.map((m) => m.content)).toEqual(["retry-me", "ok"]);
     expect(appendMock).toHaveBeenCalledTimes(2);
   });

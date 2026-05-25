@@ -64,7 +64,11 @@ export function ContentsTab({ citations, sources }: Props) {
           } catch {
             return null;
           }
-          const href = generate({ page: module, id: source.id });
+          // Help-content HowTos are public articles, not admin records: route to
+          // /help/<mode>/<slug> instead of the module's /administration/howtos
+          // page when the entity carries a helpContentSlug.
+          const helpContentSlug = (source as any).helpContentSlug as string | undefined;
+          const href = helpContentSlug ? `/help/${helpContentSlug}` : generate({ page: module, id: source.id });
           const name = (source as any).name ?? source.identifier;
           return (
             <TableRow key={`${source.type}/${source.id}`}>

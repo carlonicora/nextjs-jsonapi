@@ -33,7 +33,8 @@ export function ReferencesTab({ references }: Props) {
           } catch {
             return null;
           }
-          const href = generate({ page: module, id: ref.id });
+          const helpContentSlug = (ref as any).helpContentSlug as string | undefined;
+          const href = helpContentSlug ? `/help/${helpContentSlug}` : generate({ page: module, id: ref.id });
           return (
             <TableRow key={`${ref.type}/${ref.id}`}>
               <TableCell>

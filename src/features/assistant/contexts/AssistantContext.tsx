@@ -20,7 +20,7 @@ interface AssistantContextValue {
   sending: boolean;
   status?: string;
   failedMessageIds: Set<string>;
-  sendMessage(content: string): Promise<void>;
+  sendMessage(content: string, opts?: { howToMode?: boolean; limitToHowToId?: string }): Promise<void>;
   retrySend(tempId: string): Promise<void>;
   selectThread(id: string): Promise<void>;
   startNew(): void;
@@ -34,10 +34,17 @@ interface Props {
   children: React.ReactNode;
   dehydratedAssistant?: JsonApiHydratedDataInterface;
   dehydratedMessages?: JsonApiHydratedDataInterface[];
+  /**
+   * When `true` (default), the provider mutates the browser URL on
+   * create/selectThread/startNew (e.g. `/assistants/{id}`). Set to `false`
+   * when the assistant is hosted inside a sheet / overlay so the user's
+   * current route is preserved.
+   */
+  manageUrl?: boolean;
 }
 
 function stripOptimistic(list: AssistantMessageInterface[]): AssistantMessageInterface[] {
-  return list.filter((m) => !m.id.startsWith("tmp-"));
+  return list.filter((m) => !m.isOptimistic);
 }
 
 function nextPosition(list: AssistantMessageInterface[]): number {
@@ -55,7 +62,12 @@ function withPatchedTitle(source: AssistantInterface, title: string): AssistantI
   });
 }
 
-export function AssistantProvider({ children, dehydratedAssistant, dehydratedMessages }: Props) {
+export function AssistantProvider({
+  children,
+  dehydratedAssistant,
+  dehydratedMessages,
+  manageUrl = true,
+}: Props) {
   const t = useTranslations();
   const generateUrl = usePageUrlGenerator();
 
@@ -73,7 +85,7 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
   const { socket } = useSocketContext();
 
   const sendMessage = useCallback(
-    async (content: string) => {
+    async (content: string, opts?: { howToMode?: boolean; limitToHowToId?: string }) => {
       const trimmed = content.trim();
       if (!trimmed) return;
 
@@ -94,18 +106,24 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
 
       try {
         if (!assistant) {
-          const created = await AssistantService.create({ firstMessage: trimmed });
+          const created = await AssistantService.create({
+            firstMessage: trimmed,
+            howToMode: opts?.howToMode,
+            limitToHowToId: opts?.limitToHowToId,
+          });
           const msgs = await AssistantMessageService.findByAssistant({ assistantId: created.id });
           setAssistant(created);
           setMessages(msgs);
           setThreads((prev) => [created, ...prev]);
-          if (typeof window !== "undefined") {
+          if (manageUrl && typeof window !== "undefined") {
             window.history.replaceState(null, "", `/assistants/${created.id}`);
           }
         } else {
           const result = await AssistantService.appendMessage({
             assistantId: assistant.id,
             content: trimmed,
+            howToMode: opts?.howToMode,
+            limitToHowToId: opts?.limitToHowToId,
           });
           setMessages((prev) => [...stripOptimistic(prev), ...result]);
         }
@@ -142,17 +160,20 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
     [messages, sendMessage],
   );
 
-  const selectThread = useCallback(async (id: string) => {
-    const [target, msgs] = await Promise.all([
-      AssistantService.findOne({ id }),
-      AssistantMessageService.findByAssistant({ assistantId: id }),
-    ]);
-    setAssistant(target);
-    setMessages(msgs);
-    if (typeof window !== "undefined") {
-      window.history.replaceState(null, "", `/assistants/${id}`);
-    }
-  }, []);
+  const selectThread = useCallback(
+    async (id: string) => {
+      const [target, msgs] = await Promise.all([
+        AssistantService.findOne({ id }),
+        AssistantMessageService.findByAssistant({ assistantId: id }),
+      ]);
+      setAssistant(target);
+      setMessages(msgs);
+      if (manageUrl && typeof window !== "undefined") {
+        window.history.replaceState(null, "", `/assistants/${id}`);
+      }
+    },
+    [manageUrl],
+  );
 
   const renameThread = useCallback(async (id: string, title: string) => {
     await AssistantService.rename({ id, title });
@@ -164,10 +185,10 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
     setAssistant(undefined);
     setMessages([]);
     setFailedMessageIds(new Set());
-    if (typeof window !== "undefined") {
+    if (manageUrl && typeof window !== "undefined") {
       window.history.replaceState(null, "", "/assistants");
     }
-  }, []);
+  }, [manageUrl]);
 
   const deleteThread = useCallback(async (id: string) => {
     await AssistantService.delete({ id });
