@@ -57,3 +57,7 @@ export * from "./features/rbac/rbac.module";
 // Assistant + AssistantMessage feature data
 export * from "./features/assistant/data";
 export * from "./features/assistant-message/data";
+
+// Help feature: NOT re-exported from the main barrel. Consumers must import from
+// the dedicated `@carlonicora/nextjs-jsonapi/help` subpath to keep the help-feature
+// surface (client contexts + server-only utilities) out of the main client bundle.

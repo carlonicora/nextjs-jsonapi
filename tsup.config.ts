@@ -14,6 +14,8 @@ const clientEntries = [
   "dist/testing/index.js",
   "dist/billing/index.mjs",
   "dist/billing/index.js",
+  "dist/features/help/index.mjs",
+  "dist/features/help/index.js",
 ];
 
 export default defineConfig({
@@ -26,6 +28,9 @@ export default defineConfig({
     "contexts/index": "src/contexts/index.ts",
     "testing/index": "src/testing/index.ts",
     "billing/index": "src/billing/index.ts",
+    "features/help/index": "src/features/help/index.ts",
+    "features/help/server": "src/features/help/server-entry.ts",
+    "features/help/server/createHelpAssetRouteHandler": "src/features/help/server/createHelpAssetRouteHandler.ts",
   },
   format: ["cjs", "esm"],
   // Enable splitting to keep dynamic imports as separate chunks

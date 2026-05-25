@@ -52,6 +52,21 @@
       "types": "./dist/billing/index.d.ts",
       "import": "./dist/billing/index.mjs",
       "require": "./dist/billing/index.js"
+    },
+    "./help-asset-route": {
+      "types": "./dist/features/help/server/createHelpAssetRouteHandler.d.ts",
+      "import": "./dist/features/help/server/createHelpAssetRouteHandler.mjs",
+      "require": "./dist/features/help/server/createHelpAssetRouteHandler.js"
+    },
+    "./help": {
+      "types": "./dist/features/help/index.d.ts",
+      "import": "./dist/features/help/index.mjs",
+      "require": "./dist/features/help/index.js"
+    },
+    "./help/server": {
+      "types": "./dist/features/help/server.d.ts",
+      "import": "./dist/features/help/server.mjs",
+      "require": "./dist/features/help/server.js"
     }
   },
   "scripts": {
@@ -139,6 +154,10 @@
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "^4.11.1",
     "recharts": "^3.8.1",
+    "fuse.js": "^7.0.0",
+    "next-mdx-remote": "^5.0.0",
+    "rehype-autolink-headings": "^7.1.0",
+    "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1",
     "shadcn": "^4.8.0",
     "shepherd.js": "^15.2.2",

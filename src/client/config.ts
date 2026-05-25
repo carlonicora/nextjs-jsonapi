@@ -2,6 +2,8 @@
 
 import { ModuleWithPermissions } from "../permissions/types";
 import { setBootstrapper } from "../core/registry/bootstrapStore";
+import { _setStaticHelpContent } from "../core/registry/helpStore";
+import type { HelpContentConfig } from "../features/help/interfaces/help-content-config.interface";
 
 // Config storage for client-side contexts
 let _clientConfig: {
@@ -16,6 +18,7 @@ let _clientConfig: {
 /**
  * Configure the JSON:API client. This is the main configuration function.
  * This is typically called during app initialization.
+ * @param config.helpContent - Optional help-content config (manifest, brand, onAskAi). Forwarded to the help feature's globalThis-backed store; not stored on the client config.
  */
 export function configureJsonApi(config: {
   apiUrl: string;
@@ -24,8 +27,13 @@ export function configureJsonApi(config: {
   bootstrapper?: () => void;
   additionalHeaders?: Record<string, string>;
   stripePublishableKey?: string;
+  helpContent?: HelpContentConfig;
 }): void {
-  _clientConfig = config;
+  const { helpContent, ...rest } = config;
+  _clientConfig = rest;
+  if (helpContent) {
+    _setStaticHelpContent(helpContent);
+  }
   // Register and call bootstrapper to register all modules
   if (config.bootstrapper) {
     setBootstrapper(config.bootstrapper);

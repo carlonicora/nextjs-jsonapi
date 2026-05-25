@@ -1,5 +1,16 @@
 import "@testing-library/jest-dom/vitest";
-import { vi } from "vitest";
+import { afterEach, vi } from "vitest";
+
+// Reset the help-feature globalThis store between tests so specs that depend
+// on a clean state (e.g. asserting HelpProvider throws when helpContent is
+// missing) don't see residue from earlier specs.
+const HELP_CONTENT_KEY = Symbol.for("nextjs-jsonapi:helpContent");
+const HELP_READER_KEY = Symbol.for("nextjs-jsonapi:helpReader");
+afterEach(() => {
+  const g = globalThis as unknown as Record<symbol, unknown>;
+  g[HELP_CONTENT_KEY] = null;
+  g[HELP_READER_KEY] = null;
+});
 
 // Mock next/navigation
 vi.mock("next/navigation", () => ({
