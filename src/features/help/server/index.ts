@@ -1,5 +1,5 @@
 export { getHelpContent } from "./getHelpContent";
-export { serializeHelpArticle } from "./serializeHelpArticle";
+export { renderHelpArticle, serializeHelpArticle } from "./serializeHelpArticle";
 export { generateHelpArticleStaticParams } from "./generateHelpArticleStaticParams";
 export { generateHelpArticleMetadata } from "./generateHelpArticleMetadata";
 export { generateHelpModeStaticParams } from "./generateHelpModeStaticParams";

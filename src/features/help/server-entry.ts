@@ -11,7 +11,7 @@
 // `@carlonicora/nextjs-jsonapi/help` and server utilities from here.
 
 export { getHelpContent } from "./server/getHelpContent";
-export { serializeHelpArticle } from "./server/serializeHelpArticle";
+export { renderHelpArticle, serializeHelpArticle } from "./server/serializeHelpArticle";
 export { generateHelpArticleStaticParams, generateHelpArticleMetadata, generateHelpModeStaticParams } from "./server";
 export { findHelpArticle, prevNextWithinMode, buildHelpNav } from "./utils/helpNavigation";
 export { setHelpReader } from "../../core/registry/helpStore";
