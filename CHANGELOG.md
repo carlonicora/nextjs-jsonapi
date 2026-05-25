@@ -1,3 +1,18 @@
+## [1.109.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.108.0...v1.109.0) (2026-05-25)
+
+### 🚀 Features
+
+* **help/assistant:** help "Ask AI" sheet + HowTo help-content integration ([df182db](https://github.com/carlonicora/nextjs-jsonapi/commit/df182db3c2d525243cc7258260f11daeffd95e5a))
+* **help:** add help-content frontend feature behind /help and /help/server subpaths ([13faaf5](https://github.com/carlonicora/nextjs-jsonapi/commit/13faaf50af0971d2e3d02b082e78466c2b8488fd))
+
+### 🐛 Bug Fixes
+
+* **help:** render MDX via next-mdx-remote/rsc; use locale-stable date formatter ([e08827b](https://github.com/carlonicora/nextjs-jsonapi/commit/e08827b3c28df5bb9e97dc1e0656c893fd8beacc))
+
+### 💎 Styles
+
+* apply eslint --fix formatting ([a6bea3c](https://github.com/carlonicora/nextjs-jsonapi/commit/a6bea3ccd0d064f9236adf9c9b9c99af93fbebcc))
+
 ## [1.108.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.107.1...v1.108.0) (2026-05-24)
 
 ### 🚀 Features
