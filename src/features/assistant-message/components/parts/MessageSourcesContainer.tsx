@@ -20,6 +20,10 @@ class SourcesFetcher extends ClientAbstractService {
   }): Promise<ApiDataInterface[]> {
     const endpoint = new EndpointCreator({ endpoint: params.module });
     endpoint.addAdditionalParam(params.idsParam, params.ids.join(","));
+    // The list endpoint paginates and does not honour the `<x>Ids` filter, so a cited
+    // entity beyond the default first page never comes back and its citation falls back
+    // to "<Type> <id>". Request the full set and resolve client-side by id.
+    endpoint.addAdditionalParam("fetchAll", "true");
     if (params.module.inclusions?.lists?.fields) endpoint.limitToFields(params.module.inclusions.lists.fields);
     if (params.module.inclusions?.lists?.types) endpoint.limitToType(params.module.inclusions.lists.types);
     return this.callApi<ApiDataInterface[]>({

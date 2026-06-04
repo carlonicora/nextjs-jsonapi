@@ -1,5 +1,3 @@
-import type { HelpArticle, HelpRedirect } from "../types/help-article.types";
-
 export interface HelpBrandConfig {
   /** URL of the brand logo image (served by the consuming app). */
   logo?: string;
@@ -10,8 +8,5 @@ export interface HelpBrandConfig {
 }
 
 export interface HelpContentConfig {
-  manifest: readonly HelpArticle[];
-  namespaceUuid: string;
-  redirects?: readonly HelpRedirect[];
   brand?: HelpBrandConfig;
 }

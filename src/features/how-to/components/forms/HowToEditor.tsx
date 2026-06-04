@@ -3,12 +3,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon, SearchIcon, XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { ReactNode, useCallback, useMemo, useState } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import { z } from "zod";
 
-import { EditorSheet, FormInput } from "../../../../components";
+import { EditorSheet, FormInput, FormSelect, FormTextarea, FormCheckbox } from "../../../../components";
 import { BlockNoteEditorContainer } from "../../../../components";
 import { ModuleRegistry, Modules } from "../../../../core";
 import { useI18nRouter } from "../../../../hooks";
@@ -27,6 +27,9 @@ import {
 import { HowTo } from "../../data/HowTo";
 import { HowToInput, HowToInterface } from "../../data/HowToInterface";
 import { HowToService } from "../../data/HowToService";
+import HowToMultiSelector from "./HowToMultiSelector";
+
+const HOW_TO_TYPES = ["tutorial", "how-to", "reference", "explanation"] as const;
 
 function PageSelector({
   value,
@@ -140,6 +143,14 @@ function HowToEditorInternal({
         name: z.string().min(1, { message: t(`howto.fields.name.error`) }),
         description: z.any(),
         pages: z.array(z.string()),
+        howToType: z.enum(HOW_TO_TYPES),
+        slug: z.string().min(1, { message: t(`howto.fields.slug.error`) }),
+        order: z.number().int().min(0),
+        summary: z.string().optional(),
+        tags: z.string().optional(),
+        contextualKeys: z.string().optional(),
+        draft: z.boolean().optional(),
+        relatedArticles: z.array(z.object({ id: z.string().uuid(), name: z.string() })).optional(),
       }),
     [t],
   );
@@ -150,6 +161,14 @@ function HowToEditorInternal({
       name: howTo?.name || "",
       description: howTo?.description || [],
       pages: HowTo.parsePagesFromString(howTo?.pages),
+      howToType: (howTo?.howToType as (typeof HOW_TO_TYPES)[number]) ?? "how-to",
+      slug: howTo?.slug ?? "",
+      order: howTo?.order ?? 0,
+      summary: howTo?.summary ?? "",
+      tags: (howTo?.tags ?? []).join(", "),
+      contextualKeys: (howTo?.contextualKeys ?? []).join(", "),
+      draft: howTo?.draft ?? false,
+      relatedArticles: [] as { id: string; name: string }[],
     }),
     [howTo],
   );
@@ -158,6 +177,26 @@ function HowToEditorInternal({
     resolver: zodResolver(formSchema),
     defaultValues: getDefaultValues(),
   });
+
+  const initialRelatedIds = useRef<string[]>([]);
+  useEffect(() => {
+    if (!howTo?.howToType || !howTo?.slug) return;
+    let active = true;
+    HowToService.findRelated({ howToType: howTo.howToType, slug: howTo.slug })
+      .then((list) => {
+        if (!active) return;
+        initialRelatedIds.current = list.map((r) => r.id);
+        form.setValue(
+          "relatedArticles",
+          list.map((r) => ({ id: r.id, name: r.name })),
+          { shouldDirty: false },
+        );
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [howTo, form]);
 
   const handleDescriptionChange = useCallback(
     (content: any) => {
@@ -191,17 +230,40 @@ function HowToEditorInternal({
       propagateChanges={propagateChanges}
       size="lg"
       onSubmit={async (values) => {
+        const toList = (s?: string) =>
+          (s ?? "")
+            .split(",")
+            .map((x) => x.trim())
+            .filter(Boolean);
+
         const payload: HowToInput = {
           id: values.id,
           name: values.name,
           authorId: "",
           description: values.description,
           pages: HowTo.serializePagesToString(values.pages),
+          howToType: values.howToType,
+          slug: values.slug,
+          order: values.order,
+          summary: values.summary,
+          tags: toList(values.tags),
+          contextualKeys: toList(values.contextualKeys),
+          draft: values.draft ?? false,
         };
 
-        const updatedHowTo = howTo ? await HowToService.update(payload) : await HowToService.create(payload);
+        const saved = howTo ? await HowToService.update(payload) : await HowToService.create(payload);
 
-        return updatedHowTo;
+        const desired = new Set((values.relatedArticles ?? []).map((r) => r.id));
+        const current = new Set(initialRelatedIds.current);
+        for (const relatedId of desired) {
+          if (!current.has(relatedId)) await HowToService.addRelated({ howToId: values.id, relatedId });
+        }
+        for (const relatedId of current) {
+          if (!desired.has(relatedId)) await HowToService.removeRelated({ howToId: values.id, relatedId });
+        }
+        initialRelatedIds.current = Array.from(desired);
+
+        return saved;
       }}
       onReset={() => {
         return getDefaultValues();
@@ -221,6 +283,28 @@ function HowToEditorInternal({
           name={t(`howto.fields.name.label`)}
           placeholder={t(`howto.fields.name.placeholder`)}
           isRequired
+        />
+        <FormSelect
+          form={form}
+          id="howToType"
+          name={t(`howto.fields.howToType.label`)}
+          placeholder={t(`howto.fields.howToType.placeholder`)}
+          values={HOW_TO_TYPES.map((m) => ({ id: m, text: t(`howto.howToType.${m}` as any) }))}
+          isRequired
+        />
+        <FormInput
+          form={form}
+          id="slug"
+          name={t(`howto.fields.slug.label`)}
+          placeholder={t(`howto.fields.slug.placeholder`)}
+          isRequired
+        />
+        <FormInput form={form} id="order" name={t(`howto.fields.order.label`)} type="number" />
+        <FormTextarea
+          form={form}
+          id="summary"
+          name={t(`howto.fields.summary.label`)}
+          placeholder={t(`howto.fields.summary.placeholder`)}
         />
         <div className="space-y-2">
           <Label>{t(`howto.fields.description.label`)}</Label>
@@ -260,6 +344,26 @@ function HowToEditorInternal({
             </Button>
           </div>
         </div>
+        <FormInput
+          form={form}
+          id="tags"
+          name={t(`howto.fields.tags.label`)}
+          placeholder={t(`howto.fields.tags.placeholder`)}
+        />
+        <FormInput
+          form={form}
+          id="contextualKeys"
+          name={t(`howto.fields.contextualKeys.label`)}
+          placeholder={t(`howto.fields.contextualKeys.placeholder`)}
+        />
+        <HowToMultiSelector
+          id="relatedArticles"
+          form={form}
+          currentHowTo={howTo}
+          label={t(`howto.fields.relatedArticles.label`)}
+          placeholder={t(`howto.fields.relatedArticles.placeholder`)}
+        />
+        <FormCheckbox form={form} id="draft" name={t(`howto.fields.draft.label`)} />
       </div>
     </EditorSheet>
   );

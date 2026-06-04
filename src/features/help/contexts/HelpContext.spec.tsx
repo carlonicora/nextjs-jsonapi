@@ -6,8 +6,6 @@ import { HelpProvider, useHelp } from "./HelpContext";
 
 describe("HelpProvider / useHelp", () => {
   const cfg = {
-    manifest: [],
-    namespaceUuid: "00000000-0000-5000-8000-000000000000",
     brand: { logo: "/logo.png", label: "Test", appHref: "/" },
   };
 
@@ -18,8 +16,8 @@ describe("HelpProvider / useHelp", () => {
   it("exposes the configured helpContent via useHelp()", () => {
     const wrapper = ({ children }: { children: ReactNode }) => <HelpProvider>{children}</HelpProvider>;
     const { result } = renderHook(() => useHelp(), { wrapper });
-    expect(result.current.manifest).toBe(cfg.manifest);
     expect(result.current.brand?.label).toBe("Test");
+    expect(result.current.brand?.appHref).toBe("/");
   });
 
   it("throws when useHelp() is called outside HelpProvider", () => {

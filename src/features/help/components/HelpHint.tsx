@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { HelpCircleIcon } from "lucide-react";
@@ -13,20 +13,29 @@ import {
   SheetDescription,
 } from "../../../shadcnui";
 import { usePageUrlGenerator } from "../../../client";
-import { useHelp } from "../contexts/HelpContext";
-import { articleUrl } from "../utils/articleUrl";
-import type { HelpArticle } from "../types/help-article.types";
+import { HowToService } from "../../how-to/data/HowToService";
+import type { HowToInterface } from "../../how-to/data/HowToInterface";
 
 export function HelpHint({ contextKey }: { contextKey: string }) {
   const t = useTranslations();
   const generateUrl = usePageUrlGenerator();
-  const { manifest } = useHelp();
   const [open, setOpen] = useState(false);
-  const [picked, setPicked] = useState<HelpArticle | null>(null);
+  const [picked, setPicked] = useState<HowToInterface | null>(null);
+
+  const [articles, setArticles] = useState<HowToInterface[]>([]);
+  useEffect(() => {
+    let active = true;
+    HowToService.findPublished()
+      .then((list) => active && setArticles(list))
+      .catch(() => active && setArticles([]));
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const matches = useMemo(
-    () => manifest.filter((a) => a.contextualKeys.includes(contextKey) && !a.draft),
-    [manifest, contextKey],
+    () => articles.filter((a) => a.contextualKeys.includes(contextKey) && !a.draft),
+    [articles, contextKey],
   );
 
   if (matches.length === 0) return null;
@@ -45,13 +54,13 @@ export function HelpHint({ contextKey }: { contextKey: string }) {
       </SheetTrigger>
       <SheetContent side="right" className="w-full max-w-md sm:max-w-lg">
         <SheetHeader>
-          <SheetTitle>{active ? active.title : t("help.hint.pickArticle")}</SheetTitle>
+          <SheetTitle>{active ? active.name : t("help.hint.pickArticle")}</SheetTitle>
           <SheetDescription>{active?.summary ?? ""}</SheetDescription>
         </SheetHeader>
         {active ? (
           <div className="mt-4 space-y-3">
             <p className="text-muted-foreground text-sm">{active.summary}</p>
-            <Link href={articleUrl(generateUrl, active)} className="text-sm">
+            <Link href={generateUrl({ page: `/help/${active.howToType}/${active.slug}` })} className="text-sm">
               {t("help.hint.viewArticle")}
             </Link>
           </div>
@@ -64,7 +73,7 @@ export function HelpHint({ contextKey }: { contextKey: string }) {
                   onClick={() => setPicked(a)}
                   className="hover:bg-muted block w-full rounded px-2 py-1 text-left text-sm"
                 >
-                  <div className="font-medium">{a.title}</div>
+                  <div className="font-medium">{a.name}</div>
                   <div className="text-muted-foreground text-xs">{a.summary}</div>
                 </button>
               </li>

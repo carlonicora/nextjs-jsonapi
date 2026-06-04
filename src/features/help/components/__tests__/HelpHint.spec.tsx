@@ -1,50 +1,50 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { render, screen, waitFor } from "@testing-library/react";
 import { configureJsonApi } from "../../../../client/config";
 import { HelpProvider } from "../../contexts/HelpContext";
 import { HelpHint } from "../HelpHint";
+import { HowToService } from "../../../how-to/data/HowToService";
+
+vi.mock("../../../how-to/data/HowToService", () => ({
+  HowToService: { findPublished: vi.fn() },
+}));
 
 const article = {
   id: "1",
   slug: "x",
-  mode: "how-to",
-  title: "X",
+  howToType: "how-to",
+  name: "X",
   summary: "S",
-  order: 1,
-  tags: [],
   contextualKeys: ["npc.editor"],
-  aiIndexed: true,
   draft: false,
-  contentHash: "h",
-  path: "how-to/x.mdx",
-  headings: [],
-  relatedSlugs: [],
-  lastUpdated: "2026-01-01T00:00:00Z",
-};
+} as any;
 
 beforeEach(() => {
+  vi.clearAllMocks();
+  vi.mocked(HowToService.findPublished).mockResolvedValue([article]);
   configureJsonApi({
     apiUrl: "http://localhost",
-    helpContent: { manifest: [article], namespaceUuid: "00000000-0000-5000-8000-000000000000" },
+    helpContent: { brand: { label: "narr8" } },
   });
 });
 
 describe("HelpHint", () => {
-  it("renders null when no article matches the contextKey", () => {
+  it("renders null when no published article matches the contextKey", async () => {
     const { container } = render(
       <HelpProvider>
         <HelpHint contextKey="nope.absent" />
       </HelpProvider>,
     );
+    await waitFor(() => expect(HowToService.findPublished).toHaveBeenCalled());
     expect(container.querySelector("button")).toBeNull();
   });
 
-  it("renders the trigger when at least one article matches", () => {
+  it("renders the trigger when at least one published article matches", async () => {
     render(
       <HelpProvider>
         <HelpHint contextKey="npc.editor" />
       </HelpProvider>,
     );
-    expect(screen.getByLabelText(/help on this|hint/i)).toBeTruthy();
+    expect(await screen.findByLabelText(/help on this|hint/i)).toBeTruthy();
   });
 });

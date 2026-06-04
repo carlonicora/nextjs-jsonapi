@@ -33,8 +33,9 @@ export function ReferencesTab({ references }: Props) {
           } catch {
             return null;
           }
-          const helpContentSlug = (ref as any).helpContentSlug as string | undefined;
-          const href = helpContentSlug ? `/help/${helpContentSlug}` : generate({ page: module, id: ref.id });
+          const howToType = (ref as any).howToType as string | undefined;
+          const slug = (ref as any).slug as string | undefined;
+          const href = howToType && slug ? `/help/${howToType}/${slug}` : generate({ page: module, id: ref.id });
           return (
             <TableRow key={`${ref.type}/${ref.id}`}>
               <TableCell>

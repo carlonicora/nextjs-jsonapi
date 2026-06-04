@@ -1,48 +1,56 @@
 "use client";
+
 import { ReactNode } from "react";
 import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
-import type { HelpArticle } from "../types/help-article.types";
 import { usePageUrlGenerator } from "../../../client";
-import { useHelp } from "../contexts/HelpContext";
-import { articleUrl } from "../utils/articleUrl";
-import { prevNextWithinMode } from "../utils/helpNavigation";
 
-export function HelpArticleBody({ article, children }: { article: HelpArticle; children: ReactNode }) {
+type Sibling = { howToType: string; slug: string; title: string };
+
+export function HelpArticleBody(props: {
+  howToType: string;
+  title: string;
+  summary?: string;
+  updatedAt?: string;
+  prev?: Sibling | null;
+  next?: Sibling | null;
+  children: ReactNode;
+}) {
   const t = useTranslations();
   const format = useFormatter();
   const generateUrl = usePageUrlGenerator();
-  const { manifest } = useHelp();
-  const { prev, next } = prevNextWithinMode(manifest, article);
+  const { howToType, title, summary, updatedAt, prev, next, children } = props;
 
   return (
     <article className="prose dark:prose-invert max-w-none">
       <nav className="text-muted-foreground mb-2 text-xs">
         <Link href={generateUrl({ page: "/help" })}>Help</Link>
         {" · "}
-        <Link href={generateUrl({ page: `/help/${article.mode}` })}>{t(`help.modes.${article.mode}`)}</Link>
+        <Link href={generateUrl({ page: `/help/${howToType}` })}>{t(`help.modes.${howToType}`)}</Link>
       </nav>
-      <h1>{article.title}</h1>
-      <p className="text-muted-foreground !mt-0 text-base">{article.summary}</p>
+      <h1>{title}</h1>
+      {summary ? <p className="text-muted-foreground !mt-0 text-base">{summary}</p> : null}
       {children}
       <hr className="my-6" />
-      <div className="text-muted-foreground text-xs">
-        <span>
-          {t("help.article.lastUpdated", {
-            date: format.dateTime(new Date(article.lastUpdated), { dateStyle: "short" }),
-          })}
-        </span>
-      </div>
+      {updatedAt ? (
+        <div className="text-muted-foreground text-xs">
+          <span>
+            {t("help.article.lastUpdated", {
+              date: format.dateTime(new Date(updatedAt), { dateStyle: "short" }),
+            })}
+          </span>
+        </div>
+      ) : null}
       <div className="mt-4 flex justify-between text-sm">
         {prev ? (
-          <Link href={articleUrl(generateUrl, prev)} className="hover:underline">
+          <Link href={generateUrl({ page: `/help/${prev.howToType}/${prev.slug}` })} className="hover:underline">
             ← {t("help.article.previous")}: {prev.title}
           </Link>
         ) : (
           <span />
         )}
         {next ? (
-          <Link href={articleUrl(generateUrl, next)} className="hover:underline">
+          <Link href={generateUrl({ page: `/help/${next.howToType}/${next.slug}` })} className="hover:underline">
             {t("help.article.next")}: {next.title} →
           </Link>
         ) : (

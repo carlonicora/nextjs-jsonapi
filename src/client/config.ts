@@ -18,7 +18,7 @@ let _clientConfig: {
 /**
  * Configure the JSON:API client. This is the main configuration function.
  * This is typically called during app initialization.
- * @param config.helpContent - Optional help-content config (manifest, brand, redirects). Forwarded to the help feature's globalThis-backed store; not stored on the client config.
+ * @param config.helpContent - Optional help-content config (brand only). Forwarded to the help feature's globalThis-backed store; not stored on the client config.
  */
 export function configureJsonApi(config: {
   apiUrl: string;

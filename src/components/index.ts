@@ -6,6 +6,7 @@ export * from "./containers";
 export * from "./contents";
 export * from "./details";
 export * from "./editors";
+export { BlockNoteViewerContainer } from "./viewers/BlockNoteViewerContainer";
 export * from "./errors";
 export * from "./forms";
 export * from "./navigations";

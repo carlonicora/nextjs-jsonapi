@@ -1,7 +1,6 @@
 /**
- * Local copy of the help-article types to keep this published frontend library
- * decoupled from `@carlonicora/nestjs-neo4jsonapi`. Must stay in sync with
- * `packages/nestjs-neo4jsonapi/src/foundations/help-content-sync/interfaces/help-article.interface.ts`.
+ * Help-article types for the frontend help feature. Self-contained — the
+ * published frontend library stays decoupled from `@carlonicora/nestjs-neo4jsonapi`.
  */
 
 export const HELP_MODES = ["tutorial", "how-to", "reference", "explanation"] as const;
@@ -24,7 +23,6 @@ export interface HelpArticle {
   contextualKeys: readonly string[];
   aiIndexed: boolean;
   draft: boolean;
-  contentHash: string;
   path: string;
   headings: readonly HelpHeading[];
   relatedSlugs: readonly string[];

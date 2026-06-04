@@ -58,4 +58,65 @@ export class HowToService extends AbstractService {
       endpoint: new EndpointCreator({ endpoint: Modules.HowTo, id: params.howToId }).generate(),
     });
   }
+
+  static async findPublished(params: { howToType?: string } = {}): Promise<HowToInterface[]> {
+    const endpoint = new EndpointCreator({ endpoint: `public/${Modules.HowTo.name}` });
+    if (params.howToType) endpoint.addAdditionalParam("type", params.howToType);
+    return this.callApi({
+      type: Modules.HowTo,
+      method: HttpMethod.GET,
+      endpoint: endpoint.generate(),
+    });
+  }
+
+  static async findPublishedArticle(params: { howToType: string; slug: string }): Promise<HowToInterface> {
+    return this.callApi<HowToInterface>({
+      type: Modules.HowTo,
+      method: HttpMethod.GET,
+      endpoint: new EndpointCreator({
+        endpoint: `public/${Modules.HowTo.name}`,
+        id: params.howToType,
+        childEndpoint: params.slug,
+      }).generate(),
+    });
+  }
+
+  static async findRelated(params: { howToType: string; slug: string }): Promise<HowToInterface[]> {
+    return this.callApi({
+      type: Modules.HowTo,
+      method: HttpMethod.GET,
+      endpoint: new EndpointCreator({
+        endpoint: `public/${Modules.HowTo.name}`,
+        id: params.howToType,
+        childEndpoint: params.slug,
+        childId: "related",
+      }).generate(),
+    });
+  }
+
+  static async addRelated(params: { howToId: string; relatedId: string }): Promise<HowToInterface> {
+    return this.callApi<HowToInterface>({
+      type: Modules.HowTo,
+      method: HttpMethod.POST,
+      endpoint: new EndpointCreator({
+        endpoint: Modules.HowTo,
+        id: params.howToId,
+        childEndpoint: "related",
+        childId: params.relatedId,
+      }).generate(),
+    });
+  }
+
+  static async removeRelated(params: { howToId: string; relatedId: string }): Promise<void> {
+    await this.callApi({
+      type: Modules.HowTo,
+      method: HttpMethod.DELETE,
+      endpoint: new EndpointCreator({
+        endpoint: Modules.HowTo,
+        id: params.howToId,
+        childEndpoint: "related",
+        childId: params.relatedId,
+      }).generate(),
+    });
+  }
 }

@@ -1,37 +1,34 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { render, screen, waitFor } from "@testing-library/react";
 import { Command, CommandList } from "../../../../shadcnui";
 import { configureJsonApi } from "../../../../client/config";
 import { HelpProvider } from "../../contexts/HelpContext";
 import { HelpSearchResultRow } from "../HelpSearchResultRow";
+import { HowToService } from "../../../how-to/data/HowToService";
+
+vi.mock("../../../how-to/data/HowToService", () => ({
+  HowToService: { findOne: vi.fn() },
+}));
 
 const article = {
   id: "abc",
   slug: "x",
-  mode: "how-to" as const,
-  title: "X title",
+  howToType: "how-to",
+  name: "X title",
   summary: "S",
-  order: 1,
-  tags: [],
-  contextualKeys: [],
-  aiIndexed: true,
-  draft: false,
-  contentHash: "h",
-  path: "how-to/x.mdx",
-  headings: [],
-  relatedSlugs: [],
-  lastUpdated: "2026-01-01T00:00:00Z",
-};
+} as any;
 
 beforeEach(() => {
+  vi.clearAllMocks();
   configureJsonApi({
     apiUrl: "http://localhost",
-    helpContent: { manifest: [article], namespaceUuid: "00000000-0000-5000-8000-000000000000" },
+    helpContent: { brand: { label: "narr8" } },
   });
 });
 
 describe("HelpSearchResultRow", () => {
-  it("renders the article title when manifest contains the id", () => {
+  it("renders the article title when the service returns the how-to", async () => {
+    vi.mocked(HowToService.findOne).mockResolvedValue(article);
     render(
       <HelpProvider>
         <Command>
@@ -41,10 +38,11 @@ describe("HelpSearchResultRow", () => {
         </Command>
       </HelpProvider>,
     );
-    expect(screen.getByText("X title")).toBeTruthy();
+    expect(await screen.findByText("X title")).toBeTruthy();
   });
 
-  it("renders disabled removed-state row when id is missing", () => {
+  it("renders disabled removed-state row when the service has no how-to", async () => {
+    vi.mocked(HowToService.findOne).mockRejectedValue(new Error("not found"));
     render(
       <HelpProvider>
         <Command>
@@ -54,6 +52,7 @@ describe("HelpSearchResultRow", () => {
         </Command>
       </HelpProvider>,
     );
+    await waitFor(() => expect(HowToService.findOne).toHaveBeenCalledWith({ id: "ghost" }));
     expect(screen.queryByText("X title")).toBeNull();
   });
 });

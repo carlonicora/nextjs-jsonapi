@@ -53,11 +53,6 @@
       "import": "./dist/billing/index.mjs",
       "require": "./dist/billing/index.js"
     },
-    "./help-asset-route": {
-      "types": "./dist/features/help/server/createHelpAssetRouteHandler.d.ts",
-      "import": "./dist/features/help/server/createHelpAssetRouteHandler.mjs",
-      "require": "./dist/features/help/server/createHelpAssetRouteHandler.js"
-    },
     "./help": {
       "types": "./dist/features/help/index.d.ts",
       "import": "./dist/features/help/index.mjs",

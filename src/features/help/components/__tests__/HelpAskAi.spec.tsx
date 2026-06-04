@@ -17,7 +17,7 @@ vi.mock("../HelpAssistantSheet", () => ({
 function setupConfig() {
   configureJsonApi({
     apiUrl: "http://localhost",
-    helpContent: { manifest: [], namespaceUuid: "00000000-0000-5000-8000-000000000000" },
+    helpContent: { brand: { label: "narr8" } },
   });
 }
 

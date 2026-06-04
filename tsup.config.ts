@@ -30,7 +30,6 @@ export default defineConfig({
     "billing/index": "src/billing/index.ts",
     "features/help/index": "src/features/help/index.ts",
     "features/help/server": "src/features/help/server-entry.ts",
-    "features/help/server/createHelpAssetRouteHandler": "src/features/help/server/createHelpAssetRouteHandler.ts",
   },
   format: ["cjs", "esm"],
   // Enable splitting to keep dynamic imports as separate chunks

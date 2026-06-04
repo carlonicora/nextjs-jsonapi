@@ -1,50 +1,48 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { configureJsonApi } from "../../../../client/config";
 import { HelpProvider } from "../../contexts/HelpContext";
 import { HelpSideNav } from "../HelpSideNav";
 
-const base = {
-  tags: [],
-  contextualKeys: [],
-  aiIndexed: true,
-  draft: false,
-  contentHash: "h",
-  headings: [],
-  relatedSlugs: [],
-  lastUpdated: "2026-01-01T00:00:00Z",
-};
+// HelpSideNav now sources its list from the public API via
+// HowToService.findPublished() (Plan 3b) instead of the help manifest, so the
+// test mocks the service rather than seeding the manifest.
+vi.mock("../../../how-to/data/HowToService", () => ({
+  HowToService: { findPublished: vi.fn() },
+}));
+import { HowToService } from "../../../how-to/data/HowToService";
+
+const published = [
+  { id: "a", name: "Alpha", summary: "s", tags: [], howToType: "how-to", slug: "a", order: 1, draft: false },
+  { id: "b", name: "Beta", summary: "s", tags: [], howToType: "how-to", slug: "b", order: 2, draft: false },
+];
 
 beforeEach(() => {
   configureJsonApi({
     apiUrl: "http://localhost",
-    helpContent: {
-      manifest: [
-        { ...base, id: "a", slug: "a", mode: "how-to", title: "Alpha", summary: "s", order: 1, path: "how-to/a.mdx" },
-        { ...base, id: "b", slug: "b", mode: "how-to", title: "Beta", summary: "s", order: 2, path: "how-to/b.mdx" },
-      ],
-      namespaceUuid: "00000000-0000-5000-8000-000000000000",
-    },
+    helpContent: { brand: { label: "narr8" } },
   });
+  (HowToService.findPublished as ReturnType<typeof vi.fn>).mockResolvedValue(published as any);
 });
 
 describe("HelpSideNav", () => {
-  it("lists every non-draft article", () => {
+  it("lists every non-draft article", async () => {
     render(
       <HelpProvider>
         <HelpSideNav />
       </HelpProvider>,
     );
-    expect(screen.getByText("Alpha")).toBeTruthy();
-    expect(screen.getByText("Beta")).toBeTruthy();
+    expect(await screen.findByText("Alpha")).toBeTruthy();
+    expect(await screen.findByText("Beta")).toBeTruthy();
   });
 
-  it("filters by query", () => {
+  it("filters by query", async () => {
     render(
       <HelpProvider>
         <HelpSideNav />
       </HelpProvider>,
     );
+    await screen.findByText("Alpha");
     fireEvent.change(screen.getByPlaceholderText(/filter/i), { target: { value: "Bet" } });
     expect(screen.queryByText("Alpha")).toBeNull();
     expect(screen.getByText("Beta")).toBeTruthy();
