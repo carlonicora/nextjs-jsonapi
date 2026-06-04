@@ -1,3 +1,9 @@
+## [1.110.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.109.0...v1.110.0) (2026-06-04)
+
+### 🚀 Features
+
+* **help:** drive the help UI from the HowTo API instead of the MDX manifest ([257be55](https://github.com/carlonicora/nextjs-jsonapi/commit/257be55998c82f0ed2a9ab784df098e6c50d1789))
+
 ## [1.109.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.108.0...v1.109.0) (2026-05-25)
 
 ### 🚀 Features
