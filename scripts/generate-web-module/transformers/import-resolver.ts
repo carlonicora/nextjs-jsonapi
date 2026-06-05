@@ -177,7 +177,6 @@ export interface ModuleFilePaths {
   selector: string;
   multiSelector: string;
   list: string;
-  details: string;
   content: string;
   container: string;
   listContainer: string;
@@ -220,7 +219,6 @@ export function buildFilePaths(
     selector: `${basePath}/components/forms/${names.pascalCase}Selector.tsx`,
     multiSelector: `${basePath}/components/forms/${names.pascalCase}MultiSelector.tsx`,
     list: `${basePath}/components/lists/${names.pascalCase}List.tsx`,
-    details: `${basePath}/components/details/${names.pascalCase}Details.tsx`,
     content: `${basePath}/components/details/${names.pascalCase}Content.tsx`,
     container: `${basePath}/components/containers/${names.pascalCase}Container.tsx`,
     listContainer: `${basePath}/components/containers/${names.pascalCase}ListContainer.tsx`,

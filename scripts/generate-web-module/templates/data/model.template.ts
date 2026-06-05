@@ -4,9 +4,33 @@
  * Generates {Module}.ts class file with rehydrate and createJsonApi methods.
  */
 
-import { pluralize, toCamelCase } from "../../transformers/name-transformer";
+import { pluralize, toCamelCase, toPascalCase } from "../../transformers/name-transformer";
+import { resolveRelationshipKey } from "../../transformers/relationship-key";
 import { AUTHOR_VARIANT } from "../../types/field-mapping.types";
-import { FrontendField, FrontendTemplateData } from "../../types/template-data.interface";
+import { FrontendField, FrontendRelationship, FrontendTemplateData } from "../../types/template-data.interface";
+
+/**
+ * Build the named `<Pascal>RelationshipMeta` interface name for a relationship
+ * that carries edge fields (mirrors live Opportunity.ts / OpportunityInterface.ts).
+ *
+ * These named interfaces are declared in the module's OWN `<Module>Interface.ts`
+ * (emitted by interface.template.ts), so the model imports them from there.
+ */
+function relMetaName(rel: FrontendRelationship): string {
+  return `${toPascalCase(rel.alias ?? rel.name)}RelationshipMeta`;
+}
+
+/**
+ * Determine whether the model needs the `formatLocalDate` helper imported.
+ *
+ * True when any data field is a date/datetime, or any relationship edge field
+ * is a date/datetime (edge dates would also be serialized via the helper).
+ */
+function hasDateField(data: FrontendTemplateData): boolean {
+  const fieldIsDate = (type: string) => type === "date" || type === "datetime";
+  if (data.fields.some((f) => fieldIsDate(f.type))) return true;
+  return data.relationships.some((rel) => (rel.fields ?? []).some((f) => fieldIsDate(f.type)));
+}
 
 /**
  * Generate the model file content
@@ -46,9 +70,20 @@ function generateImports(data: FrontendTemplateData): string {
   const { names, extendsContent, relationships } = data;
   const imports: string[] = [];
 
-  // Own interface import
+  // Own interface import — also pull in the named `<Pascal>RelationshipMeta`
+  // interfaces, which are all declared in this module's own Interface file.
+  const ownNamedImports = [`${names.pascalCase}Input`, `${names.pascalCase}Interface`];
+  const seenMeta = new Set<string>();
+  relationships.forEach((rel) => {
+    if (!rel.fields || rel.fields.length === 0) return;
+    const metaName = relMetaName(rel);
+    if (seenMeta.has(metaName)) return;
+    seenMeta.add(metaName);
+    ownNamedImports.push(metaName);
+  });
+  ownNamedImports.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
   imports.push(
-    `import { ${names.pascalCase}Input, ${names.pascalCase}Interface } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";`,
+    `import { ${ownNamedImports.join(", ")} } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}Interface";`,
   );
 
   // Relationship interface imports (deduplicated, skip self-referential)
@@ -62,13 +97,16 @@ function generateImports(data: FrontendTemplateData): string {
     imports.push(`import { ${rel.interfaceName} } from "${rel.interfaceImportPath}";`);
   });
 
-  // Base class and core imports
+  // Base class and core imports (sorted case-insensitively to match live output)
+  const byName = (a: string, b: string) => a.toLowerCase().localeCompare(b.toLowerCase());
+  const coreNames = ["JsonApiHydratedDataInterface", "Modules"];
+  if (hasDateField(data)) coreNames.push("formatLocalDate");
   if (extendsContent) {
     imports.push(`import { Content } from "@/features/content/data/Content";`);
-    imports.push(`import { JsonApiHydratedDataInterface, Modules } from "@carlonicora/nextjs-jsonapi/core";`);
+    imports.push(`import { ${coreNames.sort(byName).join(", ")} } from "@carlonicora/nextjs-jsonapi/core";`);
   } else {
     imports.push(
-      `import { AbstractApiData, JsonApiHydratedDataInterface, Modules } from "@carlonicora/nextjs-jsonapi/core";`,
+      `import { ${["AbstractApiData", ...coreNames].sort(byName).join(", ")} } from "@carlonicora/nextjs-jsonapi/core";`,
     );
   }
 
@@ -97,20 +135,18 @@ function generatePrivateFields(data: FrontendTemplateData): string {
       const effectiveName = rel.alias || rel.variant || rel.name;
       if (rel.single) {
         const propName = toCamelCase(effectiveName);
-        // Use intersection type if relationship has fields
+        // Use intersection with the named meta interface if relationship has fields
         let typeDecl = rel.interfaceName;
         if (rel.fields && rel.fields.length > 0) {
-          const metaFields = rel.fields.map((f) => `${f.name}?: ${f.tsType}`).join("; ");
-          typeDecl = `${rel.interfaceName} & { ${metaFields} }`;
+          typeDecl = `${rel.interfaceName} & ${relMetaName(rel)}`;
         }
         lines.push(`  private _${propName}?: ${typeDecl};`);
       } else {
         const effectiveMany = rel.alias || rel.name;
         const propName = pluralize(toCamelCase(effectiveMany));
-        // Use intersection type if relationship has fields (edge properties)
+        // Use intersection with the named meta interface if relationship has fields (edge properties)
         if (rel.fields && rel.fields.length > 0) {
-          const metaFields = rel.fields.map((f) => `${f.name}?: ${f.tsType}`).join("; ");
-          lines.push(`  private _${propName}?: (${rel.interfaceName} & { ${metaFields} })[];`);
+          lines.push(`  private _${propName}?: (${rel.interfaceName} & ${relMetaName(rel)})[];`);
         } else {
           lines.push(`  private _${propName}?: ${rel.interfaceName}[];`);
         }
@@ -147,11 +183,10 @@ function generateGetters(data: FrontendTemplateData): string {
       if (rel.single) {
         const propName = toCamelCase(effectiveName);
 
-        // Build return type - use intersection if relationship has fields
+        // Build return type - intersect with the named meta interface if relationship has fields
         let baseType = rel.interfaceName;
         if (rel.fields && rel.fields.length > 0) {
-          const metaFields = rel.fields.map((f) => `${f.name}?: ${f.tsType}`).join("; ");
-          baseType = `${rel.interfaceName} & { ${metaFields} }`;
+          baseType = `${rel.interfaceName} & ${relMetaName(rel)}`;
         }
 
         if (rel.nullable) {
@@ -167,10 +202,9 @@ function generateGetters(data: FrontendTemplateData): string {
       } else {
         const effectiveMany = rel.alias || rel.name;
         const propName = pluralize(toCamelCase(effectiveMany));
-        // Use intersection type if relationship has fields (edge properties)
+        // Intersect with the named meta interface if relationship has fields (edge properties)
         if (rel.fields && rel.fields.length > 0) {
-          const metaFields = rel.fields.map((f) => `${f.name}?: ${f.tsType}`).join("; ");
-          lines.push(`  get ${propName}(): (${rel.interfaceName} & { ${metaFields} })[] {
+          lines.push(`  get ${propName}(): (${rel.interfaceName} & ${relMetaName(rel)})[] {
     return this._${propName} ?? [];
   }`);
         } else {
@@ -223,11 +257,11 @@ function generateRehydrateMethod(data: FrontendTemplateData): string {
       const effectiveName = rel.alias || rel.variant || rel.name;
       if (rel.single) {
         const propName = toCamelCase(effectiveName);
-        const relationshipKey = toCamelCase(effectiveName);
+        const relationshipKey = resolveRelationshipKey(rel);
 
         // Use _readIncludedWithMeta for relationships with fields
         if (rel.fields && rel.fields.length > 0) {
-          const metaType = `{ ${rel.fields.map((f) => `${f.name}?: ${f.tsType}`).join("; ")} }`;
+          const metaType = relMetaName(rel);
           const singleCast = rel.nullable
             ? ` as (${rel.interfaceName} & ${metaType}) | undefined`
             : ` as ${rel.interfaceName} & ${metaType}`;
@@ -242,11 +276,11 @@ function generateRehydrateMethod(data: FrontendTemplateData): string {
       } else {
         const effectiveMany = rel.alias || rel.name;
         const propName = pluralize(toCamelCase(effectiveMany));
-        const relationshipKey = toCamelCase(effectiveMany);
+        const relationshipKey = resolveRelationshipKey(rel);
 
         // Use _readIncludedWithMeta for relationships with fields (edge properties)
         if (rel.fields && rel.fields.length > 0) {
-          const metaType = `{ ${rel.fields.map((f) => `${f.name}?: ${f.tsType}`).join("; ")} }`;
+          const metaType = relMetaName(rel);
           lines.push(
             `    this._${propName} = this._readIncludedWithMeta<${rel.interfaceName}, ${metaType}>(data, "${relationshipKey}", Modules.${rel.name}) as (${rel.interfaceName} & ${metaType})[];`,
           );
@@ -292,15 +326,24 @@ function generateCreateJsonApiMethod(data: FrontendTemplateData): string {
     lines.push(``);
   }
 
-  // Field serialization (excluding inherited)
-  const fieldsToInclude = extendsContent
-    ? fields.filter((f) => !["name", "tldr", "abstract"].includes(f.name))
-    : fields;
+  // Field serialization (excluding inherited and read-only fields).
+  // read-only fields are server-derived: present in rehydrate/getters but never sent back.
+  const fieldsToInclude = (
+    extendsContent ? fields.filter((f) => !["name", "tldr", "abstract"].includes(f.name)) : fields
+  ).filter((f) => !f.readOnly);
 
   fieldsToInclude.forEach((field) => {
     if (field.isContentField) {
       lines.push(
         `    if (data.${field.name} !== undefined) response.data.attributes.${field.name} = JSON.stringify(data.${field.name});`,
+      );
+    } else if (field.type === "date") {
+      lines.push(
+        `    if (data.${field.name} !== undefined) response.data.attributes.${field.name} = formatLocalDate(data.${field.name});`,
+      );
+    } else if (field.type === "datetime") {
+      lines.push(
+        `    if (data.${field.name} !== undefined) response.data.attributes.${field.name} = data.${field.name}.toISOString();`,
       );
     } else {
       lines.push(
@@ -317,7 +360,7 @@ function generateCreateJsonApiMethod(data: FrontendTemplateData): string {
     relationshipsToSerialize.forEach((rel) => {
       const effectiveName = rel.alias || rel.variant || rel.name;
       const payloadKey = rel.single ? `${toCamelCase(effectiveName)}Id` : `${toCamelCase(effectiveName)}Ids`;
-      const relationshipKey = toCamelCase(effectiveName);
+      const relationshipKey = resolveRelationshipKey(rel);
 
       if (rel.single) {
         lines.push(`    if (data.${payloadKey}) {`);
@@ -337,6 +380,23 @@ function generateCreateJsonApiMethod(data: FrontendTemplateData): string {
           lines.push(`        },`);
         }
 
+        lines.push(`      };`);
+        lines.push(`    }`);
+      } else if (rel.fields && rel.fields.length > 0) {
+        // MANY relationship with edge fields: per-item meta resolved from a meta array.
+        const metaProp = `${toCamelCase(effectiveName)}Meta`;
+        lines.push(`    if (data.${payloadKey} !== undefined) {`);
+        lines.push(`      response.data.relationships.${relationshipKey} = {`);
+        lines.push(`        data: data.${payloadKey}.map((id) => {`);
+        lines.push(`          const meta = data.${metaProp}?.find((m) => m.id === id);`);
+        lines.push(`          return {`);
+        lines.push(`            type: Modules.${rel.name}.name,`);
+        lines.push(`            id,`);
+        lines.push(
+          `            ...(meta ? { meta: { ${rel.fields.map((f) => `${f.name}: meta.${f.name}`).join(", ")} } } : {}),`,
+        );
+        lines.push(`          };`);
+        lines.push(`        }),`);
         lines.push(`      };`);
         lines.push(`    }`);
       } else {

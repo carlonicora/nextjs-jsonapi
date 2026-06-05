@@ -12,7 +12,6 @@ import {
   generateContextTemplate,
   generateDeleterTemplate,
   generateDetailPageTemplate,
-  generateDetailsTemplate,
   generateEditorTemplate,
   generateFieldsTemplate,
   generateAliasesTemplate,
@@ -186,6 +185,10 @@ function buildTemplateData(schema: JsonModuleDefinition, targetHasNameMap?: Map<
 
   // Map fields
   const allFields = mapFields(schema.fields, names.camelCase);
+  allFields.forEach((f) => {
+    const src = schema.fields.find((sf) => sf.name === f.name);
+    f.readOnly = src?.readOnly === true;
+  });
 
   // Get inherited fields to filter out for forms (Content fields are handled specially)
   const inheritedFields = extendsContent ? ["name", "tldr", "abstract", "content"] : [];
@@ -234,6 +237,13 @@ function buildTemplateData(schema: JsonModuleDefinition, targetHasNameMap?: Map<
     imports,
     tableFieldNames,
     relationshipServiceMethods,
+    featureId: schema.featureId,
+    displayProp: schema.displayProp ?? (allFields.some((f) => f.name === "name") ? "name" : "id"),
+    containerTabs: {
+      activity: schema.containerTabs?.activity !== false,
+      relations: schema.containerTabs?.relations ?? [],
+    },
+    relatedInclusions: schema.inclusions?.related ?? [],
   };
 }
 
@@ -338,21 +348,12 @@ function generateAllFiles(data: FrontendTemplateData, schema: JsonModuleDefiniti
     type: "component",
   });
 
+  // Content component — always emitted (Details tab body)
   files.push({
-    path: paths.details,
-    content: generateDetailsTemplate(data),
+    path: paths.content,
+    content: generateContentTemplate(data),
     type: "component",
   });
-
-  // Content component only for Content-extending modules
-  const contentTemplate = generateContentTemplate(data);
-  if (contentTemplate) {
-    files.push({
-      path: paths.content,
-      content: contentTemplate,
-      type: "component",
-    });
-  }
 
   files.push({
     path: paths.container,

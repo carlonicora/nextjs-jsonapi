@@ -5,7 +5,7 @@
  */
 
 import { FrontendTemplateData, FrontendField } from "../types/template-data.interface";
-import { toCamelCase } from "../transformers/name-transformer";
+import { toCamelCase, pluralize } from "../transformers/name-transformer";
 
 /**
  * Generate the table structure hook file content
@@ -96,7 +96,7 @@ registerTableGenerator(Modules.${names.pascalCase}, use${names.pascalCase}TableS
  * Generate field column map entries
  */
 function generateFieldColumnEntries(data: FrontendTemplateData): string {
-  const { names, fields, extendsContent } = data;
+  const { names, fields, extendsContent, relationships } = data;
   const entries: string[] = [];
 
   // Name field (with link and tooltip for tldr if Content-extending)
@@ -183,8 +183,37 @@ function generateFieldColumnEntries(data: FrontendTemplateData): string {
       enableSorting: false,
       enableHiding: false,
     }),`);
+    } else if (field.type === "date" || field.type === "datetime") {
+      entries.push(`    [${names.pascalCase}Fields.${field.name}]: () =>
+      cellDate({
+        name: "${field.name}",
+        title: t(\`features.${names.camelCase}.fields.${field.name}.label\`),
+      }),`);
     }
   });
+
+  // Relationship columns (rendered when flagged for table display)
+  relationships
+    .filter((rel) => rel.showInTable)
+    .forEach((rel) => {
+      const key = rel.single
+        ? toCamelCase(rel.alias || rel.variant || rel.name)
+        : pluralize(toCamelCase(rel.alias || rel.name));
+      const accessor = rel.single
+        ? `${names.camelCase}.${key}?.name ?? ""`
+        : `${names.camelCase}.${key}.map((r) => r.name).join(", ")`;
+      entries.push(`    [${names.pascalCase}Fields.${key}]: () => ({
+      id: "${key}",
+      accessorKey: "${key}",
+      header: t(\`generic.relationships.${key}.label\`),
+      cell: ({ row }: { row: TableContent<${names.pascalCase}Interface> }) => {
+        const ${names.camelCase}: ${names.pascalCase}Interface = row.original.jsonApiData;
+        return <span>{${accessor}}</span>;
+      },
+      enableSorting: false,
+      enableHiding: false,
+    }),`);
+    });
 
   return entries.join("\n");
 }

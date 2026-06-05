@@ -20,11 +20,21 @@ export function generateModuleTemplate(data: FrontendTemplateData): string {
   const listFieldNames = getListFieldNames(data);
   const listInclusionFields = listFieldNames.map((f) => `\`${f}\``).join(", ");
 
+  // Feature gating (optional)
+  const featureImport = data.featureId ? `import { FeatureIds } from "@/enums/feature.ids";\n` : "";
+  const featureLine = data.featureId ? `    feature: FeatureIds.${data.featureId},\n` : "";
+
+  // Cross-module inclusions for related entities (optional)
+  const relatedInclusionLines = data.relatedInclusions
+    .map((inc) => `          createJsonApiInclusion("${inc.endpoint}", [${inc.fields.map((f) => `\`${f}\``).join(", ")}]),`)
+    .join("\n");
+  const relatedInclusionBlock = relatedInclusionLines ? `\n${relatedInclusionLines}` : "";
+
   return `import { ${names.pascalCase} } from "@/features/${data.importTargetDir}/${names.kebabCase}/data/${names.pascalCase}";
 import { createJsonApiInclusion } from "@carlonicora/nextjs-jsonapi/core";
 import { ModuleFactory } from "@carlonicora/nextjs-jsonapi/core";
 import { ${DEFAULT_MODULE_ICON} } from "lucide-react";
-
+${featureImport}
 export const ${names.pascalCase}Module = (factory: ModuleFactory) =>
   factory({
     pageUrl: "/${names.pluralKebab}",
@@ -32,11 +42,11 @@ export const ${names.pascalCase}Module = (factory: ModuleFactory) =>
     model: ${names.pascalCase},
     moduleId: "${moduleId}",
     icon: ${DEFAULT_MODULE_ICON},
-    inclusions: {
+${featureLine}    inclusions: {
       lists: {
         fields: [
           createJsonApiInclusion("${endpoint}", [${listInclusionFields}]),
-          createJsonApiInclusion("users", [\`name\`, \`avatar\`]),
+          createJsonApiInclusion("users", [\`name\`, \`avatar\`]),${relatedInclusionBlock}
         ],
       },
     },

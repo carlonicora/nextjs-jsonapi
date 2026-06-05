@@ -30,6 +30,7 @@ export interface FrontendField {
   formComponent: FormComponentType;
   nullable: boolean;
   isContentField: boolean; // Indicates BlockNoteEditor
+  readOnly?: boolean;
 }
 
 /**
@@ -68,6 +69,8 @@ export interface FrontendRelationship {
   modelKebab: string; // e.g., "user"
   fields?: FrontendField[]; // Relationship property fields (stored on edges)
   targetHasName: boolean; // Whether the target entity has a "name" field (or extends Content)
+  dtoKey: string;       // resolved wire key; "" means derive at use-site
+  showInTable: boolean;
 }
 
 /**
@@ -153,6 +156,10 @@ export interface FrontendTemplateData {
 
   // For service generation
   relationshipServiceMethods: RelationshipServiceMethod[];
+  featureId?: string;
+  displayProp: string;
+  containerTabs: { activity: boolean; relations: { module: string; listProp: string; directory: string }[] };
+  relatedInclusions: { endpoint: string; fields: string[] }[];
 }
 
 /**

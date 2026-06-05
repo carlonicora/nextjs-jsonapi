@@ -20,7 +20,6 @@ export {
   generateSelectorTemplate,
   generateMultiSelectorTemplate,
   generateListTemplate,
-  generateDetailsTemplate,
   generateContentTemplate,
   generateContainerTemplate,
   generateListContainerTemplate,

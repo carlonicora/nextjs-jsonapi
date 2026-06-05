@@ -22,6 +22,7 @@ export function generateServiceTemplate(data: FrontendTemplateData): string {
   const relationshipMethods = generateRelationshipMethods(data);
   const createMethod = generateCreateMethod(data);
   const updateMethod = generateUpdateMethod(data);
+  const patchMethod = generatePatchMethod(data);
   const deleteMethod = generateDeleteMethod(data);
 
   return `${imports}
@@ -35,6 +36,8 @@ ${relationshipMethods}
 ${createMethod}
 
 ${updateMethod}
+
+${patchMethod}
 
 ${deleteMethod}
 }
@@ -60,10 +63,13 @@ function generateFindOneMethod(data: FrontendTemplateData): string {
   const { names } = data;
 
   return `  static async findOne(params: { id: string }): Promise<${names.pascalCase}Interface> {
+    const endpoint = new EndpointCreator({ endpoint: Modules.${names.pascalCase}, id: params.id });
+    if (Modules.${names.pascalCase}.inclusions?.lists?.fields) endpoint.limitToFields(Modules.${names.pascalCase}.inclusions.lists.fields);
+    if (Modules.${names.pascalCase}.inclusions?.lists?.types) endpoint.limitToType(Modules.${names.pascalCase}.inclusions.lists.types);
     return this.callApi<${names.pascalCase}Interface>({
       type: Modules.${names.pascalCase},
       method: HttpMethod.GET,
-      endpoint: new EndpointCreator({ endpoint: Modules.${names.pascalCase}, id: params.id }).generate(),
+      endpoint: endpoint.generate(),
     });
   }`;
 }
@@ -168,6 +174,22 @@ function generateUpdateMethod(data: FrontendTemplateData): string {
     return this.callApi({
       type: Modules.${names.pascalCase},
       method: HttpMethod.PUT,
+      endpoint: new EndpointCreator({ endpoint: Modules.${names.pascalCase}, id: params.id }).generate(),
+      input: params,
+    });
+  }`;
+}
+
+/**
+ * Generate patch method
+ */
+function generatePatchMethod(data: FrontendTemplateData): string {
+  const { names } = data;
+
+  return `  static async patch(params: { id: string } & Partial<Omit<${names.pascalCase}Input, "id">>): Promise<${names.pascalCase}Interface> {
+    return this.callApi({
+      type: Modules.${names.pascalCase},
+      method: HttpMethod.PATCH,
       endpoint: new EndpointCreator({ endpoint: Modules.${names.pascalCase}, id: params.id }).generate(),
       input: params,
     });

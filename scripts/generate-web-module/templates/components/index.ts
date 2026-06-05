@@ -12,7 +12,6 @@ export { generateMultiSelectorTemplate } from "./multi-selector.template";
 
 // Display components
 export { generateListTemplate } from "./list.template";
-export { generateDetailsTemplate } from "./details.template";
 export { generateContentTemplate } from "./content.template";
 export { generateContainerTemplate } from "./container.template";
 export { generateListContainerTemplate } from "./list-container.template";

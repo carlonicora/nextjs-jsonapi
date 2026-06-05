@@ -122,6 +122,8 @@ export function resolveRelationship(rel: JsonRelationshipDefinition, targetHasNa
     modelKebab,
     fields,
     targetHasName: targetHasNameMap?.get(rel.name) ?? true, // Foundation entities default to true
+    dtoKey: rel.dtoKey ?? "",
+    showInTable: rel.showInTable === true,
   };
 }
 

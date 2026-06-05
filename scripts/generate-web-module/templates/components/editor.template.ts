@@ -1,7 +1,7 @@
 /**
  * Editor Template
  *
- * Generates {Module}Editor.tsx dialog-based form component.
+ * Generates {Module}Editor.tsx form component using the EditorSheet wrapper.
  */
 
 import { FrontendTemplateData, FrontendField, FrontendRelationship } from "../../types/template-data.interface";
@@ -23,15 +23,16 @@ import {
  * @returns Generated file content
  */
 export function generateEditorTemplate(data: FrontendTemplateData): string {
-  const { names, fields, relationships, extendsContent } = data;
-  const hasNameField = extendsContent || fields.some((f) => f.name === "name");
+  const { names, relationships } = data;
   const i18nKey = names.pluralCamel.toLowerCase();
+  const camel = names.camelCase;
+  const displayProp = data.displayProp || "name";
 
   const imports = generateImports(data);
   const propsType = generatePropsType(data);
-  const formSchema = generateFormSchema(data);
-  const defaultValues = generateDefaultValues(data);
-  const onSubmit = generateOnSubmit(data);
+  const schemaInner = generateFormSchemaInner(data);
+  const defaultsInner = generateDefaultValuesInner(data);
+  const onSubmitBody = generateOnSubmitBody(data);
   const formFields = generateFormFields(data);
 
   const hasAuthor = relationships.some((r) => r.variant === AUTHOR_VARIANT);
@@ -43,7 +44,7 @@ ${imports}
 ${propsType}
 
 function ${names.pascalCase}EditorInternal({
-  ${names.camelCase},
+  ${camel},
   propagateChanges,
   trigger,
   forceShow,
@@ -52,72 +53,71 @@ function ${names.pascalCase}EditorInternal({
   onDialogOpenChange,
 }: ${names.pascalCase}EditorProps) {
   const router = useRouter();
-  const generateUrl = usePageUrlGenerator();
   const t = useTranslations();
-${hasAuthor ? `  const { currentUser } = useCurrentUserContext<UserInterface>();` : ""}
+${hasAuthor ? `  const { currentUser } = useCurrentUserContext<UserInterface>();\n` : ""}
+  const formSchema = useMemo(
+    () =>
+      z.object({
+${schemaInner}
+      }),
+    [t],
+  );
 
-${formSchema}
-
-${defaultValues}
+  const getDefaultValues = useCallback(
+    () => ({
+${defaultsInner}
+    }),
+    [${camel}],
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: getDefaultValues(),
   });
-
-  const { dirtyFields } = form.formState;
-
-  const isFormDirty = useCallback(() => {
-    return Object.keys(dirtyFields).length > 0;
-  }, [dirtyFields]);
-
-  const { open, setOpen, handleOpenChange, discardDialogProps } = useEditorDialog(isFormDirty, {
-    dialogOpen, onDialogOpenChange, forceShow, onClose,
-  });
-
-  useEffect(() => {
-    if (!open) {
-      form.reset(getDefaultValues());
-    }
-  }, [open]);
-
 ${
   hasAuthor
-    ? `  useEffect(() => {
+    ? `
+  useEffect(() => {
     if (currentUser && !form.getValues("author")?.id) {
       form.setValue("author", { id: currentUser.id, name: currentUser.name, avatar: currentUser.avatar });
     }
-  }, [currentUser]);`
+  }, [currentUser]);
+`
     : ""
 }
-
-${onSubmit}
-
   return (
-    <>
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      {dialogOpen === undefined && (trigger ? <DialogTrigger>{trigger}</DialogTrigger> : <CommonEditorTrigger isEdit={!!${names.camelCase}} />)}
-      <DialogContent
-        className="flex max-h-[70vh] max-w-3xl flex-col overflow-y-auto"
-      >
-        <CommonEditorHeader type={t(\`entities.${i18nKey}\`, { count: 1 })}${hasNameField ? ` name={${names.camelCase}?.name}` : ""} />
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full flex-col gap-y-4">
-            <div className="flex flex-col justify-between gap-x-4">
+    <EditorSheet
+      form={form}
+      entityType={t(\`entities.${i18nKey}\`, { count: 1 })}
+      entityName={${camel}?.${displayProp}}
+      isEdit={!!${camel}}
+      module={Modules.${names.pascalCase}}
+      propagateChanges={propagateChanges}
+      size="md"
+      onSubmit={async (values) => {
+${onSubmitBody}
+      }}
+      onRevalidate={revalidatePaths}
+      onNavigate={(url) => router.push(url)}
+      onReset={getDefaultValues}
+      onClose={onClose}
+      trigger={trigger}
+      forceShow={forceShow}
+      dialogOpen={dialogOpen}
+      onDialogOpenChange={onDialogOpenChange}
+    >
+      <div className="flex w-full flex-col gap-y-4">
 ${formFields}
-              <CommonEditorButtons form={form} setOpen={handleOpenChange} isEdit={!!${names.camelCase}} />
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
-    <CommonEditorDiscardDialog {...discardDialogProps} />
-    </>
+      </div>
+    </EditorSheet>
   );
 }
 
 export default function ${names.pascalCase}Editor(props: ${names.pascalCase}EditorProps) {
-  const action = props.${names.camelCase} ? Action.Update : Action.Create;
+  const { hasPermissionToModule } = useCurrentUserContext();
+  const action = props.${camel} ? Action.Update : Action.Create;
+
+  if (!hasPermissionToModule({ module: Modules.${names.pascalCase}, action, data: props.${camel} })) return null;
 
   return <${names.pascalCase}EditorInternal {...props} />;
 }
@@ -141,6 +141,7 @@ function generateImports(data: FrontendTemplateData): string {
 
   // Relationship selector imports (deduplicated - multiple aliases may target the same entity)
   const hasAuthor = relationships.some((r) => r.variant === AUTHOR_VARIANT);
+  const hasRelationships = relationships.length > 0;
   const seenImports = new Set<string>();
 
   relationships.forEach((rel) => {
@@ -171,8 +172,9 @@ function generateImports(data: FrontendTemplateData): string {
   // Utility imports
   imports.push(`import { revalidatePaths } from "@/utils/revalidation";`);
 
-  // Library component imports
-  const componentImports: string[] = ["CommonEditorButtons", "CommonEditorDiscardDialog", "CommonEditorHeader", "CommonEditorTrigger", "errorToast", "useEditorDialog"];
+  // Library component imports — EditorSheet owns the dialog/header/buttons,
+  // so only the EditorSheet wrapper plus the Form* field components are needed.
+  const componentImports: string[] = ["EditorSheet"];
 
   // Check for field types that need specific components
   const hasContentField = fields.some((f) => f.isContentField || f.name === "content");
@@ -208,29 +210,24 @@ function generateImports(data: FrontendTemplateData): string {
   ${componentImports.join(",\n  ")},
 } from "@carlonicora/nextjs-jsonapi/components";`);
 
-  // Context imports
-  if (hasAuthor) {
-    imports.push(`import { useCurrentUserContext } from "@carlonicora/nextjs-jsonapi/contexts";`);
-  }
+  // Context imports — needed both for the permission gate and the author auto-set.
+  imports.push(`import { useCurrentUserContext } from "@carlonicora/nextjs-jsonapi/contexts";`);
 
-  // Core imports
-  imports.push(`import { Modules } from "@carlonicora/nextjs-jsonapi/core";`);
-  imports.push(`import { usePageUrlGenerator } from "@carlonicora/nextjs-jsonapi/client";`);
-  imports.push(`import { Action } from "@carlonicora/nextjs-jsonapi/core";`);
-  imports.push(`import { Dialog, DialogContent, DialogTrigger, Form } from "@carlonicora/nextjs-jsonapi/components";`);
-
-  // Zod schema imports
-  const zodSchemaImports = ["entityObjectSchema"];
-  if (hasAuthor) {
-    zodSchemaImports.push("userObjectSchema");
+  // Core imports — entityObjectSchema only when relationships exist.
+  const coreImports = ["Action", "Modules"];
+  if (hasRelationships) {
+    coreImports.splice(1, 0, "entityObjectSchema");
   }
-  imports.push(`import { ${zodSchemaImports.join(", ")} } from "@carlonicora/nextjs-jsonapi/core";`);
+  if (hasAuthor) {
+    coreImports.push("userObjectSchema");
+  }
+  imports.push(`import { ${coreImports.join(", ")} } from "@carlonicora/nextjs-jsonapi/core";`);
 
   // Other imports
   imports.push(`import { zodResolver } from "@hookform/resolvers/zod";`);
   imports.push(`import { useTranslations } from "next-intl";`);
-  imports.push(`import { ReactNode, useCallback, useEffect } from "react";`);
-  imports.push(`import { SubmitHandler, useForm } from "react-hook-form";`);
+  imports.push(`import { ReactNode, useCallback, useMemo${hasAuthor ? ", useEffect" : ""} } from "react";`);
+  imports.push(`import { useForm } from "react-hook-form";`);
   imports.push(`import { v4 } from "uuid";`);
   imports.push(`import { z } from "zod";`);
 
@@ -255,14 +252,18 @@ function generatePropsType(data: FrontendTemplateData): string {
 }
 
 /**
- * Generate form schema
+ * Generate the inner lines of the form schema (the body of `z.object({ ... })`).
+ *
+ * The `z.object({ ... })` wrapper now lives in the main template inside a
+ * `useMemo`, so this helper only emits the per-field lines (indented to sit
+ * inside that wrapper).
  */
-function generateFormSchema(data: FrontendTemplateData): string {
+function generateFormSchemaInner(data: FrontendTemplateData): string {
   const { names, fields, relationships, extendsContent } = data;
   const schemaFields: string[] = [];
 
   // ID field
-  schemaFields.push(`    id: z.uuidv4(),`);
+  schemaFields.push(`        id: z.uuidv4(),`);
 
   // Regular fields (excluding inherited)
   const fieldsToInclude = extendsContent
@@ -271,24 +272,24 @@ function generateFormSchema(data: FrontendTemplateData): string {
 
   // Add name field for Content-extending modules
   if (extendsContent) {
-    schemaFields.push(`    name: z.string().min(1, {
-      message: t(\`features.${names.camelCase.toLowerCase()}.fields.name.error\`),
-    }),`);
+    schemaFields.push(`        name: z.string().min(1, {
+          message: t(\`features.${names.camelCase.toLowerCase()}.fields.name.error\`),
+        }),`);
   }
 
   fieldsToInclude.forEach((field) => {
     if (field.isContentField) {
-      schemaFields.push(`    ${field.name}: z.any(),`);
+      schemaFields.push(`        ${field.name}: z.any(),`);
     } else if (field.type === "string") {
       if (field.nullable) {
-        schemaFields.push(`    ${field.name}: z.string().optional(),`);
+        schemaFields.push(`        ${field.name}: z.string().optional(),`);
       } else {
-        schemaFields.push(`    ${field.name}: z.string().min(1, {
-      message: t(\`features.${names.camelCase.toLowerCase()}.fields.${field.name}.error\`),
-    }),`);
+        schemaFields.push(`        ${field.name}: z.string().min(1, {
+          message: t(\`features.${names.camelCase.toLowerCase()}.fields.${field.name}.error\`),
+        }),`);
       }
     } else {
-      schemaFields.push(`    ${field.name}: ${field.zodSchema},`);
+      schemaFields.push(`        ${field.name}: ${field.zodSchema},`);
     }
   });
 
@@ -297,16 +298,16 @@ function generateFormSchema(data: FrontendTemplateData): string {
     const fieldId = toCamelCase(rel.alias || rel.variant || rel.name);
     const fieldIdLower = fieldId.toLowerCase();
     if (rel.variant === AUTHOR_VARIANT) {
-      schemaFields.push(`    ${fieldId}: userObjectSchema.refine((data) => data.id && data.id.length > 0, {
-      message: t(\`generic.relationships.author.error\`),
-    }),`);
+      schemaFields.push(`        ${fieldId}: userObjectSchema.refine((data) => data.id && data.id.length > 0, {
+          message: t(\`generic.relationships.author.error\`),
+        }),`);
     } else if (rel.single) {
       if (rel.nullable) {
-        schemaFields.push(`    ${fieldId}: entityObjectSchema.optional(),`);
+        schemaFields.push(`        ${fieldId}: entityObjectSchema.optional(),`);
       } else {
-        schemaFields.push(`    ${fieldId}: entityObjectSchema.refine((data) => data.id && data.id.length > 0, {
-      message: t(\`features.${names.camelCase.toLowerCase()}.relationships.${fieldIdLower}.error\`),
-    }),`);
+        schemaFields.push(`        ${fieldId}: entityObjectSchema.refine((data) => data.id && data.id.length > 0, {
+          message: t(\`features.${names.camelCase.toLowerCase()}.relationships.${fieldIdLower}.error\`),
+        }),`);
       }
       // Add relationship property fields to schema
       if (rel.fields && rel.fields.length > 0) {
@@ -314,48 +315,50 @@ function generateFormSchema(data: FrontendTemplateData): string {
           const optional = rel.nullable ? ".optional()" : "";
           switch (field.type) {
             case "number":
-              schemaFields.push(`    ${field.name}: z.number()${optional},`);
+              schemaFields.push(`        ${field.name}: z.number()${optional},`);
               break;
             case "boolean":
-              schemaFields.push(`    ${field.name}: z.boolean()${optional},`);
+              schemaFields.push(`        ${field.name}: z.boolean()${optional},`);
               break;
             case "date":
             case "datetime":
-              schemaFields.push(`    ${field.name}: z.date()${optional},`);
+              schemaFields.push(`        ${field.name}: z.date()${optional},`);
               break;
             case "any":
-              schemaFields.push(`    ${field.name}: z.any()${optional},`);
+              schemaFields.push(`        ${field.name}: z.any()${optional},`);
               break;
             case "string":
             default:
-              schemaFields.push(`    ${field.name}: z.string()${optional},`);
+              schemaFields.push(`        ${field.name}: z.string()${optional},`);
               break;
           }
         });
       }
     } else {
-      schemaFields.push(`    ${fieldId}: z.array(entityObjectSchema).optional(),`);
+      schemaFields.push(`        ${fieldId}: z.array(entityObjectSchema).optional(),`);
     }
   });
 
-  return `  const formSchema = z.object({
-${schemaFields.join("\n")}
-  });`;
+  return schemaFields.join("\n");
 }
 
 /**
- * Generate default values function
+ * Generate the inner lines of the default-values object (the body of `({ ... })`).
+ *
+ * The `() => ({ ... })` wrapper now lives in the main template inside a
+ * `useCallback`, so this helper only emits the per-field default lines
+ * (indented to sit inside that wrapper).
  */
-function generateDefaultValues(data: FrontendTemplateData): string {
+function generateDefaultValuesInner(data: FrontendTemplateData): string {
   const { names, fields, relationships, extendsContent } = data;
   const defaults: string[] = [];
 
   // ID default
-  defaults.push(`    id: ${names.camelCase}?.id || v4(),`);
+  defaults.push(`      id: ${names.camelCase}?.id || v4(),`);
 
   // Name for Content-extending modules
   if (extendsContent) {
-    defaults.push(`    name: ${names.camelCase}?.name || "",`);
+    defaults.push(`      name: ${names.camelCase}?.name || "",`);
   }
 
   // Field defaults
@@ -365,15 +368,15 @@ function generateDefaultValues(data: FrontendTemplateData): string {
 
   fieldsToInclude.forEach((field) => {
     if (field.isContentField) {
-      defaults.push(`    ${field.name}: ${names.camelCase}?.${field.name} || [],`);
+      defaults.push(`      ${field.name}: ${names.camelCase}?.${field.name} || [],`);
     } else if (field.type === "string") {
-      defaults.push(`    ${field.name}: ${names.camelCase}?.${field.name} || "",`);
+      defaults.push(`      ${field.name}: ${names.camelCase}?.${field.name} || "",`);
     } else if (field.type === "number") {
-      defaults.push(`    ${field.name}: ${names.camelCase}?.${field.name} || 0,`);
+      defaults.push(`      ${field.name}: ${names.camelCase}?.${field.name} || 0,`);
     } else if (field.type === "boolean") {
-      defaults.push(`    ${field.name}: ${names.camelCase}?.${field.name} || false,`);
+      defaults.push(`      ${field.name}: ${names.camelCase}?.${field.name} || false,`);
     } else {
-      defaults.push(`    ${field.name}: ${names.camelCase}?.${field.name},`);
+      defaults.push(`      ${field.name}: ${names.camelCase}?.${field.name},`);
     }
   });
 
@@ -384,62 +387,64 @@ function generateDefaultValues(data: FrontendTemplateData): string {
     const pluralPropertyName = pluralize(toCamelCase(rel.alias || rel.name));
 
     if (rel.variant === AUTHOR_VARIANT) {
-      defaults.push(`    ${fieldId}: ${names.camelCase}?.${propertyName}
-      ? { id: ${names.camelCase}.${propertyName}.id, name: ${names.camelCase}.${propertyName}.name, avatar: ${names.camelCase}.${propertyName}.avatar }
-      : undefined,`);
+      defaults.push(`      ${fieldId}: ${names.camelCase}?.${propertyName}
+        ? { id: ${names.camelCase}.${propertyName}.id, name: ${names.camelCase}.${propertyName}.name, avatar: ${names.camelCase}.${propertyName}.avatar }
+        : undefined,`);
     } else if (rel.single) {
       const displayProp = rel.targetHasName ? "name" : "id";
-      defaults.push(`    ${fieldId}: ${names.camelCase}?.${propertyName}
-      ? { id: ${names.camelCase}.${propertyName}.id, name: ${names.camelCase}.${propertyName}.${displayProp} }
-      : undefined,`);
+      defaults.push(`      ${fieldId}: ${names.camelCase}?.${propertyName}
+        ? { id: ${names.camelCase}.${propertyName}.id, name: ${names.camelCase}.${propertyName}.${displayProp} }
+        : undefined,`);
       // Add relationship property field defaults
       if (rel.fields && rel.fields.length > 0) {
         rel.fields.forEach((field) => {
           switch (field.type) {
             case "number":
-              defaults.push(`    ${field.name}: ${names.camelCase}?.${propertyName}?.${field.name} ?? 0,`);
+              defaults.push(`      ${field.name}: ${names.camelCase}?.${propertyName}?.${field.name} ?? 0,`);
               break;
             case "boolean":
-              defaults.push(`    ${field.name}: ${names.camelCase}?.${propertyName}?.${field.name} ?? false,`);
+              defaults.push(`      ${field.name}: ${names.camelCase}?.${propertyName}?.${field.name} ?? false,`);
               break;
             case "date":
             case "datetime":
             case "any":
-              defaults.push(`    ${field.name}: ${names.camelCase}?.${propertyName}?.${field.name},`);
+              defaults.push(`      ${field.name}: ${names.camelCase}?.${propertyName}?.${field.name},`);
               break;
             case "string":
             default:
-              defaults.push(`    ${field.name}: ${names.camelCase}?.${propertyName}?.${field.name} ?? "",`);
+              defaults.push(`      ${field.name}: ${names.camelCase}?.${propertyName}?.${field.name} ?? "",`);
               break;
           }
         });
       }
     } else {
       const displayProp = rel.targetHasName ? "name" : "id";
-      defaults.push(`    ${fieldId}: ${names.camelCase}?.${pluralPropertyName}
-      ? ${names.camelCase}.${pluralPropertyName}.map((item) => ({ id: item.id, name: item.${displayProp} }))
-      : [],`);
+      defaults.push(`      ${fieldId}: ${names.camelCase}?.${pluralPropertyName}
+        ? ${names.camelCase}.${pluralPropertyName}.map((item) => ({ id: item.id, name: item.${displayProp} }))
+        : [],`);
     }
   });
 
-  return `  const getDefaultValues = () => ({
-${defaults.join("\n")}
-  });`;
+  return defaults.join("\n");
 }
 
 /**
- * Generate onSubmit handler
+ * Generate the body of the EditorSheet `onSubmit` callback.
+ *
+ * EditorSheet owns open/close, revalidate, navigate, propagate and error
+ * handling. This callback only builds the typed payload and RETURNS the
+ * service result so EditorSheet can run its lifecycle.
  */
-function generateOnSubmit(data: FrontendTemplateData): string {
+function generateOnSubmitBody(data: FrontendTemplateData): string {
   const { names, fields, relationships, extendsContent } = data;
   const payloadFields: string[] = [];
 
   // ID
-  payloadFields.push(`      id: values.id,`);
+  payloadFields.push(`          id: values.id,`);
 
   // Name for Content-extending modules
   if (extendsContent) {
-    payloadFields.push(`      name: values.name,`);
+    payloadFields.push(`          name: values.name,`);
   }
 
   // Fields
@@ -448,7 +453,7 @@ function generateOnSubmit(data: FrontendTemplateData): string {
     : fields;
 
   fieldsToInclude.forEach((field) => {
-    payloadFields.push(`      ${field.name}: values.${field.name},`);
+    payloadFields.push(`          ${field.name}: values.${field.name},`);
   });
 
   // Relationships
@@ -457,40 +462,23 @@ function generateOnSubmit(data: FrontendTemplateData): string {
     const payloadKey = rel.single ? `${fieldId}Id` : `${toCamelCase(rel.alias || rel.name)}Ids`;
 
     if (rel.single) {
-      payloadFields.push(`      ${payloadKey}: values.${fieldId}?.id,`);
+      payloadFields.push(`          ${payloadKey}: values.${fieldId}?.id,`);
       // Add relationship property fields to payload
       if (rel.fields && rel.fields.length > 0) {
         rel.fields.forEach((field) => {
-          payloadFields.push(`      ${field.name}: values.${field.name},`);
+          payloadFields.push(`          ${field.name}: values.${field.name},`);
         });
       }
     } else {
-      payloadFields.push(`      ${payloadKey}: values.${fieldId} ? values.${fieldId}.map((item) => item.id) : [],`);
+      payloadFields.push(`          ${payloadKey}: values.${fieldId} ? values.${fieldId}.map((item) => item.id) : [],`);
     }
   });
 
-  return `  const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (values: z.infer<typeof formSchema>) => {
-    const payload: ${names.pascalCase}Input = {
+  return `        const payload: ${names.pascalCase}Input = {
 ${payloadFields.join("\n")}
-    };
+        };
 
-    try {
-      const updated${names.pascalCase} = ${names.camelCase} ? await ${names.pascalCase}Service.update(payload) : await ${names.pascalCase}Service.create(payload);
-
-      setOpen(false);
-      revalidatePaths(generateUrl({ page: Modules.${names.pascalCase}, id: updated${names.pascalCase}.id, language: \`[locale]\` }));
-      if (${names.camelCase} && propagateChanges) {
-        propagateChanges(updated${names.pascalCase});
-      } else {
-        router.push(generateUrl({ page: Modules.${names.pascalCase}, id: updated${names.pascalCase}.id }));
-      }
-    } catch (error) {
-      errorToast({
-        title: ${names.camelCase} ? t(\`generic.errors.update\`) : t(\`generic.errors.create\`),
-        error,
-      });
-    }
-  };`;
+        return ${names.camelCase} ? await ${names.pascalCase}Service.update(payload) : await ${names.pascalCase}Service.create(payload);`;
 }
 
 /**

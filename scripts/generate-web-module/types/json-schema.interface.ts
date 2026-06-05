@@ -13,6 +13,7 @@ export interface JsonFieldDefinition {
   name: string;
   type: string;
   nullable: boolean;
+  readOnly?: boolean;
 }
 
 /**
@@ -29,6 +30,10 @@ export interface JsonRelationshipDefinition {
   toNode: boolean; // Backend-specific, ignored in frontend
   nullable: boolean;
   fields?: JsonFieldDefinition[]; // Relationship property fields (stored on edges)
+  /** Explicit JSON:API wire key. When absent it is derived identically to the backend mapper. */
+  dtoKey?: string;
+  description?: string;
+  showInTable?: boolean;
 }
 
 /**
@@ -44,4 +49,8 @@ export interface JsonModuleDefinition {
   relationships: JsonRelationshipDefinition[];
   /** Explicitly set whether this module extends Content. If not set, auto-detects based on fields. */
   extendsContent?: boolean;
+  featureId?: string;
+  displayProp?: string;
+  containerTabs?: { activity?: boolean; relations?: { module: string; listProp: string; directory: string }[] };
+  inclusions?: { related?: { endpoint: string; fields: string[] }[] };
 }

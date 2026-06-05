@@ -5,7 +5,15 @@
  */
 
 import { FrontendTemplateData, FrontendField, FrontendRelationship } from "../../types/template-data.interface";
-import { toCamelCase, pluralize } from "../../transformers/name-transformer";
+import { toCamelCase, toPascalCase, pluralize } from "../../transformers/name-transformer";
+
+/**
+ * Build the named `<Pascal>RelationshipMeta` interface name for a relationship
+ * that carries edge fields (mirrors live OpportunityInterface.ts).
+ */
+function relationshipMetaName(rel: FrontendRelationship): string {
+  return `${toPascalCase(rel.alias ?? rel.name)}RelationshipMeta`;
+}
 
 /**
  * Generate the interface file content
@@ -17,15 +25,33 @@ export function generateInterfaceTemplate(data: FrontendTemplateData): string {
   const { names, extendsContent, fields, relationships } = data;
 
   const imports = generateImports(data);
+  const metaInterfaces = generateMetaInterfaces(data);
   const inputType = generateInputType(data);
   const interfaceDefinition = generateInterface(data);
 
   return `${imports}
-
+${metaInterfaces ? `\n${metaInterfaces}\n` : ""}
 ${inputType}
 
 ${interfaceDefinition}
 `;
+}
+
+/**
+ * Generate named `<Pascal>RelationshipMeta` interfaces for relationships that
+ * carry edge fields. Reused by getters and the Input type's meta arrays.
+ */
+function generateMetaInterfaces(data: FrontendTemplateData): string {
+  return data.relationships
+    .filter((rel) => rel.fields && rel.fields.length > 0)
+    .map((rel) => {
+      const metaName = relationshipMetaName(rel);
+      const body = rel
+        .fields!.map((f) => `  ${f.name}${f.nullable ? "?" : ""}: ${f.tsType};`)
+        .join("\n");
+      return `export interface ${metaName} {\n${body}\n}`;
+    })
+    .join("\n\n");
 }
 
 /**
@@ -64,10 +90,11 @@ function generateInputType(data: FrontendTemplateData): string {
 
   const fieldLines: string[] = ["  id: string;"];
 
-  // Add fields (excluding inherited ones if extending Content)
-  const fieldsToInclude = extendsContent
-    ? fields.filter((f) => !["name", "tldr", "abstract"].includes(f.name))
-    : fields;
+  // Add fields (excluding inherited ones if extending Content, and read-only
+  // fields which are server-derived and never sent back in the Input).
+  const fieldsToInclude = (
+    extendsContent ? fields.filter((f) => !["name", "tldr", "abstract"].includes(f.name)) : fields
+  ).filter((f) => !f.readOnly);
 
   fieldsToInclude.forEach((field) => {
     const optional = field.nullable ? "?" : "";
@@ -93,6 +120,12 @@ function generateInputType(data: FrontendTemplateData): string {
       const effectiveMany = rel.alias || rel.name;
       const key = `${toCamelCase(effectiveMany)}Ids`;
       fieldLines.push(`  ${key}?: string[];`);
+
+      // For many relationships with edge fields, also emit a parallel meta array.
+      if (rel.fields && rel.fields.length > 0) {
+        const metaShape = rel.fields.map((f) => `${f.name}: ${f.tsType}`).join("; ");
+        fieldLines.push(`  ${toCamelCase(effectiveMany)}Meta?: { id: string; ${metaShape} }[];`);
+      }
     }
   });
 
@@ -130,11 +163,11 @@ function generateInterface(data: FrontendTemplateData): string {
     if (rel.single) {
       const propertyName = toCamelCase(effectiveName);
 
-      // Build return type - use intersection if relationship has fields
+      // Build return type - intersect with the named meta interface if the
+      // relationship has edge fields.
       let baseType = rel.interfaceName;
       if (rel.fields && rel.fields.length > 0) {
-        const metaFields = rel.fields.map((f) => `${f.name}?: ${f.tsType}`).join("; ");
-        baseType = `${rel.interfaceName} & { ${metaFields} }`;
+        baseType = `${rel.interfaceName} & ${relationshipMetaName(rel)}`;
       }
 
       const type = rel.nullable ? `(${baseType}) | undefined` : baseType;
@@ -142,10 +175,9 @@ function generateInterface(data: FrontendTemplateData): string {
     } else {
       const effectiveMany = rel.alias || rel.name;
       const propertyName = pluralize(toCamelCase(effectiveMany));
-      // Use intersection type if relationship has fields (edge properties)
+      // Intersect with the named meta interface if the relationship has edge fields.
       if (rel.fields && rel.fields.length > 0) {
-        const metaFields = rel.fields.map((f) => `${f.name}?: ${f.tsType}`).join("; ");
-        getterLines.push(`  get ${propertyName}(): (${rel.interfaceName} & { ${metaFields} })[];`);
+        getterLines.push(`  get ${propertyName}(): (${rel.interfaceName} & ${relationshipMetaName(rel)})[];`);
       } else {
         getterLines.push(`  get ${propertyName}(): ${rel.interfaceName}[];`);
       }
