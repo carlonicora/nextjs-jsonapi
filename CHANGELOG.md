@@ -1,3 +1,9 @@
+## [1.111.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.110.0...v1.111.0) (2026-06-05)
+
+### 🚀 Features
+
+* **generator:** align web module generator templates with live codebase ([f2d9bbb](https://github.com/carlonicora/nextjs-jsonapi/commit/f2d9bbbf45dbd9924975b8183bf99bdf1b4ac2dc))
+
 ## [1.110.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.109.0...v1.110.0) (2026-06-04)
 
 ### 🚀 Features
