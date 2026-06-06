@@ -71,6 +71,7 @@
     "lint": "eslint \"src/**/*.ts\" \"src/**/*.tsx\" --fix",
     "format": "prettier --write \"src/**/*.ts\"",
     "prepublishOnly": "pnpm build",
+    "prepare": "tsc -p scripts/generate-web-module/tsconfig.json",
     "generate-web-module": "node dist/scripts/generate-web-module/index.js",
     "test": "vitest run",
     "test:watch": "vitest",
