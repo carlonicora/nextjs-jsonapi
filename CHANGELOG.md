@@ -1,3 +1,9 @@
+## [1.111.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.111.0...v1.111.1) (2026-06-06)
+
+### 🐛 Bug Fixes
+
+* **notifications:** de-duplicate concurrent loads to one request per page ([23eec2d](https://github.com/carlonicora/nextjs-jsonapi/commit/23eec2df4852bf205dcfbab63be20ea1b05ffe24))
+
 ## [1.111.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.110.0...v1.111.0) (2026-06-05)
 
 ### 🚀 Features
