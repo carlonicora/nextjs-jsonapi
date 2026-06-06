@@ -24,6 +24,10 @@ export function generateModuleTemplate(data: FrontendTemplateData): string {
   const featureImport = data.featureId ? `import { FeatureIds } from "@/enums/feature.ids";\n` : "";
   const featureLine = data.featureId ? `    feature: FeatureIds.${data.featureId},\n` : "";
 
+  // The author/editor (users) inclusion only applies to Content-extending
+  // modules — standalone modules have no author relationship to include.
+  const usersInclusionLine = extendsContent ? `\n          createJsonApiInclusion("users", [\`name\`, \`avatar\`]),` : "";
+
   // Cross-module inclusions for related entities (optional)
   const relatedInclusionLines = data.relatedInclusions
     .map((inc) => `          createJsonApiInclusion("${inc.endpoint}", [${inc.fields.map((f) => `\`${f}\``).join(", ")}]),`)
@@ -45,8 +49,7 @@ export const ${names.pascalCase}Module = (factory: ModuleFactory) =>
 ${featureLine}    inclusions: {
       lists: {
         fields: [
-          createJsonApiInclusion("${endpoint}", [${listInclusionFields}]),
-          createJsonApiInclusion("users", [\`name\`, \`avatar\`]),${relatedInclusionBlock}
+          createJsonApiInclusion("${endpoint}", [${listInclusionFields}]),${usersInclusionLine}${relatedInclusionBlock}
         ],
       },
     },

@@ -201,7 +201,9 @@ function generateImports(data: FrontendTemplateData): string {
   }
 
   // Check for description/textarea fields
-  const hasTextareaFields = fields.some((f) => f.name === "description" || f.type === "textarea");
+  // Rich-text (BlockNote) fields render as FormBlockNote even when named
+  // "description", so they must not pull in FormTextarea.
+  const hasTextareaFields = fields.some((f) => !f.isContentField && (f.name === "description" || f.type === "textarea"));
   if (hasTextareaFields) {
     componentImports.push("FormTextarea");
   }

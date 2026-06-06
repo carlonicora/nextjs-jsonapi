@@ -14,8 +14,8 @@ describe("container template", () => {
     expect(out).toContain("<WidgetContent widget={widget} />");
   });
 
-  it("emits an Activity tab by default and no Tasks tab", () => {
-    const out = generateContainerTemplate(makeFrontendData());
+  it("emits an Activity tab when containerTabs.activity is true and no Tasks tab", () => {
+    const out = generateContainerTemplate(makeFrontendData({ containerTabs: { activity: true, relations: [] } }));
     expect(out).toContain("<ActivityFeed module={Modules.Widget} entityId={widget.id} />");
     expect(out).not.toContain("TaskProvider");
   });

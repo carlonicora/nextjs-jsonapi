@@ -16,6 +16,8 @@ export const JSON_TO_TS_TYPE: Record<string, string> = {
   boolean: "boolean",
   date: "Date",
   any: "any",
+  // Rich-text BlockNote content hydrates into a block array (typed as any).
+  blocknote: "any",
 };
 
 /**
@@ -27,6 +29,8 @@ export const JSON_TO_ZOD_BASE: Record<string, string> = {
   boolean: "z.boolean()",
   date: "z.date()",
   any: "z.any()",
+  // BlockNote content is free-form; validated as any.
+  blocknote: "z.any()",
 };
 
 /**
@@ -98,6 +102,10 @@ export function getZodBase(jsonType: string): string {
  * Get form component for a field
  */
 export function getFormComponent(fieldName: string, fieldType: string): FormComponentType {
+  // Any field explicitly typed "blocknote" is a rich-text editor, regardless of name.
+  if (fieldType === "blocknote") {
+    return "BlockNoteEditor";
+  }
   // Check for special field names first, but only if the type is compatible
   // (e.g., "content" as a string field should NOT use BlockNoteEditor)
   if (SPECIAL_FIELD_COMPONENTS[fieldName]) {
@@ -113,11 +121,16 @@ export function getFormComponent(fieldName: string, fieldType: string): FormComp
 }
 
 /**
- * Check if a field indicates BlockNoteEditor should be used.
- * Only fields named "content" with non-primitive types (not string/number/boolean/date)
- * are treated as rich-content (JSON/BlockNote) fields.
+ * Check if a field indicates BlockNoteEditor should be used (rich-text content
+ * persisted as stringified JSON, hydrated into a block array).
+ *
+ * Two ways to flag a field as rich-text:
+ *  - Explicit type "blocknote" — any field name, supports multiple per module.
+ *  - Legacy: a field literally named "content" with a non-primitive type.
  */
 export function isContentField(fieldName: string, fieldType?: string): boolean {
+  // Explicit BlockNote type — the canonical, multi-field marker.
+  if (fieldType === "blocknote") return true;
   if (fieldName !== "content") return false;
   // If no type provided, assume it's a content field (backwards compat)
   if (!fieldType) return true;

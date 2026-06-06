@@ -6,24 +6,23 @@
  */
 
 import { JsonFieldDefinition } from "../types/json-schema.interface";
-import { CONTENT_INDICATOR_FIELDS } from "../types/field-mapping.types";
 
 /**
- * Check if a module should extend Content
+ * Check if a module should extend the Content base.
  *
- * @param fields - Array of field definitions from JSON schema
- * @param explicitValue - Optional explicit value from JSON schema
- * @returns true if the module should extend Content
+ * Opt-in ONLY: a module extends Content solely when the schema explicitly sets
+ * `extendsContent: true`. The previous heuristic auto-enabled it whenever a
+ * `name` (or `tldr`/`abstract`) field was present — i.e. for almost every
+ * entity — which forced apps that have no Content base feature to import one
+ * that doesn't exist. Rich-text editing no longer depends on Content: use a
+ * field of `type: "blocknote"` to get a BlockNote editor on a standalone model.
+ *
+ * @param _fields - Field definitions (unused; kept for signature stability)
+ * @param explicitValue - Explicit `extendsContent` value from the JSON schema
+ * @returns true only when explicitly opted in
  */
-export function detectExtendsContent(fields: JsonFieldDefinition[], explicitValue?: boolean): boolean {
-  // If explicitly set in JSON schema, use that value
-  if (explicitValue !== undefined) {
-    return explicitValue;
-  }
-
-  // Otherwise, auto-detect based on fields
-  const fieldNames = fields.map((f) => f.name);
-  return CONTENT_INDICATOR_FIELDS.some((indicator) => fieldNames.includes(indicator));
+export function detectExtendsContent(_fields: JsonFieldDefinition[], explicitValue?: boolean): boolean {
+  return explicitValue === true;
 }
 
 /**

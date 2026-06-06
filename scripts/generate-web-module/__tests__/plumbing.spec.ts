@@ -3,10 +3,9 @@ import { makeFrontendData, makeRelationship } from "./fixtures";
 import { resolveRelationshipKey } from "../transformers/relationship-key";
 
 describe("frontend plumbing", () => {
-  it("defaults displayProp to name and activity tab on", () => {
+  it("defaults displayProp to name", () => {
     const d = makeFrontendData();
     expect(d.displayProp).toBe("name");
-    expect(d.containerTabs.activity).toBe(true);
   });
 
   it("resolves wire key from explicit dtoKey verbatim", () => {

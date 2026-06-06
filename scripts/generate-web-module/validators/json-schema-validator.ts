@@ -106,8 +106,9 @@ export function validateJsonSchema(schema: any): ValidationError[] {
         });
       }
 
-      // Validate known types
-      const validTypes = ["string", "number", "boolean", "date", "any"];
+      // Validate known types (mirrors the backend CypherType set plus the
+      // frontend-facing "blocknote" rich-text marker)
+      const validTypes = ["string", "number", "boolean", "date", "datetime", "json", "any", "blocknote"];
       if (field.type && !validTypes.includes(field.type)) {
         errors.push({
           field: `fields[${index}].type`,

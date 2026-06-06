@@ -240,7 +240,9 @@ function buildTemplateData(schema: JsonModuleDefinition, targetHasNameMap?: Map<
     featureId: schema.featureId,
     displayProp: schema.displayProp ?? (allFields.some((f) => f.name === "name") ? "name" : "id"),
     containerTabs: {
-      activity: schema.containerTabs?.activity !== false,
+      // Opt-in: the Activity tab imports an app-level ActivityFeed feature that
+      // many apps don't have. Only emit it when the schema explicitly asks.
+      activity: schema.containerTabs?.activity === true,
       relations: schema.containerTabs?.relations ?? [],
     },
     relatedInclusions: schema.inclusions?.related ?? [],
@@ -261,8 +263,10 @@ function buildTableFieldNames(schema: JsonModuleDefinition, extendsContent: bool
     fieldNames.push("authors");
   }
 
-  // Add custom fields (excluding certain ones)
+  // Add custom fields (excluding certain ones, and rich-text BlockNote fields
+  // which hold stringified JSON and must not become table columns)
   schema.fields.forEach((f) => {
+    if (f.type === "blocknote") return;
     if (!["id", "name", "tldr", "abstract", "content", "createdAt", "updatedAt"].includes(f.name)) {
       fieldNames.push(f.name);
     }
