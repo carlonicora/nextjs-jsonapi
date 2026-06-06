@@ -36,7 +36,6 @@ function NotificationModalContent({ isOpen, setIsOpen }: NotificationModalProps)
     error,
     loadNotifications,
     shouldRefresh,
-    lastLoaded,
   } = useNotificationContext();
   const {
     socketNotifications,
@@ -87,10 +86,8 @@ function NotificationModalContent({ isOpen, setIsOpen }: NotificationModalProps)
     setNewNotifications(unreadCount > 0);
   }, [unreadCount]);
 
-  // Load notifications from API on mount if never loaded
-  useEffect(() => {
-    if (lastLoaded === 0) loadNotifications();
-  }, [lastLoaded, loadNotifications]);
+  // The initial load is owned by NotificationContextProvider's mount effect.
+  // The bell still refreshes on open when the cache is stale (see handleOpenChange).
 
   const processSocketNotificationsRef = useRef<NodeJS.Timeout | null>(null);
 

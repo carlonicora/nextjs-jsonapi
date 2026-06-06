@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import React, { createContext, ReactElement, useCallback, useContext, useEffect, useState } from "react";
+import React, { createContext, ReactElement, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { SharedProvider } from "../../../contexts";
 import { Modules } from "../../../core";
 import { useI18nRouter } from "../../../i18n";
@@ -55,6 +55,11 @@ export const NotificationContextProvider = ({ children }: NotificationContextPro
   const [lastLoaded, setLastLoaded] = useState(0);
   const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
 
+  // Tracks an in-flight loadNotifications() request so concurrent callers
+  // (the provider's mount effect + any consumer that also loads on mount)
+  // share a single GET /notifications instead of each firing their own.
+  const inFlightRef = useRef<Promise<void> | null>(null);
+
   // Access current user for initial load check
   const { currentUser } = useCurrentUserContext();
 
@@ -80,19 +85,30 @@ export const NotificationContextProvider = ({ children }: NotificationContextPro
   }, []);
 
   const loadNotifications = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
+    // Coalesce concurrent callers into one request. Without this, the several
+    // mount-time loaders fire before the first fetch resolves (lastLoaded is
+    // still 0), so each issues its own GET /notifications.
+    if (inFlightRef.current) return inFlightRef.current;
 
-    try {
-      const fetchedNotifications = await NotificationService.findMany({});
-      setNotifications(fetchedNotifications);
-      setLastLoaded(Date.now());
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to load notifications";
-      setError(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
+    const request = (async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const fetchedNotifications = await NotificationService.findMany({});
+        setNotifications(fetchedNotifications);
+        setLastLoaded(Date.now());
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "Failed to load notifications";
+        setError(errorMessage);
+      } finally {
+        setIsLoading(false);
+        inFlightRef.current = null;
+      }
+    })();
+
+    inFlightRef.current = request;
+    return request;
   }, []);
 
   // Initial load - runs once per session when user is available and not admin
