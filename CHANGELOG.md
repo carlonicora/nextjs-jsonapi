@@ -1,3 +1,9 @@
+## [1.112.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.111.2...v1.112.0) (2026-06-06)
+
+### 🚀 Features
+
+* update generator ([85b6012](https://github.com/carlonicora/nextjs-jsonapi/commit/85b60124bfc6c6fdf5c5f485d2f754ca4c017d73))
+
 ## [1.111.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.111.1...v1.111.2) (2026-06-06)
 
 ### 🐛 Bug Fixes
