@@ -1,3 +1,9 @@
+## [1.111.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.111.1...v1.111.2) (2026-06-06)
+
+### 🐛 Bug Fixes
+
+* **generator:** build generate-web-module bin on install via prepare ([d471ca9](https://github.com/carlonicora/nextjs-jsonapi/commit/d471ca9b3fff2660c1f7173f6f0dcf6d4b27ba9b))
+
 ## [1.111.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.111.0...v1.111.1) (2026-06-06)
 
 ### 🐛 Bug Fixes
