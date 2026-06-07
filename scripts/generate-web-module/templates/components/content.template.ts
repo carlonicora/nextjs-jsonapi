@@ -53,7 +53,7 @@ export function ${names.pascalCase}Content({ ${camel} }: ${names.pascalCase}Cont
       .map(
         (field) => `      <div className="flex flex-col gap-y-3">
         <h3 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-          {t(\`features.${names.camelCase}.fields.${field.name}.label\`)}
+          {t(\`features.${names.camelCase.toLowerCase()}.fields.${field.name}.label\`)}
         </h3>
         <Card className="flex w-full flex-col p-4">
           <BlockNoteEditorContainer id={${camel}.id} type="${camel}" initialContent={${camel}.${field.name}} />
@@ -65,7 +65,7 @@ export function ${names.pascalCase}Content({ ${camel} }: ${names.pascalCase}Cont
     const attributesBlock = hasAttributes
       ? `\n      <div className="flex flex-col gap-y-3">
         <h3 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-          {t(\`features.${names.camelCase}.sections.details\`)}
+          {t(\`features.${names.camelCase.toLowerCase()}.sections.details\`)}
         </h3>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
 ${attributeElements}
@@ -113,7 +113,7 @@ export function ${names.pascalCase}Content({ ${camel} }: ${names.pascalCase}Cont
     <div className="flex flex-col gap-y-8">
       <div className="flex flex-col gap-y-3">
         <h3 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-          {t(\`features.${names.camelCase}.sections.details\`)}
+          {t(\`features.${names.camelCase.toLowerCase()}.sections.details\`)}
         </h3>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
 ${attributeElements}
@@ -145,17 +145,17 @@ function generateAttributeElements(data: FrontendTemplateData): string {
   displayableFields.forEach((field) => {
     if (field.type === "string") {
       elements.push(`          <AttributeElement
-            title={t(\`features.${names.camelCase}.fields.${field.name}.label\`)}
+            title={t(\`features.${names.camelCase.toLowerCase()}.fields.${field.name}.label\`)}
             value={${camel}.${field.name}}
           />`);
     } else if (field.type === "boolean") {
       elements.push(`          <AttributeElement
-            title={t(\`features.${names.camelCase}.fields.${field.name}.label\`)}
+            title={t(\`features.${names.camelCase.toLowerCase()}.fields.${field.name}.label\`)}
             value={${camel}.${field.name} ? t(\`generic.yes\`) : t(\`generic.no\`)}
           />`);
     } else if (field.type === "number") {
       elements.push(`          <AttributeElement
-            title={t(\`features.${names.camelCase}.fields.${field.name}.label\`)}
+            title={t(\`features.${names.camelCase.toLowerCase()}.fields.${field.name}.label\`)}
             value={${camel}.${field.name}?.toString()}
           />`);
     }
@@ -170,7 +170,7 @@ function generateAttributeElements(data: FrontendTemplateData): string {
         const propName = toCamelCase(rel.alias || rel.variant || rel.name);
         elements.push(`          {${camel}.${propName} && (
             <AttributeElement
-              title={t(\`generic.relationships.${propName}.label\`)}
+              title={t(\`features.${names.camelCase.toLowerCase()}.relationships.${propName.toLowerCase()}.label\`)}
               value={${camel}.${propName}.${displayProp}}
             />
           )}`);

@@ -205,7 +205,7 @@ function generateFieldColumnEntries(data: FrontendTemplateData): string {
       entries.push(`    [${names.pascalCase}Fields.${key}]: () => ({
       id: "${key}",
       accessorKey: "${key}",
-      header: t(\`generic.relationships.${key}.label\`),
+      header: t(\`features.${names.camelCase.toLowerCase()}.relationships.${key.toLowerCase()}.label\`),
       cell: ({ row }: { row: TableContent<${names.pascalCase}Interface> }) => {
         const ${names.camelCase}: ${names.pascalCase}Interface = row.original.jsonApiData;
         return <span>{${accessor}}</span>;

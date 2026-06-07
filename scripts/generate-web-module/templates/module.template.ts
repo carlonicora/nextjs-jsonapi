@@ -42,7 +42,7 @@ ${featureImport}
 export const ${names.pascalCase}Module = (factory: ModuleFactory) =>
   factory({
     pageUrl: "/${names.pluralKebab}",
-    name: "${names.pluralCamel}",
+    name: "${endpoint}",
     model: ${names.pascalCase},
     moduleId: "${moduleId}",
     icon: ${DEFAULT_MODULE_ICON},

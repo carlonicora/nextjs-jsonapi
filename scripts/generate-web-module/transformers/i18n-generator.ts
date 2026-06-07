@@ -88,6 +88,7 @@ export function buildI18nMessages(i18nKeys: I18nKeySet): Record<string, any> {
       [i18nKeys.moduleName]: {
         fields: i18nKeys.fields,
         relationships: i18nKeys.relationships,
+        sections: { details: "Details" },
       },
     },
     entities: {

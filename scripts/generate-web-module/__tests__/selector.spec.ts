@@ -2,23 +2,28 @@ import { describe, it, expect } from "vitest";
 import { makeFrontendData } from "./fixtures";
 import { generateSelectorTemplate } from "../templates/components/selector.template";
 
-describe("selector template — combobox style", () => {
-  it("uses Button combobox trigger + Command primitives + Loader2", () => {
+describe("selector template — UserSelector-style UI", () => {
+  it("uses the input-styled trigger + custom search Input (mirrors UserSelector)", () => {
     const out = generateSelectorTemplate(makeFrontendData());
-    expect(out).toContain('role="combobox"');
-    expect(out).toContain("ChevronsUpDown");
-    expect(out).toContain("CommandInput");
-    expect(out).toContain("CommandEmpty");
-    expect(out).toContain("CommandGroup");
-    expect(out).toContain("Loader2");
-    expect(out).toContain("w-(--radix-popover-trigger-width) p-0");
+    expect(out).toContain("CircleX");
+    expect(out).toContain("SearchIcon");
+    expect(out).toContain("RefreshCwIcon");
+    expect(out).toContain("bg-input/20");
+    expect(out).toContain("w-(--anchor-width)");
+    expect(out).toContain("ui.search.placeholder");
+    // custom <Input> search, not the cmdk CommandInput
+    expect(out).toContain("<Input");
+    expect(out).toContain("CommandList");
+    expect(out).toContain("CommandItem");
   });
 
-  it("drops the legacy bespoke styling", () => {
+  it("drops the legacy Button-combobox styling", () => {
     const out = generateSelectorTemplate(makeFrontendData());
-    expect(out).not.toContain("CircleX");
-    expect(out).not.toContain("RefreshCwIcon");
-    expect(out).not.toContain("SearchIcon");
-    expect(out).not.toContain("bg-input/20");
+    expect(out).not.toContain('role="combobox"');
+    expect(out).not.toContain("ChevronsUpDown");
+    expect(out).not.toContain("CommandInput");
+    expect(out).not.toContain("CommandEmpty");
+    expect(out).not.toContain("CommandGroup");
+    expect(out).not.toContain("w-(--radix-popover-trigger-width)");
   });
 });

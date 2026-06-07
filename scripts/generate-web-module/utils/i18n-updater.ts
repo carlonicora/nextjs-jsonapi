@@ -68,43 +68,39 @@ export function updateI18n(
     entitiesUpdated = true;
   }
 
-  // Check if module already exists in features
-  const featuresAlreadyExist = messages.features && messages.features[lowercaseModuleName];
-
-  if (featuresAlreadyExist) {
-    // Features exist, but we may have added entities
-    if (entitiesUpdated) {
-      if (dryRun) {
-        return {
-          success: true,
-          message: `[DRY RUN] Module ${names.camelCase} exists, would add entities.${lowercasePluralKey}`,
-          alreadyExists: true,
-        };
+  // Additively merge this module's feature keys (fields / relationships /
+  // sections), FILLING missing keys without overwriting existing translations.
+  // Handles a brand-new module AND an existing-but-incomplete block (e.g. one
+  // first generated before its fields were known — which previously stayed an
+  // empty `{ fields: {}, relationships: {} }` skeleton forever).
+  const mergeMissing = (target: Record<string, any>, source: Record<string, any>): Record<string, any> => {
+    const out = target && typeof target === "object" && !Array.isArray(target) ? { ...target } : {};
+    for (const k of Object.keys(source)) {
+      const v = source[k];
+      if (v && typeof v === "object" && !Array.isArray(v)) {
+        out[k] = mergeMissing(out[k], v);
+      } else if (out[k] === undefined) {
+        out[k] = v;
       }
-
-      // Write updated content (entities were added)
-      const updatedContent = JSON.stringify(messages, null, 2);
-      fs.writeFileSync(messagesPath, updatedContent, "utf-8");
-
-      return {
-        success: true,
-        message: `Module ${names.camelCase} exists, added entities.${lowercasePluralKey}`,
-        alreadyExists: true,
-      };
     }
+    return out;
+  };
 
-    return {
-      success: true,
-      message: `Module ${names.camelCase} already exists in messages/${language}.json`,
-      alreadyExists: true,
-    };
-  }
-
-  // Add to features section (new module)
   if (!messages.features) {
     messages.features = {};
   }
-  messages.features[lowercaseModuleName] = moduleMessages.features[i18nKeys.moduleName];
+  const moduleBlock = moduleMessages.features[i18nKeys.moduleName];
+  const beforeFeatures = JSON.stringify(messages.features[lowercaseModuleName] ?? null);
+  messages.features[lowercaseModuleName] = mergeMissing(messages.features[lowercaseModuleName], moduleBlock);
+  const featuresUpdated = JSON.stringify(messages.features[lowercaseModuleName]) !== beforeFeatures;
+
+  if (!entitiesUpdated && !featuresUpdated) {
+    return {
+      success: true,
+      message: `Module ${names.camelCase} already up to date in messages/${language}.json`,
+      alreadyExists: true,
+    };
+  }
 
   if (dryRun) {
     return {
@@ -113,7 +109,6 @@ export function updateI18n(
     };
   }
 
-  // Write updated content with proper formatting
   const updatedContent = JSON.stringify(messages, null, 2);
   fs.writeFileSync(messagesPath, updatedContent, "utf-8");
 
