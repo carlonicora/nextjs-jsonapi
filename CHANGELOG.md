@@ -1,3 +1,9 @@
+## [1.112.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.112.0...v1.112.1) (2026-06-08)
+
+### 🐛 Bug Fixes
+
+* update selector and content templates for UserSelector-style UI and i18n improvements ([18e2eec](https://github.com/carlonicora/nextjs-jsonapi/commit/18e2eec8629c8a13f5aab08fe1ec1507f9954853))
+
 ## [1.112.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.111.2...v1.112.0) (2026-06-06)
 
 ### 🚀 Features
