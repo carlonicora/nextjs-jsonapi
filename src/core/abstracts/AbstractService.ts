@@ -146,6 +146,7 @@ export abstract class AbstractService {
     responseType?: ApiRequestDataTypeInterface;
     files?: { [key: string]: File | Blob } | File | Blob;
     token?: string;
+    suppressGlobalError?: boolean;
   }): Promise<T> {
     // Dynamic import to avoid bundling issues
     const { JsonApiGet, JsonApiPost, JsonApiPut, JsonApiPatch, JsonApiDelete } =
@@ -222,7 +223,7 @@ export abstract class AbstractService {
     }
 
     if (!apiResponse.ok) {
-      if (globalErrorHandler && typeof window !== "undefined") {
+      if (globalErrorHandler && typeof window !== "undefined" && !params.suppressGlobalError) {
         globalErrorHandler(apiResponse.response, apiResponse.error);
         return undefined as any;
       } else {
@@ -257,6 +258,7 @@ export abstract class AbstractService {
     overridesJsonApiCreation?: boolean;
     responseType?: ApiRequestDataTypeInterface;
     files?: { [key: string]: File | Blob } | File | Blob;
+    suppressGlobalError?: boolean;
   }): Promise<{ data: T; meta?: Record<string, any> }> {
     // Dynamic import to avoid bundling issues
     const { JsonApiGet, JsonApiPost, JsonApiPut, JsonApiPatch, JsonApiDelete } =
@@ -332,7 +334,7 @@ export abstract class AbstractService {
     }
 
     if (!apiResponse.ok) {
-      if (globalErrorHandler && typeof window !== "undefined") {
+      if (globalErrorHandler && typeof window !== "undefined" && !params.suppressGlobalError) {
         globalErrorHandler(apiResponse.response, apiResponse.error);
         return { data: undefined as any, meta: undefined };
       } else {
@@ -357,6 +359,7 @@ export abstract class AbstractService {
     method: HttpMethod;
     endpoint: string;
     companyId?: string;
+    suppressGlobalError?: boolean;
   }): Promise<any> {
     const { JsonApiGet } = await import("../../unified/JsonApiRequest");
 
@@ -378,7 +381,7 @@ export abstract class AbstractService {
     });
 
     if (!apiResponse.ok) {
-      if (globalErrorHandler && typeof window !== "undefined") {
+      if (globalErrorHandler && typeof window !== "undefined" && !params.suppressGlobalError) {
         globalErrorHandler(apiResponse.response, apiResponse.error);
         return undefined as any;
       } else {
