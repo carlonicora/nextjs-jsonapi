@@ -1,3 +1,9 @@
+## [1.115.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.114.0...v1.115.0) (2026-06-24)
+
+### 🚀 Features
+
+* add optional suppressGlobalError to AbstractService request methods ([c306b29](https://github.com/carlonicora/nextjs-jsonapi/commit/c306b295c61466d44a25415e3a041af27dfd5f83))
+
 ## [1.114.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.113.0...v1.114.0) (2026-06-24)
 
 ### 🚀 Features
