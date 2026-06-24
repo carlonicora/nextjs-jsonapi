@@ -1,3 +1,9 @@
+## [1.113.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.112.1...v1.113.0) (2026-06-12)
+
+### 🚀 Features
+
+* add ConfirmDialog, EmptyState, and Spinner components with tests ([7da29bb](https://github.com/carlonicora/nextjs-jsonapi/commit/7da29bbdffe50689a999169bb119fe1c45c48f80))
+
 ## [1.112.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.112.0...v1.112.1) (2026-06-08)
 
 ### 🐛 Bug Fixes

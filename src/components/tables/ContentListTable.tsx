@@ -47,6 +47,7 @@ type ContentListTableProps = {
   defaultExpanded?: boolean | ExpandedState;
   fullWidth?: boolean;
   groupBy?: string;
+  emptyState?: ReactNode;
 };
 
 export const ContentListTable = memo(function ContentListTable(props: ContentListTableProps) {
@@ -219,7 +220,7 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
             ) : (
               <TableRow>
                 <TableCell colSpan={tableColumns.length} className="h-24 text-center">
-                  No results.
+                  {props.emptyState ?? "No results."}
                 </TableCell>
               </TableRow>
             )}

@@ -19,7 +19,15 @@ function wrapper({ children }: { children: React.ReactNode }) {
 }
 
 function buildAssistantStub({ id, title = "Stub", engine }: { id: string; title?: string; engine?: string }) {
-  return { id, title, engine, messageCount: 0, type: "assistants", createdAt: new Date(), updatedAt: new Date() } as any;
+  return {
+    id,
+    title,
+    engine,
+    messageCount: 0,
+    type: "assistants",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  } as any;
 }
 
 function buildAssistantDehydrated({
@@ -151,10 +159,7 @@ describe("AssistantContext", () => {
   it("selectThread on a responder thread (engine absent) resets operatorMode and keeps the responder endpoint", async () => {
     const operatorThread = buildAssistantStub({ id: "a-op", engine: "operator" });
     const responderThread = buildAssistantStub({ id: "a-resp" });
-    AssistantService.findOne = vi
-      .fn()
-      .mockResolvedValueOnce(operatorThread)
-      .mockResolvedValueOnce(responderThread);
+    AssistantService.findOne = vi.fn().mockResolvedValueOnce(operatorThread).mockResolvedValueOnce(responderThread);
     AssistantMessageService.findByAssistant = vi.fn().mockResolvedValue([]);
     AssistantService.appendMessage = vi.fn().mockResolvedValue([]);
     AssistantService.appendMessageOperator = vi.fn().mockResolvedValue([]);
