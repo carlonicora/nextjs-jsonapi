@@ -2,6 +2,7 @@
 
 import { RoundPageContainer } from "../../../../components/containers/RoundPageContainer";
 import { Modules } from "../../../../core";
+import type { ApprovalActionRenderer } from "../../../assistant-message/components/MessageItem";
 import { useAssistantContext } from "../../contexts/AssistantContext";
 import { AssistantSidebar } from "../parts/AssistantSidebar";
 import { AssistantEmptyState } from "../parts/AssistantEmptyState";
@@ -9,7 +10,17 @@ import { AssistantThreadHeader } from "../parts/AssistantThreadHeader";
 import { AssistantThread } from "../parts/AssistantThread";
 import { AssistantComposer } from "../parts/AssistantComposer";
 
-export function AssistantContainer() {
+interface Props {
+  /**
+   * Optional renderer for `approval-request` messages (operator engine). The
+   * approval card component lives in the consuming app, which registers the
+   * AssistantAction module; without this prop those messages fall back to the
+   * plain markdown bubble.
+   */
+  renderApprovalAction?: ApprovalActionRenderer;
+}
+
+export function AssistantContainer({ renderApprovalAction }: Props = {}) {
   const ctx = useAssistantContext();
   const showThread = !!ctx.assistant || ctx.sending || ctx.messages.length > 0;
 
@@ -24,7 +35,11 @@ export function AssistantContainer() {
         />
         <main className="flex flex-1 flex-col">
           {!showThread ? (
-            <AssistantEmptyState onSend={ctx.sendMessage} />
+            <AssistantEmptyState
+              onSend={ctx.sendMessage}
+              operatorMode={ctx.operatorMode}
+              onOperatorModeChange={ctx.setOperatorMode}
+            />
           ) : (
             <>
               {ctx.assistant ? (
@@ -45,6 +60,7 @@ export function AssistantContainer() {
                 onSelectFollowUp={ctx.sendMessage}
                 failedMessageIds={ctx.failedMessageIds}
                 onRetry={ctx.retrySend}
+                renderApprovalAction={renderApprovalAction}
               />
               <AssistantComposer onSend={ctx.sendMessage} disabled={ctx.sending} />
             </>

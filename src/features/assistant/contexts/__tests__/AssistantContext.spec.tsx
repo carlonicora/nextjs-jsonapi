@@ -18,22 +18,24 @@ function wrapper({ children }: { children: React.ReactNode }) {
   return <AssistantProvider>{children}</AssistantProvider>;
 }
 
-function buildAssistantStub({ id, title = "Stub" }: { id: string; title?: string }) {
-  return { id, title, messageCount: 0, type: "assistants", createdAt: new Date(), updatedAt: new Date() } as any;
+function buildAssistantStub({ id, title = "Stub", engine }: { id: string; title?: string; engine?: string }) {
+  return { id, title, engine, messageCount: 0, type: "assistants", createdAt: new Date(), updatedAt: new Date() } as any;
 }
 
 function buildAssistantDehydrated({
   id,
   title = "Stub",
+  engine,
 }: {
   id: string;
   title?: string;
+  engine?: string;
 }): JsonApiHydratedDataInterface {
   return {
     jsonApi: {
       type: "assistants",
       id,
-      attributes: { title, messageCount: 0 },
+      attributes: { title, messageCount: 0, ...(engine !== undefined ? { engine } : {}) },
     },
     included: [],
   };
@@ -121,6 +123,90 @@ describe("AssistantContext", () => {
     expect(result.current.assistant?.id).toBe("a-3");
     expect(result.current.messages).toHaveLength(1);
     expect(replaceState).toHaveBeenCalledWith(null, "", "/assistants/a-3");
+  });
+
+  it("selectThread on an operator thread enables operatorMode and routes follow-ups to the operator endpoint", async () => {
+    const target = buildAssistantStub({ id: "a-op", title: "Operator", engine: "operator" });
+    AssistantService.findOne = vi.fn().mockResolvedValue(target);
+    AssistantMessageService.findByAssistant = vi.fn().mockResolvedValue([]);
+    AssistantService.appendMessage = vi.fn().mockResolvedValue([]);
+    AssistantService.appendMessageOperator = vi.fn().mockResolvedValue([]);
+    vi.spyOn(window.history, "replaceState").mockImplementation(() => {});
+
+    const { result } = renderHook(() => useAssistantContext(), {
+      wrapper: ({ children }) => <AssistantProvider>{children}</AssistantProvider>,
+    });
+    await act(async () => {
+      await result.current.selectThread("a-op");
+    });
+    expect(result.current.operatorMode).toBe(true);
+
+    await act(async () => {
+      await result.current.sendMessage("continue");
+    });
+    expect(AssistantService.appendMessageOperator).toHaveBeenCalledWith({ assistantId: "a-op", content: "continue" });
+    expect(AssistantService.appendMessage).not.toHaveBeenCalled();
+  });
+
+  it("selectThread on a responder thread (engine absent) resets operatorMode and keeps the responder endpoint", async () => {
+    const operatorThread = buildAssistantStub({ id: "a-op", engine: "operator" });
+    const responderThread = buildAssistantStub({ id: "a-resp" });
+    AssistantService.findOne = vi
+      .fn()
+      .mockResolvedValueOnce(operatorThread)
+      .mockResolvedValueOnce(responderThread);
+    AssistantMessageService.findByAssistant = vi.fn().mockResolvedValue([]);
+    AssistantService.appendMessage = vi.fn().mockResolvedValue([]);
+    AssistantService.appendMessageOperator = vi.fn().mockResolvedValue([]);
+    vi.spyOn(window.history, "replaceState").mockImplementation(() => {});
+
+    const { result } = renderHook(() => useAssistantContext(), {
+      wrapper: ({ children }) => <AssistantProvider>{children}</AssistantProvider>,
+    });
+    await act(async () => {
+      await result.current.selectThread("a-op");
+    });
+    expect(result.current.operatorMode).toBe(true);
+    await act(async () => {
+      await result.current.selectThread("a-resp");
+    });
+    expect(result.current.operatorMode).toBe(false);
+
+    await act(async () => {
+      await result.current.sendMessage("hello");
+    });
+    expect(AssistantService.appendMessage).toHaveBeenCalledWith(
+      expect.objectContaining({ assistantId: "a-resp", content: "hello" }),
+    );
+    expect(AssistantService.appendMessageOperator).not.toHaveBeenCalled();
+  });
+
+  it("hydrating an operator thread (reload) initialises operatorMode and routes sends to the operator endpoint", async () => {
+    const existing = buildAssistantDehydrated({ id: "a-op", title: "Operator", engine: "operator" });
+    AssistantService.appendMessage = vi.fn().mockResolvedValue([]);
+    AssistantService.appendMessageOperator = vi.fn().mockResolvedValue([]);
+
+    const { result } = renderHook(() => useAssistantContext(), {
+      wrapper: ({ children }) => <AssistantProvider dehydratedAssistant={existing}>{children}</AssistantProvider>,
+    });
+    expect(result.current.operatorMode).toBe(true);
+
+    await act(async () => {
+      await result.current.sendMessage("after reload");
+    });
+    expect(AssistantService.appendMessageOperator).toHaveBeenCalledWith({
+      assistantId: "a-op",
+      content: "after reload",
+    });
+    expect(AssistantService.appendMessage).not.toHaveBeenCalled();
+  });
+
+  it("hydrating a responder thread (engine absent) keeps operatorMode off", () => {
+    const existing = buildAssistantDehydrated({ id: "a-resp", title: "Responder" });
+    const { result } = renderHook(() => useAssistantContext(), {
+      wrapper: ({ children }) => <AssistantProvider dehydratedAssistant={existing}>{children}</AssistantProvider>,
+    });
+    expect(result.current.operatorMode).toBe(false);
   });
 
   it("renameThread calls the service + updates active assistant title", async () => {

@@ -10,4 +10,6 @@ export type AssistantInput = {
 export interface AssistantInterface extends ApiDataInterface {
   get title(): string;
   get messageCount(): number;
+  /** Agent engine the thread runs on — `"operator"` or undefined (responder). */
+  get engine(): string | undefined;
 }
