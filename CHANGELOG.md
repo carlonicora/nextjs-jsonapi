@@ -1,3 +1,9 @@
+## [1.114.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.113.0...v1.114.0) (2026-06-24)
+
+### 🚀 Features
+
+* **operator:** assistant approval-request UI and operator engine toggle ([12bca07](https://github.com/carlonicora/nextjs-jsonapi/commit/12bca07f8357e1d682de74b2c4a71b02b1b9fe65))
+
 ## [1.113.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.112.1...v1.113.0) (2026-06-12)
 
 ### 🚀 Features
