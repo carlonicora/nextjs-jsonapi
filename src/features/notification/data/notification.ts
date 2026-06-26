@@ -1,5 +1,4 @@
-import { AbstractApiData, JsonApiHydratedDataInterface, Modules } from "../../../core";
-import { UserInterface } from "../../user";
+import { AbstractApiData, ApiDataInterface, JsonApiHydratedDataInterface, Modules } from "../../../core";
 import { NotificationInput, NotificationInterface } from "./notification.interface";
 
 export class Notification extends AbstractApiData implements NotificationInterface {
@@ -8,7 +7,8 @@ export class Notification extends AbstractApiData implements NotificationInterfa
   private _message?: string;
   private _actionUrl?: string;
 
-  private _actor?: UserInterface;
+  private _actor?: ApiDataInterface;
+  private _subject?: ApiDataInterface;
 
   get notificationType(): string {
     if (this._notificationType === undefined) throw new Error("notificationType is not set");
@@ -27,8 +27,12 @@ export class Notification extends AbstractApiData implements NotificationInterfa
     return this._actionUrl;
   }
 
-  get actor(): UserInterface | undefined {
+  get actor(): ApiDataInterface | undefined {
     return this._actor;
+  }
+
+  get subject(): ApiDataInterface | undefined {
+    return this._subject;
   }
 
   rehydrate(data: JsonApiHydratedDataInterface): this {
@@ -39,7 +43,19 @@ export class Notification extends AbstractApiData implements NotificationInterfa
     this._message = data.jsonApi.attributes.message;
     this._actionUrl = data.jsonApi.attributes.actionUrl;
 
-    this._actor = this._readIncluded(data, "actor", Modules.User) as UserInterface;
+    const rels = (data.jsonApi.relationships ?? {}) as Record<string, { data?: { type: string; id: string } }>;
+
+    const actorType = rels.actor?.data?.type;
+    this._actor = actorType
+      ? (this._readIncluded(data, "actor", Modules.findByName(actorType)) as ApiDataInterface)
+      : undefined;
+
+    const subjectName = Object.keys(rels).find((name) => name !== "actor" && rels[name]?.data?.type);
+    const subjectType = subjectName ? rels[subjectName]?.data?.type : undefined;
+    this._subject =
+      subjectName && subjectType
+        ? (this._readIncluded(data, subjectName, Modules.findByName(subjectType)) as ApiDataInterface)
+        : undefined;
 
     return this;
   }
