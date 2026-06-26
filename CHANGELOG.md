@@ -1,3 +1,9 @@
+## [1.116.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.115.0...v1.116.0) (2026-06-26)
+
+### 🚀 Features
+
+* **notification:** generic polymorphic actor + subject relationships ([c4608a3](https://github.com/carlonicora/nextjs-jsonapi/commit/c4608a3d71f17b9aef92fc5f4932d98044979e06))
+
 ## [1.115.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.114.0...v1.115.0) (2026-06-24)
 
 ### 🚀 Features
