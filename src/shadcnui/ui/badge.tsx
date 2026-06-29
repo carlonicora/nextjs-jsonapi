@@ -17,6 +17,18 @@ const badgeVariants = cva(
           "border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground bg-input/20 dark:bg-input/30",
         ghost: "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
         link: "text-primary underline-offset-4 hover:underline",
+        warning: "bg-warning text-warning-foreground [a]:hover:bg-warning/80",
+        blue: "bg-sky-500 text-primary-foreground [a]:hover:bg-sky-500/80",
+        green: "bg-emerald-500 text-primary-foreground [a]:hover:bg-emerald-500/80",
+        red: "bg-red-500 text-primary-foreground [a]:hover:bg-red-500/80",
+        yellow: "bg-yellow-500 text-primary-foreground [a]:hover:bg-yellow-500/80",
+        purple: "bg-purple-500 text-primary-foreground [a]:hover:bg-purple-500/80",
+        pink: "bg-pink-500 text-primary-foreground [a]:hover:bg-pink-500/80",
+        gray: "bg-gray-500 text-primary-foreground [a]:hover:bg-gray-500/80",
+        orange: "bg-orange-500 text-primary-foreground [a]:hover:bg-orange-500/80",
+        teal: "bg-teal-500 text-primary-foreground [a]:hover:bg-teal-500/80",
+        lime: "bg-lime-500 text-primary-foreground [a]:hover:bg-lime-500/80",
+        none: "border-input bg-transparent text-muted-foreground min-w-20 min-h-5",
       },
     },
     defaultVariants: {
@@ -47,4 +59,7 @@ function Badge({
   });
 }
 
+type BadgeProps = useRender.ComponentProps<"span"> & VariantProps<typeof badgeVariants>;
+
 export { Badge, badgeVariants };
+export type { BadgeProps };
