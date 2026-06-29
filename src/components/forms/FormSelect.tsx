@@ -9,6 +9,7 @@ export function FormSelect({
   form,
   id,
   name,
+  description,
   placeholder,
   disabled,
   values,
@@ -21,6 +22,7 @@ export function FormSelect({
   form: any;
   id: string;
   name?: string;
+  description?: string;
   placeholder?: string;
   disabled?: boolean;
   values: { id: string; text: string }[];
@@ -36,6 +38,7 @@ export function FormSelect({
         form={form}
         name={id}
         label={name}
+        description={description}
         isRequired={isRequired}
         orientation={useRows ? "horizontal" : "vertical"}
         testId={testId}

@@ -9,6 +9,7 @@ type CommonEditorButtonsProps = {
   setOpen: (open: boolean) => void;
   hideSubmit?: boolean;
   centerButtons?: ReactNode;
+  buttonTitle?: string;
 };
 export function CommonEditorButtons({
   isEdit,
@@ -17,6 +18,7 @@ export function CommonEditorButtons({
   setOpen,
   hideSubmit,
   centerButtons,
+  buttonTitle,
 }: CommonEditorButtonsProps) {
   const t = useTranslations();
 
@@ -31,7 +33,7 @@ export function CommonEditorButtons({
 
         {!hideSubmit ? (
           <Button type="submit" disabled={form.formState.isSubmitting || disabled} data-testid={`modal-button-create`}>
-            {isEdit ? t(`ui.buttons.confirm_update`) : t(`ui.buttons.confirm_create`)}
+            {buttonTitle ? buttonTitle : isEdit ? t(`ui.buttons.confirm_update`) : t(`ui.buttons.confirm_create`)}
           </Button>
         ) : (
           <div />
@@ -54,7 +56,7 @@ export function CommonEditorButtons({
 
       {!hideSubmit && (
         <Button type="submit" disabled={form.formState.isSubmitting || disabled} data-testid={`modal-button-create`}>
-          {isEdit ? t(`ui.buttons.confirm_update`) : t(`ui.buttons.confirm_create`)}
+          {buttonTitle ? buttonTitle : isEdit ? t(`ui.buttons.confirm_update`) : t(`ui.buttons.confirm_create`)}
         </Button>
       )}
     </div>

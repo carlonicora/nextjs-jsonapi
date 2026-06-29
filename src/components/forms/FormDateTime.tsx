@@ -27,6 +27,9 @@ export function FormDateTime({
   onChange,
   allowEmpty,
   defaultMonth,
+  placeholder,
+  isRequired,
+  description,
 }: {
   form: any;
   id: string;
@@ -36,6 +39,8 @@ export function FormDateTime({
   onChange?: (date?: Date) => Promise<void>;
   allowEmpty?: boolean;
   defaultMonth?: Date;
+  isRequired?: boolean;
+  description?: string;
 }) {
   const [open, setOpen] = useState<boolean>(false);
   const t = useI18nTranslations();
@@ -100,7 +105,7 @@ export function FormDateTime({
 
   return (
     <div className="flex w-full flex-col">
-      <FormFieldWrapper form={form} name={id} label={name}>
+      <FormFieldWrapper form={form} name={id} label={name} isRequired={isRequired} description={description}>
         {(field) => (
           <div className="relative flex flex-row">
             <Popover open={open} onOpenChange={setOpen} modal={true}>
@@ -113,7 +118,11 @@ export function FormDateTime({
                     />
                   }
                 >
-                  {field.value ? formatDateTime(field.value) : <span>{t(`common.pick_date_time`)}</span>}
+                  {field.value ? (
+                    formatDateTime(field.value)
+                  ) : (
+                    <span>{placeholder ? placeholder : t(`common.pick_date_time`)}</span>
+                  )}
                   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                 </PopoverTrigger>
                 {field.value && allowEmpty !== false && (

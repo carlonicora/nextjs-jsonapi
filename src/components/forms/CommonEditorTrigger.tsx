@@ -1,18 +1,23 @@
 "use client";
 
-import { PencilIcon } from "lucide-react";
+import { PencilIcon, PlusCircleIcon } from "lucide-react";
 
 import { useTranslations } from "next-intl";
+import React from "react";
 import { Button, DialogTrigger } from "../../shadcnui";
 
-type CommonEditorTriggerProps = { isEdit: boolean; edit?: string; create?: string; testId?: string };
+type CommonEditorTriggerProps = { isEdit: boolean; edit?: string; create?: string; testId?: string; title?: string };
 
-export function CommonEditorTrigger({ isEdit, edit: _edit, create, testId }: CommonEditorTriggerProps) {
+export function CommonEditorTrigger({ isEdit, edit: _edit, create, testId, title }: CommonEditorTriggerProps) {
   const t = useTranslations();
 
   return (
     <DialogTrigger>
-      {isEdit ? (
+      {title ? (
+        <Button render={<div />} nativeButton={false} size="sm" variant={`outline`} data-testid={testId}>
+          {title}
+        </Button>
+      ) : isEdit ? (
         <Button
           render={<div />}
           nativeButton={false}
@@ -31,3 +36,12 @@ export function CommonEditorTrigger({ isEdit, edit: _edit, create, testId }: Com
     </DialogTrigger>
   );
 }
+
+export const CommonAddTrigger = React.forwardRef<HTMLButtonElement, React.ComponentPropsWithoutRef<typeof Button>>(
+  (props, ref) => (
+    <Button ref={ref} variant="ghost" size="sm" className="text-muted-foreground" {...props}>
+      <PlusCircleIcon />
+    </Button>
+  ),
+);
+CommonAddTrigger.displayName = "CommonAddTrigger";

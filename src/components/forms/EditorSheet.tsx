@@ -62,6 +62,17 @@ export type EditorSheetProps<T extends FieldValues> = {
   dialogOpen?: boolean;
   onDialogOpenChange?: (open: boolean) => void;
 
+  /** Render a fully custom footer instead of the default CommonEditorButtons.
+   *  `setOpen` is the dirty-checked open handler (shows the discard dialog);
+   *  `closeWithoutConfirm` is the raw setter that bypasses the discard dialog
+   *  (use after a successful submit when no confirmation is needed). */
+  renderFooter?: (props: {
+    form: UseFormReturn<T>;
+    isEdit: boolean;
+    setOpen: (open: boolean) => void;
+    closeWithoutConfirm: (open: boolean) => void;
+  }) => ReactNode;
+
   children: ReactNode;
 };
 
@@ -90,6 +101,7 @@ export function EditorSheet<T extends FieldValues>({
   onClose,
   dialogOpen,
   onDialogOpenChange,
+  renderFooter,
   children,
 }: EditorSheetProps<T>) {
   const t = useTranslations();
@@ -147,6 +159,7 @@ export function EditorSheet<T extends FieldValues>({
     <>
       <Sheet open={open} onOpenChange={handleOpenChange}>
         {dialogOpen === undefined &&
+          forceShow === undefined &&
           (trigger ? (
             <SheetTrigger>{trigger}</SheetTrigger>
           ) : (
@@ -184,17 +197,31 @@ export function EditorSheet<T extends FieldValues>({
             </SheetDescription>
           </SheetHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(wrappedOnSubmit)} className="flex min-h-0 flex-1 flex-col">
+            <form
+              onSubmit={(e) => {
+                // The Sheet content is portaled, but React synthetic events still
+                // bubble up the React tree — so without stopPropagation an inner
+                // EditorSheet's submit also triggers the outer form's submit
+                // (e.g. a create dialog opened from within another editor).
+                e.stopPropagation();
+                return form.handleSubmit(wrappedOnSubmit)(e);
+              }}
+              className="flex min-h-0 flex-1 flex-col"
+            >
               <div className="flex-1 overflow-y-auto px-6 py-4">{children}</div>
               <SheetFooter className="shrink-0 border-t px-6 py-4">
-                <CommonEditorButtons
-                  form={form}
-                  setOpen={handleOpenChange}
-                  isEdit={isEdit}
-                  disabled={disabled}
-                  hideSubmit={hideSubmit}
-                  centerButtons={centerButtons}
-                />
+                {renderFooter ? (
+                  renderFooter({ form, isEdit, setOpen: handleOpenChange, closeWithoutConfirm: setOpen })
+                ) : (
+                  <CommonEditorButtons
+                    form={form}
+                    setOpen={handleOpenChange}
+                    isEdit={isEdit}
+                    disabled={disabled}
+                    hideSubmit={hideSubmit}
+                    centerButtons={centerButtons}
+                  />
+                )}
               </SheetFooter>
             </form>
           </Form>

@@ -1,7 +1,7 @@
 "use client";
 
 import { LoaderCircleIcon, Trash2Icon } from "lucide-react";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { useI18nRouter, useI18nTranslations } from "../../i18n";
 import {
   AlertDialog,
@@ -15,15 +15,37 @@ import {
 import { errorToast } from "../errors";
 
 type CommonDeleterProps = {
-  type: string;
+  type?: string;
+  /** Override the type-derived dialog title. */
+  title?: string;
+  /** Override the type-derived dialog subtitle. */
+  subtitle?: string;
+  /** Override the type-derived dialog body; rendered as-is. */
+  description?: ReactNode;
   deleteFunction: () => Promise<void>;
   redirectTo?: string;
   forceShow?: boolean;
   testId?: string;
+  /** Custom trigger element replacing the default trash button. */
+  trigger?: ReactNode;
   onSuccess?: () => void | Promise<void>;
+  /** Fired after a successful delete, in addition to redirect/onSuccess. */
+  propagateChanges?: () => void;
 };
 
-export function CommonDeleter({ deleteFunction, redirectTo, type, forceShow, testId, onSuccess }: CommonDeleterProps) {
+export function CommonDeleter({
+  deleteFunction,
+  redirectTo,
+  type,
+  title,
+  subtitle,
+  description,
+  forceShow,
+  testId,
+  trigger,
+  onSuccess,
+  propagateChanges,
+}: CommonDeleterProps) {
   const t = useI18nTranslations();
   const router = useI18nRouter();
   const [open, setOpen] = useState<boolean>(forceShow || false);
@@ -37,6 +59,7 @@ export function CommonDeleter({ deleteFunction, redirectTo, type, forceShow, tes
       setOpen(false);
       if (onSuccess) await onSuccess();
       else if (redirectTo) router.push(redirectTo);
+      if (propagateChanges) propagateChanges();
     } catch (error) {
       errorToast({ title: t(`common.errors.delete`), error: error });
     }
@@ -47,28 +70,36 @@ export function CommonDeleter({ deleteFunction, redirectTo, type, forceShow, tes
     <AlertDialog open={open} onOpenChange={setOpen}>
       {forceShow ? null : (
         <AlertDialogTrigger>
-          <Button
-            render={<div />}
-            nativeButton={false}
-            size="sm"
-            variant={"ghost"}
-            className="text-muted-foreground hover:text-destructive"
-            data-testid={testId}
-          >
-            <Trash2Icon />
-          </Button>
+          {trigger || (
+            <Button
+              render={<div />}
+              nativeButton={false}
+              size="sm"
+              variant={"ghost"}
+              className="text-muted-foreground hover:text-destructive"
+              data-testid={testId}
+            >
+              <Trash2Icon />
+            </Button>
+          )}
         </AlertDialogTrigger>
       )}
       <AlertDialogContent className={`flex max-h-[70vh] max-w-3xl flex-col overflow-y-auto`}>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t(`common.delete.title`, { type: t(`entities.${type}`, { count: 1 }) })}</AlertDialogTitle>
+          <AlertDialogTitle>
+            {title ?? t(`common.delete.title`, { type: t(`entities.${type}`, { count: 1 }) })}
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            {t(`common.delete.subtitle`, { type: t(`entities.${type}`, { count: 1 }) })}
+            {subtitle ?? t(`common.delete.subtitle`, { type: t(`entities.${type}`, { count: 1 }) })}
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <div className="text-destructive p-4 text-sm">
-          {t(`common.delete.description`, { type: t(`entities.${type}`, { count: 1 }) })}
-        </div>
+        {description !== undefined ? (
+          description
+        ) : (
+          <div className="text-destructive p-4 text-sm">
+            {t(`common.delete.description`, { type: t(`entities.${type}`, { count: 1 }) })}
+          </div>
+        )}
         <div className="flex justify-end">
           <Button
             className="mr-2"
