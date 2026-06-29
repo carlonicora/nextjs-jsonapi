@@ -1,3 +1,10 @@
+## [1.117.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.116.0...v1.117.0) (2026-06-29)
+
+### 🚀 Features
+
+* **badge:** add new color variants and BadgeProps type definition ([985ef8d](https://github.com/carlonicora/nextjs-jsonapi/commit/985ef8d26ac854acbac4a10a87337722ee704930))
+* **forms:** make Form* components a superset of the a360 fork ([d93fc91](https://github.com/carlonicora/nextjs-jsonapi/commit/d93fc91e50d3d8c678ca322d291d5a1addaa87b6))
+
 ## [1.116.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.115.0...v1.116.0) (2026-06-26)
 
 ### 🚀 Features
