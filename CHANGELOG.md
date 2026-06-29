@@ -1,3 +1,10 @@
+## [1.117.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.117.0...v1.117.1) (2026-06-29)
+
+### 🐛 Bug Fixes
+
+* **EditorSheet:** render custom trigger via render prop to avoid nested <button> ([2b26c60](https://github.com/carlonicora/nextjs-jsonapi/commit/2b26c606b5a91c0d39f388fa1c2129e34d54807a))
+* **socket,editor:** notification rehydrate shape + EditorSheet/Breadcrumb ([50b560e](https://github.com/carlonicora/nextjs-jsonapi/commit/50b560e3b6fb06fa5ff3a56c02926725fd50aa78))
+
 ## [1.117.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.116.0...v1.117.0) (2026-06-29)
 
 ### 🚀 Features
