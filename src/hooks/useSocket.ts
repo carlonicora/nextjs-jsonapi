@@ -114,7 +114,18 @@ export function useSocket({ token }: UseSocketOptions): UseSocketReturn {
     };
 
     const handleNotification = (data: any) => {
-      const notification = rehydrate(Modules.Notification, data) as NotificationInterface;
+      // The socket sends a JSON:API document { data, included }; rehydrate expects
+      // { jsonApi, included }. Map it (and guard against an unexpected shape so a
+      // malformed payload never throws an uncaught error that breaks the socket).
+      const resource = data?.data ?? data?.jsonApi;
+      if (!resource?.type) {
+        console.warn("[useSocket] ignoring notification with unexpected payload shape", data);
+        return;
+      }
+      const notification = rehydrate(Modules.Notification, {
+        jsonApi: resource,
+        included: data?.included || [],
+      }) as NotificationInterface;
       if (notification) {
         setSocketNotifications((prev) => {
           const newNotifications = [...prev, notification];

@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { ReactElement, ReactNode, useCallback, useEffect, useRef } from "react";
+import { ReactNode, useCallback, useEffect, useRef } from "react";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 import { PencilIcon } from "lucide-react";
 import { ModuleWithPermissions } from "../../permissions/types";
@@ -161,7 +161,7 @@ export function EditorSheet<T extends FieldValues>({
         {dialogOpen === undefined &&
           forceShow === undefined &&
           (trigger ? (
-            <SheetTrigger render={trigger as ReactElement} />
+            <SheetTrigger>{trigger}</SheetTrigger>
           ) : (
             <SheetTrigger>
               {isEdit ? (

@@ -45,7 +45,13 @@ function BreadcrumbDesktop({
         {items.length > ITEMS_TO_DISPLAY ? (
           <>
             <BreadcrumbItem>
-              {items[0].href ? <Link href={items[0].href}>{items[0].name}</Link> : <>{items[0].name}</>}
+              {items[0].href ? (
+                <Link href={items[0].href} onClick={items[0].onClick}>
+                  {items[0].name}
+                </Link>
+              ) : (
+                <>{items[0].name}</>
+              )}
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -56,7 +62,9 @@ function BreadcrumbDesktop({
                 <DropdownMenuContent align="start">
                   {items.slice(1, -ITEMS_TO_DISPLAY + 2).map((item, index) => (
                     <DropdownMenuItem key={index}>
-                      <Link href={item.href ? item.href : "#"}>{item.name}</Link>
+                      <Link href={item.href ? item.href : "#"} onClick={item.onClick}>
+                        {item.name}
+                      </Link>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
@@ -66,7 +74,13 @@ function BreadcrumbDesktop({
             {items.slice(-ITEMS_TO_DISPLAY + 2).map((item, index) => (
               <Fragment key={index}>
                 <BreadcrumbItem>
-                  {item.href ? <Link href={item.href}>{item.name}</Link> : <>{item.name}</>}
+                  {item.href ? (
+                    <Link href={item.href} onClick={item.onClick}>
+                      {item.name}
+                    </Link>
+                  ) : (
+                    <>{item.name}</>
+                  )}
                 </BreadcrumbItem>
                 {index < items.slice(-ITEMS_TO_DISPLAY + 2).length - 1 && <BreadcrumbSeparator />}
               </Fragment>
@@ -77,7 +91,13 @@ function BreadcrumbDesktop({
             {items.map((item, index) => (
               <Fragment key={index}>
                 <BreadcrumbItem>
-                  {item.href ? <Link href={item.href}>{item.name}</Link> : <>{item.name}</>}
+                  {item.href ? (
+                    <Link href={item.href} onClick={item.onClick}>
+                      {item.name}
+                    </Link>
+                  ) : (
+                    <>{item.name}</>
+                  )}
                 </BreadcrumbItem>
                 {index < items.length - 1 && <BreadcrumbSeparator />}
               </Fragment>
@@ -124,7 +144,13 @@ function BreadcrumbMobile({
       <DropdownMenuContent align="start">
         {allItems.map((item, index) => (
           <DropdownMenuItem key={index}>
-            {item.href ? <Link href={item.href}>{item.name}</Link> : <>{item.name}</>}
+            {item.href ? (
+              <Link href={item.href} onClick={item.onClick}>
+                {item.name}
+              </Link>
+            ) : (
+              <>{item.name}</>
+            )}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
