@@ -1,3 +1,9 @@
+## [1.118.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.117.1...v1.118.0) (2026-06-30)
+
+### 🚀 Features
+
+* **containers:** RoundPageContainer rail layout + fix EditorSheet nested button ([01d1b6a](https://github.com/carlonicora/nextjs-jsonapi/commit/01d1b6ad015dae9bce9cc45c0df3984239b5b553))
+
 ## [1.117.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.117.0...v1.117.1) (2026-06-29)
 
 ### 🐛 Bug Fixes
