@@ -14,6 +14,20 @@ export type Tab = {
   modules?: ModuleWithPermissions[];
   action?: Action;
   /**
+   * Section header this tab clusters under in the `RoundPageContainer`
+   * `layout="rail"` navigation. Tabs without a `group` render at the top of the
+   * rail (the "pinned" stratum) in declared order; groups render in first-seen
+   * order. Ignored by the default `layout="tabs"` (flat) rendering.
+   */
+  group?: string;
+  /**
+   * Stable identifier used for the URL `?section=` value and active-tab
+   * matching. Defaults to `key?.name ?? label`. Provide this for tabs that have
+   * no `key` (no backing module) but still need a stable, locale-independent
+   * deep link — e.g. `"dashboard"`, `"analysis"`, `"timeline"`.
+   */
+  sectionKey?: string;
+  /**
    * When true, the tab content fills the available viewport height inside its
    * container. The tab's wrapper chain switches to a flex-column layout with
    * `flex-1 min-h-0`, the outer page scroll is suppressed, and the tab content

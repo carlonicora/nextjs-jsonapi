@@ -3,7 +3,9 @@
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
   Sheet,
@@ -15,7 +17,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components";
-import { Tab } from "@/components/containers";
+import { partitionTabs, Tab } from "@/components/containers";
 import { RoundPageContainerTitle } from "@/components/containers/RoundPageContainerTitle";
 import { Header } from "@/components/navigations";
 import { useHeaderChildren, useHeaderLeftContent } from "@/contexts";
@@ -23,7 +25,7 @@ import { useUrlRewriter } from "@/hooks";
 import { cn, useIsMobile } from "@/index";
 import { ModuleWithPermissions } from "@/permissions";
 import { useSearchParams } from "next/navigation";
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { Fragment, ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 
 const DETAILS_COOKIE_NAME = "round_page_details_state";
 const DETAILS_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -37,7 +39,30 @@ type RoundPageContainerProps = {
   fullWidth?: boolean;
   forceHeader?: boolean;
   header?: ReactNode;
+  /**
+   * Section-navigation layout for `tabs`.
+   * - `"tabs"` (default) — horizontal `TabsList` (desktop) / `Select` (mobile).
+   *   Unchanged from prior behaviour; existing callers need no edits.
+   * - `"rail"` — vertical 220px left rail grouped by each tab's `group`, with a
+   *   `<md` grouped `Select` fallback. Mirrors the retired
+   *   `PageContainerContentDetails` rail.
+   */
+  layout?: "tabs" | "rail";
 };
+
+// Rail trigger class: override the horizontal TabsTrigger defaults for a
+// vertical, left-aligned, dark-filled active state. tailwind-merge inside cn()
+// resolves the conflicts with the base classes.
+const railTriggerClass = cn(
+  "flex w-full items-center justify-start rounded-md px-3 py-1.5 text-left text-sm leading-tight whitespace-normal",
+  "text-muted-foreground",
+  "hover:bg-muted hover:text-foreground",
+  "data-[state=active]:bg-foreground data-[state=active]:text-background",
+  "data-[state=active]:font-semibold data-[state=active]:shadow-none",
+);
+
+/** Stable value for the URL `?section=` and active-tab matching. */
+const tabValue = (tab: Tab): string => tab.sectionKey ?? tab.key?.name ?? tab.label;
 
 export function RoundPageContainer({
   module,
@@ -48,6 +73,7 @@ export function RoundPageContainer({
   fullWidth,
   forceHeader,
   header,
+  layout = "tabs",
 }: RoundPageContainerProps) {
   const headerChildren = useHeaderChildren();
   const headerLeftContent = useHeaderLeftContent();
@@ -75,15 +101,14 @@ export function RoundPageContainer({
   const rewriteUrl = useUrlRewriter();
 
   const initialValue = tabs
-    ? (section && tabs.find((i) => (i.key?.name ?? i.label) === section) ? section : null) ||
-      (tabs[0].key?.name ?? tabs[0].label)
+    ? (section && tabs.find((i) => tabValue(i) === section) ? section : null) || tabValue(tabs[0])
     : undefined;
 
   const [activeTab, setActiveTab] = useState(initialValue);
 
   useEffect(() => {
     if (tabs && section) {
-      const tab = tabs.find((i) => (i.key?.name ?? i.label) === section);
+      const tab = tabs.find((i) => tabValue(i) === section);
       if (tab) {
         setActiveTab(section);
       }
@@ -98,7 +123,10 @@ export function RoundPageContainer({
     [module, id, rewriteUrl],
   );
 
-  const activeFillHeight = tabs?.find((t) => (t.key?.name ?? t.label) === activeTab)?.fillHeight === true;
+  const activeFillHeight = tabs?.find((t) => tabValue(t) === activeTab)?.fillHeight === true;
+
+  // Rail partition — only consumed by `layout="rail"` but cheap to compute.
+  const { ungrouped, groups } = useMemo(() => partitionTabs(tabs ?? []), [tabs]);
 
   const isReady = mounted && isMobile !== undefined;
 
@@ -135,85 +163,178 @@ export function RoundPageContainer({
               />
             )}
             <div className="flex h-full w-full overflow-hidden">
-              <div
-                className={cn(
-                  `grow`,
-                  isMobile ? `p-2` : `p-4`,
-                  activeFillHeight ? `flex flex-col overflow-hidden` : `overflow-y-auto`,
-                  fullWidth && `p-0`,
-                )}
-              >
+              {layout === "rail" && tabs ? (
+                // Rail layout: the vertical-tab navigation is a flush-left
+                // sidebar of the card and the content fills the full remaining
+                // width (like `fullWidth`) — NOT the centred max-w-6xl column.
+                <Tabs
+                  value={activeTab}
+                  onValueChange={handleTabChange}
+                  orientation="vertical"
+                  className="flex h-full min-w-0 grow overflow-hidden"
+                >
+                  {/* Flush-left section rail — md and up */}
+                  <aside
+                    data-testid="round-page-rail"
+                    className="hidden shrink-0 border-r p-4 md:flex md:w-56 md:flex-col md:overflow-y-auto"
+                  >
+                    <TabsList className="flex h-auto flex-col items-stretch gap-0.5 bg-transparent p-0">
+                      {ungrouped.map((tab) => (
+                        <TabsTrigger key={tab.label} value={tabValue(tab)} className={railTriggerClass}>
+                          {tab.contentLabel ?? tab.label}
+                        </TabsTrigger>
+                      ))}
+                      {groups.map((group) => (
+                        <Fragment key={group.label}>
+                          <div
+                            role="presentation"
+                            className="text-muted-foreground px-3 pt-3 pb-1 text-[10px] font-bold tracking-wider uppercase"
+                          >
+                            {group.label}
+                          </div>
+                          {group.items.map((tab) => (
+                            <TabsTrigger key={tab.label} value={tabValue(tab)} className={railTriggerClass}>
+                              {tab.contentLabel ?? tab.label}
+                            </TabsTrigger>
+                          ))}
+                        </Fragment>
+                      ))}
+                    </TabsList>
+                  </aside>
+
+                  {/* Content — full width, fills the remaining space */}
+                  <div className="flex min-w-0 grow flex-col overflow-hidden">
+                    {/* Section Select — below md */}
+                    <div data-testid="round-page-rail-select" className="p-2 md:hidden">
+                      <Select
+                        value={activeTab}
+                        onValueChange={(value) => {
+                          if (value) handleTabChange(value);
+                        }}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {ungrouped.map((tab) => (
+                            <SelectItem key={tab.label} value={tabValue(tab)}>
+                              {tab.contentLabel ?? tab.label}
+                            </SelectItem>
+                          ))}
+                          {groups.map((group) => (
+                            <SelectGroup key={group.label}>
+                              <SelectLabel>{group.label}</SelectLabel>
+                              {group.items.map((tab) => (
+                                <SelectItem key={tab.label} value={tabValue(tab)}>
+                                  {tab.contentLabel ?? tab.label}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div
+                      className={cn(
+                        `min-w-0 grow`,
+                        activeFillHeight ? `flex flex-col overflow-hidden` : `overflow-y-auto`,
+                      )}
+                    >
+                      {header}
+                      {tabs.map((tab) => (
+                        <TabsContent
+                          key={tab.label}
+                          value={tabValue(tab)}
+                          className={tab.fillHeight ? `flex min-h-0 w-full flex-1 flex-col` : ``}
+                        >
+                          {tab.content}
+                        </TabsContent>
+                      ))}
+                      {children && <div className="flex">{children}</div>}
+                    </div>
+                  </div>
+                </Tabs>
+              ) : (
                 <div
                   className={cn(
-                    `mx-auto max-w-6xl space-y-8`,
-                    activeFillHeight && `flex w-full flex-1 min-h-0 flex-col space-y-0`,
-                    fullWidth && `max-w-full w-full p-0 h-full`,
+                    `grow`,
+                    isMobile ? `p-2` : `p-4`,
+                    activeFillHeight ? `flex flex-col overflow-hidden` : `overflow-y-auto`,
+                    fullWidth && `p-0`,
                   )}
                 >
-                  {header}
-                  {tabs ? (
-                    <>
-                      <Tabs
-                        value={activeTab}
-                        className={cn(`w-full`, activeFillHeight && `flex flex-1 min-h-0 flex-col`)}
-                        onValueChange={handleTabChange}
-                      >
-                        {isMobile ? (
-                          <div className="p-0">
-                            <Select
-                              value={activeTab}
-                              onValueChange={(value) => {
-                                if (value) handleTabChange(value);
-                              }}
-                            >
-                              <SelectTrigger className="w-full">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {tabs.map((tab) => (
-                                  <SelectItem key={tab.label} value={tab.key?.name ?? tab.label}>
-                                    {tab.contentLabel ?? tab.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        ) : (
-                          <div className="p-4">
-                            <TabsList>
-                              {tabs.map((tab) => (
-                                <TabsTrigger key={tab.label} value={tab.key?.name ?? tab.label} className="px-4">
-                                  {tab.contentLabel ?? tab.label}
-                                </TabsTrigger>
-                              ))}
-                            </TabsList>
-                          </div>
-                        )}
-                        <div
-                          className={cn(
-                            `flex w-full `,
-                            isMobile ? `` : `px-4`,
-                            activeFillHeight ? `flex-1 min-h-0` : `overflow-y-auto`,
-                          )}
+                  <div
+                    className={cn(
+                      `mx-auto max-w-6xl space-y-8`,
+                      activeFillHeight && `flex w-full flex-1 min-h-0 flex-col space-y-0`,
+                      fullWidth && `max-w-full w-full p-0 h-full`,
+                    )}
+                  >
+                    {header}
+                    {tabs ? (
+                      <>
+                        <Tabs
+                          value={activeTab}
+                          className={cn(`w-full`, activeFillHeight && `flex flex-1 min-h-0 flex-col`)}
+                          onValueChange={handleTabChange}
                         >
-                          {tabs.map((tab) => (
-                            <TabsContent
-                              key={tab.label}
-                              value={tab.key?.name ?? tab.label}
-                              className={tab.fillHeight ? `flex flex-1 min-h-0 w-full flex-col` : `pb-20`}
-                            >
-                              {tab.content}
-                            </TabsContent>
-                          ))}
-                        </div>
-                      </Tabs>
-                      {children && <div className={cn(`flex`, isMobile ? `px-2` : `px-4`)}>{children}</div>}
-                    </>
-                  ) : (
-                    children
-                  )}
+                          {isMobile ? (
+                            <div className="p-0">
+                              <Select
+                                value={activeTab}
+                                onValueChange={(value) => {
+                                  if (value) handleTabChange(value);
+                                }}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {tabs.map((tab) => (
+                                    <SelectItem key={tab.label} value={tabValue(tab)}>
+                                      {tab.contentLabel ?? tab.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          ) : (
+                            <div className="p-4">
+                              <TabsList>
+                                {tabs.map((tab) => (
+                                  <TabsTrigger key={tab.label} value={tabValue(tab)} className="px-4">
+                                    {tab.contentLabel ?? tab.label}
+                                  </TabsTrigger>
+                                ))}
+                              </TabsList>
+                            </div>
+                          )}
+                          <div
+                            className={cn(
+                              `flex w-full `,
+                              isMobile ? `` : `px-4`,
+                              activeFillHeight ? `flex-1 min-h-0` : `overflow-y-auto`,
+                            )}
+                          >
+                            {tabs.map((tab) => (
+                              <TabsContent
+                                key={tab.label}
+                                value={tabValue(tab)}
+                                className={tab.fillHeight ? `flex flex-1 min-h-0 w-full flex-col` : `pb-20`}
+                              >
+                                {tab.content}
+                              </TabsContent>
+                            ))}
+                          </div>
+                        </Tabs>
+                        {children && <div className={cn(`flex`, isMobile ? `px-2` : `px-4`)}>{children}</div>}
+                      </>
+                    ) : (
+                      children
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
               {details &&
                 (isMobile ? (
                   <Sheet open={showDetails} onOpenChange={setShowDetails}>

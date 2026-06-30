@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { ReactNode, useCallback, useEffect, useRef } from "react";
+import { ReactElement, ReactNode, useCallback, useEffect, useRef } from "react";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 import { PencilIcon } from "lucide-react";
 import { ModuleWithPermissions } from "../../permissions/types";
@@ -161,7 +161,12 @@ export function EditorSheet<T extends FieldValues>({
         {dialogOpen === undefined &&
           forceShow === undefined &&
           (trigger ? (
-            <SheetTrigger>{trigger}</SheetTrigger>
+            // Base UI: the trigger renders its own <button>. Pass the caller's
+            // element via `render` (NOT as children) so it BECOMES the trigger
+            // button — otherwise an interactive trigger (e.g. <Button>) nests a
+            // <button> inside SheetTrigger's <button> (invalid HTML / hydration
+            // error). `render` also preserves the element's native `disabled`.
+            <SheetTrigger render={trigger as ReactElement} />
           ) : (
             <SheetTrigger>
               {isEdit ? (
