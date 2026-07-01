@@ -1,3 +1,9 @@
+## [1.119.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.118.0...v1.119.0) (2026-07-01)
+
+### 🚀 Features
+
+* optional per-call baseUrl override on callApi/getRawData for multi-service routing ([f66a9c2](https://github.com/carlonicora/nextjs-jsonapi/commit/f66a9c299967b57ae5b071e20ca86e700e9c773d))
+
 ## [1.118.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.117.1...v1.118.0) (2026-06-30)
 
 ### 🚀 Features
