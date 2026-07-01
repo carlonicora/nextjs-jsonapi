@@ -167,9 +167,17 @@ function runBootstrapper(): void {
   }
 }
 
-function buildUrl(endpoint: string): string {
-  const apiUrl = getApiUrl();
-  return endpoint.startsWith("http") ? endpoint : `${apiUrl}${endpoint}`;
+/**
+ * Resolve the final request URL for an endpoint.
+ *
+ * - `endpoint` starting with "http" is always passed through unchanged (existing behaviour).
+ * - Otherwise, an explicit `baseUrl` (per-call override) takes precedence over the global
+ *   `getApiUrl()` resolution. Omitting `baseUrl` preserves today's behaviour exactly.
+ */
+export function buildUrl(endpoint: string, baseUrl?: string): string {
+  if (endpoint.startsWith("http")) return endpoint;
+  const apiUrl = baseUrl ?? getApiUrl();
+  return `${apiUrl}${endpoint}`;
 }
 
 export async function JsonApiGet(params: {
@@ -177,13 +185,14 @@ export async function JsonApiGet(params: {
   endpoint: string;
   companyId?: string;
   language: string;
+  baseUrl?: string;
 }): Promise<ApiResponseInterface> {
   runBootstrapper();
   const token = await getToken();
 
   const apiResponse = await makeRequest({
     method: "GET",
-    url: buildUrl(params.endpoint),
+    url: buildUrl(params.endpoint, params.baseUrl),
     token,
     cache: params.classKey.cache,
     companyId: params.companyId,
@@ -202,6 +211,7 @@ export async function JsonApiGet(params: {
         endpoint,
         companyId: params.companyId,
         language: params.language,
+        baseUrl: params.baseUrl,
       }),
   });
 }
@@ -216,6 +226,7 @@ export async function JsonApiPost(params: {
   language: string;
   responseType?: ApiRequestDataTypeInterface;
   token?: string;
+  baseUrl?: string;
 }): Promise<ApiResponseInterface> {
   runBootstrapper();
   const token = params.token ?? (await getToken());
@@ -229,7 +240,7 @@ export async function JsonApiPost(params: {
 
   const apiResponse = await makeRequest({
     method: "POST",
-    url: buildUrl(params.endpoint),
+    url: buildUrl(params.endpoint, params.baseUrl),
     token,
     body,
     files: params.files,
@@ -254,6 +265,7 @@ export async function JsonApiPut(params: {
   files?: { [key: string]: File | Blob } | File | Blob;
   language: string;
   responseType?: ApiRequestDataTypeInterface;
+  baseUrl?: string;
 }): Promise<ApiResponseInterface> {
   runBootstrapper();
   const token = await getToken();
@@ -267,7 +279,7 @@ export async function JsonApiPut(params: {
 
   const apiResponse = await makeRequest({
     method: "PUT",
-    url: buildUrl(params.endpoint),
+    url: buildUrl(params.endpoint, params.baseUrl),
     token,
     body,
     files: params.files,
@@ -293,6 +305,7 @@ export async function JsonApiPatch(params: {
   overridesJsonApiCreation?: boolean;
   responseType?: ApiRequestDataTypeInterface;
   language: string;
+  baseUrl?: string;
 }): Promise<ApiResponseInterface> {
   runBootstrapper();
   const token = await getToken();
@@ -306,7 +319,7 @@ export async function JsonApiPatch(params: {
 
   const apiResponse = await makeRequest({
     method: "PATCH",
-    url: buildUrl(params.endpoint),
+    url: buildUrl(params.endpoint, params.baseUrl),
     token,
     body,
     files: params.files,
@@ -329,13 +342,14 @@ export async function JsonApiDelete(params: {
   companyId?: string;
   language: string;
   responseType?: ApiRequestDataTypeInterface;
+  baseUrl?: string;
 }): Promise<ApiResponseInterface> {
   runBootstrapper();
   const token = await getToken();
 
   const apiResponse = await makeRequest({
     method: "DELETE",
-    url: buildUrl(params.endpoint),
+    url: buildUrl(params.endpoint, params.baseUrl),
     token,
     companyId: params.companyId,
     language: params.language,
