@@ -1,3 +1,9 @@
+## [1.120.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.119.0...v1.120.0) (2026-07-02)
+
+### 🚀 Features
+
+* add raw API response data to error handling in ClientAbstractService and translateResponse ([386db1f](https://github.com/carlonicora/nextjs-jsonapi/commit/386db1f32fab115812e40b4f288113f736980e99))
+
 ## [1.119.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.118.0...v1.119.0) (2026-07-01)
 
 ### 🚀 Features
