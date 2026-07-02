@@ -1,3 +1,9 @@
+## [1.121.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.120.0...v1.121.0) (2026-07-02)
+
+### 🚀 Features
+
+* attach raw error body in AbstractService throw branches ([9d0f38e](https://github.com/carlonicora/nextjs-jsonapi/commit/9d0f38e9ba0867895592dcd3affc75f21e458bd7))
+
 ## [1.120.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.119.0...v1.120.0) (2026-07-02)
 
 ### 🚀 Features
