@@ -241,6 +241,7 @@ export abstract class AbstractService {
         const error = new Error(`${apiResponse.response}:${apiResponse.error}`) as any;
         error.status = apiResponse.response;
         error.digest = `HTTP_${apiResponse.response}`;
+        error.body = apiResponse.raw;
         throw error;
       }
     }
@@ -352,6 +353,7 @@ export abstract class AbstractService {
         const error = new Error(`${apiResponse.response}:${apiResponse.error}`) as any;
         error.status = apiResponse.response;
         error.digest = `HTTP_${apiResponse.response}`;
+        error.body = apiResponse.raw;
         throw error;
       }
     }
@@ -401,6 +403,7 @@ export abstract class AbstractService {
         const error = new Error(`${apiResponse.response}:${apiResponse.error}`) as any;
         error.status = apiResponse.response;
         error.digest = `HTTP_${apiResponse.response}`;
+        error.body = apiResponse.raw;
         throw error;
       }
     }
