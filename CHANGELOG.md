@@ -1,3 +1,9 @@
+## [1.123.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.122.0...v1.123.0) (2026-07-03)
+
+### 🚀 Features
+
+* implement context for active tab value and enhance TabsContent for lazy-mounting ([b591438](https://github.com/carlonicora/nextjs-jsonapi/commit/b5914382295f25284db2c0db8926d0662e0d525c))
+
 ## [1.122.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.121.0...v1.122.0) (2026-07-03)
 
 ### 🚀 Features
