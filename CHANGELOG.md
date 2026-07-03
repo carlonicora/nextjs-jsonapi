@@ -1,3 +1,9 @@
+## [1.122.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.121.0...v1.122.0) (2026-07-03)
+
+### 🚀 Features
+
+* add optional actions header slot to EditorSheet; fix FormSelect uncontrolled-to-controlled warning ([dd6fc20](https://github.com/carlonicora/nextjs-jsonapi/commit/dd6fc2073f3073dc7f48ad5d89ab7d9dac6a4e46))
+
 ## [1.121.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.120.0...v1.121.0) (2026-07-02)
 
 ### 🚀 Features
