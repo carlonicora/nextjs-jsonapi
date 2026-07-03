@@ -50,7 +50,10 @@ export function FormSelect({
               field.onChange(actual);
               if (onChange) onChange(actual);
             }}
-            value={field.value || (allowEmpty ? EMPTY_VALUE : field.value)}
+            // Never pass undefined: Base UI decides controlled vs uncontrolled on
+            // first render, and a later undefined→string change triggers the
+            // "changing uncontrolled to controlled" warning.
+            value={field.value || (allowEmpty ? EMPTY_VALUE : "")}
             disabled={disabled}
             data-testid={testId}
           >
