@@ -41,7 +41,6 @@ export function useEditorDialog(isFormDirty: () => boolean, options?: UseEditorD
       syncingFromProp.current = true;
       setOpen(options.dialogOpen);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [options?.dialogOpen]);
 
   // Notify parent when open state changes — but skip the echo when this change
