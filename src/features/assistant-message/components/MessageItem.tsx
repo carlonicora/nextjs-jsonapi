@@ -2,10 +2,18 @@
 
 import { useTranslations } from "next-intl";
 import { Sparkles, AlertCircle } from "lucide-react";
+import type { ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { AssistantMessageInterface } from "../data/AssistantMessageInterface";
 import { MessageSourcesContainer } from "./parts/MessageSourcesContainer";
+
+/**
+ * Render slot for `approval-request` messages. The approval card lives in the
+ * consuming app (it depends on the app-registered AssistantAction module), so
+ * the chat renderer receives it as a function instead of importing it.
+ */
+export type ApprovalActionRenderer = (message: AssistantMessageInterface) => ReactNode;
 
 interface Props {
   message: AssistantMessageInterface;
@@ -13,9 +21,17 @@ interface Props {
   onSelectFollowUp: (q: string) => void;
   failedMessageIds?: Set<string>;
   onRetry?: (tempId: string) => void;
+  renderApprovalAction?: ApprovalActionRenderer;
 }
 
-export function MessageItem({ message, isLatestAssistant, onSelectFollowUp, failedMessageIds, onRetry }: Props) {
+export function MessageItem({
+  message,
+  isLatestAssistant,
+  onSelectFollowUp,
+  failedMessageIds,
+  onRetry,
+  renderApprovalAction,
+}: Props) {
   const t = useTranslations();
   const isUser = message.role === "user";
   const isFailed = isUser && !!failedMessageIds?.has(message.id);
@@ -39,6 +55,8 @@ export function MessageItem({ message, isLatestAssistant, onSelectFollowUp, fail
     );
   }
 
+  const isApprovalRequest = message.messageType === "approval-request" && !!renderApprovalAction;
+
   return (
     <div className="flex min-w-0 max-w-[78%] flex-col gap-1.5">
       <div className="text-muted-foreground flex items-center gap-2 pl-1 text-xs">
@@ -47,9 +65,13 @@ export function MessageItem({ message, isLatestAssistant, onSelectFollowUp, fail
         </span>
         <span>{t("features.assistant.agent_name")}</span>
       </div>
-      <div className="bg-muted text-foreground rounded-2xl rounded-bl-sm px-3.5 py-2.5 text-sm leading-relaxed">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
-      </div>
+      {isApprovalRequest ? (
+        renderApprovalAction(message)
+      ) : (
+        <div className="bg-muted text-foreground rounded-2xl rounded-bl-sm px-3.5 py-2.5 text-sm leading-relaxed">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
+        </div>
+      )}
       <MessageSourcesContainer
         message={message}
         isLatestAssistant={isLatestAssistant}

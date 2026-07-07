@@ -2,6 +2,7 @@
 
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
 import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from "../../shadcnui";
@@ -14,6 +15,7 @@ type DateRangeSelectorProps = {
 };
 
 export function DateRangeSelector({ onDateChange, avoidSettingDates, showPreviousMonth }: DateRangeSelectorProps) {
+  const t = useTranslations();
   const [date, setDate] = useState<DateRange | undefined>(
     avoidSettingDates
       ? undefined
@@ -24,6 +26,12 @@ export function DateRangeSelector({ onDateChange, avoidSettingDates, showPreviou
   );
 
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Prevent hydration mismatch by only rendering Popover after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const [prevRange, setPrevRange] = useState<DateRange | undefined>(date);
   useEffect(() => {
@@ -53,28 +61,56 @@ export function DateRangeSelector({ onDateChange, avoidSettingDates, showPreviou
     }
   };
 
+  // Show placeholder button during SSR to prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <div className={cn("grid gap-2")}>
+        <Button
+          id="date"
+          variant={"outline"}
+          className={cn("w-[300px] justify-start text-left font-normal", !date && "text-muted-foreground")}
+        >
+          <CalendarIcon />
+          {date?.from ? (
+            date.to ? (
+              <>
+                {format(date.from, "LLL dd, y")} - {format(date.to, "LLL dd, y")}
+              </>
+            ) : (
+              format(date.from, "LLL dd, y")
+            )
+          ) : (
+            <span>{t("ui.labels.pick_a_date")}</span>
+          )}
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className={cn("grid gap-2")}>
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger>
-          <Button
-            id="date"
-            variant={"outline"}
-            className={cn("w-[300px] justify-start text-left font-normal", !date && "text-muted-foreground")}
-          >
-            <CalendarIcon />
-            {date?.from ? (
-              date.to ? (
-                <>
-                  {format(date.from, "LLL dd, y")} - {format(date.to, "LLL dd, y")}
-                </>
-              ) : (
-                format(date.from, "LLL dd, y")
-              )
+        <PopoverTrigger
+          render={
+            <Button
+              id="date"
+              variant={"outline"}
+              className={cn("w-[300px] justify-start text-left font-normal", !date && "text-muted-foreground")}
+            />
+          }
+        >
+          <CalendarIcon />
+          {date?.from ? (
+            date.to ? (
+              <>
+                {format(date.from, "LLL dd, y")} - {format(date.to, "LLL dd, y")}
+              </>
             ) : (
-              <span>Pick a date</span>
-            )}
-          </Button>
+              format(date.from, "LLL dd, y")
+            )
+          ) : (
+            <span>{t("ui.labels.pick_a_date")}</span>
+          )}
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <div className="flex flex-col gap-2 p-2">
@@ -100,7 +136,7 @@ export function DateRangeSelector({ onDateChange, avoidSettingDates, showPreviou
               className="cursor-pointer"
               disabled={!date}
             >
-              Clear
+              {t("ui.buttons.clear")}
             </Button>
           </div>
         </PopoverContent>

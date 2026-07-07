@@ -4,6 +4,7 @@ import { AssistantInput, AssistantInterface } from "./AssistantInterface";
 export class Assistant extends AbstractApiData implements AssistantInterface {
   private _title?: string;
   private _messageCount?: number;
+  private _engine?: string;
 
   get title(): string {
     return this._title ?? "";
@@ -13,9 +14,14 @@ export class Assistant extends AbstractApiData implements AssistantInterface {
     return this._messageCount ?? 0;
   }
 
+  get engine(): string | undefined {
+    return this._engine;
+  }
+
   rehydrate(data: JsonApiHydratedDataInterface): this {
     super.rehydrate(data);
     this._title = data.jsonApi.attributes?.title;
+    this._engine = data.jsonApi.attributes?.engine;
     const fromMeta = data.jsonApi.meta?.messageCount;
     const fromAttrs = data.jsonApi.attributes?.messageCount;
     this._messageCount = typeof fromMeta === "number" ? fromMeta : typeof fromAttrs === "number" ? fromAttrs : 0;

@@ -12,6 +12,7 @@ export function FormPassword({
   disabled,
   testId,
   isRequired,
+  description,
 }: {
   form: any;
   id: string;
@@ -21,10 +22,18 @@ export function FormPassword({
   disabled?: boolean;
   testId?: string;
   isRequired?: boolean;
+  description?: string;
 }) {
   return (
     <div className="flex w-full flex-col">
-      <FormFieldWrapper form={form} name={id} label={name} isRequired={isRequired} testId={testId}>
+      <FormFieldWrapper
+        form={form}
+        name={id}
+        label={name}
+        isRequired={isRequired}
+        description={description}
+        testId={testId}
+      >
         {(field) => (
           <PasswordInput
             {...field}

@@ -74,6 +74,7 @@ export async function translateResponse<T extends ApiDataInterface>(params: {
 
   if (!params.apiResponse.ok) {
     response.error = params.apiResponse?.data?.message ?? params.apiResponse.statusText;
+    response.raw = params.apiResponse.data;
     return response;
   }
 

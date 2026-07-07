@@ -26,6 +26,8 @@ export function FormDate({
   isRequired = false,
   defaultMonth,
   allowEmpty,
+  description,
+  futureYears,
 }: {
   form: any;
   id: string;
@@ -36,6 +38,8 @@ export function FormDate({
   isRequired?: boolean;
   defaultMonth?: Date;
   allowEmpty?: boolean;
+  description?: string;
+  futureYears?: number;
 }) {
   const t = useI18nTranslations();
   const locale = useI18nLocale();
@@ -117,7 +121,7 @@ export function FormDate({
 
   return (
     <div className="flex w-full flex-col">
-      <FormFieldWrapper form={form} name={id} label={name} isRequired={isRequired}>
+      <FormFieldWrapper form={form} name={id} label={name} isRequired={isRequired} description={description}>
         {(field) => (
           <Popover open={open} onOpenChange={setOpen} modal={true}>
             <InputGroup>
@@ -162,7 +166,7 @@ export function FormDate({
                 month={displayMonth}
                 onMonthChange={setDisplayMonth}
                 startMonth={new Date(1900, 0)}
-                endMonth={new Date(new Date().getFullYear() + 10, 11)}
+                endMonth={new Date(new Date().getFullYear() + (futureYears ?? 10), 11)}
               />
               {allowEmpty !== false && (
                 <div className="border-t p-2">

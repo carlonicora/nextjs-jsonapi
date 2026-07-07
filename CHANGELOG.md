@@ -1,3 +1,71 @@
+## [1.123.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.122.0...v1.123.0) (2026-07-03)
+
+### 🚀 Features
+
+* implement context for active tab value and enhance TabsContent for lazy-mounting ([b591438](https://github.com/carlonicora/nextjs-jsonapi/commit/b5914382295f25284db2c0db8926d0662e0d525c))
+
+## [1.122.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.121.0...v1.122.0) (2026-07-03)
+
+### 🚀 Features
+
+* add optional actions header slot to EditorSheet; fix FormSelect uncontrolled-to-controlled warning ([dd6fc20](https://github.com/carlonicora/nextjs-jsonapi/commit/dd6fc2073f3073dc7f48ad5d89ab7d9dac6a4e46))
+
+## [1.121.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.120.0...v1.121.0) (2026-07-02)
+
+### 🚀 Features
+
+* attach raw error body in AbstractService throw branches ([9d0f38e](https://github.com/carlonicora/nextjs-jsonapi/commit/9d0f38e9ba0867895592dcd3affc75f21e458bd7))
+
+## [1.120.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.119.0...v1.120.0) (2026-07-02)
+
+### 🚀 Features
+
+* add raw API response data to error handling in ClientAbstractService and translateResponse ([386db1f](https://github.com/carlonicora/nextjs-jsonapi/commit/386db1f32fab115812e40b4f288113f736980e99))
+
+## [1.119.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.118.0...v1.119.0) (2026-07-01)
+
+### 🚀 Features
+
+* optional per-call baseUrl override on callApi/getRawData for multi-service routing ([f66a9c2](https://github.com/carlonicora/nextjs-jsonapi/commit/f66a9c299967b57ae5b071e20ca86e700e9c773d))
+
+## [1.118.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.117.1...v1.118.0) (2026-06-30)
+
+### 🚀 Features
+
+* **containers:** RoundPageContainer rail layout + fix EditorSheet nested button ([01d1b6a](https://github.com/carlonicora/nextjs-jsonapi/commit/01d1b6ad015dae9bce9cc45c0df3984239b5b553))
+
+## [1.117.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.117.0...v1.117.1) (2026-06-29)
+
+### 🐛 Bug Fixes
+
+* **EditorSheet:** render custom trigger via render prop to avoid nested <button> ([2b26c60](https://github.com/carlonicora/nextjs-jsonapi/commit/2b26c606b5a91c0d39f388fa1c2129e34d54807a))
+* **socket,editor:** notification rehydrate shape + EditorSheet/Breadcrumb ([50b560e](https://github.com/carlonicora/nextjs-jsonapi/commit/50b560e3b6fb06fa5ff3a56c02926725fd50aa78))
+
+## [1.117.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.116.0...v1.117.0) (2026-06-29)
+
+### 🚀 Features
+
+* **badge:** add new color variants and BadgeProps type definition ([985ef8d](https://github.com/carlonicora/nextjs-jsonapi/commit/985ef8d26ac854acbac4a10a87337722ee704930))
+* **forms:** make Form* components a superset of the a360 fork ([d93fc91](https://github.com/carlonicora/nextjs-jsonapi/commit/d93fc91e50d3d8c678ca322d291d5a1addaa87b6))
+
+## [1.116.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.115.0...v1.116.0) (2026-06-26)
+
+### 🚀 Features
+
+* **notification:** generic polymorphic actor + subject relationships ([c4608a3](https://github.com/carlonicora/nextjs-jsonapi/commit/c4608a3d71f17b9aef92fc5f4932d98044979e06))
+
+## [1.115.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.114.0...v1.115.0) (2026-06-24)
+
+### 🚀 Features
+
+* add optional suppressGlobalError to AbstractService request methods ([c306b29](https://github.com/carlonicora/nextjs-jsonapi/commit/c306b295c61466d44a25415e3a041af27dfd5f83))
+
+## [1.114.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.113.0...v1.114.0) (2026-06-24)
+
+### 🚀 Features
+
+* **operator:** assistant approval-request UI and operator engine toggle ([12bca07](https://github.com/carlonicora/nextjs-jsonapi/commit/12bca07f8357e1d682de74b2c4a71b02b1b9fe65))
+
 ## [1.113.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.112.1...v1.113.0) (2026-06-12)
 
 ### 🚀 Features

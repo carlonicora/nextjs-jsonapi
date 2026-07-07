@@ -10,12 +10,13 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
-import { DropzoneOptions, DropzoneState, FileRejection, useDropzone } from "react-dropzone";
+import { Accept, DropzoneOptions, DropzoneState, FileRejection, useDropzone } from "react-dropzone";
 import { showError } from "../../utils/toast";
-import { buttonVariants, Input } from "../../shadcnui";
+import { buttonVariants, Input, Tooltip, TooltipContent, TooltipTrigger } from "../../shadcnui";
 import { cn } from "../../utils";
 
 export type { DropzoneOptions } from "react-dropzone";
@@ -31,6 +32,7 @@ type FileUploaderContextType = {
   setActiveIndex: Dispatch<SetStateAction<number>>;
   orientation: "horizontal" | "vertical";
   direction: DirectionOptions;
+  accept?: Accept;
 };
 
 const FileUploaderContext = createContext<FileUploaderContextType | null>(null);
@@ -195,6 +197,7 @@ export const FileUploader = forwardRef<HTMLDivElement, FileUploaderProps & React
           setActiveIndex,
           orientation,
           direction,
+          accept: dropzoneOptions.accept,
         }}
       >
         <div
@@ -283,10 +286,45 @@ FileUploaderItem.displayName = "FileUploaderItem";
 
 export const FileInput = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, children, ...props }, ref) => {
-    const { dropzoneState, isFileTooBig, isLOF } = useFileUpload();
+    const { dropzoneState, isFileTooBig, isLOF, accept } = useFileUpload();
+    const t = useTranslations();
     const rootProps = isLOF ? {} : dropzoneState.getRootProps();
     // Get isDragActive from the context for FileInput as well, to ensure it can react if needed, or to simplify its own styling.
     const { isDragActive: parentIsDragActive } = dropzoneState;
+
+    const acceptedLabels = useMemo(() => {
+      if (!accept) return null;
+      const extensions = new Set<string>();
+      let hasWildcardImages = false;
+      for (const [mime, exts] of Object.entries(accept)) {
+        if (mime === "image/*") hasWildcardImages = true;
+        for (const ext of exts) extensions.add(ext);
+      }
+      const labels = Array.from(extensions).sort();
+      if (hasWildcardImages) labels.push(t("ui.labels.images"));
+      return labels.length > 0 ? labels : null;
+    }, [accept, t]);
+
+    const dropArea = (
+      <div
+        className={cn(
+          "w-full rounded-lg duration-300 ease-in-out",
+          // Simpler border logic: if parent is drag-active, it controls the border.
+          // Otherwise, FileInput can show its own accept/reject/default border.
+          {
+            "border-green-500": dropzoneState.isDragAccept && !parentIsDragActive,
+            "border-red-500": (dropzoneState.isDragReject || isFileTooBig) && !parentIsDragActive,
+            "border-gray-300":
+              !dropzoneState.isDragAccept && !dropzoneState.isDragReject && !isFileTooBig && !parentIsDragActive,
+          },
+          // className from props should be last to allow overrides if necessary
+          className,
+        )}
+        {...rootProps}
+      >
+        {children}
+      </div>
+    );
 
     return (
       <div
@@ -294,24 +332,16 @@ export const FileInput = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
         {...props}
         className={cn(`relative w-full ${isLOF ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`, className)}
       >
-        <div
-          className={cn(
-            "w-full rounded-lg duration-300 ease-in-out",
-            // Simpler border logic: if parent is drag-active, it controls the border.
-            // Otherwise, FileInput can show its own accept/reject/default border.
-            {
-              "border-green-500": dropzoneState.isDragAccept && !parentIsDragActive,
-              "border-red-500": (dropzoneState.isDragReject || isFileTooBig) && !parentIsDragActive,
-              "border-gray-300":
-                !dropzoneState.isDragAccept && !dropzoneState.isDragReject && !isFileTooBig && !parentIsDragActive,
-            },
-            // className from props should be last to allow overrides if necessary
-            className,
-          )}
-          {...rootProps}
-        >
-          {children}
-        </div>
+        {acceptedLabels ? (
+          <Tooltip>
+            <TooltipTrigger render={dropArea} />
+            <TooltipContent>
+              {t("ui.labels.accepted_file_types")}: {acceptedLabels.join(", ")}
+            </TooltipContent>
+          </Tooltip>
+        ) : (
+          dropArea
+        )}
         <Input
           ref={dropzoneState.inputRef}
           disabled={isLOF}

@@ -9,6 +9,7 @@ export function FormSelect({
   form,
   id,
   name,
+  description,
   placeholder,
   disabled,
   values,
@@ -21,6 +22,7 @@ export function FormSelect({
   form: any;
   id: string;
   name?: string;
+  description?: string;
   placeholder?: string;
   disabled?: boolean;
   values: { id: string; text: string }[];
@@ -36,6 +38,7 @@ export function FormSelect({
         form={form}
         name={id}
         label={name}
+        description={description}
         isRequired={isRequired}
         orientation={useRows ? "horizontal" : "vertical"}
         testId={testId}
@@ -47,7 +50,10 @@ export function FormSelect({
               field.onChange(actual);
               if (onChange) onChange(actual);
             }}
-            value={field.value || (allowEmpty ? EMPTY_VALUE : field.value)}
+            // Never pass undefined: Base UI decides controlled vs uncontrolled on
+            // first render, and a later undefined→string change triggers the
+            // "changing uncontrolled to controlled" warning.
+            value={field.value || (allowEmpty ? EMPTY_VALUE : "")}
             disabled={disabled}
             data-testid={testId}
           >

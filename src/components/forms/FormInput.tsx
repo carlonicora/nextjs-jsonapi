@@ -9,6 +9,7 @@ export function FormInput({
   form,
   id,
   name,
+  description,
   placeholder,
   type,
   onBlur,
@@ -22,6 +23,7 @@ export function FormInput({
   form: any;
   id: string;
   name?: string;
+  description?: string;
   placeholder?: string;
   type?: "text" | "number" | "currency" | "decimal" | "password" | "link";
   onBlur?: () => Promise<void>;
@@ -36,7 +38,7 @@ export function FormInput({
 
   return (
     <div className="flex w-full flex-col">
-      <FormFieldWrapper form={form} name={id} label={name} isRequired={isRequired}>
+      <FormFieldWrapper form={form} name={id} label={name} description={description} isRequired={isRequired}>
         {(field) => {
           const handleBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
             let value = e.target.value;

@@ -18,6 +18,7 @@ type FormFieldWrapperProps<T extends FieldValues> = {
   description?: string;
   isRequired?: boolean;
   orientation?: "vertical" | "horizontal" | "responsive";
+  className?: string;
   children: (field: ControllerRenderProps<T, Path<T>>, fieldState: ControllerFieldState) => ReactNode;
   testId?: string;
 };
@@ -29,6 +30,7 @@ export function FormFieldWrapper<T extends FieldValues>({
   description,
   isRequired,
   orientation = "vertical",
+  className,
   children,
   testId,
 }: FormFieldWrapperProps<T>) {
@@ -37,7 +39,7 @@ export function FormFieldWrapper<T extends FieldValues>({
       control={form.control}
       name={name}
       render={({ field, fieldState }) => (
-        <Field orientation={orientation} data-invalid={!!fieldState.error} data-testid={testId}>
+        <Field orientation={orientation} className={className} data-invalid={!!fieldState.error} data-testid={testId}>
           {label && (
             <FieldLabel>
               {label}

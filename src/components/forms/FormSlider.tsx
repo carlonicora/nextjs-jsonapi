@@ -10,6 +10,7 @@ export function FormSlider({
   name,
   disabled,
   showPercentage,
+  description,
 }: {
   form: any;
   id: string;
@@ -17,12 +18,13 @@ export function FormSlider({
   placeholder?: string;
   disabled?: boolean;
   showPercentage?: boolean;
+  description?: string;
 }) {
   const value = useWatch({ control: form.control, name: id });
 
   return (
     <div className="flex w-full flex-col">
-      <FormFieldWrapper form={form} name={id} label={name}>
+      <FormFieldWrapper form={form} name={id} label={name} description={description}>
         {() => (
           <div>
             {showPercentage && (

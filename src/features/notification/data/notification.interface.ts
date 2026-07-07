@@ -1,5 +1,4 @@
 import { ApiDataInterface } from "../../../core";
-import { UserInterface } from "../../user";
 
 export type NotificationInput = {
   id: string;
@@ -12,5 +11,6 @@ export interface NotificationInterface extends ApiDataInterface {
   get message(): string | undefined;
   get actionUrl(): string | undefined;
 
-  get actor(): UserInterface | undefined;
+  get actor(): ApiDataInterface | undefined;
+  get subject(): ApiDataInterface | undefined;
 }

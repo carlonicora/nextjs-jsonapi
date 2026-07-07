@@ -32,6 +32,20 @@ export class AssistantService extends AbstractService {
   }
 
   /**
+   * Creates an assistant whose first turn runs on the operator engine
+   * (durable checkpointing + approval gates). Mirrors `create()` against the
+   * standalone operator module's create route (`POST operator`).
+   */
+  static async createOperator(params: AssistantInput): Promise<AssistantInterface> {
+    return this.callApi({
+      type: Modules.Assistant,
+      method: HttpMethod.POST,
+      endpoint: new EndpointCreator({ endpoint: "operator" }).generate(),
+      input: params,
+    });
+  }
+
+  /**
    * Sends a new user message to an existing assistant thread. The agent turn
    * runs synchronously; the response is a two-element list: [user, assistant].
    *
@@ -59,6 +73,30 @@ export class AssistantService extends AbstractService {
         howToMode: params.howToMode,
         limitToHowToId: params.limitToHowToId,
       }),
+      overridesJsonApiCreation: true,
+    });
+  }
+
+  /**
+   * Operator-engine variant of `appendMessage()`. Targets
+   * `POST operator/:assistantId/assistant-messages`; the turn may freeze on a
+   * destructive tool call, in which case the returned list ends with an
+   * `approval-request` assistant message linked to a pending AssistantAction.
+   */
+  static async appendMessageOperator(params: {
+    assistantId: string;
+    content: string;
+  }): Promise<AssistantMessageInterface[]> {
+    const message = new AssistantMessage();
+    return this.callApi<AssistantMessageInterface[]>({
+      type: Modules.AssistantMessage,
+      method: HttpMethod.POST,
+      endpoint: new EndpointCreator({
+        endpoint: "operator",
+        id: params.assistantId,
+        childEndpoint: Modules.AssistantMessage,
+      }).generate(),
+      input: message.createAppendMessageJsonApi({ content: params.content }),
       overridesJsonApiCreation: true,
     });
   }

@@ -26,6 +26,11 @@ interface AssistantContextValue {
   startNew(): void;
   renameThread(id: string, title: string): Promise<void>;
   deleteThread(id: string): Promise<void>;
+  /** When true, create/append route to the operator-engine endpoints. */
+  operatorMode: boolean;
+  setOperatorMode(value: boolean): void;
+  /** Appends a message returned outside the send flow (e.g. an approve/deny resume). */
+  appendResolvedMessage(message: AssistantMessageInterface): void;
 }
 
 const AssistantContext = createContext<AssistantContextValue | undefined>(undefined);
@@ -77,6 +82,12 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
   const [sending, setSending] = useState<boolean>(false);
   const [status, setStatus] = useState<string | undefined>(undefined);
   const [failedMessageIds, setFailedMessageIds] = useState<Set<string>>(() => new Set());
+  // The engine is persisted on the Assistant resource: an existing operator
+  // thread must keep routing to the operator endpoints after a reload, so the
+  // initial mode is derived from the hydrated thread instead of defaulting off.
+  const [operatorMode, setOperatorMode] = useState<boolean>(
+    () => dehydratedAssistant?.jsonApi?.attributes?.engine === "operator",
+  );
   const { socket } = useSocketContext();
 
   const sendMessage = useCallback(
@@ -101,11 +112,14 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
 
       try {
         if (!assistant) {
-          const created = await AssistantService.create({
+          const input = {
             firstMessage: trimmed,
             howToMode: opts?.howToMode,
             limitToHowToId: opts?.limitToHowToId,
-          });
+          };
+          const created = operatorMode
+            ? await AssistantService.createOperator(input)
+            : await AssistantService.create(input);
           const msgs = await AssistantMessageService.findByAssistant({ assistantId: created.id });
           setAssistant(created);
           setMessages(msgs);
@@ -114,12 +128,17 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
             window.history.replaceState(null, "", `/assistants/${created.id}`);
           }
         } else {
-          const result = await AssistantService.appendMessage({
-            assistantId: assistant.id,
-            content: trimmed,
-            howToMode: opts?.howToMode,
-            limitToHowToId: opts?.limitToHowToId,
-          });
+          const result = operatorMode
+            ? await AssistantService.appendMessageOperator({
+                assistantId: assistant.id,
+                content: trimmed,
+              })
+            : await AssistantService.appendMessage({
+                assistantId: assistant.id,
+                content: trimmed,
+                howToMode: opts?.howToMode,
+                limitToHowToId: opts?.limitToHowToId,
+              });
           setMessages((prev) => [...stripOptimistic(prev), ...result]);
         }
       } catch {
@@ -134,8 +153,12 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
         setStatus(undefined);
       }
     },
-    [assistant, messages, socket],
+    [assistant, messages, socket, operatorMode],
   );
+
+  const appendResolvedMessage = useCallback((message: AssistantMessageInterface) => {
+    setMessages((prev) => (prev.some((m) => m.id === message.id) ? prev : [...prev, message]));
+  }, []);
 
   const retrySend = useCallback(
     async (tempId: string) => {
@@ -163,6 +186,10 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
       ]);
       setAssistant(target);
       setMessages(msgs);
+      // Route follow-up sends by the thread's persisted engine: operator
+      // threads stay on the operator endpoints, everything else (engine
+      // absent) keeps the default responder flow.
+      setOperatorMode(target.engine === "operator");
       if (manageUrl && typeof window !== "undefined") {
         window.history.replaceState(null, "", `/assistants/${id}`);
       }
@@ -180,6 +207,7 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
     setAssistant(undefined);
     setMessages([]);
     setFailedMessageIds(new Set());
+    setOperatorMode(false);
     if (manageUrl && typeof window !== "undefined") {
       window.history.replaceState(null, "", "/assistants");
     }
@@ -228,6 +256,9 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
       startNew,
       renameThread,
       deleteThread,
+      operatorMode,
+      setOperatorMode,
+      appendResolvedMessage,
     }),
     [
       assistant,
@@ -243,6 +274,8 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
       startNew,
       renameThread,
       deleteThread,
+      operatorMode,
+      appendResolvedMessage,
     ],
   );
 

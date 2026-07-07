@@ -1,6 +1,11 @@
 import { v4 as uuidv4 } from "uuid";
 import { AbstractApiData, ApiDataInterface, JsonApiHydratedDataInterface, Modules } from "../../../core";
-import { AssistantMessageInput, AssistantMessageInterface, AssistantMessageRole } from "./AssistantMessageInterface";
+import {
+  AssistantMessageInput,
+  AssistantMessageInterface,
+  AssistantMessageRole,
+  AssistantMessageType,
+} from "./AssistantMessageInterface";
 import { resolveReferenceableModules } from "../../assistant/utils/resolveReferenceableModules";
 import { ChunkInterface, ChunkRelationshipMeta } from "../../chunk/data/ChunkInterface";
 
@@ -14,6 +19,8 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
   private _references?: ApiDataInterface[];
   private _citations?: (ChunkInterface & ChunkRelationshipMeta)[];
   private _isOptimistic = false;
+  private _messageType?: AssistantMessageType;
+  private _actionId?: string;
 
   get role(): AssistantMessageRole {
     return this._role ?? "assistant";
@@ -51,6 +58,14 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
     return this._isOptimistic;
   }
 
+  get messageType(): AssistantMessageType {
+    return this._messageType ?? "text";
+  }
+
+  get actionId(): string | undefined {
+    return this._actionId;
+  }
+
   rehydrate(data: JsonApiHydratedDataInterface): this {
     super.rehydrate(data);
     const attrs = data.jsonApi.attributes ?? {};
@@ -60,6 +75,11 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
     this._suggestedQuestions = Array.isArray(attrs.suggestedQuestions) ? attrs.suggestedQuestions : [];
     this._inputTokens = attrs.inputTokens;
     this._outputTokens = attrs.outputTokens;
+    this._messageType = attrs.messageType as AssistantMessageType | undefined;
+    // The AssistantAction module is app-registered, so only the raw
+    // relationship id is exposed (no hydration of the included resource here).
+    const actionRelationship = data.jsonApi.relationships?.action?.data;
+    this._actionId = Array.isArray(actionRelationship) ? actionRelationship[0]?.id : actionRelationship?.id;
     const refs = this._readIncludedPolymorphic<ApiDataInterface>(data, "references", resolveReferenceableModules());
     this._references = Array.isArray(refs) ? refs : refs ? [refs] : [];
     if (data.jsonApi.relationships?.citations?.data) {

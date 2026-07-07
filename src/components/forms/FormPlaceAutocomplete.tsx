@@ -42,6 +42,7 @@ interface PlaceAutocompleteProps {
   form: any;
   id: string;
   name?: string;
+  description?: string;
   placeholder?: string;
   disabled?: boolean;
   testId?: string;
@@ -56,12 +57,15 @@ interface PlaceAutocompleteProps {
    * For regions, use: ["administrative_area_level_1", "administrative_area_level_2"]
    */
   includeTypes?: string[];
+  /** Google Places language code for results. Defaults to "en". */
+  languageCode?: string;
 }
 
 export function FormPlaceAutocomplete({
   form,
   id,
   name,
+  description,
   placeholder,
   disabled,
   testId,
@@ -69,6 +73,7 @@ export function FormPlaceAutocomplete({
   onPlaceSelect,
   className,
   includeTypes,
+  languageCode = "en",
 }: PlaceAutocompleteProps) {
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState<PlaceSuggestion[]>([]);
@@ -117,7 +122,7 @@ export function FormPlaceAutocomplete({
         body: JSON.stringify({
           input: input,
           ...(includeTypes ? { includedPrimaryTypes: includeTypes } : {}),
-          languageCode: "en",
+          languageCode: languageCode,
         }),
       });
 
@@ -270,7 +275,7 @@ export function FormPlaceAutocomplete({
   if (loadError) {
     return (
       <div className="flex w-full flex-col">
-        <FormFieldWrapper form={form} name={id} label={name} isRequired={isRequired}>
+        <FormFieldWrapper form={form} name={id} label={name} description={description} isRequired={isRequired}>
           {(field) => (
             <Input
               {...field}
@@ -287,7 +292,7 @@ export function FormPlaceAutocomplete({
 
   return (
     <div className="flex w-full flex-col" ref={containerRef}>
-      <FormFieldWrapper form={form} name={id} label={name} isRequired={isRequired}>
+      <FormFieldWrapper form={form} name={id} label={name} description={description} isRequired={isRequired}>
         {(field) => (
           <div className="relative">
             <Input
