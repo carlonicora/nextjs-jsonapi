@@ -1,3 +1,9 @@
+## [1.123.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.123.1...v1.123.2) (2026-07-07)
+
+### 🚨 Tests
+
+* add data-testid attributes for search trigger and input in ContentTableSearch ([b158551](https://github.com/carlonicora/nextjs-jsonapi/commit/b1585518748450d2769ffdf025b7f340a280527a))
+
 ## [1.123.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.123.0...v1.123.1) (2026-07-07)
 
 ### 🐛 Bug Fixes
