@@ -1,3 +1,9 @@
+## [1.123.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.123.0...v1.123.1) (2026-07-07)
+
+### 🐛 Bug Fixes
+
+* update details display in RoundPageContainer and modify button variant in RoundPageContainerTitle ([4ac7bad](https://github.com/carlonicora/nextjs-jsonapi/commit/4ac7bad0c7e746e6ca64d5ed7c52ac3094170b2a))
+
 ## [1.123.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.122.0...v1.123.0) (2026-07-03)
 
 ### 🚀 Features
