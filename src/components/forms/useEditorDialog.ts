@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type UseEditorDialogOptions = {
   dialogOpen?: boolean;
@@ -24,15 +24,33 @@ export function useEditorDialog(isFormDirty: () => boolean, options?: UseEditorD
   const [open, setOpen] = useState<boolean>(false);
   const [showDiscardConfirm, setShowDiscardConfirm] = useState<boolean>(false);
 
-  // Sync open state from external dialogOpen prop
+  // Marks that the pending `open` change originated FROM the dialogOpen prop
+  // (the sync effect below), so the notify effect must not echo it back to the
+  // parent. Without this guard the two effects form an unguarded two-way
+  // binding: on mount `open` (false) and `dialogOpen` (true) disagree, so one
+  // effect pushes open→parent while the other pulls parent→open, and they chase
+  // each other every render → "Maximum update depth exceeded".
+  const syncingFromProp = useRef(false);
+
+  // Sync open state from external dialogOpen prop.
+  // `open` is intentionally NOT a dependency: this effect must run only when the
+  // prop changes. Adding `open` would re-fire on internal closes and immediately
+  // re-open the dialog (dialogOpen still true while open just went false).
   useEffect(() => {
-    if (options?.dialogOpen !== undefined) {
+    if (options?.dialogOpen !== undefined && options.dialogOpen !== open) {
+      syncingFromProp.current = true;
       setOpen(options.dialogOpen);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [options?.dialogOpen]);
 
-  // Notify parent when open state changes
+  // Notify parent when open state changes — but skip the echo when this change
+  // was driven by the dialogOpen prop above (otherwise it ping-pongs).
   useEffect(() => {
+    if (syncingFromProp.current) {
+      syncingFromProp.current = false;
+      return;
+    }
     if (typeof options?.onDialogOpenChange === "function") {
       options.onDialogOpenChange(open);
     }
