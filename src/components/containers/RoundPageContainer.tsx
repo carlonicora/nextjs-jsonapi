@@ -214,28 +214,28 @@ export function RoundPageContainer({
                   )}
                 </div>
               </div>
-              {details &&
-                (isMobile ? (
-                  <Sheet open={showDetails} onOpenChange={setShowDetails}>
-                    <SheetContent side="right">
-                      <SheetHeader>
-                        <SheetTitle>Details</SheetTitle>
-                      </SheetHeader>
-                      <div className="overflow-y-auto p-6 pt-0">{details}</div>
-                    </SheetContent>
-                  </Sheet>
-                ) : (
-                  <div
-                    className={cn(
-                      "h-full shrink-0 overflow-hidden overflow-y-auto transition-all duration-300 ease-in-out",
-                      showDetails ? "w-96 border-l p-4 opacity-100" : "ml-0 w-0 border-l-0 p-0 opacity-0",
-                    )}
-                  >
-                    {details}
-                  </div>
-                ))}
             </div>
           </div>
+          {details &&
+            (isMobile ? (
+              <Sheet open={showDetails} onOpenChange={setShowDetails}>
+                <SheetContent side="right">
+                  <SheetHeader>
+                    <SheetTitle>Details</SheetTitle>
+                  </SheetHeader>
+                  <div className="overflow-y-auto p-6 pt-0 bg-card">{details}</div>
+                </SheetContent>
+              </Sheet>
+            ) : (
+              <div
+                className={cn(
+                  "bg-card h-full shrink-0 overflow-hidden overflow-y-auto transition-all duration-300 ease-in-out",
+                  showDetails ? "w-96 border-l p-4 opacity-100" : "ml-0 w-0 border-l-0 p-0 opacity-0",
+                )}
+              >
+                {details}
+              </div>
+            ))}
         </div>
       </div>
     </>

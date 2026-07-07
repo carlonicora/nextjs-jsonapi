@@ -4,7 +4,7 @@ import { Button, Tooltip, TooltipContent, TooltipTrigger } from "@/components";
 import { useSharedContext } from "@/contexts";
 import { ModuleWithPermissions } from "@/permissions";
 import { cn, useIsMobile } from "@/utils";
-import { PanelRightCloseIcon, PanelRightOpenIcon } from "lucide-react";
+import { InfoIcon } from "lucide-react";
 import { ReactNode } from "react";
 
 type RoundPageContainerTitleProps = {
@@ -44,14 +44,17 @@ export function RoundPageContainerTitle({
                 <Button
                   render={<div />}
                   nativeButton={false}
-                  variant={`ghost`}
+                  variant={showDetails ? `ghost` : `default`}
                   onClick={() => setShowDetails(!showDetails)}
+                  className={cn(`cursor-pointer`)}
                 >
-                  {showDetails ? (
+                  {/* <InfoIcon className={cn(``, showDetails ? `text-muted-foreground` : `text-accent`)} /> */}
+                  <InfoIcon />
+                  {/* {showDetails ? (
                     <PanelRightCloseIcon className="text-muted-foreground" />
                   ) : (
                     <PanelRightOpenIcon className="text-accent" />
-                  )}
+                  )} */}
                 </Button>
               </TooltipTrigger>
               <TooltipContent>{showDetails ? "Hide details" : "Show details"}</TooltipContent>
