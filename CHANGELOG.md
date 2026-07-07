@@ -1,3 +1,9 @@
+## [1.124.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.124.0...v1.124.1) (2026-07-07)
+
+### 🐛 Bug Fixes
+
+* **RoundPageContainer:** streamline details rendering logic for mobile and desktop ([1964264](https://github.com/carlonicora/nextjs-jsonapi/commit/19642641629aeaf4fafe3764e9932f082523544b))
+
 ## [1.124.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.123.2...v1.124.0) (2026-07-07)
 
 ### 🚀 Features
