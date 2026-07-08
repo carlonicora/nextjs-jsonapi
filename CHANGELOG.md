@@ -1,3 +1,13 @@
+## [1.124.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.124.2...v1.124.3) (2026-07-08)
+
+### 🐛 Bug Fixes
+
+* **useEditorDialog:** notify parent only on open change, not callback identity ([f09f542](https://github.com/carlonicora/nextjs-jsonapi/commit/f09f5427b6d0865672f52b89487f6fabb7148b33))
+
+### ♻️ Chores
+
+* **release:** update to version 1.124.2; enhance EditorSheet and add EntitySelector component ([2dfdb92](https://github.com/carlonicora/nextjs-jsonapi/commit/2dfdb928804bce5d8e0ae063fb1eaa453369be6e))
+
 ## [1.124.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.124.1...v1.124.2) (2026-07-08)
 
 ### 🐛 Bug Fixes
