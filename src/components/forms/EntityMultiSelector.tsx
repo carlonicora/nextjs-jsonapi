@@ -26,6 +26,9 @@ type EntityMultiSelectorProps<T extends { id: string }> = {
   excludeId?: string;
   onChange?: (entities?: T[]) => void;
   renderOption?: (entity: T, isSelected: boolean) => ReactNode;
+  ready?: boolean;
+  description?: string;
+  disabled?: boolean;
 };
 
 type OptionData<T> = {
@@ -52,6 +55,9 @@ export function EntityMultiSelector<T extends { id: string }>({
   excludeId,
   onChange,
   renderOption,
+  ready = true,
+  description,
+  disabled = false,
 }: EntityMultiSelectorProps<T>) {
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -94,9 +100,13 @@ export function EntityMultiSelector<T extends { id: string }>({
   const data: DataListRetriever<T> = useDataListRetriever({
     retriever: (params) => retriever(params),
     retrieverParams,
-    ready: true,
+    ready,
     module,
   });
+
+  useEffect(() => {
+    if (ready) data.setReady(true);
+  }, [ready]);
 
   const updateSearch = useCallback(
     (searchedTerm: string) => {
@@ -211,12 +221,14 @@ export function EntityMultiSelector<T extends { id: string }>({
 
   return (
     <div className="flex w-full flex-col">
-      <FormFieldWrapper form={form} name={id} label={label} isRequired={isRequired}>
+      <FormFieldWrapper form={form} name={id} label={label} isRequired={isRequired} description={description}>
         {() => (
           <div className="flex flex-col gap-2">
             <Popover open={open} onOpenChange={setOpen} modal>
               <PopoverTrigger className="w-full">
-                <div className="bg-input/20 dark:bg-input/30 border-input flex min-h-7 w-full items-center gap-2 rounded-md border px-2 text-sm md:text-xs/relaxed">
+                <div
+                  className={`bg-input/20 dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring/30 focus-visible:ring-[2px] flex min-h-7 w-full items-center gap-2 rounded-md border px-2 text-sm md:text-xs/relaxed`}
+                >
                   {selectedValues.length > 0 ? (
                     <>
                       <span className="text-foreground min-w-0 flex-1 truncate text-left">{triggerSummary}</span>
