@@ -188,6 +188,30 @@ describe("EditorSheet", () => {
       expect(onNavigate).not.toHaveBeenCalled();
     });
 
+    it("should call propagateChanges instead of onNavigate when creating (nested inline create)", async () => {
+      const onSubmit = vi.fn().mockResolvedValue({ id: "abc", name: "Created" });
+      const propagateChanges = vi.fn();
+      const onNavigate = vi.fn();
+      render(
+        <TestEditor
+          dialogOpen={true}
+          isEdit={false}
+          onSubmit={onSubmit}
+          propagateChanges={propagateChanges}
+          onNavigate={onNavigate}
+        />,
+      );
+
+      const input = screen.getByTestId("name-input");
+      await userEvent.type(input, "Test Name");
+
+      const submitButton = screen.getByTestId("modal-button-create");
+      await userEvent.click(submitButton);
+
+      expect(propagateChanges).toHaveBeenCalledWith({ id: "abc", name: "Created" });
+      expect(onNavigate).not.toHaveBeenCalled();
+    });
+
     it("should show error toast on submit failure", async () => {
       const { errorToast: mockErrorToast } = await import("../../errors/errorToast");
       const error = new Error("Network error");
