@@ -1,3 +1,10 @@
+## [1.124.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.124.1...v1.124.2) (2026-07-08)
+
+### 🐛 Bug Fixes
+
+* **editor:** call propagateChanges on create, not only edit ([c0b04f1](https://github.com/carlonicora/nextjs-jsonapi/commit/c0b04f13de0e4e660aa28d30795ea8797753c962))
+* **useEditorDialog:** notify parent only on open change, not callback identity ([6b73181](https://github.com/carlonicora/nextjs-jsonapi/commit/6b73181788744723318bc0b93c6384b4e3ecacb3))
+
 ## [1.124.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.124.0...v1.124.1) (2026-07-07)
 
 ### 🐛 Bug Fixes
