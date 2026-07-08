@@ -43,17 +43,26 @@ export function useEditorDialog(isFormDirty: () => boolean, options?: UseEditorD
     }
   }, [options?.dialogOpen]);
 
+  // Keep the latest onDialogOpenChange in a ref so the notify effect can read it
+  // at fire time WITHOUT depending on its identity. If it were a dependency, a
+  // consumer passing an inline (unmemoised) callback would make the effect
+  // re-run every render and re-emit the CURRENT `open` value — e.g. a closed
+  // EditorSheet spamming onDialogOpenChange(false). That corrupts parents that
+  // multiplex several dialogs through one piece of state (the stray `false`
+  // clears whichever dialog is actually open).
+  const onDialogOpenChangeRef = useRef(options?.onDialogOpenChange);
+  onDialogOpenChangeRef.current = options?.onDialogOpenChange;
+
   // Notify parent when open state changes — but skip the echo when this change
-  // was driven by the dialogOpen prop above (otherwise it ping-pongs).
+  // was driven by the dialogOpen prop above (otherwise it ping-pongs). Depends
+  // ONLY on `open`, so it fires on real open changes, never on callback identity.
   useEffect(() => {
     if (syncingFromProp.current) {
       syncingFromProp.current = false;
       return;
     }
-    if (typeof options?.onDialogOpenChange === "function") {
-      options.onDialogOpenChange(open);
-    }
-  }, [open, options?.onDialogOpenChange]);
+    onDialogOpenChangeRef.current?.(open);
+  }, [open]);
 
   // Force show
   useEffect(() => {
