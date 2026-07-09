@@ -1,3 +1,9 @@
+## [1.125.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.124.3...v1.125.0) (2026-07-09)
+
+### 🚀 Features
+
+* **components:** add reusable entity hero component set ([75e7d7b](https://github.com/carlonicora/nextjs-jsonapi/commit/75e7d7b48527445c5ed52cc91739bb910bcb234a))
+
 ## [1.124.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.124.2...v1.124.3) (2026-07-08)
 
 ### 🐛 Bug Fixes
