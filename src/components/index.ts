@@ -14,6 +14,7 @@ export * from "./pages";
 export * from "./tables";
 export * from "./grids";
 export * from "./fiscal";
+export * from "./hero";
 export { parseFiscalData } from "../utils/fiscal-utils";
 
 // Feature components
