@@ -1,7 +1,7 @@
 "use client";
 
 import { LoaderCircleIcon, Trash2Icon } from "lucide-react";
-import { ReactNode, useState } from "react";
+import { isValidElement, ReactNode, useState } from "react";
 import { useI18nRouter, useI18nTranslations } from "../../i18n";
 import {
   AlertDialog,
@@ -68,7 +68,12 @@ export function CommonDeleter({
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      {forceShow ? null : (
+      {forceShow ? null : isValidElement(trigger) ? (
+        // A caller-supplied element trigger must REPLACE the trigger's own
+        // <button> via `render` — wrapping it as a child would nest a <button>
+        // inside AlertDialogTrigger's <button> (invalid HTML / hydration error).
+        <AlertDialogTrigger render={trigger} />
+      ) : (
         <AlertDialogTrigger>
           {trigger || (
             <Button

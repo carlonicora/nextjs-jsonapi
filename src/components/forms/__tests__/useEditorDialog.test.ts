@@ -82,6 +82,32 @@ describe("useEditorDialog", () => {
       act(() => result.current.setOpen(true));
       expect(onDialogOpenChange).toHaveBeenCalledWith(true);
     });
+
+    it("should NOT re-notify when only the callback identity changes (open unchanged)", () => {
+      // Regression: an unmemoised parent callback must not make the notify effect
+      // re-emit the current `open` on every render (a closed dialog spamming
+      // onDialogOpenChange(false) corrupts shared-state dialog multiplexers).
+      const calls: boolean[] = [];
+      const { rerender } = renderHook(({ cb }) => useEditorDialog(() => false, { onDialogOpenChange: cb }), {
+        initialProps: { cb: (o: boolean) => calls.push(o) },
+      });
+      const afterMount = calls.length; // mount emits once (false)
+      for (let i = 0; i < 5; i++) {
+        rerender({ cb: (o: boolean) => calls.push(o) }); // brand-new callback each render, open stays false
+      }
+      expect(calls.length).toBe(afterMount);
+    });
+
+    it("should notify with the LATEST callback when open actually changes", () => {
+      const first = vi.fn();
+      const second = vi.fn();
+      const { result, rerender } = renderHook(({ cb }) => useEditorDialog(() => false, { onDialogOpenChange: cb }), {
+        initialProps: { cb: first },
+      });
+      rerender({ cb: second }); // swap callback while still closed
+      act(() => result.current.setOpen(true));
+      expect(second).toHaveBeenCalledWith(true);
+    });
   });
 
   describe("options.forceShow", () => {

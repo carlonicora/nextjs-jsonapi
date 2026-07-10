@@ -73,6 +73,11 @@ export type EditorSheetProps<T extends FieldValues> = {
     closeWithoutConfirm: (open: boolean) => void;
   }) => ReactNode;
 
+  /** Rendered on the right-hand side of the header, next to the title/description
+   *  block. This sits OUTSIDE the <form> element — interactive elements here must
+   *  use onClick handlers, never type="submit". */
+  actions?: ReactNode;
+
   children: ReactNode;
 };
 
@@ -102,6 +107,7 @@ export function EditorSheet<T extends FieldValues>({
   dialogOpen,
   onDialogOpenChange,
   renderFooter,
+  actions,
   children,
 }: EditorSheetProps<T>) {
   const t = useTranslations();
@@ -139,7 +145,12 @@ export function EditorSheet<T extends FieldValues>({
           await onSuccess();
         } else if (result) {
           onRevalidate?.(generateUrl({ page: module, id: result.id, language: "[locale]" }));
-          if (isEdit && propagateChanges) {
+          // When `propagateChanges` is provided the parent handles the result
+          // inline (e.g. a nested create dialog injecting the new entity back
+          // into an outer form). Call it for BOTH create and edit and skip
+          // navigation — otherwise a create would `router.push` away and unmount
+          // the parent editor. Only navigate when no inline handler is given.
+          if (propagateChanges) {
             propagateChanges(result);
           } else {
             onNavigate?.(generateUrl({ page: module, id: result.id }));
@@ -154,6 +165,17 @@ export function EditorSheet<T extends FieldValues>({
     },
     [onSubmit, setOpen, onSuccess, onSaved, onRevalidate, onNavigate, generateUrl, module, isEdit, propagateChanges, t],
   );
+
+  const headerTitle =
+    titleOverride ??
+    (isEdit
+      ? t("common.edit.update.title", { type: entityType })
+      : t("common.edit.create.title", { type: entityType }));
+  const headerDescription =
+    descriptionOverride ??
+    (isEdit
+      ? t("common.edit.update.description", { type: entityType, name: entityName ?? "" })
+      : t("common.edit.create.description", { type: entityType }));
 
   return (
     <>
@@ -188,18 +210,21 @@ export function EditorSheet<T extends FieldValues>({
           ))}
         <SheetContent side="right" className={sizeClasses[size]}>
           <SheetHeader className="border-b px-6 py-4">
-            <SheetTitle>
-              {titleOverride ??
-                (isEdit
-                  ? t("common.edit.update.title", { type: entityType })
-                  : t("common.edit.create.title", { type: entityType }))}
-            </SheetTitle>
-            <SheetDescription>
-              {descriptionOverride ??
-                (isEdit
-                  ? t("common.edit.update.description", { type: entityType, name: entityName ?? "" })
-                  : t("common.edit.create.description", { type: entityType }))}
-            </SheetDescription>
+            {actions ? (
+              // pr-10 clears the SheetContent close button (absolute top-4 right-4).
+              <div className="flex items-start justify-between gap-x-4 pr-10">
+                <div className="flex min-w-0 flex-col gap-y-1.5">
+                  <SheetTitle>{headerTitle}</SheetTitle>
+                  <SheetDescription>{headerDescription}</SheetDescription>
+                </div>
+                <div className="flex shrink-0 items-center gap-x-2">{actions}</div>
+              </div>
+            ) : (
+              <>
+                <SheetTitle>{headerTitle}</SheetTitle>
+                <SheetDescription>{headerDescription}</SheetDescription>
+              </>
+            )}
           </SheetHeader>
           <Form {...form}>
             <form

@@ -147,6 +147,12 @@ export abstract class AbstractService {
     files?: { [key: string]: File | Blob } | File | Blob;
     token?: string;
     suppressGlobalError?: boolean;
+    /**
+     * Per-call override of the API base URL. When omitted, the existing global
+     * `NEXT_PUBLIC_API_URL` (or `configureJsonApi({ apiUrl })`) resolution is used —
+     * fully backward compatible. Ignored when `endpoint` starts with "http" (passthrough).
+     */
+    baseUrl?: string;
   }): Promise<T> {
     // Dynamic import to avoid bundling issues
     const { JsonApiGet, JsonApiPost, JsonApiPut, JsonApiPatch, JsonApiDelete } =
@@ -171,6 +177,7 @@ export abstract class AbstractService {
           endpoint: params.endpoint,
           companyId: params.companyId,
           language: language,
+          baseUrl: params.baseUrl,
         });
         break;
       case HttpMethod.POST:
@@ -184,6 +191,7 @@ export abstract class AbstractService {
           responseType: params.responseType,
           files: params.files,
           token: params.token,
+          baseUrl: params.baseUrl,
         });
         break;
       case HttpMethod.PUT:
@@ -195,6 +203,7 @@ export abstract class AbstractService {
           language: language,
           responseType: params.responseType,
           files: params.files,
+          baseUrl: params.baseUrl,
         });
         break;
       case HttpMethod.PATCH:
@@ -207,6 +216,7 @@ export abstract class AbstractService {
           language: language,
           responseType: params.responseType,
           files: params.files,
+          baseUrl: params.baseUrl,
         });
         break;
       case HttpMethod.DELETE:
@@ -216,6 +226,7 @@ export abstract class AbstractService {
           companyId: params.companyId,
           language: language,
           responseType: params.responseType,
+          baseUrl: params.baseUrl,
         });
         break;
       default:
@@ -230,6 +241,7 @@ export abstract class AbstractService {
         const error = new Error(`${apiResponse.response}:${apiResponse.error}`) as any;
         error.status = apiResponse.response;
         error.digest = `HTTP_${apiResponse.response}`;
+        error.body = apiResponse.raw;
         throw error;
       }
     }
@@ -341,6 +353,7 @@ export abstract class AbstractService {
         const error = new Error(`${apiResponse.response}:${apiResponse.error}`) as any;
         error.status = apiResponse.response;
         error.digest = `HTTP_${apiResponse.response}`;
+        error.body = apiResponse.raw;
         throw error;
       }
     }
@@ -359,6 +372,7 @@ export abstract class AbstractService {
     method: HttpMethod;
     endpoint: string;
     companyId?: string;
+    baseUrl?: string;
     suppressGlobalError?: boolean;
   }): Promise<any> {
     const { JsonApiGet } = await import("../../unified/JsonApiRequest");
@@ -377,6 +391,7 @@ export abstract class AbstractService {
       classKey: params.type,
       endpoint: params.endpoint,
       companyId: params.companyId,
+      baseUrl: params.baseUrl,
       language: language,
     });
 
@@ -388,6 +403,7 @@ export abstract class AbstractService {
         const error = new Error(`${apiResponse.response}:${apiResponse.error}`) as any;
         error.status = apiResponse.response;
         error.digest = `HTTP_${apiResponse.response}`;
+        error.body = apiResponse.raw;
         throw error;
       }
     }

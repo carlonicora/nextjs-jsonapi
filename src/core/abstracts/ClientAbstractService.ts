@@ -147,6 +147,11 @@ export abstract class ClientAbstractService {
     total?: ClientTotalRef;
     responseType?: ApiRequestDataTypeInterface;
     files?: { [key: string]: File | Blob } | File | Blob;
+    /**
+     * Per-call override of the API base URL (mirrors `AbstractService.callApi`'s `baseUrl`).
+     * Omitted => existing global `NEXT_PUBLIC_API_URL` resolution, unchanged.
+     */
+    baseUrl?: string;
   }): Promise<T> {
     let apiResponse: ApiResponseInterface;
 
@@ -160,6 +165,7 @@ export abstract class ClientAbstractService {
           endpoint: params.endpoint,
           companyId: params.companyId,
           language: language,
+          baseUrl: params.baseUrl,
         });
         break;
       case ClientHttpMethod.POST:
@@ -172,6 +178,7 @@ export abstract class ClientAbstractService {
           language: language,
           responseType: params.responseType,
           files: params.files,
+          baseUrl: params.baseUrl,
         });
         break;
       case ClientHttpMethod.PUT:
@@ -183,6 +190,7 @@ export abstract class ClientAbstractService {
           language: language,
           responseType: params.responseType,
           files: params.files,
+          baseUrl: params.baseUrl,
         });
         break;
       case ClientHttpMethod.PATCH:
@@ -195,6 +203,7 @@ export abstract class ClientAbstractService {
           language: language,
           responseType: params.responseType,
           files: params.files,
+          baseUrl: params.baseUrl,
         });
         break;
       case ClientHttpMethod.DELETE:
@@ -204,6 +213,7 @@ export abstract class ClientAbstractService {
           companyId: params.companyId,
           language: language,
           responseType: params.responseType,
+          baseUrl: params.baseUrl,
         });
         break;
       default:
@@ -218,6 +228,7 @@ export abstract class ClientAbstractService {
         const error = new Error(`${apiResponse.response}:${apiResponse.error}`) as any;
         error.status = apiResponse.response;
         error.digest = `HTTP_${apiResponse.response}`;
+        error.body = apiResponse.raw;
         throw error;
       }
     }
@@ -256,6 +267,7 @@ export abstract class ClientAbstractService {
         const error = new Error(`${apiResponse.response}:${apiResponse.error}`) as any;
         error.status = apiResponse.response;
         error.digest = `HTTP_${apiResponse.response}`;
+        error.body = apiResponse.raw;
         throw error;
       }
     }

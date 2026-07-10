@@ -2,17 +2,40 @@
 
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
 import { cva, type VariantProps } from "class-variance-authority";
+import { createContext, useContext, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
-function Tabs({ className, orientation = "horizontal", ...props }: TabsPrimitive.Root.Props) {
+// Tracks the active tab value so keepMounted panels can lazy-mount on first
+// activation. undefined = untracked (Tabs given neither value nor defaultValue).
+const TabsActiveValueContext = createContext<unknown>(undefined);
+
+function Tabs({
+  className,
+  orientation = "horizontal",
+  value,
+  defaultValue,
+  onValueChange,
+  ...props
+}: TabsPrimitive.Root.Props) {
+  const [uncontrolledValue, setUncontrolledValue] = useState<unknown>(defaultValue);
+  const activeValue = value !== undefined ? value : uncontrolledValue;
+
   return (
-    <TabsPrimitive.Root
-      data-slot="tabs"
-      data-orientation={orientation}
-      className={cn("gap-2 group/tabs flex data-[orientation=horizontal]:flex-col", className)}
-      {...props}
-    />
+    <TabsActiveValueContext.Provider value={activeValue}>
+      <TabsPrimitive.Root
+        data-slot="tabs"
+        data-orientation={orientation}
+        className={cn("gap-2 group/tabs flex data-[orientation=horizontal]:flex-col", className)}
+        value={value}
+        defaultValue={defaultValue}
+        onValueChange={(newValue, eventDetails) => {
+          setUncontrolledValue(newValue);
+          onValueChange?.(newValue, eventDetails);
+        }}
+        {...props}
+      />
+    </TabsActiveValueContext.Provider>
   );
 }
 
@@ -62,14 +85,29 @@ function TabsTrigger({ className, ...props }: TabsPrimitive.Tab.Props) {
   );
 }
 
-function TabsContent({ className, ...props }: TabsPrimitive.Panel.Props) {
+function TabsContent({ className, value, keepMounted, children, ...props }: TabsPrimitive.Panel.Props) {
+  const activeValue = useContext(TabsActiveValueContext);
+  const isActive = activeValue !== undefined && activeValue === value;
+  const [hasBeenActive, setHasBeenActive] = useState(isActive);
+  if (isActive && !hasBeenActive) setHasBeenActive(true);
+
+  // Lazy-mount-once: a keepMounted panel renders its children only after its
+  // tab has been active at least once, then keeps them mounted so state and
+  // data survive tab switches (hidden panels no longer fetch on page load).
+  // Falls back to eager rendering when the active value is untracked.
+  const shouldRenderChildren = !keepMounted || activeValue === undefined || hasBeenActive;
+
   return (
     <TabsPrimitive.Panel
       data-slot="tabs-content"
+      value={value}
+      keepMounted={keepMounted}
       className={cn("text-xs/relaxed flex-1 outline-none", className)}
       {...props}
-    />
+    >
+      {shouldRenderChildren ? children : null}
+    </TabsPrimitive.Panel>
   );
 }
 
-export { Tabs, TabsList, TabsTrigger, TabsContent, tabsListVariants };
+export { Tabs, TabsContent, TabsList, tabsListVariants, TabsTrigger };

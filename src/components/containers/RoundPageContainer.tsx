@@ -237,20 +237,28 @@ export function RoundPageContainer({
                     <div
                       className={cn(
                         `min-w-0 grow`,
-                        activeFillHeight ? `flex flex-col overflow-hidden` : `overflow-y-auto`,
+                        activeFillHeight ? `flex flex-col overflow-hidden` : `overflow-y-auto p-4`,
                       )}
                     >
-                      {header}
-                      {tabs.map((tab) => (
-                        <TabsContent
-                          key={tab.label}
-                          value={tabValue(tab)}
-                          className={tab.fillHeight ? `flex min-h-0 w-full flex-1 flex-col` : ``}
-                        >
-                          {tab.content}
-                        </TabsContent>
-                      ))}
-                      {children && <div className="flex">{children}</div>}
+                      {/* Centre and constrain rail content (like the non-rail
+                          layout). Fill-height tabs keep the full width. */}
+                      <div
+                        className={cn(
+                          activeFillHeight ? `flex min-h-0 w-full flex-1 flex-col` : `mx-auto w-full max-w-6xl`,
+                        )}
+                      >
+                        {header}
+                        {tabs.map((tab) => (
+                          <TabsContent
+                            key={tab.label}
+                            value={tabValue(tab)}
+                            className={tab.fillHeight ? `flex min-h-0 w-full flex-1 flex-col` : ``}
+                          >
+                            {tab.content}
+                          </TabsContent>
+                        ))}
+                        {children && <div className="flex">{children}</div>}
+                      </div>
                     </div>
                   </div>
                 </Tabs>
@@ -335,28 +343,28 @@ export function RoundPageContainer({
                   </div>
                 </div>
               )}
-              {details &&
-                (isMobile ? (
-                  <Sheet open={showDetails} onOpenChange={setShowDetails}>
-                    <SheetContent side="right">
-                      <SheetHeader>
-                        <SheetTitle>Details</SheetTitle>
-                      </SheetHeader>
-                      <div className="overflow-y-auto p-6 pt-0">{details}</div>
-                    </SheetContent>
-                  </Sheet>
-                ) : (
-                  <div
-                    className={cn(
-                      "h-full shrink-0 overflow-hidden overflow-y-auto transition-all duration-300 ease-in-out",
-                      showDetails ? "w-96 border-l p-4 opacity-100" : "ml-0 w-0 border-l-0 p-0 opacity-0",
-                    )}
-                  >
-                    {details}
-                  </div>
-                ))}
             </div>
           </div>
+          {details &&
+            (isMobile ? (
+              <Sheet open={showDetails} onOpenChange={setShowDetails}>
+                <SheetContent side="right">
+                  <SheetHeader>
+                    <SheetTitle>Details</SheetTitle>
+                  </SheetHeader>
+                  <div className="overflow-y-auto p-6 pt-0">{details}</div>
+                </SheetContent>
+              </Sheet>
+            ) : (
+              <div
+                className={cn(
+                  "h-full shrink-0 overflow-hidden overflow-y-auto transition-all duration-300 ease-in-out",
+                  showDetails ? "w-96 border-l p-4 opacity-100" : "ml-0 w-0 border-l-0 p-0 opacity-0",
+                )}
+              >
+                {details}
+              </div>
+            ))}
         </div>
       </div>
     </>

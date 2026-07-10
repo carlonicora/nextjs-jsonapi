@@ -72,9 +72,18 @@ function runClientBootstrapper(): void {
   }
 }
 
-function buildClientUrl(endpoint: string): string {
-  const apiUrl = getClientApiUrl();
-  return endpoint.startsWith("http") ? endpoint : `${apiUrl}${endpoint}`;
+/**
+ * Resolve the final request URL for an endpoint (client-side variant of `buildUrl`
+ * in `unified/JsonApiRequest.ts` — kept in lockstep with it).
+ *
+ * - `endpoint` starting with "http" is always passed through unchanged (existing behaviour).
+ * - Otherwise, an explicit `baseUrl` (per-call override) takes precedence over the global
+ *   `getClientApiUrl()` resolution. Omitting `baseUrl` preserves today's behaviour exactly.
+ */
+export function buildClientUrl(endpoint: string, baseUrl?: string): string {
+  if (endpoint.startsWith("http")) return endpoint;
+  const apiUrl = baseUrl ?? getClientApiUrl();
+  return `${apiUrl}${endpoint}`;
 }
 
 export async function ClientJsonApiGet(params: {
@@ -82,13 +91,14 @@ export async function ClientJsonApiGet(params: {
   endpoint: string;
   companyId?: string;
   language: string;
+  baseUrl?: string;
 }): Promise<ApiResponseInterface> {
   runClientBootstrapper();
   const token = await getClientToken();
 
   const apiResponse = await directFetch({
     method: "GET",
-    url: buildClientUrl(params.endpoint),
+    url: buildClientUrl(params.endpoint, params.baseUrl),
     token,
     companyId: params.companyId,
     language: params.language,
@@ -106,6 +116,7 @@ export async function ClientJsonApiGet(params: {
         endpoint,
         companyId: params.companyId,
         language: params.language,
+        baseUrl: params.baseUrl,
       }),
   });
 }
@@ -119,6 +130,7 @@ export async function ClientJsonApiPost(params: {
   files?: { [key: string]: File | Blob } | File | Blob;
   language: string;
   responseType?: ApiRequestDataTypeInterface;
+  baseUrl?: string;
 }): Promise<ApiResponseInterface> {
   runClientBootstrapper();
   const token = await getClientToken();
@@ -132,7 +144,7 @@ export async function ClientJsonApiPost(params: {
 
   const apiResponse = await directFetch({
     method: "POST",
-    url: buildClientUrl(params.endpoint),
+    url: buildClientUrl(params.endpoint, params.baseUrl),
     token,
     body,
     files: params.files,
@@ -157,6 +169,7 @@ export async function ClientJsonApiPut(params: {
   files?: { [key: string]: File | Blob } | File | Blob;
   language: string;
   responseType?: ApiRequestDataTypeInterface;
+  baseUrl?: string;
 }): Promise<ApiResponseInterface> {
   runClientBootstrapper();
   const token = await getClientToken();
@@ -170,7 +183,7 @@ export async function ClientJsonApiPut(params: {
 
   const apiResponse = await directFetch({
     method: "PUT",
-    url: buildClientUrl(params.endpoint),
+    url: buildClientUrl(params.endpoint, params.baseUrl),
     token,
     body,
     files: params.files,
@@ -196,6 +209,7 @@ export async function ClientJsonApiPatch(params: {
   overridesJsonApiCreation?: boolean;
   responseType?: ApiRequestDataTypeInterface;
   language: string;
+  baseUrl?: string;
 }): Promise<ApiResponseInterface> {
   runClientBootstrapper();
   const token = await getClientToken();
@@ -209,7 +223,7 @@ export async function ClientJsonApiPatch(params: {
 
   const apiResponse = await directFetch({
     method: "PATCH",
-    url: buildClientUrl(params.endpoint),
+    url: buildClientUrl(params.endpoint, params.baseUrl),
     token,
     body,
     files: params.files,
@@ -232,13 +246,14 @@ export async function ClientJsonApiDelete(params: {
   companyId?: string;
   language: string;
   responseType?: ApiRequestDataTypeInterface;
+  baseUrl?: string;
 }): Promise<ApiResponseInterface> {
   runClientBootstrapper();
   const token = await getClientToken();
 
   const apiResponse = await directFetch({
     method: "DELETE",
-    url: buildClientUrl(params.endpoint),
+    url: buildClientUrl(params.endpoint, params.baseUrl),
     token,
     companyId: params.companyId,
     language: params.language,
