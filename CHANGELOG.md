@@ -1,3 +1,9 @@
+## [1.125.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.125.0...v1.125.1) (2026-07-10)
+
+### 🐛 Bug Fixes
+
+* **useEditorDialog:** notify parent only on open change, not callback identity ([f936991](https://github.com/carlonicora/nextjs-jsonapi/commit/f936991b53e80c485eeb007edd9041f6e256d751))
+
 ## [1.125.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.124.3...v1.125.0) (2026-07-09)
 
 ### 🚀 Features
