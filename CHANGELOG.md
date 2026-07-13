@@ -1,3 +1,9 @@
+## [1.126.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.125.1...v1.126.0) (2026-07-13)
+
+### 🚀 Features
+
+* **components:** add HoverCard cursor anchor + SharedContext titleActions slot ([54b47fe](https://github.com/carlonicora/nextjs-jsonapi/commit/54b47fef5610f5e0d27969728dca39ed0132ad7a))
+
 ## [1.125.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.125.0...v1.125.1) (2026-07-10)
 
 ### 🐛 Bug Fixes
