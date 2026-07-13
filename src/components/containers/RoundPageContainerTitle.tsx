@@ -29,6 +29,7 @@ export function RoundPageContainerTitle({
       {!isMobile && (
         <div className="flex w-full gap-x-4">
           <div className={"text-muted-foreground flex items-center gap-x-2 text-lg font-light whitespace-nowrap"}>
+            {title.titleActions}
             {module && module.icon ? <module.icon className="text-primary h-6 w-6" /> : title.icon}
             {title.type}
           </div>
