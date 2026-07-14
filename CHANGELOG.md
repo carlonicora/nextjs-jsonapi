@@ -1,3 +1,9 @@
+## [1.127.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.126.0...v1.127.0) (2026-07-14)
+
+### 🚀 Features
+
+* **components:** enhance RoundPageContainer with onSectionChange callback and improve layout handling ([d99403b](https://github.com/carlonicora/nextjs-jsonapi/commit/d99403b97d9e67e0581b40e1ee17d3d5ed0e9121))
+
 ## [1.126.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.125.1...v1.126.0) (2026-07-13)
 
 ### 🚀 Features
