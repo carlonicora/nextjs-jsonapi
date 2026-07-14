@@ -9,6 +9,7 @@ import { v4 } from "uuid";
 import { z } from "zod";
 import { errorToast, FormInput, GdprConsentCheckbox } from "../../../../components";
 import { Button, Form, Link } from "../../../../shadcnui";
+import { SectionHeader } from "../../../../components/typography";
 import { getWaitlistConfig } from "../../config/waitlist.config";
 import { WaitlistService } from "../../data/WaitlistService";
 import { WaitlistQuestionnaireRenderer } from "./WaitlistQuestionnaireRenderer";
@@ -124,10 +125,10 @@ export function WaitlistForm({ onSuccess }: WaitlistFormProps) {
     return (
       <div className="space-y-6 text-center">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-          <CheckCircle className="h-8 w-8 text-green-600" />
+          <CheckCircle className="text-success h-8 w-8" />
         </div>
         <div className="space-y-2">
-          <h3 className="text-xl font-semibold">{t("waitlist.success.title")}</h3>
+          <SectionHeader>{t("waitlist.success.title")}</SectionHeader>
           <p className="text-muted-foreground">{t("waitlist.success.description")}</p>
         </div>
         <div className="flex items-center justify-center gap-2 text-muted-foreground text-sm">

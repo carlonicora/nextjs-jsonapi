@@ -1,7 +1,8 @@
 "use client";
 
 import { AlertCircle } from "lucide-react";
-import { Alert, AlertDescription, Button } from "../../../../../shadcnui";
+import { Alert, AlertDescription, Badge, Button } from "../../../../../shadcnui";
+import { SectionHeader } from "../../../../../components/typography";
 import { formatCurrency } from "../../../components/utils/currency";
 import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
 import { ProrationPreviewInterface } from "../../../stripe-invoice/data/stripe-invoice.interface";
@@ -120,7 +121,7 @@ export function WizardStepReview({
     <div className="space-y-6">
       {/* Selected Plan Summary */}
       <div className="bg-muted/50 rounded-lg p-4 space-y-3">
-        <h3 className="font-semibold text-lg">Selected Plan</h3>
+        <SectionHeader>Selected Plan</SectionHeader>
         <div className="flex justify-between items-center">
           <div>
             <p className="font-medium">{selectedPrice.product?.name}</p>
@@ -132,14 +133,10 @@ export function WizardStepReview({
                 <p className="text-sm text-muted-foreground line-through">
                   {formatCurrency(selectedPrice.unitAmount || 0, selectedPrice.currency)}
                 </p>
-                <p className="font-semibold text-lg text-green-600">
+                <p className="text-success text-lg font-semibold">
                   {formatCurrency(discountedPrice, selectedPrice.currency)}
                 </p>
-                {discountDescription && (
-                  <span className="inline-block text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                    {discountDescription}
-                  </span>
-                )}
+                {discountDescription && <Badge variant="softGreen">{discountDescription}</Badge>}
               </>
             ) : (
               <p className="font-semibold text-lg">
@@ -156,25 +153,25 @@ export function WizardStepReview({
         <div
           className={`${isTrialUpgrade ? "bg-amber-50 border-amber-200" : "bg-blue-50 border-blue-200"} border rounded-lg p-4 space-y-2`}
         >
-          <h4 className={`font-medium ${isTrialUpgrade ? "text-amber-800" : "text-blue-800"}`}>
+          <h4 className={`font-medium ${isTrialUpgrade ? "text-warning" : "text-blue-800"}`}>
             {isTrialUpgrade ? "Trial Upgrade" : "Proration Summary"}
           </h4>
-          <p className={`text-sm ${isTrialUpgrade ? "text-amber-700" : "text-blue-700"}`}>
+          <p className={`text-sm ${isTrialUpgrade ? "text-warning" : "text-blue-700"}`}>
             {isTrialUpgrade
               ? "Your trial will end immediately and you will be charged the full price."
               : "Your next charge will be adjusted to account for the plan change."}
           </p>
           <div className="flex justify-between text-sm">
-            <span className={`${isTrialUpgrade ? "text-amber-600" : "text-blue-600"}`}>
+            <span className={`${isTrialUpgrade ? "text-warning" : "text-blue-600"}`}>
               {isTrialUpgrade ? "Amount to charge now:" : "Amount due now:"}
             </span>
-            <span className={`font-medium ${isTrialUpgrade ? "text-amber-800" : "text-blue-800"}`}>
+            <span className={`font-medium ${isTrialUpgrade ? "text-warning" : "text-blue-800"}`}>
               {discountedImmediateCharge !== null ? (
                 <>
                   <span className="line-through text-muted-foreground mr-2">
                     {formatCurrency(prorationPreview.immediateCharge, prorationPreview.currency)}
                   </span>
-                  <span className="text-green-600">
+                  <span className="text-success">
                     {formatCurrency(discountedImmediateCharge, prorationPreview.currency)}
                   </span>
                 </>

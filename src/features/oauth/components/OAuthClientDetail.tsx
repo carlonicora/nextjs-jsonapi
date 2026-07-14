@@ -94,7 +94,7 @@ export function OAuthClientDetail({
         <CardHeader>
           <div className="flex items-start justify-between">
             <div>
-              <CardTitle className="text-2xl">{client.name}</CardTitle>
+              <CardTitle>{client.name}</CardTitle>
               {client.description && <CardDescription className="mt-1">{client.description}</CardDescription>}
             </div>
             <div className="flex items-center gap-2">
@@ -110,18 +110,14 @@ export function OAuthClientDetail({
           <div className="space-y-2">
             <Label>Client ID</Label>
             <div className="flex gap-2">
-              <Input value={client.clientId} readOnly className="font-mono" />
+              <Input value={client.clientId} readOnly className="tabular-nums" />
               <Button
                 variant="outline"
                 size="icon"
                 onClick={() => copyToClipboard(client.clientId, "clientId")}
                 title="Copy Client ID"
               >
-                {copiedField === "clientId" ? (
-                  <Check className="h-4 w-4 text-green-600" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
+                {copiedField === "clientId" ? <Check className="text-success h-4 w-4" /> : <Copy className="h-4 w-4" />}
               </Button>
             </div>
           </div>
@@ -130,7 +126,7 @@ export function OAuthClientDetail({
           <div className="space-y-2">
             <Label>Client Secret</Label>
             <div className="flex gap-2">
-              <Input value="••••••••••••••••••••••••••••••••" readOnly className="font-mono" />
+              <Input value="••••••••••••••••••••••••••••••••" readOnly className="tabular-nums" />
               {onRegenerateSecret && (
                 <Button
                   variant="outline"
@@ -155,7 +151,7 @@ export function OAuthClientDetail({
             <Label>Redirect URIs</Label>
             <ul className="space-y-1">
               {client.redirectUris.map((uri, index) => (
-                <li key={index} className="flex items-center gap-2 text-sm font-mono">
+                <li key={index} className="flex items-center gap-2 text-sm tabular-nums">
                   <ExternalLink className="h-3 w-3 text-muted-foreground" />
                   {uri}
                 </li>

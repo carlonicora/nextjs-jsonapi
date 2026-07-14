@@ -120,7 +120,7 @@ export function TwoFactorChallenge() {
   return (
     <>
       <CardHeader data-testid="page-2fa-challenge">
-        <CardTitle className="text-primary text-2xl">{t("auth.two_factor.verification_required")}</CardTitle>
+        <CardTitle className="text-primary">{t("auth.two_factor.verification_required")}</CardTitle>
         <CardDescription>{t("auth.two_factor.enter_verification_code")}</CardDescription>
       </CardHeader>
       <CardContent>
@@ -180,11 +180,11 @@ export function TwoFactorChallenge() {
                   onChange={(e) => setBackupCode(e.target.value.toUpperCase())}
                   placeholder="XXXXXXXX"
                   maxLength={8}
-                  className={`w-48 text-center font-mono uppercase ${backupError ? "border-destructive" : ""}`}
+                  className={`w-48 text-center tabular-nums uppercase ${backupError ? "border-destructive" : ""}`}
                   disabled={isVerifying}
                   data-testid="backup-code-input"
                 />
-                {backupError && <p className="text-sm text-destructive">{backupError}</p>}
+                {backupError && <p className="text-destructive text-xs/relaxed">{backupError}</p>}
                 <Button
                   onClick={handleBackupSubmit}
                   disabled={isVerifying || backupCode.length < 8}

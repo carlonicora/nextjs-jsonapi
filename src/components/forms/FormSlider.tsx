@@ -28,7 +28,7 @@ export function FormSlider({
         {() => (
           <div>
             {showPercentage && (
-              <div className="text-muted-foreground mb-2 flex w-full justify-center text-xs">{`${value}%`}</div>
+              <div className="text-muted-foreground mb-2 flex w-full justify-center text-xs/relaxed">{`${value}%`}</div>
             )}
             <Slider
               onValueChange={(val) => {

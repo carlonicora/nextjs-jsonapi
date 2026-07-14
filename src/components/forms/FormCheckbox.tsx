@@ -38,10 +38,10 @@ export function FormCheckbox({ form, id, name, labelBefore, description, isRequi
         {(field) => (
           <div className="flex gap-x-4">
             {labelBefore && label()}
-            {labelBefore && isRequired && <span className="text-destructive ml-2 font-semibold">*</span>}
+            {labelBefore && isRequired && <span className="ml-1 text-destructive">*</span>}
             <Checkbox id={id} checked={field.value ?? false} onCheckedChange={field.onChange} />
             {!labelBefore && label()}
-            {!labelBefore && isRequired && <span className="text-destructive ml-2 font-semibold">*</span>}
+            {!labelBefore && isRequired && <span className="ml-1 text-destructive">*</span>}
           </div>
         )}
       </FormFieldWrapper>

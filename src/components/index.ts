@@ -12,6 +12,7 @@ export * from "./forms";
 export * from "./navigations";
 export * from "./pages";
 export * from "./tables";
+export * from "./typography";
 export * from "./grids";
 export * from "./fiscal";
 export * from "./hero";

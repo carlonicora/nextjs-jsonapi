@@ -32,7 +32,7 @@ export function OAuthConsentHeader({ client, logoUrl, appName = "Only35" }: OAut
 
       {/* Authorization Request */}
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold">Authorize {client.name}</h1>
+        <h1 className="text-primary text-3xl font-semibold">Authorize {client.name}</h1>
         <p className="text-muted-foreground">
           <span className="font-medium text-foreground">{client.name}</span> wants to access your {appName} account
         </p>

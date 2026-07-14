@@ -4,6 +4,7 @@ import { CheckCircle, Loader2, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { buttonVariants, Link } from "../../../../shadcnui";
+import { SectionHeader } from "../../../../components/typography";
 import { WaitlistService } from "../../data/WaitlistService";
 
 interface Props {
@@ -46,7 +47,7 @@ export function WaitlistConfirmation({ code }: Props) {
         <div className="bg-destructive/10 rounded-full p-4">
           <XCircle className="text-destructive h-12 w-12" />
         </div>
-        <h2 className="text-2xl font-bold">{t("waitlist.confirmation.error_title")}</h2>
+        <SectionHeader level={2}>{t("waitlist.confirmation.error_title")}</SectionHeader>
         <p className="text-muted-foreground max-w-md">{errorMessage}</p>
         <Link href="/waitlist" className={buttonVariants({ variant: "outline" })}>
           {t("waitlist.buttons.return")}
@@ -60,7 +61,7 @@ export function WaitlistConfirmation({ code }: Props) {
       <div className="bg-primary/10 rounded-full p-4">
         <CheckCircle className="text-primary h-12 w-12" />
       </div>
-      <h2 className="text-2xl font-bold">{t("waitlist.confirmation.success_title")}</h2>
+      <SectionHeader level={2}>{t("waitlist.confirmation.success_title")}</SectionHeader>
       <p className="text-muted-foreground max-w-md">{t("waitlist.confirmation.success_description")}</p>
       <p className="text-muted-foreground text-sm">{t("waitlist.confirmation.success_hint")}</p>
     </div>

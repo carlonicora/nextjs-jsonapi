@@ -148,7 +148,7 @@ const createDiffActionsInlineContentSpec = (
                 diffIds.split(",").forEach((id: string) => handleAcceptChange(id.trim()));
               }}
             >
-              <CheckIcon className="h-3 w-3 text-green-600" />
+              <CheckIcon className="text-success h-3 w-3" />
             </Button>
             <Button
               title="Reject change"
@@ -159,7 +159,7 @@ const createDiffActionsInlineContentSpec = (
                 diffIds.split(",").forEach((id: string) => handleRejectChange(id.trim()));
               }}
             >
-              <XIcon className="h-3 w-3 text-red-600" />
+              <XIcon className="text-destructive h-3 w-3" />
             </Button>
           </span>
         );

@@ -20,7 +20,7 @@ export function ProductsAdminContainer() {
   if (!hasRole(getRoleId().Administrator)) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <p className="text-red-600 font-semibold">Permission denied. Administrator access required.</p>
+        <p className="text-destructive text-xs/relaxed">Permission denied. Administrator access required.</p>
       </div>
     );
   }
@@ -55,7 +55,7 @@ export function ProductsAdminContainer() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-3">
           <Package className="h-8 w-8" />
-          <h1 className="text-3xl font-bold">Product & Price Management</h1>
+          <h1 className="text-primary text-3xl font-semibold">Product & Price Management</h1>
         </div>
         <Button onClick={() => setShowCreateProduct(true)}>Create Product</Button>
       </div>
@@ -65,7 +65,7 @@ export function ProductsAdminContainer() {
         <div className="bg-muted/50 flex flex-col items-center justify-center gap-y-4 rounded-lg border-2 border-dashed p-12">
           <Package className="text-muted-foreground h-16 w-16" />
           <div className="text-center">
-            <h3 className="mb-2 text-xl font-semibold">No products yet</h3>
+            <h3 className="mb-2 text-sm font-medium">No products yet</h3>
             <p className="text-muted-foreground mb-4">
               Create your first product to start offering subscriptions to your customers.
             </p>

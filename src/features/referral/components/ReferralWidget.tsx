@@ -4,6 +4,7 @@ import { Copy, Loader2, Mail, Users } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 
 import { Button, Card, Input, Label } from "../../../shadcnui";
+import { SectionHeader } from "../../../components/typography";
 import { showError, showToast } from "../../../utils";
 import { getReferralConfig, isReferralEnabled } from "../config";
 import { useReferralInvite } from "../hooks/useReferralInvite";
@@ -264,7 +265,7 @@ export function ReferralWidget({
             <Users className="text-primary h-5 w-5" />
           </div>
           <div className="flex flex-col gap-1">
-            <h3 className="text-lg font-semibold">{t.title}</h3>
+            <SectionHeader>{t.title}</SectionHeader>
             <p className="text-muted-foreground text-sm">{t.description}</p>
           </div>
         </div>
@@ -272,9 +273,9 @@ export function ReferralWidget({
 
       {/* Referral Link */}
       <div className="flex flex-col gap-2">
-        <Label className="text-sm font-medium">{t.yourLink}</Label>
+        <Label>{t.yourLink}</Label>
         <div className="flex gap-2">
-          <Input ref={linkInputRef} value={referralUrl} readOnly className="font-mono text-sm" />
+          <Input ref={linkInputRef} value={referralUrl} readOnly className="tabular-nums text-sm" />
           <Button
             type="button"
             variant="outline"
@@ -283,15 +284,15 @@ export function ReferralWidget({
             disabled={!referralUrl}
             aria-label={t.copyButton}
           >
-            <Copy className={`h-4 w-4 ${copied ? "text-green-500" : ""}`} />
+            <Copy className={`h-4 w-4 ${copied ? "text-success" : ""}`} />
           </Button>
         </div>
       </div>
 
       {/* Email Invite */}
       <div className="flex flex-col gap-2">
-        <Label className="text-sm font-medium">{t.inviteTitle}</Label>
-        <p className="text-muted-foreground text-sm">{t.inviteDescription}</p>
+        <Label>{t.inviteTitle}</Label>
+        <p className="text-muted-foreground text-xs/relaxed">{t.inviteDescription}</p>
         <div className="flex gap-2">
           <Input
             type="email"

@@ -86,7 +86,7 @@ export function UsageContainer() {
       {/* Header */}
       <div className="flex items-center gap-x-3">
         <Activity className="h-8 w-8" />
-        <h1 className="text-3xl font-bold">Usage Tracking</h1>
+        <h1 className="text-primary text-3xl font-semibold">Usage Tracking</h1>
       </div>
 
       {/* Empty State */}
@@ -94,7 +94,7 @@ export function UsageContainer() {
         <div className="bg-muted/50 flex flex-col items-center justify-center gap-y-4 rounded-lg border-2 border-dashed border-gray-300 p-12">
           <Activity className="text-muted-foreground h-16 w-16" />
           <div className="text-center">
-            <h3 className="mb-2 text-xl font-semibold">No usage meters configured</h3>
+            <h3 className="mb-2 text-sm font-medium">No usage meters configured</h3>
             <p className="text-muted-foreground">
               Usage tracking will appear here when you have metered subscriptions with configured meters.
             </p>

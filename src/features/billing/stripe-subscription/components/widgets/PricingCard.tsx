@@ -67,7 +67,7 @@ export function PricingCard({
       )}
 
       <CardHeader className="pb-2">
-        <h3 className="font-semibold text-lg">{description}</h3>
+        <h3 className="text-sm font-medium">{description}</h3>
       </CardHeader>
 
       <CardContent className="pb-4 grow">
@@ -80,7 +80,7 @@ export function PricingCard({
           <ul className="space-y-2">
             {features.map((feature, index) => (
               <li key={index} className="flex items-start gap-2">
-                <Check className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
+                <Check className="text-success mt-0.5 h-4 w-4 shrink-0" />
                 <span className="text-sm text-muted-foreground">{feature}</span>
               </li>
             ))}

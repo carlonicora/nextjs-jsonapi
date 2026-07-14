@@ -62,11 +62,11 @@ export function TokenStatusIndicator({ className, size = "md", showExtraPages = 
 
   const getBatteryIcon = () => {
     if (percentage > 75) {
-      return <BatteryFull className={cn(iconSize, "text-green-500")} />;
+      return <BatteryFull className={cn(iconSize, "text-success")} />;
     } else if (percentage > 50) {
-      return <BatteryMedium className={cn(iconSize, "text-green-500")} />;
+      return <BatteryMedium className={cn(iconSize, "text-success")} />;
     } else if (percentage >= 25) {
-      return <BatteryLow className={cn(iconSize, "text-yellow-500")} />;
+      return <BatteryLow className={cn(iconSize, "text-warning")} />;
     } else {
       return <Battery className={cn(iconSize, "text-destructive")} />;
     }
@@ -74,9 +74,9 @@ export function TokenStatusIndicator({ className, size = "md", showExtraPages = 
 
   const getStatusColor = () => {
     if (percentage > 50) {
-      return "text-green-500";
+      return "text-success";
     } else if (percentage >= 25) {
-      return "text-yellow-500";
+      return "text-warning";
     } else {
       return "text-destructive";
     }

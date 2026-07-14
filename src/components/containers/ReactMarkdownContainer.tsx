@@ -70,7 +70,7 @@ export function ReactMarkdownContainer({
                 <ol className={`list-decimal ${size === "small" ? "pl-3" : "pl-4"}`}>{children}</ol>
               ),
               h1: ({ children }) => (
-                <h1 className={size === "small" ? "my-1 mt-2 text-sm font-bold" : "my-2 mt-4 text-3xl font-medium"}>
+                <h1 className={size === "small" ? "my-1 mt-2 text-sm font-bold" : "my-2 mt-4 text-3xl font-semibold"}>
                   {children}
                 </h1>
               ),
@@ -106,7 +106,7 @@ export function ReactMarkdownContainer({
         <div className="mt-2 flex justify-end">
           <button
             onClick={handleToggle}
-            className="flex items-center gap-1 rounded-md px-3 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
+            className="text-primary flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors hover:bg-gray-100 hover:underline"
             aria-label={isExpanded ? t("show_less") : t("show_more")}
           >
             <span>{isExpanded ? t("show_less") : t("show_more")}</span>

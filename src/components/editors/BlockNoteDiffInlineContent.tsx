@@ -55,7 +55,7 @@ export const diffWordInlineContentSpec = createReactInlineContentSpec(
             <Button
               size="sm"
               variant="ghost"
-              className="m-0 h-6 w-6 p-0 text-green-600 hover:bg-green-50 hover:text-green-700"
+              className="text-success m-0 h-6 w-6 p-0 hover:bg-green-50 hover:text-success"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -70,7 +70,7 @@ export const diffWordInlineContentSpec = createReactInlineContentSpec(
             <Button
               size="sm"
               variant="ghost"
-              className="m-0 h-6 w-6 p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
+              className="text-destructive m-0 h-6 w-6 p-0 hover:bg-red-50 hover:text-destructive"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -93,15 +93,15 @@ export const diffWordInlineContentSpec = createReactInlineContentSpec(
         <span className="group relative inline-flex items-center">
           <span
             className={cn("rounded-sm px-1 transition-all duration-200", {
-              "border border-green-300 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300":
+              "text-success border border-green-300 bg-green-100 dark:bg-green-900/30 dark:text-success":
                 isAddition && !accepted && !rejected,
-              "border border-green-400 bg-green-200 text-green-900": isAddition && accepted,
-              "border border-gray-300 bg-gray-100 text-gray-500 line-through": isAddition && rejected,
+              "text-success border border-green-400 bg-green-200": isAddition && accepted,
+              "text-muted-foreground border border-gray-300 bg-gray-100 line-through": isAddition && rejected,
 
-              "border border-red-300 bg-red-100 text-red-800 line-through dark:bg-red-900/30 dark:text-red-300":
+              "text-destructive border border-red-300 bg-red-100 line-through dark:bg-red-900/30 dark:text-destructive":
                 isRemoval && !accepted && !rejected,
-              "border border-gray-400 bg-gray-200 text-gray-600 line-through": isRemoval && accepted,
-              "border border-red-400 bg-red-200 text-red-900 line-through": isRemoval && rejected,
+              "text-muted-foreground border border-gray-400 bg-gray-200 line-through": isRemoval && accepted,
+              "text-destructive border border-red-400 bg-red-200 line-through": isRemoval && rejected,
             })}
           >
             {text}
@@ -112,7 +112,7 @@ export const diffWordInlineContentSpec = createReactInlineContentSpec(
               <Button
                 size="sm"
                 variant="ghost"
-                className="m-0 h-6 w-6 p-0 text-green-600 hover:bg-green-50 hover:text-green-700"
+                className="text-success m-0 h-6 w-6 p-0 hover:bg-green-50 hover:text-success"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -127,7 +127,7 @@ export const diffWordInlineContentSpec = createReactInlineContentSpec(
               <Button
                 size="sm"
                 variant="ghost"
-                className="m-0 h-6 w-6 p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
+                className="text-destructive m-0 h-6 w-6 p-0 hover:bg-red-50 hover:text-destructive"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();

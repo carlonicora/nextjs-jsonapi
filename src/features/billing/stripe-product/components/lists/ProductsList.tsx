@@ -11,6 +11,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  Badge,
   Button,
 } from "../../../../../shadcnui";
 import { PricesList } from "../../../stripe-price/components/lists/PricesList";
@@ -85,15 +86,11 @@ export function ProductsList({ products, onProductsChange }: ProductsListProps) 
                 <Package className="h-6 w-6 text-primary" />
                 <div className="flex-1">
                   <div className="flex items-center gap-x-3">
-                    <h3 className="text-lg font-semibold">{product.name}</h3>
+                    <h3 className="text-sm font-medium">{product.name}</h3>
                     {product.active ? (
-                      <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
-                        Active
-                      </span>
+                      <Badge variant="softGreen">Active</Badge>
                     ) : (
-                      <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full font-medium">
-                        Inactive
-                      </span>
+                      <Badge variant="softGray">Inactive</Badge>
                     )}
                   </div>
                   {product.description && <p className="text-muted-foreground text-sm mt-1">{product.description}</p>}

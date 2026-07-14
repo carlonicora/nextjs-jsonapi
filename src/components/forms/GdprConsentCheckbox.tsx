@@ -28,7 +28,7 @@ export function GdprConsentCheckbox<T extends FieldValues>({
           <div className="space-y-1 leading-none">
             <span className="text-sm font-normal">
               {label}
-              {required && <span className="text-destructive ml-1">*</span>}
+              {required && <span className="ml-1 text-destructive">*</span>}
             </span>
             {description && <FieldDescription className="text-xs">{description}</FieldDescription>}
           </div>

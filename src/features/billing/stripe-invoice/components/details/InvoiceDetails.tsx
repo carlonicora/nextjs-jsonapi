@@ -62,29 +62,29 @@ export function InvoiceDetails({
           {/* Invoice Info Grid */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <span className="text-sm font-medium text-muted-foreground">Billing Period:</span>
-              <p className="font-medium">
+              <span className="text-muted-foreground text-xs">Billing Period:</span>
+              <p className="text-sm">
                 {formatDate(invoice.periodStart)} - {formatDate(invoice.periodEnd)}
               </p>
             </div>
 
             {invoice.dueDate && (
               <div>
-                <span className="text-sm font-medium text-muted-foreground">Due Date:</span>
-                <p className="font-medium">{formatDate(invoice.dueDate)}</p>
+                <span className="text-muted-foreground text-xs">Due Date:</span>
+                <p className="text-sm">{formatDate(invoice.dueDate)}</p>
               </div>
             )}
 
             {invoice.paidAt && (
               <div>
-                <span className="text-sm font-medium text-muted-foreground">Paid Date:</span>
-                <p className="font-medium">{formatDate(invoice.paidAt)}</p>
+                <span className="text-muted-foreground text-xs">Paid Date:</span>
+                <p className="text-sm">{formatDate(invoice.paidAt)}</p>
               </div>
             )}
 
             <div>
-              <span className="text-sm font-medium text-muted-foreground">Attempt Count:</span>
-              <p className="font-medium">{invoice.attemptCount}</p>
+              <span className="text-muted-foreground text-xs">Attempt Count:</span>
+              <p className="text-sm">{invoice.attemptCount}</p>
             </div>
           </div>
 
@@ -112,14 +112,14 @@ export function InvoiceDetails({
           {/* Amount Breakdown */}
           <div className="space-y-2 border-t pt-4">
             <div className="flex justify-between">
-              <span className="text-sm font-medium text-muted-foreground">Subtotal:</span>
-              <span className="font-medium">{formatCurrency(invoice.subtotal, invoice.currency)}</span>
+              <span className="text-muted-foreground text-xs">Subtotal:</span>
+              <span className="text-sm">{formatCurrency(invoice.subtotal, invoice.currency)}</span>
             </div>
 
             {invoice.tax !== undefined && invoice.tax > 0 && (
               <div className="flex justify-between">
-                <span className="text-sm font-medium text-muted-foreground">Tax:</span>
-                <span className="font-medium">{formatCurrency(invoice.tax, invoice.currency)}</span>
+                <span className="text-muted-foreground text-xs">Tax:</span>
+                <span className="text-sm">{formatCurrency(invoice.tax, invoice.currency)}</span>
               </div>
             )}
 
@@ -130,17 +130,15 @@ export function InvoiceDetails({
 
             {invoice.amountPaid > 0 && (
               <div className="flex justify-between">
-                <span className="text-sm font-medium text-muted-foreground">Amount Paid:</span>
-                <span className="font-medium text-green-600">
-                  {formatCurrency(invoice.amountPaid, invoice.currency)}
-                </span>
+                <span className="text-muted-foreground text-xs">Amount Paid:</span>
+                <span className="text-sm text-success">{formatCurrency(invoice.amountPaid, invoice.currency)}</span>
               </div>
             )}
 
             {invoice.amountRemaining > 0 && (
               <div className="flex justify-between">
-                <span className="text-sm font-medium text-muted-foreground">Amount Due:</span>
-                <span className="font-medium text-red-600">
+                <span className="text-muted-foreground text-xs">Amount Due:</span>
+                <span className="text-sm text-destructive">
                   {formatCurrency(invoice.amountRemaining, invoice.currency)}
                 </span>
               </div>

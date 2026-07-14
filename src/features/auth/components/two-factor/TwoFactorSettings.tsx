@@ -84,9 +84,9 @@ export function TwoFactorSettings() {
       <CardHeader>
         <div className="flex items-center gap-2">
           {isEnabled ? (
-            <ShieldCheck className="h-6 w-6 text-green-600" />
+            <ShieldCheck className="text-success h-6 w-6" />
           ) : (
-            <ShieldAlert className="h-6 w-6 text-yellow-600" />
+            <ShieldAlert className="text-warning h-6 w-6" />
           )}
           <div>
             <CardTitle>{t("auth.two_factor.title")}</CardTitle>
@@ -146,7 +146,7 @@ export function TwoFactorSettings() {
             <Separator />
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-medium text-green-600">{t("auth.two_factor.enable_2fa")}</h3>
+                <h3 className="text-success font-medium">{t("auth.two_factor.enable_2fa")}</h3>
                 <p className="text-sm text-muted-foreground">{t("auth.two_factor.enable_description")}</p>
               </div>
               <Button onClick={handleEnable2FA} disabled={isEnabling}>

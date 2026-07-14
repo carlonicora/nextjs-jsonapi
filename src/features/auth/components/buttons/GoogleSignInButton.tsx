@@ -23,7 +23,7 @@ export function GoogleSignInButton({ referralCode }: GoogleSignInButtonProps) {
   return (
     <Link href={buildGoogleOAuthUrl()} className="flex w-full justify-end">
       <Button
-        className="w-full bg-white hover:bg-gray-50 text-gray-700 border border-gray-300"
+        className="text-muted-foreground w-full border border-gray-300 bg-white hover:bg-gray-50"
         variant="outline"
         data-testid="page-login-button-google"
       >

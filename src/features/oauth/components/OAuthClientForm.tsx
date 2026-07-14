@@ -121,7 +121,7 @@ export function OAuthClientForm({ client, onSubmit, onCancel, isLoading = false 
               disabled={isLoading}
               className={errors.name ? "border-destructive" : ""}
             />
-            {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
+            {errors.name && <p className="text-destructive text-xs/relaxed">{errors.name}</p>}
           </div>
 
           {/* Description */}
@@ -164,7 +164,7 @@ export function OAuthClientForm({ client, onSubmit, onCancel, isLoading = false 
               <div className="flex items-start space-x-3 p-3 rounded-md border">
                 <RadioGroupItem value="confidential" id="confidential" className="mt-1" />
                 <div>
-                  <Label htmlFor="confidential" className="font-medium cursor-pointer">
+                  <Label htmlFor="confidential" className="cursor-pointer">
                     Confidential
                   </Label>
                   <p className="text-sm text-muted-foreground">
@@ -175,7 +175,7 @@ export function OAuthClientForm({ client, onSubmit, onCancel, isLoading = false 
               <div className="flex items-start space-x-3 p-3 rounded-md border">
                 <RadioGroupItem value="public" id="public" className="mt-1" />
                 <div>
-                  <Label htmlFor="public" className="font-medium cursor-pointer">
+                  <Label htmlFor="public" className="cursor-pointer">
                     Public
                   </Label>
                   <p className="text-sm text-muted-foreground">

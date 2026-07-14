@@ -91,7 +91,9 @@ export function PaymentMethodCard({ paymentMethod, onUpdate }: PaymentMethodCard
       <Card className="relative">
         {/* Default Badge */}
         {isDefault && (
-          <Badge className="absolute right-2 top-2 bg-green-100 text-green-800 hover:bg-green-100">Default</Badge>
+          <Badge variant="softGreen" className="absolute right-2 top-2">
+            Default
+          </Badge>
         )}
 
         <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -118,7 +120,11 @@ export function PaymentMethodCard({ paymentMethod, onUpdate }: PaymentMethodCard
                   Set as Default
                 </DropdownMenuItem>
               )}
-              <DropdownMenuItem onClick={() => setShowRemoveDialog(true)} disabled={loading} className="text-red-600">
+              <DropdownMenuItem
+                onClick={() => setShowRemoveDialog(true)}
+                disabled={loading}
+                className="text-destructive"
+              >
                 Remove
               </DropdownMenuItem>
             </DropdownMenuContent>

@@ -17,7 +17,13 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(({ className, href, 
   // Get the configured next-intl Link component at runtime (after i18n is configured)
   const NextIntlLink = getI18nLink();
   return (
-    <NextIntlLink prefetch={false} ref={ref} href={href} className={cn(`font-medium`, className)} {...props}>
+    <NextIntlLink
+      prefetch={false}
+      ref={ref}
+      href={href}
+      className={cn("text-primary font-medium hover:underline", className)}
+      {...props}
+    >
       {children}
     </NextIntlLink>
   );

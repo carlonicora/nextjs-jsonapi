@@ -83,12 +83,12 @@ export default function RbacPermissionCell({
         )}
         render={<div />}
       >
-        <Badge variant="outline" className="max-w-full truncate text-xs font-mono">
+        <Badge variant="outline" className="max-w-full truncate text-xs tabular-nums">
           {truncated}
         </Badge>
       </TooltipTrigger>
       <TooltipContent side="top" className="max-w-xs">
-        <p className="font-mono text-xs break-all">{displayValue}</p>
+        <p className="tabular-nums text-xs break-all">{displayValue}</p>
       </TooltipContent>
     </Tooltip>
   );

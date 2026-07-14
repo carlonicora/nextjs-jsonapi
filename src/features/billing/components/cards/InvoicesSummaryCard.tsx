@@ -46,7 +46,7 @@ export function InvoicesSummaryCard({ invoices, loading, error, onViewAllClick }
     return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Recent Invoices</CardTitle>
+          <CardTitle>Recent Invoices</CardTitle>
           <ReceiptIcon className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -62,11 +62,11 @@ export function InvoicesSummaryCard({ invoices, loading, error, onViewAllClick }
     return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Recent Invoices</CardTitle>
+          <CardTitle>Recent Invoices</CardTitle>
           <ReceiptIcon className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-destructive">{error}</p>
+          <p className="text-destructive text-xs/relaxed">{error}</p>
         </CardContent>
       </Card>
     );
@@ -80,7 +80,7 @@ export function InvoicesSummaryCard({ invoices, loading, error, onViewAllClick }
   return (
     <Card className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={onViewAllClick}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">Recent Invoices</CardTitle>
+        <CardTitle>Recent Invoices</CardTitle>
         <ReceiptIcon className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
@@ -100,7 +100,7 @@ export function InvoicesSummaryCard({ invoices, loading, error, onViewAllClick }
             </p>
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
               {paidInvoices.length > 0 && <span>{paidInvoices.length} paid</span>}
-              {openInvoices.length > 0 && <span className="text-orange-600">{openInvoices.length} open</span>}
+              {openInvoices.length > 0 && <span className="text-warning">{openInvoices.length} open</span>}
               <span className="flex items-center">
                 View all
                 <ChevronRight className="h-3 w-3 ml-1" />

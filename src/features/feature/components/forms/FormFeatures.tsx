@@ -1,6 +1,7 @@
 "use client";
 
 import { Checkbox, Label, ScrollArea } from "../../../../shadcnui";
+import { SectionHeader } from "../../../../components/typography";
 import { FeatureInterface } from "../../data";
 
 type FormFeaturesProps = {
@@ -30,7 +31,11 @@ export function FormFeatures({ form, name, features, featureField = "featureIds"
 
   return (
     <div className="flex w-full flex-col">
-      {name && <h2 className="mb-4 border-b text-lg font-semibold">{name}</h2>}
+      {name && (
+        <SectionHeader level={2} className="mb-4 border-b">
+          {name}
+        </SectionHeader>
+      )}
       <ScrollArea className="h-[40vh]">
         <div className="flex flex-col gap-y-2 pr-4">
           {features

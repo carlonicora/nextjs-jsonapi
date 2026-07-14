@@ -157,7 +157,7 @@ export function RbacPermissionPicker({
                         checked={currentSegments.includes(segment)}
                         onCheckedChange={() => toggleSegment(segment)}
                       />
-                      <span className="font-mono text-xs">{segment}</span>
+                      <span className="tabular-nums text-xs">{segment}</span>
                     </label>
                   ))}
                 </div>
@@ -167,7 +167,7 @@ export function RbacPermissionPicker({
                   value={customSegment}
                   onChange={(e) => setCustomSegment(e.target.value)}
                   placeholder={t("rbac.custom_segment_placeholder")}
-                  className="h-7 font-mono text-xs"
+                  className="h-7 tabular-nums text-xs"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
@@ -188,7 +188,7 @@ export function RbacPermissionPicker({
               {currentSegments.length > 0 && (
                 <div className="bg-muted mt-2 rounded p-2">
                   <p className="text-muted-foreground mb-1 text-xs">{t("rbac.preview")}</p>
-                  <p className="font-mono text-xs break-all">{currentSegments.join("|")}</p>
+                  <p className="tabular-nums text-xs break-all">{currentSegments.join("|")}</p>
                 </div>
               )}
             </div>

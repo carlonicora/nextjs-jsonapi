@@ -6,6 +6,7 @@ import { useMemo } from "react";
 
 import { BlockNoteEditorContainer } from "../../../../components";
 import { Button } from "../../../../shadcnui";
+import { SectionHeader } from "../../../../components/typography";
 import { HowToInterface } from "../../data/HowToInterface";
 import { calculateReadingTime, extractHeadings } from "../../utils/blocknote";
 
@@ -29,7 +30,9 @@ export default function HowToCommandViewer({ howTo, onBack, onStartChat }: HowTo
           <ArrowLeft className="h-4 w-4" />
           <span className="ml-1">{t("howto.command.back")}</span>
         </Button>
-        <h2 className="flex-1 truncate text-lg font-semibold">{howTo.name}</h2>
+        <SectionHeader level={2} className="flex-1 truncate">
+          {howTo.name}
+        </SectionHeader>
         <div className="text-muted-foreground flex items-center gap-1.5 text-sm">
           <BookOpen className="h-4 w-4" />
           <span>{t("howto.reading_time.label", { minutes: readingTime })}</span>

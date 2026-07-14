@@ -15,15 +15,15 @@ export function BillingAlertBanner({ subscription, onUpdatePayment, onAddPayment
   if (subscription.status === SubscriptionStatus.PAST_DUE) {
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-x-3">
-        <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
+        <AlertCircle className="text-destructive mt-0.5 h-5 w-5" />
         <div className="flex-1">
-          <h3 className="font-semibold text-red-900">Payment Failed</h3>
-          <p className="text-sm text-red-700 mt-1">
+          <h3 className="text-destructive text-sm font-medium">Payment Failed</h3>
+          <p className="text-destructive mt-1 text-sm">
             Your last payment failed. Please update your payment method to avoid service interruption.
           </p>
         </div>
         {onUpdatePayment && (
-          <Button variant="outline" size="sm" onClick={onUpdatePayment} className="border-red-300 text-red-700">
+          <Button variant="outline" size="sm" onClick={onUpdatePayment} className="text-destructive border-red-300">
             Update Payment Method
           </Button>
         )}
@@ -40,16 +40,16 @@ export function BillingAlertBanner({ subscription, onUpdatePayment, onAddPayment
     if (daysRemaining <= 7) {
       return (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start gap-x-3">
-          <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
+          <AlertCircle className="text-warning mt-0.5 h-5 w-5" />
           <div className="flex-1">
-            <h3 className="font-semibold text-yellow-900">Trial Ending Soon</h3>
-            <p className="text-sm text-yellow-700 mt-1">
+            <h3 className="text-warning text-sm font-medium">Trial Ending Soon</h3>
+            <p className="text-warning mt-1 text-sm">
               Your trial ends in {daysRemaining} {daysRemaining === 1 ? "day" : "days"}. Add a payment method to
               continue your subscription.
             </p>
           </div>
           {onAddPayment && (
-            <Button variant="outline" size="sm" onClick={onAddPayment} className="border-yellow-300 text-yellow-700">
+            <Button variant="outline" size="sm" onClick={onAddPayment} className="text-warning border-yellow-300">
               Add Payment Method
             </Button>
           )}

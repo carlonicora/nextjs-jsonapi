@@ -5,6 +5,7 @@ import { Modules } from "../../../../core";
 import { usePageUrlGenerator } from "../../../../hooks";
 import { HoverCard, HoverCardContent, HoverCardTrigger, Link } from "../../../../shadcnui";
 import { getIconByModule } from "../../../../utils";
+import { SectionHeader } from "../../../../components/typography";
 import { ContributorsList } from "../../../user/components";
 import { ContentInterface } from "../../data";
 
@@ -17,7 +18,7 @@ export function ContentsList({ contentList }: ContentsListProps) {
 
   return (
     <div className="flex min-h-0 w-full flex-col overflow-y-auto">
-      <h2 className="text-xl font-semibold">{t(`content.news`)}</h2>
+      <SectionHeader level={2}>{t(`content.news`)}</SectionHeader>
       <div className="flex flex-col">
         {contentList.map((content) => (
           <ContentsListElement content={content} key={content.id} />

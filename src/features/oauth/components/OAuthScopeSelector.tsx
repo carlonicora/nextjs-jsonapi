@@ -97,7 +97,7 @@ export function OAuthScopeSelector({
                       disabled={disabled}
                     />
                     <div className="flex-1">
-                      <Label htmlFor={`scope-${scopeInfo.scope}`} className="text-sm font-medium cursor-pointer">
+                      <Label htmlFor={`scope-${scopeInfo.scope}`} className="cursor-pointer">
                         {scopeInfo.name}
                         {isAdmin && <span className="ml-2 text-xs text-destructive">(Dangerous)</span>}
                       </Label>
@@ -111,7 +111,7 @@ export function OAuthScopeSelector({
         ))}
       </div>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && <p className="text-destructive text-xs/relaxed">{error}</p>}
     </div>
   );
 }

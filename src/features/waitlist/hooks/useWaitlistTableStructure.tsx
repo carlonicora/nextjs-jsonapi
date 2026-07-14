@@ -102,7 +102,7 @@ export function useWaitlistTableStructure({
 
         if (entry.status === "invited" && entry.invitedAt) {
           return (
-            <span className="text-muted-foreground text-sm">
+            <span className="text-muted-foreground text-xs">
               {t("waitlist.admin.actions.invited_on", { date: new Date(entry.invitedAt).toLocaleDateString() })}
             </span>
           );

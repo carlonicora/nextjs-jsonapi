@@ -2,6 +2,7 @@
 
 import { Eye, Pencil, Image, Upload, Film, FolderPlus, User, Shield, LucideIcon } from "lucide-react";
 import { OAuthScopeInfo } from "../../interfaces/oauth.interface";
+import { MicroLabel } from "../../../../components/typography";
 
 export interface OAuthScopeListProps {
   /** List of requested scopes */
@@ -30,9 +31,7 @@ export function OAuthScopeList({ scopes }: OAuthScopeListProps) {
 
   return (
     <div className="space-y-3">
-      <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-        This will allow the application to:
-      </h2>
+      <MicroLabel as="h3">This will allow the application to:</MicroLabel>
       <ul className="space-y-3">
         {scopes.map((scope) => {
           const IconComponent = scope.icon ? SCOPE_ICONS[scope.icon] : Eye;

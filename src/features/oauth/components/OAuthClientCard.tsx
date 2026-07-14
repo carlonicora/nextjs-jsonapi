@@ -93,7 +93,7 @@ export function OAuthClientCard({ client, onClick, onEdit, onDelete }: OAuthClie
       </CardHeader>
       <CardContent>
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
-          <span className="font-mono">{truncatedId}</span>
+          <span className="tabular-nums">{truncatedId}</span>
           <span>Created {createdAgo}</span>
           <span>{client.isConfidential ? "Confidential" : "Public"}</span>
         </div>

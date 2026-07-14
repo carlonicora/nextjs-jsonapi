@@ -55,7 +55,7 @@ export function SubscriptionsContainer({ onOpenWizard, hasActiveRecurringSubscri
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-3">
           <CreditCard className="h-8 w-8" />
-          <h1 className="text-3xl font-bold">Subscriptions</h1>
+          <h1 className="text-primary text-3xl font-semibold">Subscriptions</h1>
         </div>
         {subscriptions.length > 0 && (
           <Button onClick={() => onOpenWizard?.()}>
@@ -74,7 +74,7 @@ export function SubscriptionsContainer({ onOpenWizard, hasActiveRecurringSubscri
         <div className="flex flex-col items-center justify-center py-12 space-y-4">
           <CreditCard className="h-16 w-16 text-muted-foreground" />
           <div className="text-center">
-            <h3 className="text-xl font-semibold mb-2">No Active Subscriptions</h3>
+            <h3 className="text-sm font-medium mb-2">No Active Subscriptions</h3>
             <p className="text-muted-foreground mb-6">Choose a subscription plan to get started with our services.</p>
             <Button onClick={() => onOpenWizard?.()}>Subscribe to a Plan</Button>
           </div>

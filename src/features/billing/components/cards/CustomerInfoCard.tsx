@@ -42,7 +42,7 @@ export function CustomerInfoCard({ customer, loading, error }: CustomerInfoCardP
     return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Billing Account</CardTitle>
+          <CardTitle>Billing Account</CardTitle>
           <User className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -58,11 +58,11 @@ export function CustomerInfoCard({ customer, loading, error }: CustomerInfoCardP
     return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Billing Account</CardTitle>
+          <CardTitle>Billing Account</CardTitle>
           <User className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-destructive">{error}</p>
+          <p className="text-destructive text-xs/relaxed">{error}</p>
         </CardContent>
       </Card>
     );
@@ -72,7 +72,7 @@ export function CustomerInfoCard({ customer, loading, error }: CustomerInfoCardP
     return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Billing Account</CardTitle>
+          <CardTitle>Billing Account</CardTitle>
           <User className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -86,7 +86,7 @@ export function CustomerInfoCard({ customer, loading, error }: CustomerInfoCardP
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">Billing Account</CardTitle>
+        <CardTitle>Billing Account</CardTitle>
         <User className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
@@ -96,7 +96,7 @@ export function CustomerInfoCard({ customer, loading, error }: CustomerInfoCardP
           {customer.balance !== undefined && customer.balance !== 0 && (
             <p className="text-sm">
               <span className="text-muted-foreground">Credit Balance: </span>
-              <span className={customer.balance < 0 ? "text-green-600" : "text-destructive"}>
+              <span className={customer.balance < 0 ? "text-success" : "text-destructive"}>
                 {formatBalance(customer.balance, customer.currency)}
               </span>
             </p>

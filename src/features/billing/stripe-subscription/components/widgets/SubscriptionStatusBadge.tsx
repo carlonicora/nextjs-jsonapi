@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge, type BadgeProps } from "../../../../../shadcnui";
 import { SubscriptionStatus } from "../../data";
 
 type SubscriptionStatusBadgeProps = {
@@ -9,47 +10,47 @@ type SubscriptionStatusBadgeProps = {
 
 type StatusConfig = {
   label: string;
-  color: string;
+  variant: BadgeProps["variant"];
 };
 
 const statusConfig: Record<SubscriptionStatus, StatusConfig> = {
   [SubscriptionStatus.ACTIVE]: {
     label: "Active",
-    color: "bg-green-100 text-green-800",
+    variant: "softGreen",
   },
   [SubscriptionStatus.TRIALING]: {
     label: "Trial",
-    color: "bg-blue-100 text-blue-800",
+    variant: "softBlue",
   },
   [SubscriptionStatus.PAST_DUE]: {
     label: "Past Due",
-    color: "bg-red-100 text-red-800",
+    variant: "softRed",
   },
   [SubscriptionStatus.CANCELED]: {
     label: "Canceled",
-    color: "bg-gray-100 text-gray-800",
+    variant: "softGray",
   },
   [SubscriptionStatus.PAUSED]: {
     label: "Paused",
-    color: "bg-yellow-100 text-yellow-800",
+    variant: "softYellow",
   },
   [SubscriptionStatus.UNPAID]: {
     label: "Unpaid",
-    color: "bg-orange-100 text-orange-800",
+    variant: "softOrange",
   },
   [SubscriptionStatus.INCOMPLETE]: {
     label: "Incomplete",
-    color: "bg-gray-100 text-gray-800",
+    variant: "softGray",
   },
   [SubscriptionStatus.INCOMPLETE_EXPIRED]: {
     label: "Expired",
-    color: "bg-gray-100 text-gray-800",
+    variant: "softGray",
   },
 };
 
 const cancelingConfig: StatusConfig = {
   label: "Canceling",
-  color: "bg-amber-100 text-amber-800",
+  variant: "softAmber",
 };
 
 export function SubscriptionStatusBadge({ status, cancelAtPeriodEnd }: SubscriptionStatusBadgeProps) {
@@ -58,5 +59,5 @@ export function SubscriptionStatusBadge({ status, cancelAtPeriodEnd }: Subscript
     ? cancelingConfig
     : statusConfig[status] || statusConfig[SubscriptionStatus.CANCELED];
 
-  return <span className={`${config.color} text-xs px-2 py-1 rounded-full font-medium`}>{config.label}</span>;
+  return <Badge variant={config.variant}>{config.label}</Badge>;
 }

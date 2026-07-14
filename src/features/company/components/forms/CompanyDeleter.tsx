@@ -99,7 +99,7 @@ function CompanyDeleterInternal({ company, isAdministrator }: CompanyDeleterInte
             <div className="flex w-full flex-col">
               <Label className="flex items-center">
                 {t(`company.fields.name.label`)}
-                <span className="text-destructive ml-2 font-semibold">*</span>
+                <span className="ml-1 text-destructive">*</span>
               </Label>
               <Input
                 className={`w-full`}

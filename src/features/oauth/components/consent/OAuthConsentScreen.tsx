@@ -99,7 +99,7 @@ export function OAuthConsentScreen({
             <ExternalLink className="h-4 w-4 mt-0.5 flex-shrink-0" />
             <div>
               <span>Authorizing will redirect you to:</span>
-              <p className="font-mono text-xs mt-1 break-all">{params.redirectUri}</p>
+              <p className="tabular-nums text-xs mt-1 break-all">{params.redirectUri}</p>
             </div>
           </div>
 

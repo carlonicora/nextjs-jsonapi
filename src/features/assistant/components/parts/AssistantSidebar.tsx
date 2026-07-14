@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Plus } from "lucide-react";
 import { Button } from "../../../../shadcnui";
+import { MicroLabel } from "../../../../components/typography";
 import type { AssistantInterface } from "../../data/AssistantInterface";
 import { groupThreadsByBucket } from "../../utils/groupThreadsByBucket";
 
@@ -21,7 +22,7 @@ export function AssistantSidebar({ threads, activeId, onSelect, onNew }: Props) 
     if (items.length === 0) return null;
     return (
       <div className="mb-2">
-        <div className="text-muted-foreground px-2 py-1 text-xs font-semibold uppercase tracking-wider">{label}</div>
+        <MicroLabel className="px-2 py-1">{label}</MicroLabel>
         {items.map((thread) => (
           <button
             key={thread.id}

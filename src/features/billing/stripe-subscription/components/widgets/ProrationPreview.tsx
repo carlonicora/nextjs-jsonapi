@@ -16,7 +16,7 @@ export function ProrationPreview({ preview }: ProrationPreviewProps) {
         {preview.lineItems.map((item, index) => (
           <div key={index} className="flex justify-between text-sm">
             <span className="text-blue-800">{item.description}</span>
-            <span className={`font-medium ${item.amount < 0 ? "text-green-600" : "text-blue-900"}`}>
+            <span className={`font-medium ${item.amount < 0 ? "text-success" : "text-blue-900"}`}>
               {formatCurrency(item.amount, preview.currency)}
             </span>
           </div>

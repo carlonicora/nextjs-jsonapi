@@ -117,7 +117,7 @@ export function SubscriptionDetails({
           <div className="space-y-6">
             {/* Status */}
             <div className="flex items-center gap-x-3">
-              <span className="text-sm font-medium text-muted-foreground">Status:</span>
+              <span className="text-muted-foreground text-xs">Status:</span>
               <SubscriptionStatusBadge
                 status={subscription.status}
                 cancelAtPeriodEnd={subscription.cancelAtPeriodEnd}
@@ -127,20 +127,20 @@ export function SubscriptionDetails({
             {/* Plan Info */}
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-sm font-medium text-muted-foreground">Plan:</span>
-                <span className="font-medium">{formatPlanName(subscription.price)}</span>
+                <span className="text-muted-foreground text-xs">Plan:</span>
+                <span className="text-sm">{formatPlanName(subscription.price)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm font-medium text-muted-foreground">Billing Amount:</span>
-                <span className="font-medium">{formatBillingAmount(subscription.price)}</span>
+                <span className="text-muted-foreground text-xs">Billing Amount:</span>
+                <span className="text-sm">{formatBillingAmount(subscription.price)}</span>
               </div>
             </div>
 
             {/* Current Period */}
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-sm font-medium text-muted-foreground">Current Period:</span>
-                <span className="font-medium">
+                <span className="text-muted-foreground text-xs">Current Period:</span>
+                <span className="text-sm">
                   {formatDate(subscription.currentPeriodStart)} - {formatDate(subscription.currentPeriodEnd)}
                 </span>
               </div>
@@ -149,15 +149,15 @@ export function SubscriptionDetails({
             {/* Trial Info */}
             {subscription.trialEnd && (
               <div className="flex justify-between">
-                <span className="text-sm font-medium text-muted-foreground">Trial Ends:</span>
-                <span className="font-medium">{formatDate(subscription.trialEnd)}</span>
+                <span className="text-muted-foreground text-xs">Trial Ends:</span>
+                <span className="text-sm">{formatDate(subscription.trialEnd)}</span>
               </div>
             )}
 
             {/* Cancellation Warning */}
             {subscription.cancelAtPeriodEnd && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                <p className="text-sm text-yellow-800">
+                <p className="text-warning text-xs/relaxed">
                   This subscription will be canceled at the end of the current period on{" "}
                   {formatDate(subscription.currentPeriodEnd)}.
                 </p>

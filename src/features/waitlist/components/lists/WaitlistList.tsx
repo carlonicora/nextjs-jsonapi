@@ -5,6 +5,7 @@ import { RefreshCw, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { errorToast } from "../../../../components";
+import { SectionHeader } from "../../../../components/typography";
 import {
   Button,
   Select,
@@ -75,7 +76,7 @@ export function WaitlistList() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Users className="h-5 w-5" />
-          <h2 className="text-xl font-semibold">{t("waitlist.admin.title")}</h2>
+          <SectionHeader level={2}>{t("waitlist.admin.title")}</SectionHeader>
           <span className="text-muted-foreground">({t("waitlist.admin.entries_count", { count: total })})</span>
         </div>
 

@@ -11,6 +11,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  Badge,
   Button,
 } from "../../../../../shadcnui";
 import { formatCurrency } from "../../../components/utils/currency";
@@ -184,24 +185,16 @@ export function PricesList({ productId, onPricesChange }: PricesListProps) {
 
                 <div className="flex flex-wrap gap-2">
                   {price.active ? (
-                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
-                      Active
-                    </span>
+                    <Badge variant="softGreen">Active</Badge>
                   ) : (
-                    <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full font-medium">
-                      Inactive
-                    </span>
+                    <Badge variant="softGray">Inactive</Badge>
                   )}
 
-                  {price.recurring?.usageType === "metered" && (
-                    <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">
-                      Metered
-                    </span>
-                  )}
+                  {price.recurring?.usageType === "metered" && <Badge variant="softBlue">Metered</Badge>}
 
-                  <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full font-medium uppercase">
+                  <Badge variant="softGray" className="uppercase">
                     {price.currency}
-                  </span>
+                  </Badge>
                 </div>
               </div>
             );

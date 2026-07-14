@@ -2,6 +2,7 @@
 
 import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
 import { StripeProductInterface } from "../../../stripe-product";
+import { SectionHeader } from "../../../../../components/typography";
 import { PricingCard } from "./PricingCard";
 
 export type ProductPricingRowProps = {
@@ -28,7 +29,7 @@ export function ProductPricingRow({
   return (
     <div className="space-y-3">
       {/* Product name header */}
-      <h3 className="font-semibold text-lg">{product.name}</h3>
+      <SectionHeader>{product.name}</SectionHeader>
 
       {/* Price cards in columns */}
       <div

@@ -30,7 +30,7 @@ export function BillingUsageSummaryCard({
     return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Usage This Month</CardTitle>
+          <CardTitle>Usage This Month</CardTitle>
           <Activity className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -45,11 +45,11 @@ export function BillingUsageSummaryCard({
     return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Usage This Month</CardTitle>
+          <CardTitle>Usage This Month</CardTitle>
           <Activity className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-destructive">{error}</p>
+          <p className="text-destructive text-xs/relaxed">{error}</p>
         </CardContent>
       </Card>
     );
@@ -67,7 +67,7 @@ export function BillingUsageSummaryCard({
   return (
     <Card className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={onViewDetailsClick}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">Usage This Month</CardTitle>
+        <CardTitle>Usage This Month</CardTitle>
         <Activity className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>

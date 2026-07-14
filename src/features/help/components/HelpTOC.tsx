@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { HelpHeading } from "../types/help-article.types";
+import { MicroLabel } from "../../../components/typography";
 
 export function HelpTOC({ headings }: { headings: readonly HelpHeading[] }) {
   const t = useTranslations();
@@ -26,9 +27,7 @@ export function HelpTOC({ headings }: { headings: readonly HelpHeading[] }) {
   if (headings.length === 0) return null;
   return (
     <nav aria-label={t("help.toc.title")} className="hidden lg:block">
-      <div className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
-        {t("help.toc.title")}
-      </div>
+      <MicroLabel className="mb-2">{t("help.toc.title")}</MicroLabel>
       <ul className="space-y-1 text-sm">
         {headings.map((h) => (
           <li key={h.slug} style={{ paddingLeft: `${(h.depth - 2) * 0.75}rem` }}>

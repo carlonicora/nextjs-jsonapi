@@ -122,7 +122,7 @@ export function BackupCodesDialog({ remainingCodes, onRegenerate, trigger }: Bac
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            <div className="grid grid-cols-2 gap-2 p-4 bg-muted rounded-lg font-mono text-sm">
+            <div className="grid grid-cols-2 gap-2 p-4 bg-muted rounded-lg tabular-nums text-sm">
               {codes.map((code, index) => (
                 <div key={index} className="text-center" data-testid={`backup-code-${index}`}>
                   {code}

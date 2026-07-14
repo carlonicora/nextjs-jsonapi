@@ -205,7 +205,7 @@ function NotificationModalContent({ isOpen, setIsOpen }: NotificationModalProps)
           <CardHeader className="p-4">
             <CardTitle>{t(`entities.notifications`, { count: 2 })}</CardTitle>
             {isLoading && <div className="text-muted-foreground text-xs">Loading...</div>}
-            {error && <div className="text-destructive text-xs">Error: {error}</div>}
+            {error && <div className="text-destructive text-xs/relaxed">Error: {error}</div>}
           </CardHeader>
           <Separator />
           <ScrollArea className="h-96">
@@ -214,7 +214,7 @@ function NotificationModalContent({ isOpen, setIsOpen }: NotificationModalProps)
                 <Fragment key={notification.id}>{generateNotification(notification, () => setIsOpen(false))}</Fragment>
               ))
             ) : (
-              <div className="p-4 text-center text-sm text-gray-500">{t(`notification.empty`)}</div>
+              <div className="text-muted-foreground p-4 text-center text-sm">{t(`notification.empty`)}</div>
             )}
           </ScrollArea>
         </Card>

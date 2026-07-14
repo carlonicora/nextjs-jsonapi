@@ -13,7 +13,7 @@ function NotificationsListContainerContent() {
   if (error) {
     return (
       <div className="flex items-center justify-center p-8 text-center">
-        <div className="text-destructive text-sm">
+        <div className="text-destructive text-xs/relaxed">
           <p>Error loading notifications: {error}</p>
           <p className="text-muted-foreground mt-2">Please try refreshing the page.</p>
         </div>

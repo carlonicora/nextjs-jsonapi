@@ -112,7 +112,7 @@ const ModuleEditor = memo(function ModuleEditor({
     <div className="rounded-lg border border-accent bg-card">
       <div className="flex items-center justify-between border-b px-4 py-2">
         <h4 className="text-sm font-medium">{moduleLabel}</h4>
-        <span className="font-mono text-xs text-muted-foreground">{moduleId}</span>
+        <span className="text-muted-foreground tabular-nums text-xs">{moduleId}</span>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">

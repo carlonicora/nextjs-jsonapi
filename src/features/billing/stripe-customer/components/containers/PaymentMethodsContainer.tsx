@@ -42,7 +42,7 @@ export function PaymentMethodsContainer() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-3">
           <CreditCard className="h-8 w-8" />
-          <h1 className="text-3xl font-bold">Payment Methods</h1>
+          <h1 className="text-primary text-3xl font-semibold">Payment Methods</h1>
         </div>
         <Button onClick={() => setShowAddPaymentMethod(true)}>Add Payment Method</Button>
       </div>
@@ -52,7 +52,7 @@ export function PaymentMethodsContainer() {
         <div className="flex flex-col items-center justify-center gap-y-4 rounded-lg border-2 border-dashed border-gray-300 bg-muted/50 p-12">
           <CreditCard className="h-16 w-16 text-muted-foreground" />
           <div className="text-center">
-            <h3 className="mb-2 text-xl font-semibold">No payment methods</h3>
+            <h3 className="mb-2 text-sm font-medium">No payment methods</h3>
             <p className="mb-4 text-muted-foreground">
               Add a payment method to enable subscriptions and secure checkout.
             </p>

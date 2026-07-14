@@ -1,6 +1,7 @@
 "use client";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../shadcnui";
+import { SectionHeader } from "../../../../../components/typography";
 import { StripeUsageInterface } from "../../data/stripe-usage.interface";
 
 type UsageHistoryTableProps = {
@@ -39,7 +40,7 @@ export function UsageHistoryTable({ usageRecords }: UsageHistoryTableProps) {
 
   return (
     <div className="flex w-full flex-col gap-y-4">
-      <h2 className="text-xl font-semibold">Usage History</h2>
+      <SectionHeader level={2}>Usage History</SectionHeader>
       <div className="overflow-clip rounded-lg border">
         <Table>
           <TableHeader className="bg-muted">
@@ -60,7 +61,7 @@ export function UsageHistoryTable({ usageRecords }: UsageHistoryTableProps) {
                   <TableCell className="font-medium">{dateTime}</TableCell>
                   <TableCell className="text-muted-foreground">{record.meterEventName}</TableCell>
                   <TableCell className="text-right font-medium">{quantity}</TableCell>
-                  <TableCell className="text-muted-foreground text-sm font-mono">{record.stripeEventId}</TableCell>
+                  <TableCell className="text-muted-foreground text-sm tabular-nums">{record.stripeEventId}</TableCell>
                 </TableRow>
               );
             })}

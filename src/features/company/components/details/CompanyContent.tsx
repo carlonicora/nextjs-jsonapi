@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { ReactNode } from "react";
 import { AttributeElement } from "../../../../components";
+import { SectionHeader, MicroLabel } from "../../../../components/typography";
 import { FiscalDataDisplay } from "../../../../components/fiscal/FiscalDataDisplay";
 import { CompanyInterface } from "../../data";
 
@@ -34,7 +35,7 @@ export function CompanyContent({ company, actions }: CompanyContentProps) {
     <div className="flex flex-col gap-y-8">
       {/* Title Row */}
       <div className="flex w-full items-center justify-between">
-        <h2 className="text-lg font-semibold">{company.name}</h2>
+        <SectionHeader level={2}>{company.name}</SectionHeader>
         {actions && <div className="flex items-center gap-x-2">{actions}</div>}
       </div>
 
@@ -70,9 +71,7 @@ export function CompanyContent({ company, actions }: CompanyContentProps) {
       {/* Fiscal Data Section */}
       {company.fiscal_data && (
         <div className="flex flex-col gap-y-3">
-          <h3 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-            {t("company.sections.fiscal_data")}
-          </h3>
+          <MicroLabel>{t("company.sections.fiscal_data")}</MicroLabel>
           <FiscalDataDisplay fiscalData={company.fiscal_data} />
         </div>
       )}
@@ -80,9 +79,7 @@ export function CompanyContent({ company, actions }: CompanyContentProps) {
       {/* Address Details Section */}
       {hasAddressDetails(company) && (
         <div className="flex flex-col gap-y-3">
-          <h3 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-            {t("company.sections.address_details")}
-          </h3>
+          <MicroLabel>{t("company.sections.address_details")}</MicroLabel>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {company.street && <AttributeElement title={t("company.fields.street.label")} value={company.street} />}
             {company.street_number && (

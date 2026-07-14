@@ -84,7 +84,7 @@ export function WaitlistQuestionnaireRenderer<T extends FieldValues>({
               <div key={field.id} className="space-y-2">
                 <span className="text-sm font-medium">
                   {field.label}
-                  {field.required && <span className="text-destructive ml-1">*</span>}
+                  {field.required && <span className="ml-1 text-destructive">*</span>}
                 </span>
                 {field.description && <p className="text-muted-foreground text-xs">{field.description}</p>}
                 <div className="space-y-2">

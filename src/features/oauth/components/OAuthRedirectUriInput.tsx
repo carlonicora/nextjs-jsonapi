@@ -139,7 +139,7 @@ export function OAuthRedirectUriInput({
         Add Redirect URI
       </Button>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && <p className="text-destructive text-xs/relaxed">{error}</p>}
     </div>
   );
 }

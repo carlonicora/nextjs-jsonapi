@@ -20,6 +20,7 @@ import {
   parseFiscalData,
 } from "../../../../components";
 import type { FiscalDataHandle } from "../../../../components";
+import { SectionHeader } from "../../../../components/typography";
 import { Modules } from "../../../../core";
 import { useI18nRouter } from "../../../../i18n";
 import { getRoleId } from "../../../../roles";
@@ -223,7 +224,7 @@ function CompanyEditorInternal({
       <div className="flex w-full items-start justify-between gap-x-4">
         <div className="flex w-96 flex-col justify-start gap-y-4">
           <FileUploader value={files} onValueChange={setFiles} dropzoneOptions={dropzone} className="w-full p-4">
-            <FileInput className="text-neutral-300 outline-dashed">
+            <FileInput className="text-muted-foreground/50 outline-dashed">
               <div className="flex w-full flex-col items-center justify-center pt-3 pb-4">
                 <div className="flex w-full flex-col items-center justify-center pt-3 pb-4">
                   {file || company?.logo ? (
@@ -262,7 +263,7 @@ function CompanyEditorInternal({
               }
             }}
           />
-          <h3 className="mt-2 text-sm font-semibold">{t(`company.sections.fiscal_data`)}</h3>
+          <SectionHeader className="mt-2">{t(`company.sections.fiscal_data`)}</SectionHeader>
           <ItalianFiscalData ref={fiscalRef} initialData={parseFiscalData(company?.fiscal_data)} />
         </div>
         {canAccessFeatures && (

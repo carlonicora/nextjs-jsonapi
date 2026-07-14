@@ -68,21 +68,21 @@ export function PromoCodeInput({
       <div className="space-y-2">
         <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
           <div className="flex items-center gap-2">
-            <Check className="h-4 w-4 text-green-600" />
-            <span className="font-medium text-green-800">{appliedCode.code}</span>
-            <span className="text-sm text-green-600">{formatDiscount(appliedCode)}</span>
+            <Check className="text-success h-4 w-4" />
+            <span className="text-success font-medium">{appliedCode.code}</span>
+            <span className="text-success text-sm">{formatDiscount(appliedCode)}</span>
           </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={onRemove}
             disabled={disabled}
-            className="text-green-700 hover:text-green-900 hover:bg-green-100"
+            className="text-success hover:bg-green-100 hover:text-success"
           >
             <X className="h-4 w-4" />
           </Button>
         </div>
-        <p className="text-sm text-green-600">{formatDuration(appliedCode)}</p>
+        <p className="text-success text-sm">{formatDuration(appliedCode)}</p>
       </div>
     );
   }
@@ -102,7 +102,7 @@ export function PromoCodeInput({
           {isValidating ? <Loader2 className="h-4 w-4 animate-spin" /> : "Apply"}
         </Button>
       </div>
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && <p className="text-destructive text-xs/relaxed">{error}</p>}
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { Plus, Key } from "lucide-react";
 import { Button, Skeleton } from "../../../shadcnui";
+import { SectionHeader } from "../../../components/typography";
 import { OAuthClientCard } from "./OAuthClientCard";
 import { OAuthClientInterface } from "../interfaces/oauth.interface";
 
@@ -45,7 +46,7 @@ export function OAuthClientList({
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">{title}</h2>
+          <SectionHeader level={2}>{title}</SectionHeader>
           <Skeleton className="h-10 w-32" />
         </div>
         <div className="space-y-3">
@@ -62,7 +63,7 @@ export function OAuthClientList({
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">{title}</h2>
+          <SectionHeader level={2}>{title}</SectionHeader>
         </div>
         <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-6 text-center">
           <p className="text-destructive">{error.message}</p>
@@ -76,7 +77,7 @@ export function OAuthClientList({
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">{title}</h2>
+          <SectionHeader level={2}>{title}</SectionHeader>
           {onCreateClick && (
             <Button onClick={onCreateClick}>
               <Plus className="h-4 w-4 mr-2" />
@@ -103,7 +104,7 @@ export function OAuthClientList({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">{title}</h2>
+        <SectionHeader level={2}>{title}</SectionHeader>
         {onCreateClick && (
           <Button onClick={onCreateClick}>
             <Plus className="h-4 w-4 mr-2" />

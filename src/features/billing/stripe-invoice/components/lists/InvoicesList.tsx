@@ -54,12 +54,12 @@ export function InvoicesList({ invoices, onInvoicesChange }: InvoicesListProps) 
                   className="cursor-pointer hover:bg-muted/50"
                 >
                   <TableCell className="font-medium">{invoiceNumber}</TableCell>
-                  <TableCell className="text-muted-foreground text-sm">{date}</TableCell>
+                  <TableCell className="text-muted-foreground text-xs">{date}</TableCell>
                   <TableCell>
                     <InvoiceStatusBadge status={invoice.status} />
                   </TableCell>
                   <TableCell className="text-right font-medium">{amount}</TableCell>
-                  <TableCell className="text-muted-foreground text-sm">{period}</TableCell>
+                  <TableCell className="text-muted-foreground text-xs">{period}</TableCell>
                 </TableRow>
               );
             })}

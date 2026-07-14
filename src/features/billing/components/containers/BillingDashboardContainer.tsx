@@ -328,7 +328,7 @@ export function BillingDashboardContainer() {
       {/* Header */}
       <div className="flex items-center gap-x-3">
         <Wallet className="h-8 w-8" />
-        <h1 className="text-3xl font-bold">Billing</h1>
+        <h1 className="text-primary text-3xl font-semibold">Billing</h1>
       </div>
 
       {/* Initial Loading State */}
@@ -367,7 +367,7 @@ export function BillingDashboardContainer() {
           </CardContent>
           {errors.customer && (
             <CardContent className="pt-0">
-              <p className="text-center text-sm text-destructive">{errors.customer}</p>
+              <p className="text-center text-destructive text-xs/relaxed">{errors.customer}</p>
             </CardContent>
           )}
         </Card>

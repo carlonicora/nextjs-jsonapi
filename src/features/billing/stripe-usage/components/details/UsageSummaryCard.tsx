@@ -52,8 +52,8 @@ export function UsageSummaryCard({ meter, summary }: UsageSummaryCardProps) {
           <Activity className="h-5 w-5" />
         </div>
         <div className="flex flex-col">
-          <h3 className="font-semibold">{displayName}</h3>
-          <p className="text-xs text-gray-500">{meter.id}</p>
+          <h3 className="text-sm font-medium">{displayName}</h3>
+          <p className="text-muted-foreground text-xs">{meter.id}</p>
         </div>
       </CardHeader>
 
@@ -61,7 +61,7 @@ export function UsageSummaryCard({ meter, summary }: UsageSummaryCardProps) {
         {/* Current Usage */}
         <div>
           <p className="text-3xl font-bold">{currentUsage.toLocaleString()}</p>
-          {hasLimit && <p className="text-sm text-gray-500">of {limit.toLocaleString()} used</p>}
+          {hasLimit && <p className="text-muted-foreground text-sm">of {limit.toLocaleString()} used</p>}
         </div>
 
         {/* Progress Bar */}
@@ -70,16 +70,16 @@ export function UsageSummaryCard({ meter, summary }: UsageSummaryCardProps) {
             <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
               <div className={`h-full transition-all ${progressColor}`} style={{ width: `${progressWidth}%` }} />
             </div>
-            <p className="text-sm text-gray-500">{percentage?.toFixed(1)}% used</p>
+            <p className="text-muted-foreground text-sm">{percentage?.toFixed(1)}% used</p>
           </div>
         ) : (
-          <p className="text-sm text-gray-500">No limit set</p>
+          <p className="text-muted-foreground text-sm">No limit set</p>
         )}
 
         {/* Period Information */}
         {summary && summary.start && summary.end && (
           <div className="border-t pt-3">
-            <p className="text-xs text-gray-500">
+            <p className="text-muted-foreground text-xs">
               Period: {formatDate(summary.start)} - {formatDate(summary.end)}
             </p>
           </div>

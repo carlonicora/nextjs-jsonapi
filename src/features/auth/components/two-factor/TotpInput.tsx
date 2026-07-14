@@ -75,13 +75,13 @@ export function TotpInput({ onComplete, disabled = false, autoFocus = true, erro
             onKeyDown={(e) => handleKeyDown(index, e)}
             onPaste={handlePaste}
             disabled={disabled}
-            className={`w-12 h-14 text-center text-2xl font-mono ${error ? "border-destructive" : ""}`}
+            className={`w-12 h-14 text-center text-2xl tabular-nums ${error ? "border-destructive" : ""}`}
             data-testid={`totp-input-${index}`}
           />
         ))}
       </div>
       {error && (
-        <p className="text-sm text-destructive" data-testid="totp-error">
+        <p className="text-destructive text-xs/relaxed" data-testid="totp-error">
           {error}
         </p>
       )}

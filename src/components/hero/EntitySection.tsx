@@ -2,6 +2,7 @@
 
 import { ReactNode } from "react";
 import { cn } from "../../utils";
+import { MicroLabel } from "../typography";
 
 type EntitySectionProps = {
   title: string;
@@ -13,7 +14,7 @@ type EntitySectionProps = {
 export function EntitySection({ title, columns, children, className }: EntitySectionProps) {
   return (
     <div className={cn("flex w-full flex-col gap-y-3", className)}>
-      <h3 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">{title}</h3>
+      <MicroLabel as="h3">{title}</MicroLabel>
       {columns ? (
         <div
           className={cn(
