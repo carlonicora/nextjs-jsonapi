@@ -1,3 +1,14 @@
+## [1.129.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.128.0...v1.129.0) (2026-07-14)
+
+### 🚀 Features
+
+* **tables:** add titleActions slot to ContentListTable title row ([7ccb844](https://github.com/carlonicora/nextjs-jsonapi/commit/7ccb844fc4e5923938ef2508a0cc372c8958a2fb))
+
+### 🐛 Bug Fixes
+
+* **build:** stop dev/build tsup race on shared dist (ENOENT unlink) ([8a1b541](https://github.com/carlonicora/nextjs-jsonapi/commit/8a1b541a11d8c11138b8857d4e0b32b520c5e30a)), closes [#build](https://github.com/carlonicora/nextjs-jsonapi/issues/build) [#dev](https://github.com/carlonicora/nextjs-jsonapi/issues/dev)
+* forward per-call token on GET/PUT/PATCH/DELETE in callApi ([f2411c0](https://github.com/carlonicora/nextjs-jsonapi/commit/f2411c0c5f9c41553f9033fb6d6e3e7e47eb5357))
+
 ## [1.128.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.127.0...v1.128.0) (2026-07-14)
 
 ### 🚀 Features
