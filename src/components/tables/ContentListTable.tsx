@@ -5,6 +5,7 @@ import { ExpandedState, flexRender, getCoreRowModel, getExpandedRowModel, useRea
 
 import { cn } from "@/index";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React, { ReactNode, memo, useMemo, useState } from "react";
 import { DataListRetriever, TableContent, useTableGenerator } from "../../hooks";
 import { ModuleWithPermissions } from "../../permissions";
@@ -32,6 +33,7 @@ export type GenerateTableStructureParams = {
 
 type ContentListTableProps = {
   title?: string;
+  titleActions?: ReactNode;
   data: DataListRetriever<any>;
   tableGenerator?: never;
   tableGeneratorType: ModuleWithPermissions;
@@ -48,10 +50,12 @@ type ContentListTableProps = {
   fullWidth?: boolean;
   groupBy?: string;
   emptyState?: ReactNode;
+  onRowClick?: (rowData: any) => void;
 };
 
 export const ContentListTable = memo(function ContentListTable(props: ContentListTableProps) {
-  const { data, fields, checkedIds, toggleId, allowSearch, filters: _filters, fullWidth } = props;
+  const { data, fields, checkedIds, toggleId, allowSearch, filters: _filters, fullWidth, onRowClick } = props;
+  const t = useTranslations();
   const [expanded, setExpanded] = useState<ExpandedState>(
     props.defaultExpanded === true ? true : typeof props.defaultExpanded === "object" ? props.defaultExpanded : {},
   );
@@ -144,6 +148,7 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                           fullWidth ? `text-lg` : `text-sm`,
                         )}
                       >
+                        {props.titleActions}
                         {props.tableGeneratorType.icon && (
                           <props.tableGeneratorType.icon
                             className={cn(`text-primary`, fullWidth ? `h-6 w-6` : `h-4 w-4`)}
@@ -190,7 +195,11 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                       </TableCell>
                     </TableRow>
                     {group.rows.map((row) => (
-                      <TableRow key={row.id}>
+                      <TableRow
+                        key={row.id}
+                        onClick={() => onRowClick?.(row.original.jsonApiData)}
+                        className={`group ${onRowClick ? "hover:bg-muted/50 cursor-pointer" : ""}`}
+                      >
                         {row.getVisibleCells().map((cell) => {
                           const meta = cell.column.columnDef.meta as { className?: string } | undefined;
                           return (
@@ -205,7 +214,11 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                 ))
               ) : (
                 rowModel.rows.map((row) => (
-                  <TableRow key={row.id}>
+                  <TableRow
+                    key={row.id}
+                    onClick={() => onRowClick?.(row.original.jsonApiData)}
+                    className={`group ${onRowClick ? "hover:bg-muted/50 cursor-pointer" : ""}`}
+                  >
                     {row.getVisibleCells().map((cell) => {
                       const meta = cell.column.columnDef.meta as { className?: string } | undefined;
                       return (
@@ -220,7 +233,8 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
             ) : (
               <TableRow>
                 <TableCell colSpan={tableColumns.length} className="h-24 text-center">
-                  {props.emptyState ?? "No results."}
+                  {props.emptyState ??
+                    (t.has("ui.empty_states.no_results") ? t("ui.empty_states.no_results") : "No results.")}
                 </TableCell>
               </TableRow>
             )}

@@ -48,6 +48,13 @@ type RoundPageContainerProps = {
    *   `PageContainerContentDetails` rail.
    */
   layout?: "tabs" | "rail";
+  /**
+   * Fired with the new section value (`tabValue`) on every tab change. Lets a
+   * parent mirror the rail's active section (e.g. to drive a breadcrumb) since
+   * the rail writes the URL via history.replaceState, which does not re-render
+   * ancestors.
+   */
+  onSectionChange?: (section: string) => void;
 };
 
 // Rail trigger class: override the horizontal TabsTrigger defaults for a
@@ -74,6 +81,7 @@ export function RoundPageContainer({
   forceHeader,
   header,
   layout = "tabs",
+  onSectionChange,
 }: RoundPageContainerProps) {
   const headerChildren = useHeaderChildren();
   const headerLeftContent = useHeaderLeftContent();
@@ -118,9 +126,16 @@ export function RoundPageContainer({
   const handleTabChange = useCallback(
     (key: string) => {
       setActiveTab(key);
-      if (module && id) rewriteUrl({ page: module, id: id, additionalParameters: { section: key } });
+      if (module && id) {
+        rewriteUrl({ page: module, id: id, additionalParameters: { section: key } });
+      } else {
+        // No backing entity (e.g. the settings hub): still reflect the active
+        // section in the URL by rewriting ?section= against the current path.
+        rewriteUrl({ page: window.location.pathname, additionalParameters: { section: key } });
+      }
+      onSectionChange?.(key);
     },
-    [module, id, rewriteUrl],
+    [module, id, rewriteUrl, onSectionChange],
   );
 
   const activeFillHeight = tabs?.find((t) => tabValue(t) === activeTab)?.fillHeight === true;
@@ -170,8 +185,17 @@ export function RoundPageContainer({
                 <Tabs
                   value={activeTab}
                   onValueChange={handleTabChange}
-                  orientation="vertical"
-                  className="flex h-full min-w-0 grow overflow-hidden"
+                  // Horizontal orientation (NOT vertical): shadcn Tabs style their
+                  // list/triggers off the ancestor `group/tabs` data-orientation, so a
+                  // vertical rail leaks `flex-col` etc. into any nested horizontal
+                  // sub-tabs in the content (stacking them into a broken column). The
+                  // flush-left rail is produced purely by the explicit flex classes on
+                  // the <aside>/<TabsList> below, so orientation is free to be
+                  // horizontal here. `data-[orientation=horizontal]:flex-row` overrides
+                  // the shadcn root's default `data-[orientation=horizontal]:flex-col`
+                  // to keep the rail and content side by side.
+                  orientation="horizontal"
+                  className="flex h-full min-w-0 grow overflow-hidden data-[orientation=horizontal]:flex-row"
                 >
                   {/* Flush-left section rail — md and up */}
                   <aside
@@ -237,20 +261,28 @@ export function RoundPageContainer({
                     <div
                       className={cn(
                         `min-w-0 grow`,
-                        activeFillHeight ? `flex flex-col overflow-hidden` : `overflow-y-auto`,
+                        activeFillHeight ? `flex flex-col overflow-hidden` : `overflow-y-auto p-4`,
                       )}
                     >
-                      {header}
-                      {tabs.map((tab) => (
-                        <TabsContent
-                          key={tab.label}
-                          value={tabValue(tab)}
-                          className={tab.fillHeight ? `flex min-h-0 w-full flex-1 flex-col` : ``}
-                        >
-                          {tab.content}
-                        </TabsContent>
-                      ))}
-                      {children && <div className="flex">{children}</div>}
+                      {/* Centre and constrain rail content (like the non-rail
+                          layout). Fill-height tabs keep the full width. */}
+                      <div
+                        className={cn(
+                          activeFillHeight ? `flex min-h-0 w-full flex-1 flex-col` : `mx-auto w-full max-w-6xl`,
+                        )}
+                      >
+                        {header}
+                        {tabs.map((tab) => (
+                          <TabsContent
+                            key={tab.label}
+                            value={tabValue(tab)}
+                            className={tab.fillHeight ? `flex min-h-0 w-full flex-1 flex-col` : ``}
+                          >
+                            {tab.content}
+                          </TabsContent>
+                        ))}
+                        {children && <div className="flex">{children}</div>}
+                      </div>
                     </div>
                   </div>
                 </Tabs>
@@ -335,28 +367,28 @@ export function RoundPageContainer({
                   </div>
                 </div>
               )}
-              {details &&
-                (isMobile ? (
-                  <Sheet open={showDetails} onOpenChange={setShowDetails}>
-                    <SheetContent side="right">
-                      <SheetHeader>
-                        <SheetTitle>Details</SheetTitle>
-                      </SheetHeader>
-                      <div className="overflow-y-auto p-6 pt-0">{details}</div>
-                    </SheetContent>
-                  </Sheet>
-                ) : (
-                  <div
-                    className={cn(
-                      "h-full shrink-0 overflow-hidden overflow-y-auto transition-all duration-300 ease-in-out",
-                      showDetails ? "w-96 border-l p-4 opacity-100" : "ml-0 w-0 border-l-0 p-0 opacity-0",
-                    )}
-                  >
-                    {details}
-                  </div>
-                ))}
             </div>
           </div>
+          {details &&
+            (isMobile ? (
+              <Sheet open={showDetails} onOpenChange={setShowDetails}>
+                <SheetContent side="right">
+                  <SheetHeader>
+                    <SheetTitle>Details</SheetTitle>
+                  </SheetHeader>
+                  <div className="overflow-y-auto p-6 pt-0">{details}</div>
+                </SheetContent>
+              </Sheet>
+            ) : (
+              <div
+                className={cn(
+                  "h-full shrink-0 overflow-hidden overflow-y-auto transition-all duration-300 ease-in-out",
+                  showDetails ? "w-96 border-l p-4 opacity-100" : "ml-0 w-0 border-l-0 p-0 opacity-0",
+                )}
+              >
+                {details}
+              </div>
+            ))}
         </div>
       </div>
     </>

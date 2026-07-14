@@ -145,7 +145,12 @@ export function EditorSheet<T extends FieldValues>({
           await onSuccess();
         } else if (result) {
           onRevalidate?.(generateUrl({ page: module, id: result.id, language: "[locale]" }));
-          if (isEdit && propagateChanges) {
+          // When `propagateChanges` is provided the parent handles the result
+          // inline (e.g. a nested create dialog injecting the new entity back
+          // into an outer form). Call it for BOTH create and edit and skip
+          // navigation — otherwise a create would `router.push` away and unmount
+          // the parent editor. Only navigate when no inline handler is given.
+          if (propagateChanges) {
             propagateChanges(result);
           } else {
             onNavigate?.(generateUrl({ page: module, id: result.id }));

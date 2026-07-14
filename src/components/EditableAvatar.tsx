@@ -1,7 +1,6 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../shadcnui";
-import { useCurrentUserContext } from "../contexts";
 import { S3Interface } from "../features/s3/data/s3.interface";
 import { S3Service } from "../features/s3/data/s3.service";
 import { ModuleWithPermissions } from "../permissions";
@@ -20,6 +19,12 @@ type EditableAvatarProps = {
   patchImage: (imageKey: string) => Promise<void>;
   className?: string;
   fallbackClassName?: string;
+  /**
+   * Company id used to namespace the S3 upload key. Supplied by the caller from
+   * whichever current-user context the host app instantiates, so this leaf
+   * component does not depend on a specific provider being mounted.
+   */
+  companyId: string;
 };
 
 export function EditableAvatar({
@@ -31,8 +36,8 @@ export function EditableAvatar({
   patchImage,
   className,
   fallbackClassName,
+  companyId,
 }: EditableAvatarProps) {
-  const { company } = useCurrentUserContext();
   const t = useTranslations();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -46,15 +51,15 @@ export function EditableAvatar({
     (file: File) => {
       const ext = file.type.split("/").pop() ?? "";
       const ts = new Date().toISOString().replace(/[-:T]/g, "").split(".")[0];
-      return `companies/${company!.id}/${module.name}/${entityId}/${entityId}.${ts}.${ext}`;
+      return `companies/${companyId}/${module.name}/${entityId}/${entityId}.${ts}.${ext}`;
     },
-    [company, module.name, entityId],
+    [companyId, module.name, entityId],
   );
 
   const handleFile = useCallback(
     async (file: File) => {
       if (isUploading) return;
-      if (!company) return;
+      if (!companyId) return;
 
       const previousImage = image;
       const previewUrl = URL.createObjectURL(file);
@@ -90,7 +95,7 @@ export function EditableAvatar({
         setIsUploading(false);
       }
     },
-    [company, generateS3Key, image, isUploading, patchImage, t],
+    [companyId, generateS3Key, image, isUploading, patchImage, t],
   );
 
   const handleRemove = useCallback(async () => {

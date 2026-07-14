@@ -30,17 +30,20 @@ vi.mock("next/navigation", () => ({
 }));
 
 // Mock next-intl
-vi.mock("next-intl", () => ({
-  useTranslations: () => (key: string) => key,
-  useLocale: () => "en",
-  useNow: () => new Date(),
-  useTimeZone: () => "UTC",
-  useFormatter: () => ({
-    dateTime: vi.fn(),
-    number: vi.fn(),
-    relativeTime: vi.fn(),
-  }),
-}));
+vi.mock("next-intl", () => {
+  const makeT = () => {
+    const t = (key: string) => key;
+    (t as any).has = () => true;
+    return t;
+  };
+  return {
+    useTranslations: () => makeT(),
+    useLocale: () => "en",
+    useNow: () => new Date(),
+    useTimeZone: () => "UTC",
+    useFormatter: () => ({ dateTime: vi.fn(), number: vi.fn(), relativeTime: vi.fn() }),
+  };
+});
 
 // Mock next/headers
 vi.mock("next/headers", () => ({

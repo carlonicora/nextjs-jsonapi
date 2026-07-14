@@ -1,3 +1,85 @@
+## [1.129.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.128.0...v1.129.0) (2026-07-14)
+
+### 🚀 Features
+
+* **tables:** add titleActions slot to ContentListTable title row ([7ccb844](https://github.com/carlonicora/nextjs-jsonapi/commit/7ccb844fc4e5923938ef2508a0cc372c8958a2fb))
+
+### 🐛 Bug Fixes
+
+* **build:** stop dev/build tsup race on shared dist (ENOENT unlink) ([8a1b541](https://github.com/carlonicora/nextjs-jsonapi/commit/8a1b541a11d8c11138b8857d4e0b32b520c5e30a)), closes [#build](https://github.com/carlonicora/nextjs-jsonapi/issues/build) [#dev](https://github.com/carlonicora/nextjs-jsonapi/issues/dev)
+* forward per-call token on GET/PUT/PATCH/DELETE in callApi ([f2411c0](https://github.com/carlonicora/nextjs-jsonapi/commit/f2411c0c5f9c41553f9033fb6d6e3e7e47eb5357))
+
+## [1.128.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.127.0...v1.128.0) (2026-07-14)
+
+### 🚀 Features
+
+* **ContentListTable:** add onRowClick prop and translated empty-state default ([eed1aba](https://github.com/carlonicora/nextjs-jsonapi/commit/eed1abafcabb2e608becdf5389c4d475d701932a))
+
+## [1.127.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.126.0...v1.127.0) (2026-07-14)
+
+### 🚀 Features
+
+* **components:** enhance RoundPageContainer with onSectionChange callback and improve layout handling ([d99403b](https://github.com/carlonicora/nextjs-jsonapi/commit/d99403b97d9e67e0581b40e1ee17d3d5ed0e9121))
+
+## [1.126.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.125.1...v1.126.0) (2026-07-13)
+
+### 🚀 Features
+
+* **components:** add HoverCard cursor anchor + SharedContext titleActions slot ([54b47fe](https://github.com/carlonicora/nextjs-jsonapi/commit/54b47fef5610f5e0d27969728dca39ed0132ad7a))
+
+## [1.125.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.125.0...v1.125.1) (2026-07-10)
+
+### 🐛 Bug Fixes
+
+* **useEditorDialog:** notify parent only on open change, not callback identity ([f936991](https://github.com/carlonicora/nextjs-jsonapi/commit/f936991b53e80c485eeb007edd9041f6e256d751))
+
+## [1.125.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.124.3...v1.125.0) (2026-07-09)
+
+### 🚀 Features
+
+* **components:** add reusable entity hero component set ([75e7d7b](https://github.com/carlonicora/nextjs-jsonapi/commit/75e7d7b48527445c5ed52cc91739bb910bcb234a))
+
+## [1.124.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.124.2...v1.124.3) (2026-07-08)
+
+### 🐛 Bug Fixes
+
+* **useEditorDialog:** notify parent only on open change, not callback identity ([f09f542](https://github.com/carlonicora/nextjs-jsonapi/commit/f09f5427b6d0865672f52b89487f6fabb7148b33))
+
+### ♻️ Chores
+
+* **release:** update to version 1.124.2; enhance EditorSheet and add EntitySelector component ([2dfdb92](https://github.com/carlonicora/nextjs-jsonapi/commit/2dfdb928804bce5d8e0ae063fb1eaa453369be6e))
+
+## [1.124.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.124.1...v1.124.2) (2026-07-08)
+
+### 🐛 Bug Fixes
+
+* **editor:** call propagateChanges on create, not only edit ([c0b04f1](https://github.com/carlonicora/nextjs-jsonapi/commit/c0b04f13de0e4e660aa28d30795ea8797753c962))
+* **useEditorDialog:** notify parent only on open change, not callback identity ([6b73181](https://github.com/carlonicora/nextjs-jsonapi/commit/6b73181788744723318bc0b93c6384b4e3ecacb3))
+
+## [1.124.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.124.0...v1.124.1) (2026-07-07)
+
+### 🐛 Bug Fixes
+
+* **RoundPageContainer:** streamline details rendering logic for mobile and desktop ([1964264](https://github.com/carlonicora/nextjs-jsonapi/commit/19642641629aeaf4fafe3764e9932f082523544b))
+
+## [1.124.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.123.2...v1.124.0) (2026-07-07)
+
+### 🚀 Features
+
+* **forms:** add EntitySelector single-select and extend EntityMultiSelector ([35e3f4c](https://github.com/carlonicora/nextjs-jsonapi/commit/35e3f4c9fd27b99cb53d797a6a2afc98a36c4a22))
+* **forms:** implement FormBody, FormSection, FormRow, and FormCol components ([591d71b](https://github.com/carlonicora/nextjs-jsonapi/commit/591d71bea0b6dba1676c6276bb5285bbe4705245))
+
+### 🐛 Bug Fixes
+
+* **dialog:** prevent maximum update depth exceeded by managing open state sync ([7a69284](https://github.com/carlonicora/nextjs-jsonapi/commit/7a692844da6d468ad5df241e36cb6f6a3c755c7a))
+* **dialog:** prevent maximum update depth exceeded by managing open state sync ([fa3efce](https://github.com/carlonicora/nextjs-jsonapi/commit/fa3efce5c4a455b9a88b28865c2b0bb8eede8765))
+
+## [1.123.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.123.1...v1.123.2) (2026-07-07)
+
+### 🚨 Tests
+
+* add data-testid attributes for search trigger and input in ContentTableSearch ([b158551](https://github.com/carlonicora/nextjs-jsonapi/commit/b1585518748450d2769ffdf025b7f340a280527a))
+
 ## [1.123.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.123.0...v1.123.1) (2026-07-07)
 
 ### 🐛 Bug Fixes

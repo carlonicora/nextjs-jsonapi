@@ -69,6 +69,7 @@ export function ContentTableSearch({ data }: ContentTableSearchProps) {
       }`}
     >
       <Search
+        data-testid="content-table-search-trigger"
         className={`absolute top-1 left-1 h-4 w-4 transition-colors ${
           isExpanded ? "text-muted-foreground" : "text-muted-foreground hover:text-foreground cursor-pointer"
         }`}
@@ -76,6 +77,7 @@ export function ContentTableSearch({ data }: ContentTableSearchProps) {
       />
       {isExpanded && (
         <Input
+          data-testid="content-table-search-input"
           ref={inputRef}
           onKeyDown={(e) => {
             if (e.key === "Escape") {

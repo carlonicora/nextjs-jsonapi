@@ -185,10 +185,11 @@ export async function JsonApiGet(params: {
   endpoint: string;
   companyId?: string;
   language: string;
+  token?: string;
   baseUrl?: string;
 }): Promise<ApiResponseInterface> {
   runBootstrapper();
-  const token = await getToken();
+  const token = params.token ?? (await getToken());
 
   const apiResponse = await makeRequest({
     method: "GET",
@@ -211,6 +212,7 @@ export async function JsonApiGet(params: {
         endpoint,
         companyId: params.companyId,
         language: params.language,
+        token: params.token,
         baseUrl: params.baseUrl,
       }),
   });
@@ -265,10 +267,11 @@ export async function JsonApiPut(params: {
   files?: { [key: string]: File | Blob } | File | Blob;
   language: string;
   responseType?: ApiRequestDataTypeInterface;
+  token?: string;
   baseUrl?: string;
 }): Promise<ApiResponseInterface> {
   runBootstrapper();
-  const token = await getToken();
+  const token = params.token ?? (await getToken());
 
   let body = params.body;
   if (!body) {
@@ -305,10 +308,11 @@ export async function JsonApiPatch(params: {
   overridesJsonApiCreation?: boolean;
   responseType?: ApiRequestDataTypeInterface;
   language: string;
+  token?: string;
   baseUrl?: string;
 }): Promise<ApiResponseInterface> {
   runBootstrapper();
-  const token = await getToken();
+  const token = params.token ?? (await getToken());
 
   let body = params.body;
   if (!body) {
@@ -342,10 +346,11 @@ export async function JsonApiDelete(params: {
   companyId?: string;
   language: string;
   responseType?: ApiRequestDataTypeInterface;
+  token?: string;
   baseUrl?: string;
 }): Promise<ApiResponseInterface> {
   runBootstrapper();
-  const token = await getToken();
+  const token = params.token ?? (await getToken());
 
   const apiResponse = await makeRequest({
     method: "DELETE",

@@ -1,6 +1,6 @@
 {
   "name": "@carlonicora/nextjs-jsonapi",
-  "version": "1.123.1",
+  "version": "1.129.0",
   "description": "Next.js JSON:API client with server/client support and caching",
   "author": "Carlo Nicora",
   "license": "GPL-3.0-or-later",
@@ -65,7 +65,7 @@
     }
   },
   "scripts": {
-    "build": "NODE_OPTIONS='--max-old-space-size=8192' tsup && tsc -p scripts/generate-web-module/tsconfig.json",
+    "build": "rm -rf dist && NODE_OPTIONS='--max-old-space-size=8192' tsup && tsc -p scripts/generate-web-module/tsconfig.json",
     "dev": "NODE_OPTIONS='--max-old-space-size=8192' tsup --watch",
     "clean": "rm -rf dist",
     "lint": "eslint \"src/**/*.ts\" \"src/**/*.tsx\" --fix",

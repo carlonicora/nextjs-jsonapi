@@ -132,7 +132,7 @@ describe("ContentListTable", () => {
 
       render(<ContentListTable data={dataRetriever} tableGeneratorType={mockModule as any} fields={["id", "title"]} />);
 
-      expect(screen.getByText("No results.")).toBeInTheDocument();
+      expect(screen.getByText("ui.empty_states.no_results")).toBeInTheDocument();
     });
   });
 
@@ -464,7 +464,7 @@ describe("ContentListTable", () => {
         />,
       );
 
-      expect(screen.getByText("No results.")).toBeInTheDocument();
+      expect(screen.getByText("ui.empty_states.no_results")).toBeInTheDocument();
     });
 
     it("should group by to-many relationship, duplicating rows across groups", () => {
@@ -510,6 +510,42 @@ describe("ContentListTable", () => {
       expect(article2Count).toBe(1);
       const article3Count = allText.filter((t) => t === "Article 3").length;
       expect(article3Count).toBe(2);
+    });
+  });
+
+  describe("onRowClick", () => {
+    it("calls onRowClick with the row's jsonApiData when a row is clicked", () => {
+      const onRowClick = vi.fn();
+      const dataRetriever = createMockDataRetriever({
+        data: [{ id: "1", title: "First Article" }],
+      });
+
+      render(
+        <ContentListTable
+          data={dataRetriever}
+          tableGeneratorType={mockModule as any}
+          fields={["id", "title"]}
+          onRowClick={onRowClick}
+        />,
+      );
+
+      fireEvent.click(screen.getByText("First Article"));
+      expect(onRowClick).toHaveBeenCalledTimes(1);
+      expect(onRowClick).toHaveBeenCalledWith({ id: "1", title: "First Article" });
+    });
+
+    it("does not attach a row click handler when onRowClick is absent", () => {
+      const dataRetriever = createMockDataRetriever({
+        data: [{ id: "1", title: "First Article" }],
+      });
+
+      render(<ContentListTable data={dataRetriever} tableGeneratorType={mockModule as any} fields={["id", "title"]} />);
+
+      // No throw on click, and the row has no cursor-pointer affordance class.
+      const cell = screen.getByText("First Article");
+      const row = cell.closest("tr")!;
+      expect(row.className).not.toContain("cursor-pointer");
+      fireEvent.click(cell); // must not throw
     });
   });
 });

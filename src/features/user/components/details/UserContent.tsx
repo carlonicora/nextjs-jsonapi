@@ -10,7 +10,7 @@ import { Badge, Link } from "../../../../shadcnui";
 import { RoleInterface } from "../../../role";
 import { UserInterface } from "../../data";
 import { UserService } from "../../data/user.service";
-import { useUserContext } from "../../contexts";
+import { useCurrentUserContext, useUserContext } from "../../contexts";
 import { BriefcaseIcon, MailIcon, PhoneIcon } from "lucide-react";
 
 type UserContentProps = {
@@ -21,6 +21,7 @@ export function UserContent({ user }: UserContentProps) {
   const t = useTranslations();
   const generateUrl = usePageUrlGenerator();
   const { setUser } = useUserContext();
+  const { company } = useCurrentUserContext();
 
   const hasBio = !!user.bio;
 
@@ -38,6 +39,7 @@ export function UserContent({ user }: UserContentProps) {
             const updated = await UserService.patchAvatar({ id: user.id, avatar: imageKey });
             setUser(updated);
           }}
+          companyId={company?.id ?? ""}
           className="h-24 w-24"
           fallbackClassName="text-2xl"
         />

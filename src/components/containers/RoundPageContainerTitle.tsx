@@ -25,18 +25,25 @@ export function RoundPageContainerTitle({
   const isMobile = useIsMobile();
 
   return (
-    <div className={cn(`flex w-full flex-row items-center border-b p-4`, isMobile ? `justify-end` : `justify-between`)}>
-      {!isMobile && (
+    <div className={cn(`flex w-full flex-row items-center gap-x-2 border-b p-4 justify-between`)}>
+      {!isMobile ? (
         <div className="flex w-full gap-x-4">
           <div className={"text-muted-foreground flex items-center gap-x-2 text-lg font-light whitespace-nowrap"}>
+            {title.titleActions}
             {module && module.icon ? <module.icon className="text-primary h-6 w-6" /> : title.icon}
             {title.type}
           </div>
           <div className={cn("text-primary w-full text-xl font-semibold")}>{title.element}</div>
         </div>
+      ) : (
+        <div className="text-muted-foreground flex min-w-0 items-center gap-x-2 text-base font-light">
+          {title.titleActions}
+          {module && module.icon ? <module.icon className="text-primary h-5 w-5 shrink-0" /> : title.icon}
+          <span className="truncate">{title.type}</span>
+        </div>
       )}
       {(title.functions || details) && (
-        <div className="flex items-center gap-x-2">
+        <div className="flex shrink-0 items-center gap-x-2">
           {title.functions}
           {details && (
             <Tooltip>
