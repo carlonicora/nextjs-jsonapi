@@ -1,3 +1,9 @@
+## [1.130.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.129.1...v1.130.0) (2026-07-14)
+
+### 🚀 Features
+
+* **typography:** 17-role text system — primitives, tokens-ready recipes, soft badges ([4128cb7](https://github.com/carlonicora/nextjs-jsonapi/commit/4128cb78f28934d8b46c835339f1f256232b2308))
+
 ## [1.129.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.129.0...v1.129.1) (2026-07-14)
 
 ### 🐛 Bug Fixes
