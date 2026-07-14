@@ -33,6 +33,7 @@ export type GenerateTableStructureParams = {
 
 type ContentListTableProps = {
   title?: string;
+  titleActions?: ReactNode;
   data: DataListRetriever<any>;
   tableGenerator?: never;
   tableGeneratorType: ModuleWithPermissions;
@@ -147,6 +148,7 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                           fullWidth ? `text-lg` : `text-sm`,
                         )}
                       >
+                        {props.titleActions}
                         {props.tableGeneratorType.icon && (
                           <props.tableGeneratorType.icon
                             className={cn(`text-primary`, fullWidth ? `h-6 w-6` : `h-4 w-4`)}
