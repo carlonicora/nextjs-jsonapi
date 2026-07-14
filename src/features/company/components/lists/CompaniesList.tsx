@@ -23,7 +23,7 @@ export function CompaniesList() {
   return (
     <ContentListTable
       data={data}
-      fields={[CompanyFields.name, CompanyFields.createdAt]}
+      fields={[CompanyFields.name]}
       tableGeneratorType={Modules.Company}
       functions={functions}
       title={t(`entities.companies`, { count: 2 })}

@@ -27,7 +27,7 @@ function AdminUsersListInternal({ company }: AdminUsersListProps) {
     <ContentListTable
       title={t(`entities.users`, { count: 2 })}
       data={data}
-      fields={[UserFields.name, UserFields.email, UserFields.createdAt]}
+      fields={[UserFields.name, UserFields.email]}
       tableGeneratorType={Modules.User}
       functions={<UserEditor propagateChanges={data.refresh} adminCreated />}
     />

@@ -23,7 +23,7 @@ export function ContentsListById({ contentIds }: ContentsListByIdProps) {
   return (
     <ContentListTable
       data={data}
-      fields={[ContentFields.name, ContentFields.authors, ContentFields.updatedAt]}
+      fields={[ContentFields.name, ContentFields.authors]}
       tableGeneratorType={Modules.Content}
       title={t(`common.relevant`)}
     />
