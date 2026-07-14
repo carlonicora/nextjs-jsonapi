@@ -36,7 +36,13 @@ export default defineConfig({
   // This prevents server code (with "use cache") from being inlined into client bundles
   splitting: true,
   sourcemap: true,
-  clean: true,
+  // clean is done once by the `build` npm script (`rm -rf dist`) rather than by
+  // tsup itself. The dev launcher (`turbo run dev`) runs this package's `build`
+  // and `dev` (tsup --watch) tasks; if both let tsup clean the shared dist/,
+  // their `removeFiles` passes race and one crashes with ENOENT on unlink.
+  // With clean:false the watch never wipes dist/, so the apps (which wait only
+  // on `build`) always see a valid dist/. See turbo.json (dev dependsOn build).
+  clean: false,
   // Bundle type generation with resolution
   dts: { resolve: true },
   external: [
