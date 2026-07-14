@@ -1,3 +1,9 @@
+## [1.128.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.127.0...v1.128.0) (2026-07-14)
+
+### 🚀 Features
+
+* **ContentListTable:** add onRowClick prop and translated empty-state default ([eed1aba](https://github.com/carlonicora/nextjs-jsonapi/commit/eed1abafcabb2e608becdf5389c4d475d701932a))
+
 ## [1.127.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.126.0...v1.127.0) (2026-07-14)
 
 ### 🚀 Features
