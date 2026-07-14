@@ -177,6 +177,7 @@ export abstract class AbstractService {
           endpoint: params.endpoint,
           companyId: params.companyId,
           language: language,
+          token: params.token,
           baseUrl: params.baseUrl,
         });
         break;
@@ -203,6 +204,7 @@ export abstract class AbstractService {
           language: language,
           responseType: params.responseType,
           files: params.files,
+          token: params.token,
           baseUrl: params.baseUrl,
         });
         break;
@@ -216,6 +218,7 @@ export abstract class AbstractService {
           language: language,
           responseType: params.responseType,
           files: params.files,
+          token: params.token,
           baseUrl: params.baseUrl,
         });
         break;
@@ -226,6 +229,7 @@ export abstract class AbstractService {
           companyId: params.companyId,
           language: language,
           responseType: params.responseType,
+          token: params.token,
           baseUrl: params.baseUrl,
         });
         break;
