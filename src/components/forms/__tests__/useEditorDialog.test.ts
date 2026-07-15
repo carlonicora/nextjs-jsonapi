@@ -168,4 +168,70 @@ describe("useEditorDialog", () => {
       expect(result.current.discardDialogProps.open).toBe(false);
     });
   });
+
+  describe("escape key with nested editors", () => {
+    const pressEscape = () =>
+      act(() => {
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+      });
+
+    it("should close only the topmost editor, leaving the parent open", () => {
+      // Each open editor adds its OWN document-level capture listener, and
+      // stopPropagation() does not suppress sibling listeners on the same node.
+      // Without a stack guard one Escape closes the parent too — e.g. a nested
+      // create dialog takes the editor that opened it down with it.
+      const outer = renderHook(() => useEditorDialog(() => false));
+      act(() => outer.result.current.setOpen(true));
+
+      const inner = renderHook(() => useEditorDialog(() => false));
+      act(() => inner.result.current.setOpen(true));
+
+      pressEscape();
+
+      expect(inner.result.current.open).toBe(false);
+      expect(outer.result.current.open).toBe(true);
+    });
+
+    it("should close the parent on a second Escape once the nested editor has closed", () => {
+      const outer = renderHook(() => useEditorDialog(() => false));
+      act(() => outer.result.current.setOpen(true));
+
+      const inner = renderHook(() => useEditorDialog(() => false));
+      act(() => inner.result.current.setOpen(true));
+
+      pressEscape();
+      pressEscape();
+
+      expect(outer.result.current.open).toBe(false);
+    });
+
+    it("should hand Escape back to the parent when the nested editor unmounts while open", () => {
+      const outer = renderHook(() => useEditorDialog(() => false));
+      act(() => outer.result.current.setOpen(true));
+
+      const inner = renderHook(() => useEditorDialog(() => false));
+      act(() => inner.result.current.setOpen(true));
+
+      // The nested editor is torn down without closing first (parent stopped
+      // rendering it). Its stack entry must not strand Escape forever.
+      inner.unmount();
+      pressEscape();
+
+      expect(outer.result.current.open).toBe(false);
+    });
+
+    it("should still show the discard prompt for the topmost editor when it is dirty", () => {
+      const outer = renderHook(() => useEditorDialog(() => false));
+      act(() => outer.result.current.setOpen(true));
+
+      const inner = renderHook(() => useEditorDialog(() => true));
+      act(() => inner.result.current.setOpen(true));
+
+      pressEscape();
+
+      expect(inner.result.current.discardDialogProps.open).toBe(true);
+      expect(inner.result.current.open).toBe(true);
+      expect(outer.result.current.open).toBe(true);
+    });
+  });
 });

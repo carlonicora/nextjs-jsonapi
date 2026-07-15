@@ -2,6 +2,15 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+// Every OPEN editor dialog, in the order it opened — the last entry is the
+// topmost. Escape has to consult this because each open dialog attaches its own
+// `keydown` listener to `document`: listeners on the SAME node all run
+// regardless of stopPropagation() (only stopImmediatePropagation() would stop
+// them, and that would close the wrong one — the parent registers first). So
+// without this stack a single Escape closes a nested create dialog AND the
+// editor that opened it.
+const openEditorStack: object[] = [];
+
 type UseEditorDialogOptions = {
   dialogOpen?: boolean;
   onDialogOpenChange?: (open: boolean) => void;
@@ -87,10 +96,26 @@ export function useEditorDialog(isFormDirty: () => boolean, options?: UseEditorD
     [isFormDirty],
   );
 
+  // Identity of this dialog within `openEditorStack`.
+  const dialogId = useRef<object>({});
+
+  // Join the stack while open. The cleanup also covers unmount-while-open, so a
+  // dialog whose parent stops rendering it cannot strand Escape at the top.
+  useEffect(() => {
+    if (!open) return;
+    const id = dialogId.current;
+    openEditorStack.push(id);
+    return () => {
+      const index = openEditorStack.lastIndexOf(id);
+      if (index !== -1) openEditorStack.splice(index, 1);
+    };
+  }, [open]);
+
   // Escape key handler
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" && open) {
+        if (openEditorStack[openEditorStack.length - 1] !== dialogId.current) return;
         event.preventDefault();
         event.stopPropagation();
         handleOpenChange(false);
