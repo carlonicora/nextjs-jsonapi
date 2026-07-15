@@ -2,12 +2,12 @@ import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { configureI18n } from "../../../../i18n";
 
-// currentUser undefined → the provider's initial-load effect is a no-op
-// (it returns early on `!currentUser`), so the ONLY fetches in this test come
-// from the explicit loadNotifications() calls below. This isolates the
-// in-flight de-duplication behaviour from the mount-time auto-load.
+// The provider's initial-load effect returns early on `!currentUser`. Tests set
+// `userMock.currentUser` to choose whether the mount-time auto-load fires.
+const userMock = vi.hoisted(() => ({ currentUser: undefined as any }));
+
 vi.mock("../../../user/contexts/CurrentUserContext", () => ({
-  useCurrentUserContext: () => ({ currentUser: undefined }),
+  useCurrentUserContext: () => userMock,
 }));
 vi.mock("../../data/notification.service", () => ({
   NotificationService: { findMany: vi.fn(), markAsRead: vi.fn() },
@@ -41,6 +41,7 @@ describe("NotificationContext.loadNotifications", () => {
   });
 
   beforeEach(() => {
+    userMock.currentUser = undefined;
     vi.mocked(NotificationService.findMany).mockReset();
   });
 
@@ -55,14 +56,39 @@ describe("NotificationContext.loadNotifications", () => {
 
     const { result } = renderHook(() => useNotificationContext(), { wrapper });
 
-    // Three concurrent callers, mirroring the three mount-time triggers
-    // (provider + LayoutDetails + NotificationModal) firing before the first
-    // request resolves.
+    // Three concurrent callers, mirroring the mount-time triggers (provider +
+    // NotificationModal) plus any consumer that loads on mount, all firing
+    // before the first request resolves.
     await act(async () => {
       result.current.loadNotifications();
       result.current.loadNotifications();
       result.current.loadNotifications();
       release?.();
+    });
+
+    expect(NotificationService.findMany).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("NotificationContextProvider mount load", () => {
+  beforeEach(() => {
+    vi.mocked(NotificationService.findMany).mockReset();
+    vi.mocked(NotificationService.findMany).mockResolvedValue([] as never);
+  });
+
+  it("loads notifications exactly once on mount when a user is present", async () => {
+    userMock.currentUser = { id: "user-1", roles: [] };
+
+    const { rerender } = renderHook(() => useNotificationContext(), { wrapper });
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    rerender();
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
     });
 
     expect(NotificationService.findMany).toHaveBeenCalledTimes(1);

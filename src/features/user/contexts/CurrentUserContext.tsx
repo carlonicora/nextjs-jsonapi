@@ -3,7 +3,7 @@
 import { useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { usePathname } from "next/navigation";
-import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useSocketContext } from "../../../contexts/SocketContext";
 import { Modules, rehydrate } from "../../../core";
 import { Action, checkPermissions, ModuleWithPermissions } from "../../../permissions";
@@ -66,13 +66,31 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
     return descriptor?.get?.call(Modules);
   };
 
-  const currentUser = dehydratedUser ? rehydrate<UserInterface>(Modules.User, dehydratedUser) : null;
+  const currentUser = useMemo(
+    () => (dehydratedUser ? rehydrate<UserInterface>(Modules.User, dehydratedUser) : null),
+    [dehydratedUser],
+  );
 
-  const company = currentUser?.company ?? null;
+  // Balances pushed by company:tokens_updated. Transient: a real user refresh is
+  // authoritative and clears this.
+  const [tokenOverride, setTokenOverride] = useState<{
+    availableMonthlyTokens: number;
+    availableExtraTokens: number;
+  } | null>(null);
+
+  const company = useMemo<CompanyInterface | null>(() => {
+    const c = currentUser?.company ?? null;
+    if (!c || !tokenOverride) return c;
+    return Object.assign(Object.create(Object.getPrototypeOf(c)), c, {
+      _availableMonthlyTokens: tokenOverride.availableMonthlyTokens,
+      _availableExtraTokens: tokenOverride.availableExtraTokens,
+    });
+  }, [currentUser, tokenOverride]);
 
   const setUser = (user?: UserInterface): void => {
     if (user) setDehydratedUser(user.dehydrate() as any);
     else setDehydratedUser(null);
+    setTokenOverride(null);
   };
 
   const hasRole = (roleId: string): boolean => {
@@ -159,6 +177,7 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
           }
 
           setDehydratedUser(fullUser.dehydrate() as any);
+          setTokenOverride(null);
         }
       } catch (error) {
         console.error("Failed to refresh user data:", error);
@@ -185,7 +204,23 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
       return;
     }
 
-    const handleCompanyUpdate = (data: { companyId: string; type: string }) => {
+    // Hot path: fires once per LLM call. Fully described by its payload — must
+    // never trigger an HTTP request.
+    const handleTokensUpdated = (data: {
+      companyId: string;
+      availableMonthlyTokens: number;
+      availableExtraTokens: number;
+    }) => {
+      if (data.companyId !== currentUser.company?.id) return;
+      setTokenOverride({
+        availableMonthlyTokens: data.availableMonthlyTokens,
+        availableExtraTokens: data.availableExtraTokens,
+      });
+    };
+
+    // Rare (Stripe webhooks only) and genuinely changes features, modules and
+    // permissions — a payload cannot economically carry that, so refetch.
+    const handleSubscriptionUpdated = (data: { companyId: string; type: string }) => {
       if (data.companyId === currentUser.company?.id && !isRefreshingRef.current) {
         isRefreshingRef.current = true;
         // Skip cookie update to prevent page reload - only update React state
@@ -195,13 +230,12 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
       }
     };
 
-    // Both events trigger the same refresh behavior
-    socket.on("company:tokens_updated", handleCompanyUpdate);
-    socket.on("company:subscription_updated", handleCompanyUpdate);
+    socket.on("company:tokens_updated", handleTokensUpdated);
+    socket.on("company:subscription_updated", handleSubscriptionUpdated);
 
     return () => {
-      socket.off("company:tokens_updated", handleCompanyUpdate);
-      socket.off("company:subscription_updated", handleCompanyUpdate);
+      socket.off("company:tokens_updated", handleTokensUpdated);
+      socket.off("company:subscription_updated", handleSubscriptionUpdated);
     };
   }, [socket, isConnected, currentUser?.company?.id]);
 
