@@ -48,7 +48,13 @@ function SheetContent({
 }) {
   return (
     <SheetPortal>
-      <SheetOverlay />
+      {/* forceRender: Base UI skips the backdrop entirely for a NESTED dialog
+          (`enabled: forceRender || !nested`). Without it a sheet opened from
+          inside another sheet has no backdrop, so nothing covers the parent
+          popup — which Base UI has marked inert. Clicks there are swallowed by
+          `inert` and never reach the dismiss logic, so the nested sheet cannot
+          be closed by clicking outside it. Non-nested sheets are unaffected. */}
+      <SheetOverlay forceRender />
       <SheetPrimitive.Popup
         data-slot="sheet-content"
         data-side={side}
