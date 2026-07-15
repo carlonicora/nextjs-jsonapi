@@ -25,48 +25,55 @@ export function RoundPageContainerTitle({
   const isMobile = useIsMobile();
 
   return (
-    <div className={cn(`flex w-full flex-row items-center gap-x-2 border-b p-4 justify-between`)}>
-      {!isMobile ? (
-        <div className="flex w-full gap-x-4">
-          <div className={"text-muted-foreground flex items-center gap-x-2 text-lg font-light whitespace-nowrap"}>
-            {title.titleActions}
-            {module && module.icon ? <module.icon className="text-primary h-6 w-6" /> : title.icon}
-            {title.type}
+    <div className="flex w-full flex-col border-b">
+      <div className={cn(`flex w-full flex-row items-center gap-x-2 p-4 justify-between`)}>
+        {!isMobile ? (
+          <div className="flex w-full gap-x-4">
+            <div className={"text-muted-foreground flex items-center gap-x-2 text-lg font-light whitespace-nowrap"}>
+              {title.titleActions}
+              {module && module.icon ? <module.icon className="text-primary h-6 w-6" /> : title.icon}
+              {title.type}
+            </div>
+            <div className={cn("text-primary w-full text-xl font-semibold")}>{title.element}</div>
           </div>
-          <div className={cn("text-primary w-full text-xl font-semibold")}>{title.element}</div>
-        </div>
-      ) : (
-        <div className="text-muted-foreground flex min-w-0 items-center gap-x-2 text-base font-light">
-          {title.titleActions}
-          {module && module.icon ? <module.icon className="text-primary h-5 w-5 shrink-0" /> : title.icon}
-          <span className="truncate">{title.type}</span>
-        </div>
-      )}
-      {(title.functions || details) && (
-        <div className="flex shrink-0 items-center gap-x-2">
-          {title.functions}
-          {details && (
-            <Tooltip>
-              <TooltipTrigger>
-                <Button
-                  render={<div />}
-                  nativeButton={false}
-                  variant={showDetails ? `ghost` : `default`}
-                  onClick={() => setShowDetails(!showDetails)}
-                  className={cn(`cursor-pointer`)}
-                >
-                  {/* <InfoIcon className={cn(``, showDetails ? `text-muted-foreground` : `text-accent`)} /> */}
-                  <InfoIcon />
-                  {/* {showDetails ? (
-                    <PanelRightCloseIcon className="text-muted-foreground" />
-                  ) : (
-                    <PanelRightOpenIcon className="text-accent" />
-                  )} */}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>{showDetails ? "Hide details" : "Show details"}</TooltipContent>
-            </Tooltip>
-          )}
+        ) : (
+          <div className="text-muted-foreground flex min-w-0 items-center gap-x-2 text-base font-light">
+            {title.titleActions}
+            {module && module.icon ? <module.icon className="text-primary h-5 w-5 shrink-0" /> : title.icon}
+            <span className="truncate">{title.type}</span>
+          </div>
+        )}
+        {(title.functions || details) && (
+          <div className="flex shrink-0 items-center gap-x-2">
+            {title.functions}
+            {details && (
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button
+                    render={<div />}
+                    nativeButton={false}
+                    variant={showDetails ? `ghost` : `default`}
+                    onClick={() => setShowDetails(!showDetails)}
+                    className={cn(`cursor-pointer`)}
+                  >
+                    {/* <InfoIcon className={cn(``, showDetails ? `text-muted-foreground` : `text-accent`)} /> */}
+                    <InfoIcon />
+                    {/* {showDetails ? (
+                      <PanelRightCloseIcon className="text-muted-foreground" />
+                    ) : (
+                      <PanelRightOpenIcon className="text-accent" />
+                    )} */}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{showDetails ? "Hide details" : "Show details"}</TooltipContent>
+              </Tooltip>
+            )}
+          </div>
+        )}
+      </div>
+      {title.actionBar && (
+        <div data-testid="round-page-action-bar" className="flex w-full items-center border-t px-4 py-2">
+          {title.actionBar}
         </div>
       )}
     </div>

@@ -12,6 +12,7 @@ const SharedContext = createContext<{
     titleActions?: ReactNode;
     prioritizeFunctions?: boolean;
     icon?: ReactNode;
+    actionBar?: ReactNode;
   };
 } | null>(null);
 
@@ -26,6 +27,7 @@ interface SharedProviderProps {
       titleActions?: ReactNode;
       prioritizeFunctions?: boolean;
       icon?: ReactNode;
+      actionBar?: ReactNode;
     };
   };
 }
