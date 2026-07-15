@@ -1,3 +1,10 @@
+## [1.131.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.131.0...v1.131.1) (2026-07-15)
+
+### 🐛 Bug Fixes
+
+* **sheet:** render the backdrop for nested sheets so outside-click closes them ([287fb28](https://github.com/carlonicora/nextjs-jsonapi/commit/287fb28fef301fdc66236ac08aff3b021416075c))
+* **useEditorDialog:** close only the topmost editor on Escape ([c284e5d](https://github.com/carlonicora/nextjs-jsonapi/commit/c284e5ded45e491609fbf0ce13df5ae810bb5783))
+
 ## [1.131.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.130.0...v1.131.0) (2026-07-15)
 
 ### 🚀 Features
