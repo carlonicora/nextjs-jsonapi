@@ -1,3 +1,9 @@
+## [1.131.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.130.0...v1.131.0) (2026-07-15)
+
+### 🚀 Features
+
+* optional actionBar slot on SharedContext rendered as a full-width row under the RoundPageContainer title ([1fc4f28](https://github.com/carlonicora/nextjs-jsonapi/commit/1fc4f283000e925a6bc9fc9553f70fbfab866edf))
+
 ## [1.130.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.129.1...v1.130.0) (2026-07-14)
 
 ### 🚀 Features
