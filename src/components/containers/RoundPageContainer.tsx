@@ -143,6 +143,11 @@ export function RoundPageContainer({
   // Rail partition — only consumed by `layout="rail"` but cheap to compute.
   const { ungrouped, groups } = useMemo(() => partitionTabs(tabs ?? []), [tabs]);
 
+  const tabItems = useMemo(
+    () => Object.fromEntries((tabs ?? []).map((tab) => [tabValue(tab), tab.contentLabel ?? tab.label])),
+    [tabs],
+  );
+
   const isReady = mounted && isMobile !== undefined;
 
   if (!isReady) {
@@ -231,6 +236,7 @@ export function RoundPageContainer({
                     {/* Section Select — below md */}
                     <div data-testid="round-page-rail-select" className="p-2 md:hidden">
                       <Select
+                        items={tabItems}
                         value={activeTab}
                         onValueChange={(value) => {
                           if (value) handleTabChange(value);
@@ -313,6 +319,7 @@ export function RoundPageContainer({
                           {isMobile ? (
                             <div className="p-0">
                               <Select
+                                items={tabItems}
                                 value={activeTab}
                                 onValueChange={(value) => {
                                   if (value) handleTabChange(value);

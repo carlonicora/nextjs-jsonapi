@@ -3,7 +3,7 @@
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { RefreshCw, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { errorToast } from "../../../../components";
 import { SectionHeader } from "../../../../components/typography";
 import {
@@ -64,6 +64,17 @@ export function WaitlistList() {
 
   const columns = useWaitlistTableStructure({ onInvite: handleInvite });
 
+  const statusItems = useMemo(
+    () => ({
+      all: t("waitlist.admin.all_statuses"),
+      pending: t("waitlist.admin.status.pending"),
+      confirmed: t("waitlist.admin.status.confirmed"),
+      invited: t("waitlist.admin.status.invited"),
+      registered: t("waitlist.admin.status.registered"),
+    }),
+    [t],
+  );
+
   const table = useReactTable({
     data: entries,
     columns,
@@ -82,7 +93,7 @@ export function WaitlistList() {
 
         <div className="flex items-center gap-4">
           {/* Status Filter */}
-          <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value ?? "all")}>
+          <Select items={statusItems} value={statusFilter} onValueChange={(value) => setStatusFilter(value ?? "all")}>
             <SelectTrigger className="w-40">
               <SelectValue placeholder={t("waitlist.admin.filter_placeholder")} />
             </SelectTrigger>

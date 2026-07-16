@@ -88,6 +88,9 @@ export function FormDateTime({
     };
   });
 
+  const hoursItems = Object.fromEntries(hoursOptions.map((option) => [String(option.value), option.label]));
+  const minutesItems = Object.fromEntries(minutesOptions.map((option) => [String(option.value), option.label]));
+
   function roundToNearestFiveMinutes(minutes: number): number {
     return (Math.round(minutes / 5) * 5) % 60;
   }
@@ -172,6 +175,7 @@ export function FormDateTime({
                     <div className="flex flex-col space-y-2">
                       <Label htmlFor="hours-select">{t(`common.hours`)}</Label>
                       <Select
+                        items={hoursItems}
                         value={String(field.value ? new Date(field.value).getHours() : selectedHours)}
                         onValueChange={(value) => {
                           if (!value) return;
@@ -201,6 +205,7 @@ export function FormDateTime({
                     <div className="flex flex-col space-y-2">
                       <Label htmlFor="minutes-select">{t(`common.minutes`)}</Label>
                       <Select
+                        items={minutesItems}
                         value={String(
                           field.value ? roundToNearestFiveMinutes(new Date(field.value).getMinutes()) : selectedMinutes,
                         )}
