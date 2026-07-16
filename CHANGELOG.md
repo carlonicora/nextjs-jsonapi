@@ -1,3 +1,9 @@
+## [1.131.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.131.1...v1.131.2) (2026-07-16)
+
+### 🐛 Bug Fixes
+
+* **CurrentUserContext:** optimize user rehydration and token handling; improve tests for token updates ([36195ce](https://github.com/carlonicora/nextjs-jsonapi/commit/36195ce9cfd9e747c7941f107a75aeee2f75e204))
+
 ## [1.131.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.131.0...v1.131.1) (2026-07-15)
 
 ### 🐛 Bug Fixes
