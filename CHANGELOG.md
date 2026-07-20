@@ -1,3 +1,9 @@
+## [1.137.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.136.0...v1.137.0) (2026-07-20)
+
+### 🚀 Features
+
+* **components:** safe-area header height and dvh viewport units for PWA shell ([e87b323](https://github.com/carlonicora/nextjs-jsonapi/commit/e87b323ff23175b8d4d1387c283eea0a15fc4724))
+
 ## [1.136.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.135.1...v1.136.0) (2026-07-20)
 
 ### 🚀 Features
