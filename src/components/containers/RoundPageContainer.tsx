@@ -18,7 +18,7 @@ import {
   TabsTrigger,
 } from "@/components";
 import { partitionTabs, Tab } from "@/components/containers";
-import { RoundPageContainerTitle } from "@/components/containers/RoundPageContainerTitle";
+import { HEADER_ROW_MIN_H, RoundPageContainerTitle } from "@/components/containers/RoundPageContainerTitle";
 import { Header, MobileNavigationBar } from "@/components/navigations";
 import { useHeaderChildren, useHeaderLeftContent, useHeaderLogo, useHeaderMobileChildren } from "@/contexts";
 import { useUrlRewriter } from "@/hooks";
@@ -55,6 +55,44 @@ type RoundPageContainerProps = {
    * ancestors.
    */
   onSectionChange?: (section: string) => void;
+  /**
+   * `data-testid` for the page shell. Applied to the outermost content wrapper
+   * of BOTH return branches — the pre-hydration one and the main one — so an
+   * e2e suite gating page-readiness on the testid can attach before hydration
+   * completes rather than racing it.
+   */
+  testId?: string;
+  /**
+   * Initial state of the `details` panel before the persisted preference (the
+   * `round_page_details_state` cookie) is read. Defaults to `false` — the panel
+   * starts collapsed, which suits an informational aside.
+   *
+   * Pass `true` when `details` holds PRIMARY navigation rather than an aside
+   * (e.g. the chat / conversation list), where a collapsed-by-default panel
+   * would hide the page's main affordance behind a toggle. The stored
+   * preference still wins in both directions once the user sets one.
+   *
+   * Requires the title bar to be rendered (`!fullWidth || forceHeader`) —
+   * that is where the toggle lives, so a `fullWidth` caller passing `details`
+   * without `forceHeader` leaves the panel unreachable.
+   */
+  defaultDetailsOpen?: boolean;
+  /**
+   * Heading for the `details` panel. Rendered as a fixed header above the
+   * panel's scroll area, used as the mobile `Sheet` title (replacing the old
+   * hardcoded "Details"), and woven into the toggle's tooltip — so the control
+   * reads "Show conversations" rather than an unlabelled icon.
+   *
+   * Strongly recommended whenever `details` holds primary navigation: without
+   * it the panel is an unlabelled column and the toggle is unguessable.
+   */
+  detailsTitle?: ReactNode;
+  /**
+   * Icon for the `details` toggle. Defaults to an info glyph, which suits an
+   * informational aside. Pass a panel/list glyph when `details` holds primary
+   * navigation — an "info" icon actively misdescribes a conversation list.
+   */
+  detailsIcon?: ReactNode;
 };
 
 // Rail trigger class: override the horizontal TabsTrigger defaults for a
@@ -82,28 +120,47 @@ export function RoundPageContainer({
   header,
   layout = "tabs",
   onSectionChange,
+  testId,
+  defaultDetailsOpen = false,
+  detailsTitle,
+  detailsIcon,
 }: RoundPageContainerProps) {
   const headerChildren = useHeaderChildren();
   const headerLeftContent = useHeaderLeftContent();
   const headerLogo = useHeaderLogo();
   const headerMobileChildren = useHeaderMobileChildren();
-  const [showDetails, setShowDetailsState] = useState(false);
+  const [showDetails, setShowDetailsState] = useState(defaultDetailsOpen);
   const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const match = document.cookie.split("; ").find((row) => row.startsWith(`${DETAILS_COOKIE_NAME}=`));
-    if (match?.split("=")[1] === "true") setShowDetailsState(true);
+    const match = document.cookie.split("; ").find((row) => row.startsWith(`${detailsCookieName}=`));
+    const stored = match?.split("=")[1];
+    // Apply the stored preference in BOTH directions. Previously this only ever
+    // opened the panel, which was harmless while the initial state was always
+    // `false` — but with `defaultDetailsOpen` a caller can start open, and a user
+    // who explicitly collapsed the panel must stay collapsed on the next load.
+    if (stored === "true") setShowDetailsState(true);
+    else if (stored === "false") setShowDetailsState(false);
   }, []);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const setShowDetails = useCallback((value: boolean) => {
-    setShowDetailsState(value);
-    document.cookie = `${DETAILS_COOKIE_NAME}=${value}; path=/; max-age=${DETAILS_COOKIE_MAX_AGE}`;
-  }, []);
+  // Scope the persisted preference PER MODULE. A single global cookie meant
+  // collapsing an informational aside on one page silently collapsed a primary
+  // navigation panel on another — so a page declaring `defaultDetailsOpen`
+  // could still load collapsed because of an unrelated page's cookie.
+  const detailsCookieName = module?.name ? `${DETAILS_COOKIE_NAME}_${module.name}` : DETAILS_COOKIE_NAME;
+
+  const setShowDetails = useCallback(
+    (value: boolean) => {
+      setShowDetailsState(value);
+      document.cookie = `${detailsCookieName}=${value}; path=/; max-age=${DETAILS_COOKIE_MAX_AGE}`;
+    },
+    [detailsCookieName],
+  );
 
   const searchParams = useSearchParams();
   const section = searchParams.get("section");
@@ -163,7 +220,10 @@ export function RoundPageContainer({
         >
           {headerChildren}
         </Header>
-        <div className={cn("flex h-[calc(100vh-3rem)] w-full flex-col", isMobile ? "gap-1 p-1 pt-0" : "p-2 pt-0 pl-0")}>
+        <div
+          data-testid={testId}
+          className={cn("flex h-[calc(100vh-3rem)] w-full flex-col", isMobile ? "gap-1 p-1 pt-0" : "p-2 pt-0 pl-0")}
+        >
           {/* `min-h-0 flex-1`, NOT `h-full`: the bar below is an in-flow sibling in
               this fixed-height flex column. `h-full` would resolve to 100% of the
               wrapper, leaving no room and pushing the bar below the fold (visible
@@ -187,7 +247,10 @@ export function RoundPageContainer({
       >
         {headerChildren}
       </Header>
-      <div className={cn(`flex h-[calc(100vh-3rem)] w-full flex-col`, isMobile ? "gap-1 p-1 pt-0" : "p-2 pt-0 pl-0")}>
+      <div
+        data-testid={testId}
+        className={cn(`flex h-[calc(100vh-3rem)] w-full flex-col`, isMobile ? "gap-1 p-1 pt-0" : "p-2 pt-0 pl-0")}
+      >
         {/* `min-h-0 flex-1`, NOT `h-full`: MobileNavigationBar below is an in-flow
             sibling in this fixed-height flex column. `h-full` resolves to 100% of
             the wrapper, leaving the bar no room and pushing it below the fold —
@@ -198,6 +261,8 @@ export function RoundPageContainer({
               <RoundPageContainerTitle
                 module={module}
                 details={details}
+                detailsTitle={detailsTitle}
+                detailsIcon={detailsIcon}
                 showDetails={showDetails}
                 setShowDetails={setShowDetails}
                 fullWidth={fullWidth}
@@ -402,7 +467,7 @@ export function RoundPageContainer({
               <Sheet open={showDetails} onOpenChange={setShowDetails}>
                 <SheetContent side="right">
                   <SheetHeader>
-                    <SheetTitle>Details</SheetTitle>
+                    <SheetTitle>{detailsTitle ?? "Details"}</SheetTitle>
                   </SheetHeader>
                   <div className="overflow-y-auto p-6 pt-0">{details}</div>
                 </SheetContent>
@@ -410,11 +475,25 @@ export function RoundPageContainer({
             ) : (
               <div
                 className={cn(
-                  "h-full shrink-0 overflow-hidden overflow-y-auto transition-all duration-300 ease-in-out",
-                  showDetails ? "w-96 border-l p-4 opacity-100" : "ml-0 w-0 border-l-0 p-0 opacity-0",
+                  // `flex-col` + a separate scroll body below: the header must stay
+                  // put while the panel content scrolls. Scrolling on this element
+                  // (as it did before) would carry the header away with the content.
+                  "flex h-full shrink-0 flex-col overflow-hidden transition-all duration-300 ease-in-out",
+                  showDetails ? "w-96 border-l opacity-100" : "ml-0 w-0 border-l-0 opacity-0",
                 )}
               >
-                {details}
+                {detailsTitle && (
+                  // Mirrors RoundPageContainerTitle's structure exactly — border on an
+                  // OUTER wrapper, height floor on the INNER row. Putting the border
+                  // inside the measured row instead leaves this header 1px short of
+                  // the page title bar, since `box-sizing: border-box` absorbs it.
+                  <div className="shrink-0 border-b">
+                    <div className={cn("flex items-center p-4", HEADER_ROW_MIN_H)}>
+                      <span className="text-primary truncate text-sm font-semibold">{detailsTitle}</span>
+                    </div>
+                  </div>
+                )}
+                <div className="min-h-0 flex-1 overflow-y-auto p-4">{details}</div>
               </div>
             ))}
         </div>

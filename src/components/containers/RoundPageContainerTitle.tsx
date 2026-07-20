@@ -7,9 +7,21 @@ import { cn, useIsMobile } from "@/utils";
 import { InfoIcon } from "lucide-react";
 import { ReactNode } from "react";
 
+/**
+ * Shared height floor for the card's top row. Applied BOTH here and to the
+ * `details` panel header in RoundPageContainer, so the two line up across the
+ * card's top edge. Expressed in px on purpose: the app scales its root
+ * font-size (14px), so a rem value would drift between the two rows.
+ */
+export const HEADER_ROW_MIN_H = "min-h-[53px]";
+
 type RoundPageContainerTitleProps = {
   module?: ModuleWithPermissions;
   details?: ReactNode;
+  /** Names what the toggle reveals, so the control is not an unlabelled icon. */
+  detailsTitle?: ReactNode;
+  /** Overrides the default info glyph — see `RoundPageContainer.detailsIcon`. */
+  detailsIcon?: ReactNode;
   showDetails: boolean;
   setShowDetails: (show: boolean) => void;
   fullWidth?: boolean;
@@ -18,6 +30,8 @@ type RoundPageContainerTitleProps = {
 export function RoundPageContainerTitle({
   module,
   details,
+  detailsTitle,
+  detailsIcon,
   showDetails,
   setShowDetails,
 }: RoundPageContainerTitleProps) {
@@ -26,7 +40,7 @@ export function RoundPageContainerTitle({
 
   return (
     <div className="flex w-full flex-col border-b">
-      <div className={cn(`flex w-full flex-row items-center gap-x-2 p-4 justify-between`)}>
+      <div className={cn(`flex w-full flex-row items-center gap-x-2 p-4 justify-between`, HEADER_ROW_MIN_H)}>
         {!isMobile ? (
           <div className="flex w-full gap-x-4">
             <div className={"text-muted-foreground flex items-center gap-x-2 text-lg font-light whitespace-nowrap"}>
@@ -56,16 +70,12 @@ export function RoundPageContainerTitle({
                     onClick={() => setShowDetails(!showDetails)}
                     className={cn(`cursor-pointer`)}
                   >
-                    {/* <InfoIcon className={cn(``, showDetails ? `text-muted-foreground` : `text-accent`)} /> */}
-                    <InfoIcon />
-                    {/* {showDetails ? (
-                      <PanelRightCloseIcon className="text-muted-foreground" />
-                    ) : (
-                      <PanelRightOpenIcon className="text-accent" />
-                    )} */}
+                    {detailsIcon ?? <InfoIcon />}
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>{showDetails ? "Hide details" : "Show details"}</TooltipContent>
+                <TooltipContent>
+                  {showDetails ? "Hide" : "Show"} {detailsTitle ?? "details"}
+                </TooltipContent>
               </Tooltip>
             )}
           </div>
