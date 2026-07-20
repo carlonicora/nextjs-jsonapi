@@ -1,3 +1,19 @@
+## [1.132.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.131.2...v1.132.0) (2026-07-20)
+
+### 🚀 Features
+
+* **navigation:** allow applications to override the breadcrumb root label ([169345a](https://github.com/carlonicora/nextjs-jsonapi/commit/169345a2d9b2cf337691a03f79222832369a7ed3))
+* **utils:** export Italian tax-code validators and add allowPartitaIva option ([5987c03](https://github.com/carlonicora/nextjs-jsonapi/commit/5987c035270d48c455dfc9f23978c6b3cca52de9))
+
+### 🐛 Bug Fixes
+
+* **components:** show the selected label instead of the raw value in selects ([007fb50](https://github.com/carlonicora/nextjs-jsonapi/commit/007fb50f432ef38208633396c2ad0de2d7534047))
+* **forms:** re-seed EditorSheet from current props when reopening an edit form ([8c5dafa](https://github.com/carlonicora/nextjs-jsonapi/commit/8c5dafad53e190703236d4f9d42c8a20de575a3f))
+
+### 💎 Styles
+
+* **ui:** stop underlining links ([c0757d8](https://github.com/carlonicora/nextjs-jsonapi/commit/c0757d81d264c20014258f53cbbcf12a55709591))
+
 ## [1.131.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.131.1...v1.131.2) (2026-07-16)
 
 ### 🐛 Bug Fixes
