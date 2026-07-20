@@ -1,7 +1,7 @@
 export type { ClassValue } from "clsx";
 export { cn } from "./cn";
 export { composeRefs, useComposedRefs } from "./compose-refs";
-export { useIsMobile } from "./use-mobile";
+export { useIsMobile, MOBILE_BREAKPOINT, VIEWPORT_COOKIE_NAME } from "./use-mobile";
 
 // New utilities
 export { formatDate, formatLocalDate, type FormatOption } from "./date-formatter";

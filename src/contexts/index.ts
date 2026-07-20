@@ -12,6 +12,7 @@ export * from "./HeaderLeftContentContext";
 export * from "./HeaderLogoContext";
 export * from "./SharedContext";
 export * from "./SocketContext";
+export * from "./ViewportContext";
 
 // Jotai atoms (merged from /atoms entry point)
 export * from "../atoms";

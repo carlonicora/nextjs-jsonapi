@@ -150,7 +150,7 @@ export function RoundPageContainer({
     [tabs],
   );
 
-  const isReady = mounted && isMobile !== undefined;
+  const isReady = mounted;
 
   if (!isReady) {
     return (

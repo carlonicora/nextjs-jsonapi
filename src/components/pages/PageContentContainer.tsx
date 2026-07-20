@@ -21,7 +21,7 @@ export function PageContentContainer({ header, details, footer, content, fullBle
     setMounted(true);
   }, []);
 
-  const isReady = mounted && isMobile !== undefined;
+  const isReady = mounted;
 
   // Create layout ID based on device type for separate persistence
   const layoutId = `page-content-container-${isMobile ? "mobile" : "desktop"}`;
