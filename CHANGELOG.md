@@ -1,3 +1,9 @@
+## [1.137.5](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.137.4...v1.137.5) (2026-07-20)
+
+### 🐛 Bug Fixes
+
+* **RoundPageContainer, MobileNavigationBar:** remove bottom safe-area padding to eliminate dead space in layout ([5377359](https://github.com/carlonicora/nextjs-jsonapi/commit/537735969404dd55738445ce4c23278788385ae5))
+
 ## [1.137.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.137.3...v1.137.4) (2026-07-20)
 
 ### 🐛 Bug Fixes
