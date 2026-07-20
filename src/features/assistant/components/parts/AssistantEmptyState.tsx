@@ -43,7 +43,7 @@ export function AssistantEmptyState({ onSend, operatorMode = false, onOperatorMo
               checked={operatorMode}
               onCheckedChange={(checked) => onOperatorModeChange(checked === true)}
             />
-            <Label htmlFor="assistant-operator-mode" className="text-muted-foreground text-xs">
+            <Label htmlFor="assistant-operator-mode" className="text-muted-foreground cursor-pointer text-xs">
               {t("features.assistant.operator_mode")}
             </Label>
           </div>

@@ -147,3 +147,30 @@ pnpm --filter @carlonicora/nextjs-jsonapi test:coverage
 | Missing "use client" directive | Add to client-side files |
 | Server code in client bundle | Check import paths |
 | Missing test utility updates | Update mocks when adding features |
+
+## Consumer requirement — pointer cursor
+
+Tailwind v4 removed the v3 Preflight rule `button { cursor: pointer }`. This
+package's primitives carry their own `cursor-*` classes where Base UI renders a
+non-button element (`Checkbox`, `Switch`, `RadioGroupItem` → `span`; menu and
+listbox items → `div`), and `buttonVariants` carries `cursor-pointer` so
+`<Button render={<div/>} nativeButton={false}>` works.
+
+Raw `<button>` elements inside this package's feature components rely on the
+**consuming app**. Every app that consumes this package must add to its global
+stylesheet:
+
+```css
+@layer base {
+  button:not(:disabled):not([aria-disabled="true"]):not([data-disabled]),
+  [role="button"]:not(:disabled):not([aria-disabled="true"]):not([data-disabled]),
+  input:is([type="checkbox"], [type="radio"], [type="file"], [type="range"], [type="submit"], [type="reset"]):not(:disabled),
+  select:not(:disabled),
+  summary {
+    cursor: pointer;
+  }
+}
+```
+
+Known status: `a360ai` has it (`apps/web/src/app/globals.css`). `neural-erp`
+does **not** — its buttons are pointer-less until the rule is added there.

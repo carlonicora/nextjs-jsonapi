@@ -132,7 +132,7 @@ export function PaymentMethodForm({ onSuccess, onCancel, isLoading = false }: Pa
       {/* Set as Default Checkbox */}
       <div className="flex items-center gap-x-2">
         <Checkbox id="setAsDefault" checked={setAsDefault} onCheckedChange={(checked) => setSetAsDefault(!!checked)} />
-        <Label htmlFor="setAsDefault" className="font-normal">
+        <Label htmlFor="setAsDefault" className="cursor-pointer font-normal">
           Set as default payment method
         </Label>
       </div>
