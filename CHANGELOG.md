@@ -1,3 +1,13 @@
+## [1.135.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.134.0...v1.135.0) (2026-07-20)
+
+### 🚀 Features
+
+* **navigation:** add a mobile bottom navigation bar ([84dbb50](https://github.com/carlonicora/nextjs-jsonapi/commit/84dbb50325d51f6a2a8e7aac70e93e08de32acee))
+
+### 💎 Styles
+
+* **navigation:** match the mobile bottom bar background to the header ([edea4f3](https://github.com/carlonicora/nextjs-jsonapi/commit/edea4f337a48b527dc7263d9a776c5fefcd0321f))
+
 ## [1.134.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.133.0...v1.134.0) (2026-07-20)
 
 ### 🚀 Features
