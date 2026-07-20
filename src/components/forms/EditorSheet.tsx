@@ -123,12 +123,35 @@ export function EditorSheet<T extends FieldValues>({
   );
 
   const hasBeenOpen = useRef(false);
+  // Fingerprint of the values the form was last seeded with, used to detect that
+  // the entity behind `onReset` has changed while the sheet was closed.
+  const seeded = useRef<string | undefined>(undefined);
 
   useEffect(() => {
     if (open) {
       hasBeenOpen.current = true;
+
+      // Re-seed from current props when reopening an edit form. The close branch
+      // below runs during `wrappedOnSubmit`, BEFORE `onSuccess` has refetched the
+      // parent, so it necessarily captures pre-save values; without this the form
+      // stays stale until the component remounts, and a field the user cleared
+      // reappears on reopen.
+      //
+      // Two deliberate limits:
+      //  - Only when `isEdit`. Create-mode defaults typically contain a freshly
+      //    generated uuid, so they would never compare equal and every open would
+      //    reset — clobbering parents that pre-fill via `form.setValue`.
+      //  - Only when the values actually differ. Reseeding unconditionally would
+      //    equally clobber effect-driven pre-fills on edit forms.
+      if (!isEdit) return;
+      const next = onReset();
+      const fingerprint = JSON.stringify(next);
+      if (seeded.current !== undefined && seeded.current !== fingerprint) form.reset(next);
+      seeded.current = fingerprint;
     } else if (hasBeenOpen.current) {
-      form.reset(onReset());
+      const next = onReset();
+      form.reset(next);
+      if (isEdit) seeded.current = JSON.stringify(next);
       onClose?.();
     }
   }, [open]);
