@@ -29,7 +29,12 @@ export function validatePartitaIva(partitaIva: string): boolean {
   return totalSum % 10 === 0;
 }
 
-export function validateCodiceFiscale(codiceFiscale: string): boolean {
+export type CodiceFiscaleValidationOptions = {
+  /** When true, a valid Partita IVA is also accepted as a valid value. */
+  allowPartitaIva?: boolean;
+};
+
+export function validateCodiceFiscale(codiceFiscale: string, options?: CodiceFiscaleValidationOptions): boolean {
   if (!codiceFiscale || typeof codiceFiscale !== "string") {
     return false;
   }
@@ -37,13 +42,21 @@ export function validateCodiceFiscale(codiceFiscale: string): boolean {
   const cleaned = codiceFiscale.replace(/\s/g, "").toUpperCase();
 
   try {
-    return CodiceFiscale.check(cleaned);
+    if (CodiceFiscale.check(cleaned)) {
+      return true;
+    }
   } catch (error) {
-    return false;
+    // fall through to the optional Partita IVA check
   }
+
+  return options?.allowPartitaIva === true && validatePartitaIva(cleaned);
 }
 
-export function validateItalianTaxCode(value: string, type: "partitaIva" | "codiceFiscale"): boolean {
+export function validateItalianTaxCode(
+  value: string,
+  type: "partitaIva" | "codiceFiscale",
+  options?: CodiceFiscaleValidationOptions,
+): boolean {
   if (!value || typeof value !== "string") {
     return false;
   }
@@ -52,7 +65,7 @@ export function validateItalianTaxCode(value: string, type: "partitaIva" | "codi
     case "partitaIva":
       return validatePartitaIva(value);
     case "codiceFiscale":
-      return validateCodiceFiscale(value);
+      return validateCodiceFiscale(value, options);
     default:
       return false;
   }
