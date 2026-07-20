@@ -1,6 +1,7 @@
 "use client";
 
 import { useIsMobile } from "@/utils";
+import { useHeaderRootLabel } from "../../contexts/HeaderChildrenContext";
 import { useSharedContext } from "../../contexts/SharedContext";
 import { SidebarTrigger } from "../../shadcnui";
 import { BreadcrumbNavigation } from "./Breadcrumb";
@@ -13,6 +14,7 @@ type HeaderProps = {
 
 export function Header({ children, leftContent, className }: HeaderProps) {
   const { breadcrumbs } = useSharedContext();
+  const rootLabel = useHeaderRootLabel();
   const isMobile = useIsMobile();
 
   return (
@@ -21,7 +23,7 @@ export function Header({ children, leftContent, className }: HeaderProps) {
         <SidebarTrigger aria-label="Toggle sidebar" id="sidebar-trigger" />
         {leftContent}
         <div className="flex w-full flex-row items-center justify-start">
-          <BreadcrumbNavigation items={breadcrumbs} />
+          <BreadcrumbNavigation items={breadcrumbs} rootLabel={rootLabel ?? undefined} />
         </div>
         {!isMobile && children && (
           <div className="flex w-64 flex-row items-center justify-end gap-x-4 whitespace-nowrap">
