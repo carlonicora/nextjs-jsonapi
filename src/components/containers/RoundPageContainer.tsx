@@ -20,7 +20,7 @@ import {
 import { partitionTabs, Tab } from "@/components/containers";
 import { RoundPageContainerTitle } from "@/components/containers/RoundPageContainerTitle";
 import { Header } from "@/components/navigations";
-import { useHeaderChildren, useHeaderLeftContent, useHeaderLogo } from "@/contexts";
+import { useHeaderChildren, useHeaderLeftContent, useHeaderLogo, useHeaderMobileChildren } from "@/contexts";
 import { useUrlRewriter } from "@/hooks";
 import { cn, useIsMobile } from "@/index";
 import { ModuleWithPermissions } from "@/permissions";
@@ -86,6 +86,7 @@ export function RoundPageContainer({
   const headerChildren = useHeaderChildren();
   const headerLeftContent = useHeaderLeftContent();
   const headerLogo = useHeaderLogo();
+  const headerMobileChildren = useHeaderMobileChildren();
   const [showDetails, setShowDetailsState] = useState(false);
   const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
@@ -154,7 +155,12 @@ export function RoundPageContainer({
   if (!isReady) {
     return (
       <>
-        <Header leftContent={headerLeftContent} logo={headerLogo} className="bg-sidebar border-0">
+        <Header
+          leftContent={headerLeftContent}
+          logo={headerLogo}
+          mobileChildren={headerMobileChildren}
+          className="bg-sidebar border-0"
+        >
           {headerChildren}
         </Header>
         <div className={cn("flex h-[calc(100vh-3rem)] w-full flex-col", isMobile ? "" : "p-2 pt-0 pl-0")}>
@@ -168,7 +174,12 @@ export function RoundPageContainer({
 
   return (
     <>
-      <Header leftContent={headerLeftContent} logo={headerLogo} className="bg-sidebar border-0">
+      <Header
+        leftContent={headerLeftContent}
+        logo={headerLogo}
+        mobileChildren={headerMobileChildren}
+        className="bg-sidebar border-0"
+      >
         {headerChildren}
       </Header>
       <div className={cn(`flex h-[calc(100vh-3rem)] w-full flex-col`, isMobile ? "p-1 pt-0" : "p-2 pt-0 pl-0")}>
