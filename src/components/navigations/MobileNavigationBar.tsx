@@ -49,14 +49,15 @@ export function MobileNavigationBar() {
 
   if (!isMobile || items.length === 0) return null;
 
-  // A detached surface sitting BELOW the page card with a gap, so it carries the
-  // card's own treatment (rounded + full border) rather than a `border-t`, which
-  // would read as if the bar were welded to the card's bottom edge.
+  // A detached surface sitting BELOW the page card with a gap, so it carries a
+  // rounded border rather than a `border-t`, which would read as if the bar were
+  // welded to the card's bottom edge. `bg-sidebar` deliberately matches the
+  // Header's own background so the two chrome edges of the viewport agree.
   return (
     <nav
       aria-label="Primary"
       data-testid="mobile-navigation-bar"
-      className="bg-background flex w-full shrink-0 flex-row items-stretch rounded-lg border pb-[env(safe-area-inset-bottom)]"
+      className="bg-sidebar flex w-full shrink-0 flex-row items-stretch rounded-lg border pb-[env(safe-area-inset-bottom)]"
     >
       {items.map((item) => {
         const active = item.href ? isActiveHref(pathname, item.href) : false;
