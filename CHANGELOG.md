@@ -1,3 +1,9 @@
+## [1.137.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.137.0...v1.137.1) (2026-07-20)
+
+### 🐛 Bug Fixes
+
+* **RoundPageContainer:** size the page column with svh, not dvh ([4a7f896](https://github.com/carlonicora/nextjs-jsonapi/commit/4a7f89622dc56f18a206271b7e282e2f82a2bae0))
+
 ## [1.137.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.136.0...v1.137.0) (2026-07-20)
 
 ### 🚀 Features
