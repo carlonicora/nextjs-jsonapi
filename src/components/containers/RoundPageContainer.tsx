@@ -224,14 +224,15 @@ export function RoundPageContainer({
           data-testid={testId}
           className={cn(
             "flex h-[calc(100svh-var(--app-header-h,3rem))] w-full flex-col",
-            // The bottom safe-area inset is reserved HERE, not inside
-            // MobileNavigationBar: padding within the bar's bordered card leaves
-            // dead space inside the rounded box with the icons crammed against
-            // its top edge (measured 78px tall for a 42px icon row). Held by the
-            // shell instead, the bar keeps its natural height and the whole card
-            // floats above the home indicator, which is what the detached-card
-            // design intends. Resolves to plain p-1 wherever the inset is 0.
-            isMobile ? "gap-1 p-1 pt-0 pb-[calc(0.25rem+env(safe-area-inset-bottom))]" : "p-2 pt-0 pl-0",
+            // Deliberately NO bottom safe-area inset, here or in
+            // MobileNavigationBar. iOS still reports 34px of bottom inset
+            // (measured in an installed PWA), but nothing is drawn in that strip
+            // on current devices, so reserving it only opens a band of empty
+            // background under the bar. Inside the bar it made a 42px icon row
+            // render 78px tall; below the bar it became a visible gap. The
+            // swipe-up gesture region is unaffected either way — it is a gesture
+            // area, not painted chrome.
+            isMobile ? "gap-1 p-1 pt-0" : "p-2 pt-0 pl-0",
           )}
         >
           {/* `min-h-0 flex-1`, NOT `h-full`: the bar below is an in-flow sibling in
@@ -266,14 +267,15 @@ export function RoundPageContainer({
         data-testid={testId}
         className={cn(
           `flex h-[calc(100svh-var(--app-header-h,3rem))] w-full flex-col`,
-          // The bottom safe-area inset is reserved HERE, not inside
-          // MobileNavigationBar: padding within the bar's bordered card leaves
-          // dead space inside the rounded box with the icons crammed against
-          // its top edge (measured 78px tall for a 42px icon row). Held by the
-          // shell instead, the bar keeps its natural height and the whole card
-          // floats above the home indicator, which is what the detached-card
-          // design intends. Resolves to plain p-1 wherever the inset is 0.
-          isMobile ? "gap-1 p-1 pt-0 pb-[calc(0.25rem+env(safe-area-inset-bottom))]" : "p-2 pt-0 pl-0",
+          // Deliberately NO bottom safe-area inset, here or in
+          // MobileNavigationBar. iOS still reports 34px of bottom inset
+          // (measured in an installed PWA), but nothing is drawn in that strip
+          // on current devices, so reserving it only opens a band of empty
+          // background under the bar. Inside the bar it made a 42px icon row
+          // render 78px tall; below the bar it became a visible gap. The
+          // swipe-up gesture region is unaffected either way — it is a gesture
+          // area, not painted chrome.
+          isMobile ? "gap-1 p-1 pt-0" : "p-2 pt-0 pl-0",
         )}
       >
         {/* `min-h-0 flex-1`, NOT `h-full`: MobileNavigationBar below is an in-flow

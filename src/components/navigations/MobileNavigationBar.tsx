@@ -54,10 +54,11 @@ export function MobileNavigationBar() {
   // welded to the card's bottom edge. `bg-sidebar` deliberately matches the
   // Header's own background so the two chrome edges of the viewport agree.
   //
-  // Deliberately NO bottom safe-area padding here. The inset is reserved by the
-  // page shell's bottom padding (RoundPageContainer) so this card keeps its
-  // natural height and floats above the home indicator, rather than growing to
-  // enclose 34px of dead space with the icons pinned to its top edge.
+  // Deliberately NO bottom safe-area padding here, and none on the page shell
+  // either. iOS reports a 34px bottom inset but paints nothing in that strip on
+  // current devices, so honouring it only produced dead space — 78px of bar for
+  // a 42px icon row when held inside this border, and an empty band under the
+  // bar when held by the shell instead.
   return (
     <nav
       aria-label="Primary"
