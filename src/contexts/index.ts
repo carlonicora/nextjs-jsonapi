@@ -9,6 +9,7 @@ export * from "../features/assistant/contexts/AssistantContext";
 export * from "./CommonContext";
 export * from "./HeaderChildrenContext";
 export * from "./HeaderLeftContentContext";
+export * from "./HeaderLogoContext";
 export * from "./SharedContext";
 export * from "./SocketContext";
 
