@@ -1,3 +1,9 @@
+## [1.133.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.132.0...v1.133.0) (2026-07-20)
+
+### 🚀 Features
+
+* **tables:** add groupLabel, groupOrder and hideHeader to ContentListTable ([87cc1e2](https://github.com/carlonicora/nextjs-jsonapi/commit/87cc1e23f192027deb428816773c579c8a0e52d4))
+
 ## [1.132.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.131.2...v1.132.0) (2026-07-20)
 
 ### 🚀 Features
