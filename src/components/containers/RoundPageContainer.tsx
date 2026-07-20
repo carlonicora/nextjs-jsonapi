@@ -223,7 +223,7 @@ export function RoundPageContainer({
         <div
           data-testid={testId}
           className={cn(
-            "flex h-[calc(100dvh-var(--app-header-h,3rem))] w-full flex-col",
+            "flex h-[calc(100svh-var(--app-header-h,3rem))] w-full flex-col",
             isMobile ? "gap-1 p-1 pt-0" : "p-2 pt-0 pl-0",
           )}
         >
@@ -250,10 +250,15 @@ export function RoundPageContainer({
       >
         {headerChildren}
       </Header>
+      {/* svh, NOT dvh: iOS leaves dvh stale-short after the software keyboard
+          closes (standalone PWAs especially), which opens a dead band under
+          the bottom bar. svh is constant — the fully visible area in
+          standalone, the chrome-visible area in Safari — so the bar can never
+          end up above OR below the fold. */}
       <div
         data-testid={testId}
         className={cn(
-          `flex h-[calc(100dvh-var(--app-header-h,3rem))] w-full flex-col`,
+          `flex h-[calc(100svh-var(--app-header-h,3rem))] w-full flex-col`,
           isMobile ? "gap-1 p-1 pt-0" : "p-2 pt-0 pl-0",
         )}
       >
