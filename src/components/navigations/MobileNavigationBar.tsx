@@ -53,11 +53,16 @@ export function MobileNavigationBar() {
   // rounded border rather than a `border-t`, which would read as if the bar were
   // welded to the card's bottom edge. `bg-sidebar` deliberately matches the
   // Header's own background so the two chrome edges of the viewport agree.
+  //
+  // Deliberately NO bottom safe-area padding here. The inset is reserved by the
+  // page shell's bottom padding (RoundPageContainer) so this card keeps its
+  // natural height and floats above the home indicator, rather than growing to
+  // enclose 34px of dead space with the icons pinned to its top edge.
   return (
     <nav
       aria-label="Primary"
       data-testid="mobile-navigation-bar"
-      className="bg-sidebar flex w-full shrink-0 flex-row items-stretch rounded-lg border pb-[env(safe-area-inset-bottom)]"
+      className="bg-sidebar flex w-full shrink-0 flex-row items-stretch rounded-lg border"
     >
       {items.map((item) => {
         const active = item.href ? isActiveHref(pathname, item.href) : false;
