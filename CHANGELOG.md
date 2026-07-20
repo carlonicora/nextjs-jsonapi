@@ -1,3 +1,9 @@
+## [1.135.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.135.0...v1.135.1) (2026-07-20)
+
+### 🐛 Bug Fixes
+
+* **ui:** restore pointer cursor on interactive elements ([ea87857](https://github.com/carlonicora/nextjs-jsonapi/commit/ea87857bdf5a9ffba8a554b8ea0a7424dcf85d98))
+
 ## [1.135.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.134.0...v1.135.0) (2026-07-20)
 
 ### 🚀 Features
