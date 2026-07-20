@@ -1,3 +1,12 @@
+## [1.134.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.133.0...v1.134.0) (2026-07-20)
+
+### 🚀 Features
+
+* **header:** add optional mobile logo slot ([38f28ad](https://github.com/carlonicora/nextjs-jsonapi/commit/38f28ad7e5d1857583cc9d359761cbe9f5238680))
+* **header:** let the app choose which widgets survive on mobile ([c8b1e95](https://github.com/carlonicora/nextjs-jsonapi/commit/c8b1e95febca2524f7e52c9ccfbf49936c7ddae9))
+* **viewport:** add viewport context management with lazy creation ([ab9a790](https://github.com/carlonicora/nextjs-jsonapi/commit/ab9a79017f44d5db1483b49e864999d67425ff4c))
+* **viewport:** seed isMobile from the server to remove the layout flash ([d4f2243](https://github.com/carlonicora/nextjs-jsonapi/commit/d4f2243edc3be332e2e1bda24717ec1e10b1302b))
+
 ## [1.133.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.132.0...v1.133.0) (2026-07-20)
 
 ### 🚀 Features
