@@ -34,10 +34,7 @@ export class NotificationErrorBoundary extends Component<Props, State> {
           <div className="flex items-center justify-center p-4 text-center">
             <div className="text-muted-foreground text-sm">
               <p>Something went wrong with notifications.</p>
-              <button
-                onClick={() => this.setState({ hasError: false })}
-                className="text-primary mt-2 underline hover:no-underline"
-              >
+              <button onClick={() => this.setState({ hasError: false })} className="text-primary mt-2">
                 Try again
               </button>
             </div>

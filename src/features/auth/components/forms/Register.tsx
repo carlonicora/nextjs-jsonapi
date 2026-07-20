@@ -194,7 +194,7 @@ export default function Register() {
         <CardContent className="text-center">
           <p className="text-destructive mb-4">{inviteError}</p>
           <p className="mb-4">{t("waitlist.invite.join_prompt")}</p>
-          <Link href="/waitlist" className="text-primary underline">
+          <Link href="/waitlist" className="text-primary">
             {t("waitlist.invite.join_link")}
           </Link>
         </CardContent>
@@ -215,7 +215,7 @@ export default function Register() {
         <CardContent className="text-center">
           <p className="mb-4">{t("waitlist.invite.registration_description")}</p>
           <p className="mb-4">{t("waitlist.invite.registration_hint")}</p>
-          <Link href="/waitlist" className="text-primary underline">
+          <Link href="/waitlist" className="text-primary">
             {t("waitlist.invite.join_link")}
           </Link>
         </CardContent>

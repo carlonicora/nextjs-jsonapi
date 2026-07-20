@@ -43,14 +43,14 @@ export function HelpArticleBody(props: {
       ) : null}
       <div className="mt-4 flex justify-between text-sm">
         {prev ? (
-          <Link href={generateUrl({ page: `/help/${prev.howToType}/${prev.slug}` })} className="hover:underline">
+          <Link href={generateUrl({ page: `/help/${prev.howToType}/${prev.slug}` })}>
             ← {t("help.article.previous")}: {prev.title}
           </Link>
         ) : (
           <span />
         )}
         {next ? (
-          <Link href={generateUrl({ page: `/help/${next.howToType}/${next.slug}` })} className="hover:underline">
+          <Link href={generateUrl({ page: `/help/${next.howToType}/${next.slug}` })}>
             {t("help.article.next")}: {next.title} →
           </Link>
         ) : (

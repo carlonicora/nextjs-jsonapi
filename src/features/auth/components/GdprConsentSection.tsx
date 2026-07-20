@@ -21,11 +21,11 @@ export function GdprConsentSection<T extends FieldValues>({
   const termsLabel = (
     <>
       {t("terms_prefix")}{" "}
-      <Link href="/terms" target="_blank" rel="noopener" className="underline">
+      <Link href="/terms" target="_blank" rel="noopener">
         {t("terms_of_service")}
       </Link>{" "}
       {t("and")}{" "}
-      <Link href="/privacy" target="_blank" rel="noopener" className="underline">
+      <Link href="/privacy" target="_blank" rel="noopener">
         {t("privacy_policy")}
       </Link>
     </>

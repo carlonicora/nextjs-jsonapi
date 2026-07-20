@@ -111,11 +111,11 @@ export function OAuthConsentScreen({
         <CardFooter className="justify-center">
           <p className="text-xs text-center text-muted-foreground">
             By authorizing, you agree to the app's{" "}
-            <a href={termsUrl} className="underline hover:text-foreground" target="_blank" rel="noopener">
+            <a href={termsUrl} className="hover:text-foreground" target="_blank" rel="noopener">
               Terms of Service
             </a>{" "}
             and{" "}
-            <a href={privacyUrl} className="underline hover:text-foreground" target="_blank" rel="noopener">
+            <a href={privacyUrl} className="hover:text-foreground" target="_blank" rel="noopener">
               Privacy Policy
             </a>
             .

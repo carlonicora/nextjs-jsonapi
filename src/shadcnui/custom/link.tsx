@@ -21,7 +21,7 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(({ className, href, 
       prefetch={false}
       ref={ref}
       href={href}
-      className={cn("text-primary font-medium hover:underline", className)}
+      className={cn("text-primary font-medium", className)}
       {...props}
     >
       {children}

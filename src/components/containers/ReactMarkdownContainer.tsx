@@ -106,7 +106,7 @@ export function ReactMarkdownContainer({
         <div className="mt-2 flex justify-end">
           <button
             onClick={handleToggle}
-            className="text-primary flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors hover:bg-gray-100 hover:underline"
+            className="text-primary flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors hover:bg-gray-100"
             aria-label={isExpanded ? t("show_less") : t("show_more")}
           >
             <span>{isExpanded ? t("show_less") : t("show_more")}</span>

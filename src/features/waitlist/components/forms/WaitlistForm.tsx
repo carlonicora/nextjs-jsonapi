@@ -159,11 +159,11 @@ export function WaitlistForm({ onSuccess }: WaitlistFormProps) {
             label={
               <>
                 {t("auth.gdpr.terms_prefix")}
-                <Link href="/terms" target="_blank" rel="noopener" className="underline">
+                <Link href="/terms" target="_blank" rel="noopener">
                   {t("auth.gdpr.terms_of_service")}
                 </Link>
                 {t("auth.gdpr.and")}
-                <Link href="/privacy" target="_blank" rel="noopener" className="underline">
+                <Link href="/privacy" target="_blank" rel="noopener">
                   {t("auth.gdpr.privacy_policy")}
                 </Link>
               </>
