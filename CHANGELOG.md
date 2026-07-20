@@ -1,3 +1,9 @@
+## [1.136.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.135.1...v1.136.0) (2026-07-20)
+
+### 🚀 Features
+
+* **RoundPageContainer:** add testId, details title/icon and open-by-default ([5aed300](https://github.com/carlonicora/nextjs-jsonapi/commit/5aed30063ded5f13b72fe50febfa37108c80fe85))
+
 ## [1.135.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.135.0...v1.135.1) (2026-07-20)
 
 ### 🐛 Bug Fixes
