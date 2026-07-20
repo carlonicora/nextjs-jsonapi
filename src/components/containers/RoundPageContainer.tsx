@@ -222,7 +222,10 @@ export function RoundPageContainer({
         </Header>
         <div
           data-testid={testId}
-          className={cn("flex h-[calc(100vh-3rem)] w-full flex-col", isMobile ? "gap-1 p-1 pt-0" : "p-2 pt-0 pl-0")}
+          className={cn(
+            "flex h-[calc(100dvh-var(--app-header-h,3rem))] w-full flex-col",
+            isMobile ? "gap-1 p-1 pt-0" : "p-2 pt-0 pl-0",
+          )}
         >
           {/* `min-h-0 flex-1`, NOT `h-full`: the bar below is an in-flow sibling in
               this fixed-height flex column. `h-full` would resolve to 100% of the
@@ -249,7 +252,10 @@ export function RoundPageContainer({
       </Header>
       <div
         data-testid={testId}
-        className={cn(`flex h-[calc(100vh-3rem)] w-full flex-col`, isMobile ? "gap-1 p-1 pt-0" : "p-2 pt-0 pl-0")}
+        className={cn(
+          `flex h-[calc(100dvh-var(--app-header-h,3rem))] w-full flex-col`,
+          isMobile ? "gap-1 p-1 pt-0" : "p-2 pt-0 pl-0",
+        )}
       >
         {/* `min-h-0 flex-1`, NOT `h-full`: MobileNavigationBar below is an in-flow
             sibling in this fixed-height flex column. `h-full` resolves to 100% of

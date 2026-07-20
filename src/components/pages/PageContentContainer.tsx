@@ -35,7 +35,7 @@ export function PageContentContainer({ header, details, footer, content, fullBle
   });
 
   if (!isReady) {
-    return <div className="flex h-[calc(100vh-4rem)] w-full flex-col" />;
+    return <div className="flex h-[calc(100dvh-4rem)] w-full flex-col" />;
   }
 
   // v4 CRITICAL: Use STRING percentages for Panel defaultSize, not numbers!
@@ -46,7 +46,7 @@ export function PageContentContainer({ header, details, footer, content, fullBle
   const rightPanelDefaultSize = isMobile ? "90%" : "68%";
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] w-full flex-col transition-opacity duration-150 animate-in fade-in">
+    <div className="flex h-[calc(100dvh-4rem)] w-full flex-col transition-opacity duration-150 animate-in fade-in">
       {header && <div className="mb-4 flex w-full shrink-0 border-b pr-4">{header}</div>}
       <div className="min-h-0 flex-1">
         {details || footer ? (

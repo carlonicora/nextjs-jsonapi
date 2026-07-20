@@ -49,7 +49,7 @@ export function OAuthConsentScreen({
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="min-h-dvh flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -63,7 +63,7 @@ export function OAuthConsentScreen({
   // Error state
   if (error || !clientInfo) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="min-h-dvh flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardContent className="py-8">
             <Alert variant="destructive">
@@ -81,7 +81,7 @@ export function OAuthConsentScreen({
   const { client, scopes } = clientInfo;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-muted/30">
+    <div className="min-h-dvh flex items-center justify-center p-4 bg-muted/30">
       <Card className="w-full max-w-md">
         <CardContent className="pt-6 space-y-6">
           {/* Header */}
