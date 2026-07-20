@@ -19,7 +19,7 @@ import {
 } from "@/components";
 import { partitionTabs, Tab } from "@/components/containers";
 import { RoundPageContainerTitle } from "@/components/containers/RoundPageContainerTitle";
-import { Header } from "@/components/navigations";
+import { Header, MobileNavigationBar } from "@/components/navigations";
 import { useHeaderChildren, useHeaderLeftContent, useHeaderLogo, useHeaderMobileChildren } from "@/contexts";
 import { useUrlRewriter } from "@/hooks";
 import { cn, useIsMobile } from "@/index";
@@ -163,10 +163,15 @@ export function RoundPageContainer({
         >
           {headerChildren}
         </Header>
-        <div className={cn("flex h-[calc(100vh-3rem)] w-full flex-col", isMobile ? "" : "p-2 pt-0 pl-0")}>
-          <div className={cn("bg-background flex h-full w-full", isMobile ? "" : "rounded-lg border p-0")}>
+        <div className={cn("flex h-[calc(100vh-3rem)] w-full flex-col", isMobile ? "gap-1 p-1 pt-0" : "p-2 pt-0 pl-0")}>
+          {/* `min-h-0 flex-1`, NOT `h-full`: the bar below is an in-flow sibling in
+              this fixed-height flex column. `h-full` would resolve to 100% of the
+              wrapper, leaving no room and pushing the bar below the fold (visible
+              only after scrolling to the end of the page). */}
+          <div className={cn("bg-background flex min-h-0 w-full flex-1", isMobile ? "" : "rounded-lg border p-0")}>
             <div className="flex w-full flex-col" />
           </div>
+          <MobileNavigationBar />
         </div>
       </>
     );
@@ -182,8 +187,12 @@ export function RoundPageContainer({
       >
         {headerChildren}
       </Header>
-      <div className={cn(`flex h-[calc(100vh-3rem)] w-full flex-col`, isMobile ? "p-1 pt-0" : "p-2 pt-0 pl-0")}>
-        <div className="bg-background flex h-full w-full rounded-lg border p-0">
+      <div className={cn(`flex h-[calc(100vh-3rem)] w-full flex-col`, isMobile ? "gap-1 p-1 pt-0" : "p-2 pt-0 pl-0")}>
+        {/* `min-h-0 flex-1`, NOT `h-full`: MobileNavigationBar below is an in-flow
+            sibling in this fixed-height flex column. `h-full` resolves to 100% of
+            the wrapper, leaving the bar no room and pushing it below the fold —
+            it then appears only after scrolling to the very end of the page. */}
+        <div className="bg-background flex min-h-0 w-full flex-1 rounded-lg border p-0">
           <div className="flex w-full flex-col">
             {(!fullWidth || forceHeader) && (
               <RoundPageContainerTitle
@@ -409,6 +418,7 @@ export function RoundPageContainer({
               </div>
             ))}
         </div>
+        <MobileNavigationBar />
       </div>
     </>
   );
