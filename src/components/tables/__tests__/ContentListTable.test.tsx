@@ -338,6 +338,37 @@ describe("ContentListTable", () => {
     });
   });
 
+  describe("hideHeader", () => {
+    it("should render the column header row by default", () => {
+      const dataRetriever = createMockDataRetriever({
+        data: [{ id: "1", title: "Article 1" }],
+      });
+
+      render(<ContentListTable data={dataRetriever} tableGeneratorType={mockModule as any} fields={["id", "title"]} />);
+
+      expect(screen.getByText("Title")).toBeInTheDocument();
+    });
+
+    it("should not render the column header row when hideHeader is set", () => {
+      const dataRetriever = createMockDataRetriever({
+        data: [{ id: "1", title: "Article 1" }],
+      });
+
+      render(
+        <ContentListTable
+          data={dataRetriever}
+          tableGeneratorType={mockModule as any}
+          fields={["id", "title"]}
+          hideHeader
+        />,
+      );
+
+      expect(screen.queryByText("Title")).not.toBeInTheDocument();
+      // Body rows must still render — only the header row is suppressed.
+      expect(screen.getByText("Article 1")).toBeInTheDocument();
+    });
+  });
+
   describe("grouping", () => {
     it("should not group rows when groupBy is not provided", () => {
       const dataRetriever = createMockDataRetriever({
@@ -510,6 +541,52 @@ describe("ContentListTable", () => {
       expect(article2Count).toBe(1);
       const article3Count = allText.filter((t) => t === "Article 3").length;
       expect(article3Count).toBe(2);
+    });
+
+    it("should render group headers through groupLabel when provided", () => {
+      const dataRetriever = createMockDataRetriever({
+        data: [
+          { id: "1", title: "Article 1", category: "CIVIL" },
+          { id: "2", title: "Article 2", category: "CRIMINAL" },
+        ],
+      });
+
+      render(
+        <ContentListTable
+          data={dataRetriever}
+          tableGeneratorType={mockModule as any}
+          fields={["id", "title"]}
+          groupBy="category"
+          groupLabel={(key) => `Branch: ${key}`}
+        />,
+      );
+
+      expect(screen.getByText("Branch: CIVIL")).toBeInTheDocument();
+      expect(screen.getByText("Branch: CRIMINAL")).toBeInTheDocument();
+      expect(screen.queryByText("CIVIL")).not.toBeInTheDocument();
+    });
+
+    it("should order groups by groupOrder instead of alphabetically", () => {
+      const dataRetriever = createMockDataRetriever({
+        data: [
+          { id: "1", title: "A Article", category: "A" },
+          { id: "2", title: "B Article", category: "B" },
+          { id: "3", title: "C Article", category: "C" },
+        ],
+      });
+
+      render(
+        <ContentListTable
+          data={dataRetriever}
+          tableGeneratorType={mockModule as any}
+          fields={["id", "title"]}
+          groupBy="category"
+          groupOrder={["C", "A", "B"]}
+        />,
+      );
+
+      const headings = screen.getAllByRole("heading", { level: 4 });
+      expect(headings.map((h) => h.textContent)).toEqual(["C", "A", "B"]);
     });
   });
 

@@ -10,6 +10,7 @@ import React, { ReactNode, memo, useMemo, useState } from "react";
 import { DataListRetriever, TableContent, useTableGenerator } from "../../hooks";
 import { ModuleWithPermissions } from "../../permissions";
 import { Button, Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "../../shadcnui";
+import { MicroLabel } from "../typography";
 import { ContentTableSearch } from "./ContentTableSearch";
 
 const EMPTY_ARRAY: any[] = [];
@@ -49,6 +50,9 @@ type ContentListTableProps = {
   defaultExpanded?: boolean | ExpandedState;
   fullWidth?: boolean;
   groupBy?: string;
+  groupLabel?: (key: string) => ReactNode;
+  groupOrder?: string[];
+  hideHeader?: boolean;
   emptyState?: ReactNode;
   onRowClick?: (rowData: any) => void;
 };
@@ -118,12 +122,24 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
       }
     }
 
-    const sortedKeys = [...groupMap.keys()].sort((a, b) => a.localeCompare(b));
+    const order = props.groupOrder;
+    const sortedKeys = [...groupMap.keys()].sort((a, b) => {
+      if (order) {
+        const ia = order.indexOf(a);
+        const ib = order.indexOf(b);
+        // keys absent from groupOrder sort last, alphabetically among themselves
+        if (ia === -1 && ib === -1) return a.localeCompare(b);
+        if (ia === -1) return 1;
+        if (ib === -1) return -1;
+        return ia - ib;
+      }
+      return a.localeCompare(b);
+    });
     return sortedKeys.map((groupKey) => ({
       groupKey,
       rows: groupMap.get(groupKey)!,
     }));
-  }, [props.groupBy, rowModel]);
+  }, [props.groupBy, props.groupOrder, rowModel]);
 
   const showFooter = !!(data.next || data.previous);
 
@@ -168,18 +184,19 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                 </TableHead>
               </TableRow>
             )}
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  const meta = header.column.columnDef.meta as { className?: string } | undefined;
-                  return (
-                    <TableHead key={header.id} className={meta?.className}>
-                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
+            {!props.hideHeader &&
+              table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    const meta = header.column.columnDef.meta as { className?: string } | undefined;
+                    return (
+                      <TableHead key={header.id} className={meta?.className}>
+                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
           </TableHeader>
           <TableBody>
             {rowModel && rowModel.rows?.length ? (
@@ -187,11 +204,8 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                 groupedRows.map((group) => (
                   <React.Fragment key={group.groupKey}>
                     <TableRow>
-                      <TableCell
-                        colSpan={tableColumns.length}
-                        className="bg-muted text-muted-foreground px-4 py-2 text-sm font-semibold"
-                      >
-                        {group.groupKey}
+                      <TableCell colSpan={tableColumns.length} className="bg-muted px-4 py-2">
+                        <MicroLabel>{props.groupLabel?.(group.groupKey) ?? group.groupKey}</MicroLabel>
                       </TableCell>
                     </TableRow>
                     {group.rows.map((row) => (
