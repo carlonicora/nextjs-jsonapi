@@ -1,3 +1,9 @@
+## [1.137.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.137.3...v1.137.4) (2026-07-20)
+
+### 🐛 Bug Fixes
+
+* **RoundPageContainer:** adjust padding to resolve dead space in rounded box layout ([a50546e](https://github.com/carlonicora/nextjs-jsonapi/commit/a50546e37b5c4d1955c8bb1409579a0d628d5af8))
+
 ## [1.137.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.137.2...v1.137.3) (2026-07-20)
 
 ### 🐛 Bug Fixes
