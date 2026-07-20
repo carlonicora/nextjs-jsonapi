@@ -1,3 +1,9 @@
+## [1.137.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.137.2...v1.137.3) (2026-07-20)
+
+### 🐛 Bug Fixes
+
+* **MobileNavigationBar:** hold the bottom safe-area inset on the shell, not the bar ([dcef719](https://github.com/carlonicora/nextjs-jsonapi/commit/dcef71998569972742115675a5d763cb183afb8b))
+
 ## [1.137.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.137.1...v1.137.2) (2026-07-20)
 
 ### 🐛 Bug Fixes
