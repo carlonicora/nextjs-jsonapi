@@ -4,7 +4,7 @@ import "../../client";
 import { ExpandedState, flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from "@tanstack/react-table";
 
 import { cn } from "@/index";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React, { ReactNode, memo, useMemo, useState } from "react";
 import { DataListRetriever, TableContent, useTableGenerator } from "../../hooks";
@@ -63,6 +63,13 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
   const [expanded, setExpanded] = useState<ExpandedState>(
     props.defaultExpanded === true ? true : typeof props.defaultExpanded === "object" ? props.defaultExpanded : {},
   );
+
+  // Track which pagination direction is loading so we can show a spinner on that button
+  const [pendingDirection, setPendingDirection] = useState<"prev" | "next" | null>(null);
+
+  React.useEffect(() => {
+    if (data.isLoaded) setPendingDirection(null);
+  }, [data.isLoaded]);
 
   const { data: tableData, columns: tableColumns } = useTableGenerator(props.tableGeneratorType, {
     data: data?.data ?? EMPTY_ARRAY,
@@ -263,11 +270,16 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                       size="sm"
                       onClick={(e) => {
                         e.preventDefault();
+                        setPendingDirection("prev");
                         data.previous?.(true);
                       }}
-                      disabled={!data.previous}
+                      disabled={!data.previous || pendingDirection !== null}
                     >
-                      <ChevronLeft className="h-4 w-4" />
+                      {pendingDirection === "prev" ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <ChevronLeft className="h-4 w-4" />
+                      )}
                     </Button>
                     {data.pageInfo && (
                       <span className="text-muted-foreground text-xs">
@@ -279,11 +291,16 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                       size="sm"
                       onClick={(e) => {
                         e.preventDefault();
+                        setPendingDirection("next");
                         data.next?.(true);
                       }}
-                      disabled={!data.next}
+                      disabled={!data.next || pendingDirection !== null}
                     >
-                      <ChevronRight className="h-4 w-4" />
+                      {pendingDirection === "next" ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4" />
+                      )}
                     </Button>
                   </div>
                 </TableCell>
