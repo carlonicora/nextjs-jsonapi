@@ -213,7 +213,9 @@ export function FormPlaceAutocomplete({
   // Handle input changes with debouncing
   const handleInputChange = (value: string) => {
     setInputValue(value);
-    form.setValue(id, value);
+    // shouldValidate so a prior-submit "required" error on this field clears as
+    // soon as it has a value (form.setValue alone does not re-run validation).
+    form.setValue(id, value, { shouldValidate: true });
 
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
@@ -233,7 +235,7 @@ export function FormPlaceAutocomplete({
   // Handle suggestion selection
   const handleSuggestionSelect = async (suggestion: PlaceSuggestion) => {
     setInputValue(suggestion.description);
-    form.setValue(id, suggestion.description);
+    form.setValue(id, suggestion.description, { shouldValidate: true });
     setShowSuggestions(false);
     setSuggestions([]);
 
