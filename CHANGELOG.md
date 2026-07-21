@@ -1,3 +1,13 @@
+## [1.138.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.137.5...v1.138.0) (2026-07-21)
+
+### 🚀 Features
+
+* **table:** show loading spinner on pagination prev/next ([da9ec15](https://github.com/carlonicora/nextjs-jsonapi/commit/da9ec15cf079bcd6562ebf6df6fd4abdc143e8ef))
+
+### 🐛 Bug Fixes
+
+* **FormPlaceAutocomplete:** revalidate on setValue so required errors clear ([2658e66](https://github.com/carlonicora/nextjs-jsonapi/commit/2658e66d112f290477ab85db4f1a199554fbbba0))
+
 ## [1.137.5](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.137.4...v1.137.5) (2026-07-20)
 
 ### 🐛 Bug Fixes
