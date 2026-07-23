@@ -6,14 +6,9 @@ import { cn } from "@/lib/utils";
 
 function Progress({ className, children, value, ...props }: ProgressPrimitive.Root.Props) {
   return (
-    <ProgressPrimitive.Root
-      value={value}
-      data-slot="progress"
-      className={cn("flex flex-wrap gap-3", className)}
-      {...props}
-    >
+    <ProgressPrimitive.Root value={value} data-slot="progress" className="flex flex-wrap gap-3" {...props}>
       {children}
-      <ProgressTrack>
+      <ProgressTrack className={className}>
         <ProgressIndicator />
       </ProgressTrack>
     </ProgressPrimitive.Root>
