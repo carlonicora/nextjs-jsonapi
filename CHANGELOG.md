@@ -1,3 +1,9 @@
+## [1.138.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.138.0...v1.138.1) (2026-07-23)
+
+### 🐛 Bug Fixes
+
+* **ui:** route Progress className to the track, not the root ([c6ccbc0](https://github.com/carlonicora/nextjs-jsonapi/commit/c6ccbc0f4e1cf4afe1ff2cb59528b9f4276b9e72))
+
 ## [1.138.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.137.5...v1.138.0) (2026-07-21)
 
 ### 🚀 Features
