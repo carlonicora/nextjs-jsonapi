@@ -1,3 +1,9 @@
+## [1.139.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.138.1...v1.139.0) (2026-07-24)
+
+### 🚀 Features
+
+* **useDataListRetriever:** expose full response meta beyond total ([976eb1f](https://github.com/carlonicora/nextjs-jsonapi/commit/976eb1fdb578cac687619982c652412167cf434c))
+
 ## [1.138.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.138.0...v1.138.1) (2026-07-23)
 
 ### 🐛 Bug Fixes
