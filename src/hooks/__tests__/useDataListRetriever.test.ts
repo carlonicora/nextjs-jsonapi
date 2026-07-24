@@ -288,6 +288,29 @@ describe("useDataListRetriever", () => {
       });
     });
 
+    it("should forward an explicit search additional parameter to the retriever", async () => {
+      const retriever = vi.fn().mockResolvedValue([]);
+
+      const { result } = renderHook(() =>
+        useDataListRetriever({
+          retriever,
+          module: mockModule,
+        }),
+      );
+
+      await waitFor(() => {
+        expect(result.current.isLoaded).toBe(true);
+      });
+
+      act(() => {
+        result.current.addAdditionalParameter("search", "mario");
+      });
+
+      await waitFor(() => {
+        expect(retriever).toHaveBeenCalledWith(expect.objectContaining({ search: "mario" }));
+      });
+    });
+
     it("should remove additional parameter", async () => {
       const retriever = vi.fn().mockResolvedValue([]);
 

@@ -63,6 +63,7 @@ export function EntityMultiSelector<T extends { id: string }>({
   const [searchTerm, setSearchTerm] = useState("");
   const [options, setOptions] = useState<OptionData<T>[]>([]);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchTermRef = useRef<string>("");
 
   // Stabilize callback props in refs to prevent infinite re-render loops.
   // These functions are passed inline by consumers (e.g. getLabel={(w) => w.name})
@@ -110,11 +111,10 @@ export function EntityMultiSelector<T extends { id: string }>({
 
   const updateSearch = useCallback(
     (searchedTerm: string) => {
-      if (searchedTerm.trim()) {
-        data.addAdditionalParameter("search", searchedTerm.trim());
-      } else {
-        data.removeAdditionalParameter("search");
-      }
+      const trimmed = searchedTerm.trim();
+      if (trimmed === searchTermRef.current) return;
+      searchTermRef.current = trimmed;
+      data.search(trimmed);
     },
     [data],
   );
@@ -202,17 +202,15 @@ export function EntityMultiSelector<T extends { id: string }>({
     [form, id, options],
   );
 
+  // No client-side filtering: the search term is sent to the API (debounced), so filtering
+  // the response again by label would hide matches found on other fields (e.g. email).
   const sortedOptions = useMemo(() => {
-    const filtered = searchTerm.trim()
-      ? options.filter((o) => o.label.toLowerCase().includes(searchTerm.trim().toLowerCase()))
-      : options;
-
-    return [...filtered].sort((a, b) => {
+    return [...options].sort((a, b) => {
       const aSelected = selectedIds.has(a.id) ? 0 : 1;
       const bSelected = selectedIds.has(b.id) ? 0 : 1;
       return aSelected - bSelected;
     });
-  }, [options, selectedIds, searchTerm]);
+  }, [options, selectedIds]);
 
   const triggerSummary = useMemo(() => {
     if (selectedValues.length === 0) return null;

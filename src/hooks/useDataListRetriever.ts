@@ -196,7 +196,9 @@ export function useDataListRetriever<T>(params: {
             ...additionalParamsRef.current,
           };
 
-          retrieverParams.search = currentSearchTerm;
+          // An explicit `search` passed through addAdditionalParameter wins: overwriting it
+          // with the internal term (only ever set by `search()`) silently dropped it.
+          if (additionalParamsRef.current.search === undefined) retrieverParams.search = currentSearchTerm;
           retrieverParams.next = nextRef;
           retrieverParams.previous = previousRef;
           retrieverParams.self = selfRef;
