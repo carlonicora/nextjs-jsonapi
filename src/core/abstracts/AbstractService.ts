@@ -36,6 +36,19 @@ export function clearLastApiTotal(): void {
   lastApiTotal = undefined;
 }
 
+// Store the last full top-level `meta` object from any list API call - accessible by
+// hooks that need aggregate meta beyond `total` (e.g. per-list counts). Same
+// module-global design as lastApiTotal above.
+let lastApiMeta: Record<string, any> | undefined = undefined;
+
+export function getLastApiMeta(): Record<string, any> | undefined {
+  return lastApiMeta;
+}
+
+export function clearLastApiMeta(): void {
+  lastApiMeta = undefined;
+}
+
 let globalErrorHandler: ((status: number, message: string) => void) | null = null;
 
 /**
@@ -258,6 +271,8 @@ export abstract class AbstractService {
       lastApiTotal = apiResponse.meta.total;
       if (params.total) params.total.total = apiResponse.meta.total;
     }
+    // Store the full top-level meta too, so hooks can read aggregates beyond `total`.
+    lastApiMeta = apiResponse.meta;
 
     return apiResponse.data as T;
   }

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ClientAbstractService } from "../core/abstracts/ClientAbstractService";
-import { getLastApiTotal } from "../core/abstracts/AbstractService";
+import { getLastApiMeta, getLastApiTotal } from "../core/abstracts/AbstractService";
 
 export type PageInfo = {
   startItem: number;
@@ -16,6 +16,7 @@ export type DataListRetriever<T> = {
   isLoaded: boolean;
   data: T[] | undefined;
   total?: number;
+  meta?: Record<string, any>;
   next?: (onlyNewRecords?: boolean) => Promise<void>;
   previous?: (onlyNewRecords?: boolean) => Promise<void>;
   search: (search: string) => Promise<void>;
@@ -39,6 +40,7 @@ export function useDataListRetriever<T>(params: {
 }): DataListRetriever<T> {
   const [data, setData] = useState<T[] | undefined>(undefined);
   const [total, setTotal] = useState<number | undefined>(undefined);
+  const [meta, setMeta] = useState<Record<string, any> | undefined>(undefined);
   const [nextPage, setNextPage] = useState<string | undefined>(undefined);
   const [previousPage, setPreviousPage] = useState<string | undefined>(undefined);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -218,6 +220,11 @@ export function useDataListRetriever<T>(params: {
           if (apiTotal !== undefined) {
             setTotal(apiTotal);
           }
+          // Full top-level meta (aggregates beyond `total`, e.g. per-list counts)
+          const apiMeta = getLastApiMeta();
+          if (apiMeta !== undefined) {
+            setMeta(apiMeta);
+          }
         }
       } catch (error) {
         if (thisRequestId === requestIdRef.current) {
@@ -359,6 +366,7 @@ export function useDataListRetriever<T>(params: {
     isLoaded: isLoaded,
     data: data as T[],
     total,
+    meta,
     next: nextPage ? loadNext : undefined,
     previous: previousPage ? loadPrevious : undefined,
     search: search,
