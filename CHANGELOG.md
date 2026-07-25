@@ -1,3 +1,9 @@
+## [1.139.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.139.0...v1.139.1) (2026-07-25)
+
+### 🐛 Bug Fixes
+
+* **EntityMultiSelector:** send the search term to the API ([c0514d6](https://github.com/carlonicora/nextjs-jsonapi/commit/c0514d6d8b7a9c2a2a1dfa602412a06429b5be3f))
+
 ## [1.139.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.138.1...v1.139.0) (2026-07-24)
 
 ### 🚀 Features
