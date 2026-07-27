@@ -1,3 +1,9 @@
+## [1.139.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.139.3...v1.139.4) (2026-07-27)
+
+### 🐛 Bug Fixes
+
+* **components:** declare non-native button on EditorSheet trigger ([47d4aad](https://github.com/carlonicora/nextjs-jsonapi/commit/47d4aad9a1995fed6f1a8d0893d1c34598f6f2ee))
+
 ## [1.139.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.139.2...v1.139.3) (2026-07-27)
 
 ### 🐛 Bug Fixes
