@@ -1,3 +1,9 @@
+## [1.139.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.139.1...v1.139.2) (2026-07-27)
+
+### 🐛 Bug Fixes
+
+* **oauth:** make scope optional in the consent flow per RFC 6749 §3.3 ([7e5be8d](https://github.com/carlonicora/nextjs-jsonapi/commit/7e5be8d54b8ff508c9c47106f889fbf10f792569))
+
 ## [1.139.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.139.0...v1.139.1) (2026-07-25)
 
 ### 🐛 Bug Fixes
