@@ -46,7 +46,9 @@ export function useOAuthConsent(params: OAuthConsentRequest): UseOAuthConsentRet
   // Fetch client info on mount
   useEffect(() => {
     const fetchInfo = async () => {
-      if (!params.clientId || !params.redirectUri || !params.scope) {
+      // scope is deliberately NOT required: RFC 6749 §3.3 makes it optional
+      // and the server defaults to the client's registered scopes.
+      if (!params.clientId || !params.redirectUri) {
         setError(new Error("Missing required authorization parameters"));
         setIsLoading(false);
         return;
