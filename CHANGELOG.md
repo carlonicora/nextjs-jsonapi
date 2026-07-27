@@ -1,3 +1,9 @@
+## [1.139.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.139.2...v1.139.3) (2026-07-27)
+
+### 🐛 Bug Fixes
+
+* **navigations:** keep RecentPagesNavigator labelled in the mobile sheet ([5273499](https://github.com/carlonicora/nextjs-jsonapi/commit/527349968d6305a35586a2cd95938db43f39756d))
+
 ## [1.139.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.139.1...v1.139.2) (2026-07-27)
 
 ### 🐛 Bug Fixes
