@@ -211,7 +211,13 @@ export function EditorSheet<T extends FieldValues>({
             // button — otherwise an interactive trigger (e.g. <Button>) nests a
             // <button> inside SheetTrigger's <button> (invalid HTML / hydration
             // error). `render` also preserves the element's native `disabled`.
-            <SheetTrigger render={trigger as ReactElement} />
+            //
+            // `nativeButton={false}` because this package's trigger convention is
+            // `<Button render={<div />} nativeButton={false}>` (see the package
+            // CLAUDE.md "pointer cursor" note). Without it the Trigger defaults to
+            // `nativeButton: true`, promising a native <button> it never renders,
+            // and Base UI logs a semantics/accessibility error at runtime.
+            <SheetTrigger nativeButton={false} render={trigger as ReactElement} />
           ) : (
             <SheetTrigger>
               {isEdit ? (

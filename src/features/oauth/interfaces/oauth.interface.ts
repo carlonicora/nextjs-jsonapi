@@ -77,8 +77,12 @@ export interface OAuthConsentRequest {
   clientId: string;
   /** Where to redirect after authorization */
   redirectUri: string;
-  /** Space-separated list of requested scopes */
-  scope: string;
+  /**
+   * Space-separated list of requested scopes. Optional per RFC 6749 §3.3 —
+   * when omitted, the authorization server defaults to the client's
+   * registered scopes (MCP clients like Claude Code omit it).
+   */
+  scope?: string;
   /** CSRF protection token (passed back on redirect) */
   state?: string;
   /** PKCE code challenge (required for public clients) */

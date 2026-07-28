@@ -130,7 +130,7 @@ export class OAuthService extends AbstractService {
     // Add query parameters
     endpoint.addAdditionalParam("client_id", params.clientId);
     endpoint.addAdditionalParam("redirect_uri", params.redirectUri);
-    endpoint.addAdditionalParam("scope", params.scope);
+    if (params.scope) endpoint.addAdditionalParam("scope", params.scope);
     if (params.state) endpoint.addAdditionalParam("state", params.state);
     if (params.codeChallenge) endpoint.addAdditionalParam("code_challenge", params.codeChallenge);
     if (params.codeChallengeMethod) endpoint.addAdditionalParam("code_challenge_method", params.codeChallengeMethod);

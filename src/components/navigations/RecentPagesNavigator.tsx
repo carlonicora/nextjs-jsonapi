@@ -19,7 +19,7 @@ import {
 export function RecentPagesNavigator() {
   const recentPages = useAtomValue(recentPagesAtom);
   const t = useTranslations();
-  const { state } = useSidebar();
+  const { state, isMobile } = useSidebar();
 
   if (recentPages.length === 0) {
     return null;
@@ -29,7 +29,16 @@ export function RecentPagesNavigator() {
     <DropdownMenu>
       <DropdownMenuTrigger render={<span />} nativeButton={false}>
         <span className="flex w-full cursor-pointer items-center gap-2">
-          {state === "collapsed" ? <HistoryIcon className="h-4 w-4" /> : <span>{t(`common.recent_pages`)}</span>}
+          {/* `state` is the DESKTOP rail's collapse state — useSidebar derives it
+              from `open` alone, never from `openMobile`. On mobile the sidebar
+              always renders as a full-width sheet, so without the !isMobile guard
+              this swaps its label for an icon inside the sheet — and consumers
+              that also render their own item icon end up showing TWO. */}
+          {state === "collapsed" && !isMobile ? (
+            <HistoryIcon className="h-4 w-4" />
+          ) : (
+            <span>{t(`common.recent_pages`)}</span>
+          )}
         </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-96">
