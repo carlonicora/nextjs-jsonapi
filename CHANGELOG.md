@@ -1,3 +1,9 @@
+## [1.140.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.139.4...v1.140.0) (2026-07-28)
+
+### 🚀 Features
+
+* **typography:** level-dependent SectionHeader sizes ([1ccc3dc](https://github.com/carlonicora/nextjs-jsonapi/commit/1ccc3dc7e564b397ea619dc7b71f50c35b1362d3))
+
 ## [1.139.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.139.3...v1.139.4) (2026-07-27)
 
 ### 🐛 Bug Fixes
