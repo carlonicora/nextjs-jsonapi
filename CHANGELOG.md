@@ -1,3 +1,9 @@
+## [1.141.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.140.2...v1.141.0) (2026-07-29)
+
+### 🚀 Features
+
+* **FileUploader:** opt-in onFilesRejected callback for rejection reporting ([17fcf16](https://github.com/carlonicora/nextjs-jsonapi/commit/17fcf16df10e5e134009891e9cd3a69797a77f65))
+
 ## [1.140.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.140.1...v1.140.2) (2026-07-29)
 
 ### 🐛 Bug Fixes
