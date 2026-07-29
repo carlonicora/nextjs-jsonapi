@@ -1,3 +1,9 @@
+## [1.140.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.140.0...v1.140.1) (2026-07-29)
+
+### 🐛 Bug Fixes
+
+* **a11y:** restore the main landmark and make table search keyboard-reachable ([937ea27](https://github.com/carlonicora/nextjs-jsonapi/commit/937ea2748c33cb6524de71242274b193d84b5ac1))
+
 ## [1.140.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.139.4...v1.140.0) (2026-07-28)
 
 ### 🚀 Features
