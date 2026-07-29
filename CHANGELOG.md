@@ -1,3 +1,9 @@
+## [1.140.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.140.1...v1.140.2) (2026-07-29)
+
+### 🐛 Bug Fixes
+
+* **forms:** localise the DateRangeSelector trigger label ([2d1811d](https://github.com/carlonicora/nextjs-jsonapi/commit/2d1811dbf3f370a3a44fbf00e95721c94ef54947))
+
 ## [1.140.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.140.0...v1.140.1) (2026-07-29)
 
 ### 🐛 Bug Fixes
