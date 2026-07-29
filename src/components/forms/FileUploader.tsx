@@ -14,7 +14,15 @@ import {
   useRef,
   useState,
 } from "react";
-import { Accept, DropzoneOptions, DropzoneState, FileRejection, useDropzone } from "react-dropzone";
+import {
+  Accept,
+  DropzoneOptions,
+  DropzoneState,
+  ErrorCode,
+  FileRejection,
+  FileWithPath,
+  useDropzone,
+} from "react-dropzone";
 import { showError } from "../../utils/toast";
 import { buttonVariants, Input, Tooltip, TooltipContent, TooltipTrigger } from "../../shadcnui";
 import { cn } from "../../utils";
@@ -51,11 +59,29 @@ type FileUploaderProps = {
   onValueChange: (value: File[] | null) => void;
   dropzoneOptions: DropzoneOptions;
   orientation?: "horizontal" | "vertical";
+  /**
+   * Opt-in rejection reporting. When supplied, the component hands every
+   * rejection — react-dropzone's own plus the files it had to drop because the
+   * `maxFiles` cap was already reached — to the consumer and raises no toast of
+   * its own. When absent, the built-in toast behaviour is unchanged.
+   */
+  onFilesRejected?: (rejections: FileRejection[]) => void;
 };
 
 export const FileUploader = forwardRef<HTMLDivElement, FileUploaderProps & React.HTMLAttributes<HTMLDivElement>>(
   (
-    { className, dropzoneOptions, value, onValueChange, reSelect, orientation = "vertical", children, dir, ...props },
+    {
+      className,
+      dropzoneOptions,
+      value,
+      onValueChange,
+      reSelect,
+      orientation = "vertical",
+      children,
+      dir,
+      onFilesRejected,
+      ...props
+    },
     ref,
   ) => {
     const [isFileTooBig, setIsFileTooBig] = useState(false);
@@ -138,13 +164,25 @@ export const FileUploader = forwardRef<HTMLDivElement, FileUploaderProps & React
           newValues.splice(0, newValues.length);
         }
 
-        files.forEach((file) => {
-          if (newValues.length < maxFiles) {
-            newValues.push(file);
-          }
-        });
+        // Split at the remaining capacity instead of silently dropping the tail:
+        // the overflow is a rejection the consumer may want to show.
+        const remaining = Math.max(0, maxFiles - newValues.length);
+        const admitted = files.slice(0, remaining);
+        const overflow = files.slice(remaining);
+
+        admitted.forEach((file) => newValues.push(file));
 
         onValueChange(newValues);
+
+        if (onFilesRejected) {
+          const overflowRejections: FileRejection[] = overflow.map((file) => ({
+            file: file as FileWithPath,
+            errors: [{ code: ErrorCode.TooManyFiles, message: `Too many files. Only ${maxFiles} allowed.` }],
+          }));
+          const allRejections = [...rejectedFiles, ...overflowRejections];
+          if (allRejections.length > 0) onFilesRejected(allRejections);
+          return;
+        }
 
         if (rejectedFiles.length > 0) {
           for (let i = 0; i < rejectedFiles.length; i++) {
@@ -163,7 +201,7 @@ export const FileUploader = forwardRef<HTMLDivElement, FileUploaderProps & React
           }
         }
       },
-      [reSelectAll, value],
+      [reSelectAll, value, maxFiles, maxSize, onValueChange, onFilesRejected, t],
     );
 
     useEffect(() => {
