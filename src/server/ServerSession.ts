@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import pako from "pako";
+import { ungzip } from "pako";
 import { Action, checkPermissionsFromServer, ModuleWithPermissions } from "../permissions";
 
 export class ServerSession {
@@ -68,7 +68,7 @@ export class ServerSession {
         update: boolean | string;
         delete: boolean | string;
       };
-    }[] = JSON.parse(pako.ungzip(Buffer.from(rawModules, "base64"), { to: "string" }));
+    }[] = JSON.parse(ungzip(Buffer.from(rawModules, "base64"), { toText: true }));
 
     const selectedModule = modules.find((module) => module.id === params.module.moduleId);
 
