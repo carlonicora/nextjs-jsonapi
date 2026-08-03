@@ -1,3 +1,9 @@
+## [1.141.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.141.0...v1.141.1) (2026-08-03)
+
+### 🐛 Bug Fixes
+
+* **components:** resolve EditorSheet trigger nativeButton per render target ([bd7fd2a](https://github.com/carlonicora/nextjs-jsonapi/commit/bd7fd2a076f65d62c1e8572fd271fb97fbd1724b))
+
 ## [1.141.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.140.2...v1.141.0) (2026-07-29)
 
 ### 🚀 Features
