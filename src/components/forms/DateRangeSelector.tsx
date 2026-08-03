@@ -5,6 +5,7 @@ import { CalendarIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
+import { useI18nDateFnsLocale } from "../../i18n";
 import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from "../../shadcnui";
 import { cn } from "../../utils";
 
@@ -16,6 +17,7 @@ type DateRangeSelectorProps = {
 
 export function DateRangeSelector({ onDateChange, avoidSettingDates, showPreviousMonth }: DateRangeSelectorProps) {
   const t = useTranslations();
+  const dateFnsLocale = useI18nDateFnsLocale();
   const [date, setDate] = useState<DateRange | undefined>(
     avoidSettingDates
       ? undefined
@@ -74,10 +76,11 @@ export function DateRangeSelector({ onDateChange, avoidSettingDates, showPreviou
           {date?.from ? (
             date.to ? (
               <>
-                {format(date.from, "LLL dd, y")} - {format(date.to, "LLL dd, y")}
+                {format(date.from, "d MMM yyyy", { locale: dateFnsLocale })} -{" "}
+                {format(date.to, "d MMM yyyy", { locale: dateFnsLocale })}
               </>
             ) : (
-              format(date.from, "LLL dd, y")
+              format(date.from, "d MMM yyyy", { locale: dateFnsLocale })
             )
           ) : (
             <span>{t("ui.labels.pick_a_date")}</span>
@@ -103,10 +106,11 @@ export function DateRangeSelector({ onDateChange, avoidSettingDates, showPreviou
           {date?.from ? (
             date.to ? (
               <>
-                {format(date.from, "LLL dd, y")} - {format(date.to, "LLL dd, y")}
+                {format(date.from, "d MMM yyyy", { locale: dateFnsLocale })} -{" "}
+                {format(date.to, "d MMM yyyy", { locale: dateFnsLocale })}
               </>
             ) : (
-              format(date.from, "LLL dd, y")
+              format(date.from, "d MMM yyyy", { locale: dateFnsLocale })
             )
           ) : (
             <span>{t("ui.labels.pick_a_date")}</span>

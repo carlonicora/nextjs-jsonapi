@@ -4,7 +4,7 @@ import { RefreshCw, Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { DataListRetriever, useDebounce } from "../../hooks";
-import { Input } from "../../shadcnui";
+import { Button, Input } from "../../shadcnui";
 
 type ContentTableSearchProps = {
   data: DataListRetriever<any>;
@@ -68,13 +68,25 @@ export function ContentTableSearch({ data }: ContentTableSearchProps) {
         isExpanded ? "w-64" : "w-6"
       }`}
     >
-      <Search
-        data-testid="content-table-search-trigger"
-        className={`absolute top-1 left-1 h-4 w-4 transition-colors ${
-          isExpanded ? "text-muted-foreground" : "text-muted-foreground hover:text-foreground cursor-pointer"
-        }`}
-        onClick={handleSearchIconClick}
-      />
+      {/* Collapsed, this glyph is the ONLY way to open search — as a bare <svg onClick> it had
+          no role, no tab stop and no name, so search was unreachable without a pointer on every
+          list in the product. Expanded, it is purely decorative and must NOT be a tab stop.
+          Labels reuse keys that exist in every consuming app; a new package-level key would
+          throw MISSING_MESSAGE wherever it had not been added. */}
+      {isExpanded ? (
+        <Search aria-hidden className="text-muted-foreground absolute top-1 left-1 size-4" />
+      ) : (
+        <Button
+          data-testid="content-table-search-trigger"
+          variant="ghost"
+          size="icon-sm"
+          className="text-muted-foreground hover:text-foreground absolute top-0 left-0"
+          onClick={handleSearchIconClick}
+        >
+          <Search className="size-4" />
+          <span className="sr-only">{t(`ui.search.button`)}</span>
+        </Button>
+      )}
       {isExpanded && (
         <Input
           data-testid="content-table-search-input"
@@ -97,10 +109,15 @@ export function ContentTableSearch({ data }: ContentTableSearchProps) {
         <RefreshCw className="text-muted-foreground absolute top-1 right-1 h-4 w-4 animate-spin" />
       )}
       {isExpanded && !isSearching && searchTermRef.current && (
-        <X
-          className="text-muted-foreground hover:text-foreground absolute top-1 right-1 h-4 w-4 cursor-pointer"
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          className="text-muted-foreground hover:text-foreground absolute top-0 right-0"
           onClick={handleClear}
-        />
+        >
+          <X className="size-4" />
+          <span className="sr-only">{t(`ui.buttons.clear`)}</span>
+        </Button>
       )}
     </div>
   );

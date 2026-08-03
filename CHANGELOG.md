@@ -1,3 +1,27 @@
+## [1.141.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.140.2...v1.141.0) (2026-07-29)
+
+### 🚀 Features
+
+* **FileUploader:** opt-in onFilesRejected callback for rejection reporting ([17fcf16](https://github.com/carlonicora/nextjs-jsonapi/commit/17fcf16df10e5e134009891e9cd3a69797a77f65))
+
+## [1.140.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.140.1...v1.140.2) (2026-07-29)
+
+### 🐛 Bug Fixes
+
+* **forms:** localise the DateRangeSelector trigger label ([2d1811d](https://github.com/carlonicora/nextjs-jsonapi/commit/2d1811dbf3f370a3a44fbf00e95721c94ef54947))
+
+## [1.140.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.140.0...v1.140.1) (2026-07-29)
+
+### 🐛 Bug Fixes
+
+* **a11y:** restore the main landmark and make table search keyboard-reachable ([937ea27](https://github.com/carlonicora/nextjs-jsonapi/commit/937ea2748c33cb6524de71242274b193d84b5ac1))
+
+## [1.140.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.139.4...v1.140.0) (2026-07-28)
+
+### 🚀 Features
+
+* **typography:** level-dependent SectionHeader sizes ([1ccc3dc](https://github.com/carlonicora/nextjs-jsonapi/commit/1ccc3dc7e564b397ea619dc7b71f50c35b1362d3))
+
 ## [1.139.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v1.139.3...v1.139.4) (2026-07-27)
 
 ### 🐛 Bug Fixes

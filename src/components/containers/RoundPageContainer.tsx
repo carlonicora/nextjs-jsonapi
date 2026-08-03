@@ -220,7 +220,12 @@ export function RoundPageContainer({
         >
           {headerChildren}
         </Header>
-        <div
+        {/* `main`, not `div`: this is the page's content landmark. PageContainer used to
+            supply it, and the migration to RoundPageContainer dropped it, leaving every
+            authenticated page with no "skip to main content" target. `main` is block-level
+            like `div`, so the flex classes below behave identically and nothing shifts.
+            data-testid stays here so the e2e pre-hydration attach is unaffected. */}
+        <main
           data-testid={testId}
           className={cn(
             "flex h-[calc(100svh-var(--app-header-h,3rem))] w-full flex-col",
@@ -243,7 +248,7 @@ export function RoundPageContainer({
             <div className="flex w-full flex-col" />
           </div>
           <MobileNavigationBar />
-        </div>
+        </main>
       </>
     );
   }
@@ -263,7 +268,7 @@ export function RoundPageContainer({
           the bottom bar. svh is constant — the fully visible area in
           standalone, the chrome-visible area in Safari — so the bar can never
           end up above OR below the fold. */}
-      <div
+      <main
         data-testid={testId}
         className={cn(
           `flex h-[calc(100svh-var(--app-header-h,3rem))] w-full flex-col`,
@@ -525,7 +530,7 @@ export function RoundPageContainer({
             ))}
         </div>
         <MobileNavigationBar />
-      </div>
+      </main>
     </>
   );
 }
