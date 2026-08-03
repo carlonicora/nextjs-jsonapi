@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { ReactElement, ReactNode, useCallback, useEffect, useRef } from "react";
+import { isValidElement, ReactElement, ReactNode, useCallback, useEffect, useRef } from "react";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 import { PencilIcon } from "lucide-react";
 import { ModuleWithPermissions } from "../../permissions/types";
@@ -23,6 +23,39 @@ import { useEditorDialog } from "./useEditorDialog";
 import { errorToast } from "../errors/errorToast";
 
 type EditorSheetSize = "sm" | "md" | "lg" | "xl" | "2xl";
+
+/**
+ * Resolve the `nativeButton` contract for a caller-supplied `trigger`.
+ *
+ * Base UI checks `nativeButton` against the element the trigger ACTUALLY puts in
+ * the DOM and logs an error when the two disagree — in BOTH directions (see
+ * `@base-ui/react/internals/use-button/useButton`: "expected a native <button>"
+ * / "expected a non-<button>"). Since `trigger` is supplied by the call site and
+ * this package has two live conventions, no constant is correct for all of them:
+ *
+ *   - `<Button render={<div />} nativeButton={false}>` — the pointer-cursor
+ *     convention documented in this package's CLAUDE.md — renders a `<div>`.
+ *   - a plain `<Button>` / `<button>` / `<Button render={<Link />}>` renders a
+ *     native `<button>` / a native `<button>` / an `<a>` respectively.
+ *
+ * So derive it from the element instead of hardcoding it.
+ */
+function resolveTriggerIsNativeButton(trigger: ReactNode): boolean {
+  if (!isValidElement(trigger)) return true;
+
+  const props = (trigger.props ?? {}) as { nativeButton?: boolean; render?: unknown };
+
+  // The call site already declared the contract for its own element — honour it.
+  if (typeof props.nativeButton === "boolean") return props.nativeButton;
+
+  // `render={<X />}` means X is what reaches the DOM (e.g. <Link> → <a>, <div>).
+  if (isValidElement(props.render)) return props.render.type === "button";
+
+  // Intrinsic tags: only <button> is native. Components (this package's <Button>
+  // and the Base UI primitives) default to rendering a native <button>.
+  if (typeof trigger.type === "string") return trigger.type === "button";
+  return true;
+}
 
 const sizeClasses: Record<EditorSheetSize, string> = {
   sm: "data-[side=right]:sm:max-w-2xl",
@@ -212,12 +245,13 @@ export function EditorSheet<T extends FieldValues>({
             // <button> inside SheetTrigger's <button> (invalid HTML / hydration
             // error). `render` also preserves the element's native `disabled`.
             //
-            // `nativeButton={false}` because this package's trigger convention is
-            // `<Button render={<div />} nativeButton={false}>` (see the package
-            // CLAUDE.md "pointer cursor" note). Without it the Trigger defaults to
-            // `nativeButton: true`, promising a native <button> it never renders,
-            // and Base UI logs a semantics/accessibility error at runtime.
-            <SheetTrigger nativeButton={false} render={trigger as ReactElement} />
+            // `nativeButton` must match the element the trigger actually renders,
+            // or Base UI logs a semantics/accessibility error at runtime. Call
+            // sites pass BOTH kinds — a native `<Button>` and the div-rendering
+            // `<Button render={<div />} nativeButton={false}>` convention — so it
+            // is resolved per trigger rather than hardcoded (a constant `false`
+            // warned on every native-button trigger).
+            <SheetTrigger nativeButton={resolveTriggerIsNativeButton(trigger)} render={trigger as ReactElement} />
           ) : (
             <SheetTrigger>
               {isEdit ? (
