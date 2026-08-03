@@ -31,6 +31,12 @@ export type { DropzoneOptions } from "react-dropzone";
 
 type DirectionOptions = "rtl" | "ltr" | undefined;
 
+/**
+ * One entry of react-dropzone 19.3's grouped `accept` form. Declared locally rather than
+ * imported because 19.1 has no `AcceptGroup` export, and this file must compile against both.
+ */
+type AcceptGroupLike = { description?: string; accept: Accept };
+
 type FileUploaderContextType = {
   dropzoneState: DropzoneState;
   isLOF: boolean;
@@ -40,7 +46,9 @@ type FileUploaderContextType = {
   setActiveIndex: Dispatch<SetStateAction<number>>;
   orientation: "horizontal" | "vertical";
   direction: DirectionOptions;
-  accept?: Accept;
+  // Mirrors whatever react-dropzone declares: 19.1 had `Accept`, 19.3 widened it to
+  // `Accept | AcceptGroup[]`. Indexing the option type keeps this correct on both.
+  accept?: DropzoneOptions["accept"];
 };
 
 const FileUploaderContext = createContext<FileUploaderContextType | null>(null);
@@ -332,11 +340,18 @@ export const FileInput = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
 
     const acceptedLabels = useMemo(() => {
       if (!accept) return null;
+      // react-dropzone 19.3 made two changes to `accept`: it allows a grouped form
+      // (`{ description?, accept }[]`) beside the flat MIME -> extensions record, and it widened
+      // each value from `readonly string[]` to `string | readonly string[]`. Normalise both so a
+      // single-extension string is not iterated character by character.
+      const entries: [string, string | readonly string[]][] = Array.isArray(accept)
+        ? accept.flatMap((group: AcceptGroupLike) => Object.entries(group.accept))
+        : Object.entries(accept);
       const extensions = new Set<string>();
       let hasWildcardImages = false;
-      for (const [mime, exts] of Object.entries(accept)) {
+      for (const [mime, exts] of entries) {
         if (mime === "image/*") hasWildcardImages = true;
-        for (const ext of exts) extensions.add(ext);
+        for (const ext of typeof exts === "string" ? [exts] : exts) extensions.add(ext);
       }
       const labels = Array.from(extensions).sort();
       if (hasWildcardImages) labels.push(t("ui.labels.images"));
