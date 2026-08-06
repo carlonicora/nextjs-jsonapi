@@ -224,7 +224,7 @@ function CompanyEditorInternal({
       <div className="flex w-full items-start justify-between gap-x-4">
         <div className="flex w-96 flex-col justify-start gap-y-4">
           <FileUploader value={files} onValueChange={setFiles} dropzoneOptions={dropzone} className="w-full p-4">
-            <FileInput className="text-muted-foreground/50 outline-dashed">
+            <FileInput className="text-muted-foreground/50 rounded-lg outline-1 outline-dashed">
               <div className="flex w-full flex-col items-center justify-center pt-3 pb-4">
                 <div className="flex w-full flex-col items-center justify-center pt-3 pb-4">
                   {file || company?.logo ? (
