@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useCurrentUserContext } from "../../user/contexts/CurrentUserContext";
-import { Button } from "../../../shadcnui";
+import { buttonVariants } from "../../../shadcnui";
 import { useHelp } from "../contexts/HelpContext";
 import { HelpAskAi } from "./HelpAskAi";
 
@@ -25,14 +25,19 @@ export function HelpHeader() {
       </Link>
       <div className="flex items-center gap-2">
         <HelpAskAi />
+        {/* Styled Links, not <Button render={<Link/>} nativeButton={false}>. Base UI's
+            Button primitive warns when rendered as a non-button, and nativeButton={false}
+            silences that by stamping role="button" onto the anchor — so a control that
+            navigates would announce as a button. Both of these navigate, so they stay
+            real links and only borrow the button styling. */}
         {currentUser ? (
-          <Button render={<Link href={appHref} />} nativeButton={false} variant="outline" size="sm">
+          <Link href={appHref} className={buttonVariants({ variant: "outline", size: "sm" })}>
             {t("help.header.openApp")}
-          </Button>
+          </Link>
         ) : (
-          <Button render={<Link href="/login" />} nativeButton={false} variant="outline" size="sm">
+          <Link href="/login" className={buttonVariants({ variant: "outline", size: "sm" })}>
             {t("help.header.login")}
-          </Button>
+          </Link>
         )}
       </div>
     </header>
