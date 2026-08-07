@@ -11,9 +11,9 @@ export class Company extends AbstractApiData implements CompanyInterface {
 
   private _isActiveSubscription: boolean = false;
 
-  private _monthlyTokens: number = 0;
-  private _availableMonthlyTokens: number = 0;
-  private _availableExtraTokens: number = 0;
+  private _monthlyCredits: number = 0;
+  private _availableMonthlyCredits: number = 0;
+  private _availableExtraCredits: number = 0;
 
   private _features?: FeatureInterface[];
   private _modules?: ModuleInterface[];
@@ -46,16 +46,16 @@ export class Company extends AbstractApiData implements CompanyInterface {
     return this._isActiveSubscription ?? false;
   }
 
-  get monthlyTokens(): number {
-    return this._monthlyTokens ?? 0;
+  get monthlyCredits(): number {
+    return this._monthlyCredits ?? 0;
   }
 
-  get availableMonthlyTokens(): number {
-    return this._availableMonthlyTokens ?? 0;
+  get availableMonthlyCredits(): number {
+    return this._availableMonthlyCredits ?? 0;
   }
 
-  get availableExtraTokens(): number {
-    return this._availableExtraTokens ?? 0;
+  get availableExtraCredits(): number {
+    return this._availableExtraCredits ?? 0;
   }
 
   get features(): FeatureInterface[] {
@@ -120,9 +120,9 @@ export class Company extends AbstractApiData implements CompanyInterface {
     this._logo = data.jsonApi.attributes.logo;
     this._logoUrl = data.jsonApi.attributes.logoUrl;
     this._isActiveSubscription = data.jsonApi.attributes.isActiveSubscription ?? false;
-    this._monthlyTokens = data.jsonApi.attributes.monthlyTokens ?? 0;
-    this._availableMonthlyTokens = data.jsonApi.attributes.availableMonthlyTokens ?? 0;
-    this._availableExtraTokens = data.jsonApi.attributes.availableExtraTokens ?? 0;
+    this._monthlyCredits = data.jsonApi.attributes.monthlyCredits ?? 0;
+    this._availableMonthlyCredits = data.jsonApi.attributes.availableMonthlyCredits ?? 0;
+    this._availableExtraCredits = data.jsonApi.attributes.availableExtraCredits ?? 0;
 
     this._legal_address = data.jsonApi.attributes.legal_address;
     this._street_number = data.jsonApi.attributes.street_number;
@@ -156,11 +156,11 @@ export class Company extends AbstractApiData implements CompanyInterface {
     if (data.name) response.data.attributes.name = data.name;
     if (data.configurations) response.data.attributes.configurations = JSON.stringify(data.configurations);
     if (data.logo) response.data.attributes.logo = data.logo;
-    if (data.monthlyTokens !== undefined) response.data.attributes.monthlyTokens = data.monthlyTokens;
-    if (data.availableMonthlyTokens !== undefined)
-      response.data.attributes.availableMonthlyTokens = data.availableMonthlyTokens;
-    if (data.availableExtraTokens !== undefined)
-      response.data.attributes.availableExtraTokens = data.availableExtraTokens;
+    if (data.monthlyCredits !== undefined) response.data.attributes.monthlyCredits = data.monthlyCredits;
+    if (data.availableMonthlyCredits !== undefined)
+      response.data.attributes.availableMonthlyCredits = data.availableMonthlyCredits;
+    if (data.availableExtraCredits !== undefined)
+      response.data.attributes.availableExtraCredits = data.availableExtraCredits;
 
     if (data.legal_address !== undefined) response.data.attributes.legal_address = data.legal_address;
     if (data.street_number !== undefined) response.data.attributes.street_number = data.street_number;

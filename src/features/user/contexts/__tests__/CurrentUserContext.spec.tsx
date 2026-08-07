@@ -39,14 +39,14 @@ vi.mock("../../../../core", () => {
   // exercise it.
   class FakeCompany {
     id = "";
-    monthlyTokens = 0;
-    _availableMonthlyTokens = 0;
-    _availableExtraTokens = 0;
-    get availableMonthlyTokens() {
-      return this._availableMonthlyTokens ?? 0;
+    monthlyCredits = 0;
+    _availableMonthlyCredits = 0;
+    _availableExtraCredits = 0;
+    get availableMonthlyCredits() {
+      return this._availableMonthlyCredits ?? 0;
     }
-    get availableExtraTokens() {
-      return this._availableExtraTokens ?? 0;
+    get availableExtraCredits() {
+      return this._availableExtraCredits ?? 0;
     }
   }
   return {
@@ -187,9 +187,9 @@ describe("CurrentUserProvider token updates", () => {
     modules: [],
     company: {
       id: "company-1",
-      monthlyTokens: 1000,
-      _availableMonthlyTokens: 900,
-      _availableExtraTokens: 50,
+      monthlyCredits: 1000,
+      _availableMonthlyCredits: 900,
+      _availableExtraCredits: 50,
     },
   };
 
@@ -197,7 +197,7 @@ describe("CurrentUserProvider token updates", () => {
     const { company } = useCurrentUserContext();
     return (
       <div data-testid="balances">
-        {company ? `${(company as any).availableMonthlyTokens}/${(company as any).availableExtraTokens}` : "null"}
+        {company ? `${(company as any).availableMonthlyCredits}/${(company as any).availableExtraCredits}` : "null"}
       </div>
     );
   }
@@ -208,7 +208,7 @@ describe("CurrentUserProvider token updates", () => {
     vi.clearAllMocks();
   });
 
-  it("patches balances from company:tokens_updated without refetching the user", async () => {
+  it("patches balances from company:credits_updated without refetching the user", async () => {
     localStorage.setItem("user", JSON.stringify(STORED_USER));
 
     const { getByTestId } = render(
@@ -221,11 +221,11 @@ describe("CurrentUserProvider token updates", () => {
     expect(getByTestId("balances").textContent).toBe("900/50");
 
     await act(async () => {
-      socketMock.emit("company:tokens_updated", {
-        type: "company:tokens_updated",
+      socketMock.emit("company:credits_updated", {
+        type: "company:credits_updated",
         companyId: "company-1",
-        availableMonthlyTokens: 750,
-        availableExtraTokens: 40,
+        availableMonthlyCredits: 750,
+        availableExtraCredits: 40,
       });
     });
 
@@ -233,7 +233,7 @@ describe("CurrentUserProvider token updates", () => {
     expect(UserService.findFullUser).not.toHaveBeenCalled();
   });
 
-  it("ignores company:tokens_updated for a different company", async () => {
+  it("ignores company:credits_updated for a different company", async () => {
     localStorage.setItem("user", JSON.stringify(STORED_USER));
 
     const { getByTestId } = render(
@@ -245,11 +245,11 @@ describe("CurrentUserProvider token updates", () => {
     await new Promise((resolve) => setTimeout(resolve, 50));
 
     await act(async () => {
-      socketMock.emit("company:tokens_updated", {
-        type: "company:tokens_updated",
+      socketMock.emit("company:credits_updated", {
+        type: "company:credits_updated",
         companyId: "someone-else",
-        availableMonthlyTokens: 1,
-        availableExtraTokens: 1,
+        availableMonthlyCredits: 1,
+        availableExtraCredits: 1,
       });
     });
 

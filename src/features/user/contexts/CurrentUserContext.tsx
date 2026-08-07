@@ -71,26 +71,26 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
     [dehydratedUser],
   );
 
-  // Balances pushed by company:tokens_updated. Transient: a real user refresh is
+  // Balances pushed by company:credits_updated. Transient: a real user refresh is
   // authoritative and clears this.
-  const [tokenOverride, setTokenOverride] = useState<{
-    availableMonthlyTokens: number;
-    availableExtraTokens: number;
+  const [creditOverride, setCreditOverride] = useState<{
+    availableMonthlyCredits: number;
+    availableExtraCredits: number;
   } | null>(null);
 
   const company = useMemo<CompanyInterface | null>(() => {
     const c = currentUser?.company ?? null;
-    if (!c || !tokenOverride) return c;
+    if (!c || !creditOverride) return c;
     return Object.assign(Object.create(Object.getPrototypeOf(c)), c, {
-      _availableMonthlyTokens: tokenOverride.availableMonthlyTokens,
-      _availableExtraTokens: tokenOverride.availableExtraTokens,
+      _availableMonthlyCredits: creditOverride.availableMonthlyCredits,
+      _availableExtraCredits: creditOverride.availableExtraCredits,
     });
-  }, [currentUser, tokenOverride]);
+  }, [currentUser, creditOverride]);
 
   const setUser = (user?: UserInterface): void => {
     if (user) setDehydratedUser(user.dehydrate() as any);
     else setDehydratedUser(null);
-    setTokenOverride(null);
+    setCreditOverride(null);
   };
 
   const hasRole = (roleId: string): boolean => {
@@ -177,7 +177,7 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
           }
 
           setDehydratedUser(fullUser.dehydrate() as any);
-          setTokenOverride(null);
+          setCreditOverride(null);
         }
       } catch (error) {
         console.error("Failed to refresh user data:", error);
@@ -206,15 +206,15 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
 
     // Hot path: fires once per LLM call. Fully described by its payload — must
     // never trigger an HTTP request.
-    const handleTokensUpdated = (data: {
+    const handleCreditsUpdated = (data: {
       companyId: string;
-      availableMonthlyTokens: number;
-      availableExtraTokens: number;
+      availableMonthlyCredits: number;
+      availableExtraCredits: number;
     }) => {
       if (data.companyId !== currentUser.company?.id) return;
-      setTokenOverride({
-        availableMonthlyTokens: data.availableMonthlyTokens,
-        availableExtraTokens: data.availableExtraTokens,
+      setCreditOverride({
+        availableMonthlyCredits: data.availableMonthlyCredits,
+        availableExtraCredits: data.availableExtraCredits,
       });
     };
 
@@ -230,11 +230,11 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
       }
     };
 
-    socket.on("company:tokens_updated", handleTokensUpdated);
+    socket.on("company:credits_updated", handleCreditsUpdated);
     socket.on("company:subscription_updated", handleSubscriptionUpdated);
 
     return () => {
-      socket.off("company:tokens_updated", handleTokensUpdated);
+      socket.off("company:credits_updated", handleCreditsUpdated);
       socket.off("company:subscription_updated", handleSubscriptionUpdated);
     };
   }, [socket, isConnected, currentUser?.company?.id]);

@@ -8,9 +8,9 @@ export type CompanyInput = {
   logo?: string;
   configurations?: any;
 
-  monthlyTokens?: number;
-  availableMonthlyTokens?: number;
-  availableExtraTokens?: number;
+  monthlyCredits?: number;
+  availableMonthlyCredits?: number;
+  availableExtraCredits?: number;
 
   featureIds?: string[];
   moduleIds?: string[];
@@ -34,9 +34,9 @@ export interface CompanyInterface extends ApiDataInterface {
 
   get isActiveSubscription(): boolean;
 
-  get monthlyTokens(): number;
-  get availableMonthlyTokens(): number;
-  get availableExtraTokens(): number;
+  get monthlyCredits(): number;
+  get availableMonthlyCredits(): number;
+  get availableExtraCredits(): number;
 
   get features(): FeatureInterface[];
   get modules(): ModuleInterface[];

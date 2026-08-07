@@ -31,12 +31,12 @@ export function TokenStatusIndicator({ className, size = "md", showExtraPages = 
   // Don't render if no company data
   if (!company) return null;
 
-  const monthlyTokens = company.monthlyTokens;
-  const availableMonthlyTokens = company.availableMonthlyTokens;
-  const availableExtraTokens = company.availableExtraTokens;
+  const monthlyCredits = company.monthlyCredits;
+  const availableMonthlyCredits = company.availableMonthlyCredits;
+  const availableExtraCredits = company.availableExtraCredits;
 
   // Calculate percentage of available monthly pages
-  const percentage = monthlyTokens > 0 ? (availableMonthlyTokens / monthlyTokens) * 100 : 0;
+  const percentage = monthlyCredits > 0 ? (availableMonthlyCredits / monthlyCredits) * 100 : 0;
 
   const sizeClasses = {
     sm: "h-4 w-4",
@@ -91,7 +91,7 @@ export function TokenStatusIndicator({ className, size = "md", showExtraPages = 
             {t("billing.tokens.monthly", { defaultValue: "Monthly Pages" })}:
           </span>
           <span className={cn("font-medium", getStatusColor())}>
-            {availableMonthlyTokens} / {monthlyTokens}
+            {availableMonthlyCredits} / {monthlyCredits}
           </span>
         </div>
         <div className="flex items-center justify-between gap-4">
@@ -108,7 +108,7 @@ export function TokenStatusIndicator({ className, size = "md", showExtraPages = 
           <span className="text-muted-foreground">
             {t("billing.tokens.available_extra", { defaultValue: "Extra Pages" })}:
           </span>
-          <span className="font-medium text-blue-500">{availableExtraTokens}</span>
+          <span className="font-medium text-blue-500">{availableExtraCredits}</span>
         </div>
         <Link href="/settings/billing?action=subscribe" className="w-full flex justify-end my-4">
           <Button variant="outline" size="sm">
@@ -127,11 +127,11 @@ export function TokenStatusIndicator({ className, size = "md", showExtraPages = 
           aria-label={t("billing.tokens.status", { defaultValue: "Page Status" })}
         >
           {getBatteryIcon()}
-          <span className={cn(textSize, "text-muted-foreground font-medium")}>{availableMonthlyTokens}</span>
-          {showExtraPages && availableExtraTokens > 0 && (
+          <span className={cn(textSize, "text-muted-foreground font-medium")}>{availableMonthlyCredits}</span>
+          {showExtraPages && availableExtraCredits > 0 && (
             <div className="inline-flex items-center gap-0.5">
               <PlusCircle className={cn(smallIconSize, "text-blue-500")} />
-              <span className={cn(textSize, "text-blue-500 font-medium")}>{availableExtraTokens}</span>
+              <span className={cn(textSize, "text-blue-500 font-medium")}>{availableExtraCredits}</span>
             </div>
           )}
         </div>
