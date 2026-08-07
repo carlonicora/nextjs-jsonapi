@@ -91,4 +91,9 @@ export * from "../features/rbac/rbac.module";
 export * from "../features/referral/data";
 export * from "../features/referral/referral.module";
 export * from "../features/referral/referral-stats.module";
+// Administrative token-usage reporting modules. Exported from core (not only
+// from the client-marked ./tokenusage barrel) so a consuming app can register
+// them in its bootstrapper without pulling the feature's client bundle —
+// same placement as waitlist-stats and referral-stats above.
+export * from "../features/tokenusage/tokenusage-admin.module";
 export * from "../features/audit-log";

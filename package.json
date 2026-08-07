@@ -62,6 +62,11 @@
       "types": "./dist/features/help/server.d.ts",
       "import": "./dist/features/help/server.mjs",
       "require": "./dist/features/help/server.js"
+    },
+    "./tokenusage": {
+      "types": "./dist/features/tokenusage/index.d.ts",
+      "import": "./dist/features/tokenusage/index.mjs",
+      "require": "./dist/features/tokenusage/index.js"
     }
   },
   "scripts": {

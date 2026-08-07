@@ -16,6 +16,8 @@ const clientEntries = [
   "dist/billing/index.js",
   "dist/features/help/index.mjs",
   "dist/features/help/index.js",
+  "dist/features/tokenusage/index.mjs",
+  "dist/features/tokenusage/index.js",
 ];
 
 export default defineConfig({
@@ -30,6 +32,7 @@ export default defineConfig({
     "billing/index": "src/billing/index.ts",
     "features/help/index": "src/features/help/index.ts",
     "features/help/server": "src/features/help/server-entry.ts",
+    "features/tokenusage/index": "src/features/tokenusage/index.ts",
   },
   format: ["cjs", "esm"],
   // Enable splitting to keep dynamic imports as separate chunks

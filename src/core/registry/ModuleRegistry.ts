@@ -58,6 +58,10 @@ export interface FoundationModuleDefinitions {
   RbacMatrix: ModuleWithPermissions;
   // Audit modules
   AuditLog: ModuleWithPermissions;
+  // Administrative token-usage reporting modules
+  TokenUsageAdminSummary: ModuleWithPermissions;
+  TokenUsageAdminTimeline: ModuleWithPermissions;
+  TokenUsageAdminBreakdown: ModuleWithPermissions;
 }
 
 // App-specific modules - apps will augment this interface ONLY
