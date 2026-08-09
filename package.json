@@ -90,8 +90,8 @@
     "README.md"
   ],
   "peerDependencies": {
-    "@stripe/react-stripe-js": ">=2.0.0",
-    "@stripe/stripe-js": ">=3.0.0",
+    "@stripe/react-stripe-js": ">=6.8.0",
+    "@stripe/stripe-js": ">=9.13.0",
     "@tanstack/react-table": ">=8.0.0",
     "next": ">=14.0.0",
     "next-intl": ">=3.0.0",
