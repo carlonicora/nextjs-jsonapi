@@ -510,7 +510,20 @@ export function RoundPageContainer({
                   // `flex-col` + a separate scroll body below: the header must stay
                   // put while the panel content scrolls. Scrolling on this element
                   // (as it did before) would carry the header away with the content.
-                  "flex h-full shrink-0 flex-col overflow-hidden transition-all duration-300 ease-in-out",
+                  //
+                  // `relative` is load-bearing: the panel content mounts Base UI
+                  // dialog headers marked `sr-only`, which are `position: absolute`
+                  // with no offsets. Without a positioned ancestor their containing
+                  // block is the initial containing block, so when the panel is
+                  // collapsed (`w-0`) their static position lands a few px past the
+                  // viewport's right edge and adds to the DOCUMENT's scroll area —
+                  // `overflow-hidden` here cannot clip them, because it only clips
+                  // descendants whose containing block is inside this element. That
+                  // produced a page-wide horizontal scrollbar, which in turn stole
+                  // 15px of height and made every `100vh`/`100svh` box overflow
+                  // vertically too. Making this the containing block lets
+                  // `overflow-hidden` clip them again.
+                  "relative flex h-full shrink-0 flex-col overflow-hidden transition-all duration-300 ease-in-out",
                   showDetails ? "w-96 border-l opacity-100" : "ml-0 w-0 border-l-0 opacity-0",
                 )}
               >
