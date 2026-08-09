@@ -21,9 +21,22 @@ function Command({ className, ...props }: React.ComponentProps<typeof CommandPri
   );
 }
 
+/**
+ * `title` / `description` render a visually hidden header **inside** the popup, for command
+ * dialogs whose own content carries no `DialogTitle`. Omit both when `children` already render
+ * a `DialogTitle` — Base UI keeps a single `titleElementId` per dialog
+ * (`store.useSyncedValueWithCleanup('titleElementId', id)`), so two mounted titles fight over
+ * the popup's `aria-labelledby` and unmount order decides which one wins.
+ *
+ * The header must stay inside `DialogContent`. Rendered as a sibling of it (as shadcn upstream
+ * does) it is NOT portalled: it lands inline in the page, and because `sr-only` is
+ * `position: absolute` with no offsets and usually no positioned ancestor, its static position
+ * can fall outside the viewport and grow the DOCUMENT's scroll area — a stray page-wide
+ * scrollbar with no visible cause. See the `relative` note in RoundPageContainer.
+ */
 function CommandDialog({
-  title = "Command Palette",
-  description = "Search for a command to run...",
+  title,
+  description,
   children,
   className,
   showCloseButton = false,
@@ -37,11 +50,13 @@ function CommandDialog({
 }) {
   return (
     <Dialog {...props}>
-      <DialogHeader className="sr-only">
-        <DialogTitle>{title}</DialogTitle>
-        <DialogDescription>{description}</DialogDescription>
-      </DialogHeader>
       <DialogContent className={cn("rounded-xl! p-0 overflow-hidden p-0", className)} showCloseButton={showCloseButton}>
+        {(title || description) && (
+          <DialogHeader className="sr-only">
+            {title && <DialogTitle>{title}</DialogTitle>}
+            {description && <DialogDescription>{description}</DialogDescription>}
+          </DialogHeader>
+        )}
         {children}
       </DialogContent>
     </Dialog>
