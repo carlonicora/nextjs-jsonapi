@@ -59,14 +59,16 @@ export function useSubscriptionStatus(): TrialSubscriptionStatus {
       };
     }
 
-    // No company after loading = blocked
+    // No company after loading is an AUTHENTICATION fault, not a billing one.
+    // Reporting it as a block would hide the real problem, so fail open — the
+    // same reasoning CreditsGuard documents on the API side.
     if (!company) {
       return {
         status: "expired",
         trialEndsAt: null,
         daysRemaining: 0,
         isGracePeriod: false,
-        isBlocked: true,
+        isBlocked: false,
       };
     }
 
@@ -81,7 +83,16 @@ export function useSubscriptionStatus(): TrialSubscriptionStatus {
       };
     }
 
-    // Calculate trial status from createdAt
+    // No active subscription — but that alone is NOT a block. The trial window
+    // has to have elapsed too, and this mirrors the server rule in
+    // apps/api .../campaign/entities/campaign-lock.cypher.ts. Keep the two in
+    // step: if TRIAL_DAYS changes here it must change there.
+    //
+    // Blocking on the flag alone is wrong in practice. isActiveSubscription is
+    // only written true once a Stripe subscription actually reaches
+    // trialing/active, and that is not guaranteed — a real signup produced a
+    // StripeSubscription stuck at status "incomplete", leaving the flag NULL and
+    // a zero-day-old company blocked out of its own trial.
     const createdAt = new Date(company.createdAt);
     const trialEndsAt = new Date(createdAt);
     trialEndsAt.setDate(trialEndsAt.getDate() + TRIAL_DAYS);
@@ -89,13 +100,14 @@ export function useSubscriptionStatus(): TrialSubscriptionStatus {
     const now = new Date();
     const msRemaining = trialEndsAt.getTime() - now.getTime();
     const daysRemaining = Math.ceil(msRemaining / (1000 * 60 * 60 * 24));
+    const trialElapsed = daysRemaining <= 0;
 
     return {
-      status: daysRemaining > 0 ? "trial" : "expired",
+      status: trialElapsed ? "expired" : "trial",
       trialEndsAt,
       daysRemaining: Math.max(0, daysRemaining),
       isGracePeriod: daysRemaining > 0 && daysRemaining <= GRACE_DAYS,
-      isBlocked: daysRemaining <= 0,
+      isBlocked: trialElapsed,
     };
   }, [company, currentUser]);
 }
