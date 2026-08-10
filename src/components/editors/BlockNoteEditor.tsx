@@ -36,6 +36,7 @@ import {
   XIcon,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useTheme } from "next-themes";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getPublicApiUrl } from "../../client/config";
 import { getClientToken } from "../../client/token";
@@ -410,6 +411,7 @@ export default function BlockNoteEditor({
 }: BlockNoteEditorProps): React.JSX.Element {
   const t = useTranslations();
   const locale = useI18nLocale();
+  const { resolvedTheme } = useTheme();
   const { company } = useCurrentUserContext<UserInterface>();
 
   const [acceptedChanges, setAcceptedChanges] = useState<Set<string>>(new Set());
@@ -833,7 +835,9 @@ export default function BlockNoteEditor({
         editable={onChange !== undefined}
         formattingToolbar={false}
         slashMenu={!aiConfig}
-        theme="light"
+        // Follow the app theme: hardcoding "light" leaves dark (light-theme)
+        // text on the dark card, which is nearly unreadable in dark mode.
+        theme={resolvedTheme === "dark" ? "dark" : "light"}
         // `className` is applied by BlockNote to both the main `.bn-container`
         // AND `editor.portalElement` (the floating-UI portal root). Gate `p-4`
         // on `.bn-container` so it doesn't add padding to the empty portal
