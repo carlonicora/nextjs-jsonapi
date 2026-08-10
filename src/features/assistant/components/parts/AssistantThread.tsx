@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import type { AssistantMessageInterface } from "../../../assistant-message/data/AssistantMessageInterface";
 import { MessageList } from "../../../assistant-message/components/MessageList";
-import type { ApprovalActionRenderer } from "../../../assistant-message/components/MessageItem";
+import type { ApprovalActionRenderer, MentionRenderer } from "../../../assistant-message/components/MessageItem";
 import { AssistantStatusLine } from "./AssistantStatusLine";
 
 interface Props {
@@ -14,6 +14,7 @@ interface Props {
   failedMessageIds?: Set<string>;
   onRetry?: (tempId: string) => void;
   renderApprovalAction?: ApprovalActionRenderer;
+  renderMention?: MentionRenderer;
 }
 
 export function AssistantThread({
@@ -24,6 +25,7 @@ export function AssistantThread({
   failedMessageIds,
   onRetry,
   renderApprovalAction,
+  renderMention,
 }: Props) {
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -39,6 +41,7 @@ export function AssistantThread({
         failedMessageIds={failedMessageIds}
         onRetry={onRetry}
         renderApprovalAction={renderApprovalAction}
+        renderMention={renderMention}
       />
       {sending && <AssistantStatusLine status={status} />}
       <div ref={endRef} />

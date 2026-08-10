@@ -1,4 +1,5 @@
 // S3 feature exports
+export * from "./assistant-action";
 export * from "./auth";
 export * from "./billing";
 export * from "./billing/stripe-customer";

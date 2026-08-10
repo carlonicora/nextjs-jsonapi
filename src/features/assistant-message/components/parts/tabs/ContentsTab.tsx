@@ -7,6 +7,7 @@ import { ModuleRegistry } from "../../../../../core/registry/ModuleRegistry";
 import { usePageUrlGenerator } from "../../../../../hooks";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../shadcnui/ui/table";
 import type { ChunkInterface, ChunkRelationshipMeta } from "../../../../chunk/data/ChunkInterface";
+import { useEntityLabel } from "./useEntityLabel";
 
 interface Props {
   citations: (ChunkInterface & ChunkRelationshipMeta)[];
@@ -22,6 +23,7 @@ interface ContentRow {
 
 export function ContentsTab({ citations, sources }: Props) {
   const t = useTranslations();
+  const entityLabel = useEntityLabel();
   const generate = usePageUrlGenerator();
 
   // Group citations by nodeId, then materialise rows from the resolved sources
@@ -82,7 +84,7 @@ export function ContentsTab({ citations, sources }: Props) {
                   </span>
                 </Link>
               </TableCell>
-              <TableCell className="text-muted-foreground text-xs">{module.name}</TableCell>
+              <TableCell className="text-muted-foreground text-xs">{entityLabel(module.name)}</TableCell>
             </TableRow>
           );
         })}

@@ -20,7 +20,10 @@ interface AssistantContextValue {
   sending: boolean;
   status?: string;
   failedMessageIds: Set<string>;
-  sendMessage(content: string, opts?: { howToMode?: boolean; limitToHowToId?: string }): Promise<void>;
+  sendMessage(
+    content: string,
+    opts?: { howToMode?: boolean; limitToHowToId?: string; contentBlocks?: unknown[] },
+  ): Promise<void>;
   retrySend(tempId: string): Promise<void>;
   selectThread(id: string): Promise<void>;
   startNew(): void;
@@ -46,6 +49,28 @@ interface Props {
    * current route is preserved.
    */
   manageUrl?: boolean;
+  /**
+   * Confines the provider to one bound resource (e.g. a campaign): the thread
+   * list is filtered to that resource and newly created threads are bound to
+   * it, so a scoped surface never shows or creates cross-scope threads.
+   */
+  scope?: { type: string; id: string };
+  /**
+   * Builds the browser URL for a thread. Defaults to `/assistants/{id}` (or
+   * `/assistants` when no thread is active), which is only correct for the
+   * standalone assistant route; a scoped host passes its own builder.
+   */
+  threadUrl?: (id?: string) => string;
+  /**
+   * Page heading. Defaults to the "Assistants" entity label; a scoped host
+   * passes something meaningful for its own surface.
+   */
+  titleOverride?: string;
+  /**
+   * Breadcrumb trail. Defaults to a single crumb pointing at the global
+   * assistant list, which is wrong for a scoped surface.
+   */
+  breadcrumbsOverride?: BreadcrumbItemData[];
 }
 
 function stripOptimistic(list: AssistantMessageInterface[]): AssistantMessageInterface[] {
@@ -67,9 +92,23 @@ function withPatchedTitle(source: AssistantInterface, title: string): AssistantI
   });
 }
 
-export function AssistantProvider({ children, dehydratedAssistant, dehydratedMessages, manageUrl = true }: Props) {
+export function AssistantProvider({
+  children,
+  dehydratedAssistant,
+  dehydratedMessages,
+  manageUrl = true,
+  titleOverride,
+  breadcrumbsOverride,
+  scope,
+  threadUrl,
+}: Props) {
   const t = useTranslations();
   const generateUrl = usePageUrlGenerator();
+
+  const resolveThreadUrl = useCallback(
+    (id?: string) => (threadUrl ? threadUrl(id) : id ? `/assistants/${id}` : "/assistants"),
+    [threadUrl],
+  );
 
   const [assistant, setAssistant] = useState<AssistantInterface | undefined>(() =>
     dehydratedAssistant ? rehydrate<AssistantInterface>(Modules.Assistant, dehydratedAssistant) : undefined,
@@ -91,7 +130,7 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
   const { socket } = useSocketContext();
 
   const sendMessage = useCallback(
-    async (content: string, opts?: { howToMode?: boolean; limitToHowToId?: string }) => {
+    async (content: string, opts?: { howToMode?: boolean; limitToHowToId?: string; contentBlocks?: unknown[] }) => {
       const trimmed = content.trim();
       if (!trimmed) return;
 
@@ -116,6 +155,8 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
             firstMessage: trimmed,
             howToMode: opts?.howToMode,
             limitToHowToId: opts?.limitToHowToId,
+            contentBlocks: opts?.contentBlocks,
+            boundContent: scope,
           };
           const created = operatorMode
             ? await AssistantService.createOperator(input)
@@ -125,19 +166,21 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
           setMessages(msgs);
           setThreads((prev) => [created, ...prev]);
           if (manageUrl && typeof window !== "undefined") {
-            window.history.replaceState(null, "", `/assistants/${created.id}`);
+            window.history.replaceState(null, "", resolveThreadUrl(created.id));
           }
         } else {
           const result = operatorMode
             ? await AssistantService.appendMessageOperator({
                 assistantId: assistant.id,
                 content: trimmed,
+                contentBlocks: opts?.contentBlocks,
               })
             : await AssistantService.appendMessage({
                 assistantId: assistant.id,
                 content: trimmed,
                 howToMode: opts?.howToMode,
                 limitToHowToId: opts?.limitToHowToId,
+                contentBlocks: opts?.contentBlocks,
               });
           setMessages((prev) => [...stripOptimistic(prev), ...result]);
         }
@@ -153,7 +196,7 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
         setStatus(undefined);
       }
     },
-    [assistant, messages, socket, operatorMode],
+    [assistant, messages, socket, operatorMode, scope, manageUrl, resolveThreadUrl],
   );
 
   const appendResolvedMessage = useCallback((message: AssistantMessageInterface) => {
@@ -191,10 +234,10 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
       // absent) keeps the default responder flow.
       setOperatorMode(target.engine === "operator");
       if (manageUrl && typeof window !== "undefined") {
-        window.history.replaceState(null, "", `/assistants/${id}`);
+        window.history.replaceState(null, "", resolveThreadUrl(id));
       }
     },
-    [manageUrl],
+    [manageUrl, resolveThreadUrl],
   );
 
   const renameThread = useCallback(async (id: string, title: string) => {
@@ -209,9 +252,9 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
     setFailedMessageIds(new Set());
     setOperatorMode(false);
     if (manageUrl && typeof window !== "undefined") {
-      window.history.replaceState(null, "", "/assistants");
+      window.history.replaceState(null, "", resolveThreadUrl());
     }
-  }, [manageUrl]);
+  }, [manageUrl, resolveThreadUrl]);
 
   const deleteThread = useCallback(async (id: string) => {
     await AssistantService.delete({ id });
@@ -230,7 +273,7 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
     (async () => {
       setThreadsLoading(true);
       try {
-        const loaded = await AssistantService.findMany();
+        const loaded = await AssistantService.findMany({ boundType: scope?.type, boundId: scope?.id });
         if (!cancelled) setThreads(loaded);
       } finally {
         if (!cancelled) setThreadsLoading(false);
@@ -239,7 +282,7 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [scope?.type, scope?.id]);
 
   const value = useMemo<AssistantContextValue>(
     () => ({
@@ -279,15 +322,19 @@ export function AssistantProvider({ children, dehydratedAssistant, dehydratedMes
     ],
   );
 
-  const breadcrumbs: BreadcrumbItemData[] = [
+  // A scoped assistant lives under its host resource, so the default trail to
+  // the global /assistants list is wrong there — the consumer supplies its own.
+  const breadcrumbs: BreadcrumbItemData[] = breadcrumbsOverride ?? [
     {
       name: t("entities.assistants", { count: 2 }),
       href: generateUrl({ page: Modules.Assistant }),
     },
   ];
 
+  // `entities.tasks` was a copy-paste from another feature and rendered
+  // "Tasks" as the page heading of every assistant page.
   const title = {
-    type: t("entities.tasks", { count: 2 }),
+    type: titleOverride ?? t("entities.assistants", { count: 2 }),
   };
 
   return (

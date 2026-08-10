@@ -18,19 +18,36 @@ class SourcesFetcher extends ClientAbstractService {
     idsParam: string;
     ids: string[];
   }): Promise<ApiDataInterface[]> {
-    const endpoint = new EndpointCreator({ endpoint: params.module });
-    endpoint.addAdditionalParam(params.idsParam, params.ids.join(","));
-    // The list endpoint paginates and does not honour the `<x>Ids` filter, so a cited
-    // entity beyond the default first page never comes back and its citation falls back
-    // to "<Type> <id>". Request the full set and resolve client-side by id.
-    endpoint.addAdditionalParam("fetchAll", "true");
-    if (params.module.inclusions?.lists?.fields) endpoint.limitToFields(params.module.inclusions.lists.fields);
-    if (params.module.inclusions?.lists?.types) endpoint.limitToType(params.module.inclusions.lists.types);
-    return this.callApi<ApiDataInterface[]>({
-      type: params.module,
-      method: ClientHttpMethod.GET,
-      endpoint: endpoint.generate(),
-    });
+    // Resolved one id at a time, deliberately.
+    //
+    // The obvious alternative — a single `GET /<type>?<type>Ids=…&fetchAll=true`
+    // — assumes every entity exposes a flat collection route. narr8 does not:
+    // it serves `/npcs/:id` and `/campaigns/:campaignId/npcs`, with no
+    // `GET /npcs`, so the bulk call 404s, every citation degrades to
+    // "<Type> <uuid>", and the browser logs a failed request for each source
+    // type on every message. Reading by id needs only the by-id route, which
+    // every entity has. Citation counts are small (a handful per message) and
+    // the reads run in parallel, so the extra round-trips are cheap.
+    return this.findEachById(params);
+  }
+
+  private static async findEachById(params: {
+    module: ApiRequestDataTypeInterface;
+    ids: string[];
+  }): Promise<ApiDataInterface[]> {
+    const settled = await Promise.allSettled(
+      params.ids.map((id) =>
+        this.callApi<ApiDataInterface>({
+          type: params.module,
+          method: ClientHttpMethod.GET,
+          endpoint: new EndpointCreator({ endpoint: params.module, id }).generate(),
+        }),
+      ),
+    );
+    // A deleted or unreadable source must not blank out the whole panel.
+    return settled
+      .filter((r): r is PromiseFulfilledResult<ApiDataInterface> => r.status === "fulfilled" && !!r.value)
+      .map((r) => r.value);
   }
 }
 

@@ -12,9 +12,18 @@ export class AssistantService extends AbstractService {
     });
   }
 
-  static async findMany(params: { fetchAll?: boolean } = {}): Promise<AssistantInterface[]> {
+  /**
+   * Lists threads. `boundType`/`boundId` narrow the list to the threads bound
+   * to one resource (e.g. a campaign), so a scoped surface never shows the
+   * user's unrelated threads.
+   */
+  static async findMany(
+    params: { fetchAll?: boolean; boundType?: string; boundId?: string } = {},
+  ): Promise<AssistantInterface[]> {
     const endpoint = new EndpointCreator({ endpoint: Modules.Assistant });
     if (params.fetchAll) endpoint.addAdditionalParam("fetchAll", "true");
+    if (params.boundType) endpoint.addAdditionalParam("boundType", params.boundType);
+    if (params.boundId) endpoint.addAdditionalParam("boundId", params.boundId);
     return this.callApi({
       type: Modules.Assistant,
       method: HttpMethod.GET,
@@ -58,6 +67,8 @@ export class AssistantService extends AbstractService {
     content: string;
     howToMode?: boolean;
     limitToHowToId?: string;
+    /** BlockNote document. Serialised by the model into `content`; never its own attribute. */
+    contentBlocks?: unknown[];
   }): Promise<AssistantMessageInterface[]> {
     const message = new AssistantMessage();
     return this.callApi<AssistantMessageInterface[]>({
@@ -72,6 +83,7 @@ export class AssistantService extends AbstractService {
         content: params.content,
         howToMode: params.howToMode,
         limitToHowToId: params.limitToHowToId,
+        contentBlocks: params.contentBlocks,
       }),
       overridesJsonApiCreation: true,
     });
@@ -86,6 +98,8 @@ export class AssistantService extends AbstractService {
   static async appendMessageOperator(params: {
     assistantId: string;
     content: string;
+    /** BlockNote document. Serialised by the model into `content`; never its own attribute. */
+    contentBlocks?: unknown[];
   }): Promise<AssistantMessageInterface[]> {
     const message = new AssistantMessage();
     return this.callApi<AssistantMessageInterface[]>({
@@ -96,7 +110,10 @@ export class AssistantService extends AbstractService {
         id: params.assistantId,
         childEndpoint: Modules.AssistantMessage,
       }).generate(),
-      input: message.createAppendMessageJsonApi({ content: params.content }),
+      input: message.createAppendMessageJsonApi({
+        content: params.content,
+        contentBlocks: params.contentBlocks,
+      }),
       overridesJsonApiCreation: true,
     });
   }

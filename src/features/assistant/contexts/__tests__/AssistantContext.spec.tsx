@@ -523,4 +523,85 @@ describe("AssistantContext", () => {
     expect(result.current.messages.map((m) => m.content)).toEqual(["retry-me", "ok"]);
     expect(appendMock).toHaveBeenCalledTimes(2);
   });
+
+  it("loads only threads bound to the scope", async () => {
+    const findMany = vi.fn().mockResolvedValue([]);
+    AssistantService.findMany = findMany;
+
+    renderHook(() => useAssistantContext(), {
+      wrapper: ({ children }) => (
+        <AssistantProvider scope={{ type: "campaigns", id: "camp-1" }}>{children}</AssistantProvider>
+      ),
+    });
+
+    await waitFor(() => expect(findMany).toHaveBeenCalledWith({ boundType: "campaigns", boundId: "camp-1" }));
+  });
+
+  it("creates the first thread bound to the scope", async () => {
+    const replaceState = vi.spyOn(window.history, "replaceState").mockImplementation(() => {});
+    const create = vi.fn().mockResolvedValue(buildAssistantStub({ id: "a1" }));
+    AssistantService.create = create;
+    AssistantMessageService.findByAssistant = vi.fn().mockResolvedValue([]);
+
+    const { result } = renderHook(() => useAssistantContext(), {
+      wrapper: ({ children }) => (
+        <AssistantProvider scope={{ type: "campaigns", id: "camp-1" }}>{children}</AssistantProvider>
+      ),
+    });
+    await act(async () => {
+      await result.current.sendMessage("hello");
+    });
+
+    expect(create).toHaveBeenCalledWith(expect.objectContaining({ boundContent: { type: "campaigns", id: "camp-1" } }));
+    replaceState.mockRestore();
+  });
+
+  it("uses threadUrl for history replacement", () => {
+    const replaceState = vi.spyOn(window.history, "replaceState").mockImplementation(() => {});
+
+    const { result } = renderHook(() => useAssistantContext(), {
+      wrapper: ({ children }) => (
+        <AssistantProvider
+          scope={{ type: "campaigns", id: "camp-1" }}
+          threadUrl={(id?: string) => (id ? `/campaigns/camp-1/assistant/${id}` : "/campaigns/camp-1/assistant")}
+        >
+          {children}
+        </AssistantProvider>
+      ),
+    });
+
+    act(() => {
+      result.current.startNew();
+    });
+
+    expect(replaceState).toHaveBeenCalledWith(null, "", "/campaigns/camp-1/assistant");
+    replaceState.mockRestore();
+  });
+
+  it("forwards contentBlocks from the composer to create and appendMessage", async () => {
+    const replaceState = vi.spyOn(window.history, "replaceState").mockImplementation(() => {});
+    const blocks = [{ type: "paragraph", content: [] }];
+
+    AssistantService.create = vi.fn().mockResolvedValue(buildAssistantStub({ id: "a-blocks" }));
+    AssistantMessageService.findByAssistant = vi.fn().mockResolvedValue([]);
+    const { result } = renderHook(() => useAssistantContext(), {
+      wrapper: ({ children }) => <AssistantProvider>{children}</AssistantProvider>,
+    });
+    await act(async () => {
+      await result.current.sendMessage("hello", { contentBlocks: blocks });
+    });
+    expect(AssistantService.create).toHaveBeenCalledWith(expect.objectContaining({ contentBlocks: blocks }));
+
+    const existing = buildAssistantDehydrated({ id: "a-blocks-2" });
+    AssistantService.appendMessage = vi.fn().mockResolvedValue([]);
+    const { result: followUp } = renderHook(() => useAssistantContext(), {
+      wrapper: ({ children }) => <AssistantProvider dehydratedAssistant={existing}>{children}</AssistantProvider>,
+    });
+    await act(async () => {
+      await followUp.current.sendMessage("more", { contentBlocks: blocks });
+    });
+    expect(AssistantService.appendMessage).toHaveBeenCalledWith(expect.objectContaining({ contentBlocks: blocks }));
+
+    replaceState.mockRestore();
+  });
 });

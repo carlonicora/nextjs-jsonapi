@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../../../../shadcnui/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { RelevanceMeter } from "../RelevanceMeter";
+import { useEntityLabel } from "./useEntityLabel";
 
 interface Props {
   citations: (ChunkInterface & ChunkRelationshipMeta)[];
@@ -24,6 +25,7 @@ interface Props {
 
 export function CitationsTab({ citations, sources }: Props) {
   const t = useTranslations();
+  const entityLabel = useEntityLabel();
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   if (citations.length === 0) return null;
 
@@ -50,9 +52,12 @@ export function CitationsTab({ citations, sources }: Props) {
         {sorted.map((chunk) => {
           const isOpen = expanded.has(chunk.id);
           const resolved = chunk.nodeId ? sources?.get(chunk.nodeId) : undefined;
-          const fallbackName = chunk.nodeId
-            ? `${chunk.nodeType ?? t("features.assistant.message.sources.source")} ${chunk.nodeId.slice(0, 8)}`
-            : (chunk.nodeType ?? t("features.assistant.message.sources.source"));
+          // `nodeType` is a JSON:API wire type (`npcs`), not UI copy — translate
+          // it the same way the References tab does before showing it.
+          const typeLabel = chunk.nodeType
+            ? entityLabel(chunk.nodeType)
+            : t("features.assistant.message.sources.source");
+          const fallbackName = chunk.nodeId ? `${typeLabel} ${chunk.nodeId.slice(0, 8)}` : typeLabel;
           const sourceName = (resolved as any)?.name ?? fallbackName;
           return (
             <Fragment key={chunk.id}>
@@ -89,8 +94,21 @@ export function CitationsTab({ citations, sources }: Props) {
               </TableRow>
               {isOpen && (
                 <TableRow>
-                  <TableCell colSpan={2} className="border-t-0 p-4">
-                    <div className="bg-card w-full max-w-full overflow-x-auto rounded border p-4 text-sm break-words">
+                  {/*
+                    `max-w-0` is the table-layout trick: without it the cell
+                    sizes to its widest line, so the panel either scrolls
+                    sideways or clips. Pinning the cell's intrinsic max width to
+                    zero makes the browser take its width from the table instead,
+                    which lets the content below actually wrap.
+                  */}
+                  <TableCell colSpan={2} className="w-full max-w-0 border-t-0 p-4">
+                    {/*
+                      Prose wraps; only genuinely wide children scroll. The
+                      wrapper used to be `overflow-x-auto`, which turned every
+                      long sentence into a horizontal scrollbar instead of
+                      breaking onto the next line.
+                    */}
+                    <div className="bg-card w-full min-w-0 rounded border p-4 text-sm break-words whitespace-pre-wrap [overflow-wrap:anywhere] [&_pre]:overflow-x-auto [&_table]:block [&_table]:overflow-x-auto">
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>{chunk.content}</ReactMarkdown>
                     </div>
                   </TableCell>

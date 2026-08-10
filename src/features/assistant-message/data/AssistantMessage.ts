@@ -125,12 +125,21 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
    * the append-to-thread endpoint derives those server-side, so we only send `content` and
    * the optional retrieval-mode flags.
    */
-  createAppendMessageJsonApi(params: { content: string; howToMode?: boolean; limitToHowToId?: string }) {
+  createAppendMessageJsonApi(params: {
+    content: string;
+    howToMode?: boolean;
+    limitToHowToId?: string;
+    contentBlocks?: unknown[];
+  }) {
     return {
       data: {
         type: Modules.AssistantMessage.name,
         attributes: {
-          content: params.content,
+          // narr8 convention for BlockNote-backed fields: the document travels
+          // as a JSON string in the field's own string attribute (see
+          // Npc.description). The server detects the shape and derives the
+          // stored markdown from it.
+          content: params.contentBlocks !== undefined ? JSON.stringify(params.contentBlocks) : params.content,
           ...(params.howToMode !== undefined ? { howToMode: params.howToMode } : {}),
           ...(params.limitToHowToId !== undefined ? { limitToHowToId: params.limitToHowToId } : {}),
         },

@@ -6,6 +6,7 @@ import type { ApiDataInterface } from "../../../../../core";
 import { ModuleRegistry } from "../../../../../core/registry/ModuleRegistry";
 import { usePageUrlGenerator } from "../../../../../hooks";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../shadcnui/ui/table";
+import { useEntityLabel } from "./useEntityLabel";
 
 interface Props {
   references: ApiDataInterface[];
@@ -14,6 +15,8 @@ interface Props {
 export function ReferencesTab({ references }: Props) {
   const t = useTranslations();
   const generate = usePageUrlGenerator();
+
+  const entityLabel = useEntityLabel();
 
   if (references.length === 0) return null;
 
@@ -43,7 +46,7 @@ export function ReferencesTab({ references }: Props) {
                   {ref.identifier}
                 </Link>
               </TableCell>
-              <TableCell className="text-muted-foreground text-xs">{module.name}</TableCell>
+              <TableCell className="text-muted-foreground text-xs">{entityLabel(module.name)}</TableCell>
             </TableRow>
           );
         })}
