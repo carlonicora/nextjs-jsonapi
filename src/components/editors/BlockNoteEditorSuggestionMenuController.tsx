@@ -12,6 +12,16 @@ export interface MentionItem {
   icon?: React.ReactNode;
 }
 
+/**
+ * A suggestion item enriched with the entity it points at. Entity NAMES are not
+ * unique (two clues can both be called "New clue"), so a custom
+ * `suggestionMenuComponent` MUST key its rows on `id`, never on `title`.
+ */
+export type MentionSuggestionItem = DefaultReactSuggestionItem & {
+  id?: string;
+  entityType?: string;
+};
+
 export type MentionSearchFn = (query: string, params?: Record<string, string>) => Promise<MentionItem[]>;
 
 export type MentionInsertFn = (id: string, name: string, entityType: string) => void;
@@ -57,7 +67,9 @@ export function BlockNoteEditorMentionSuggestionMenu({
   const getItems = useCallback(
     async (query: string): Promise<DefaultReactSuggestionItem[]> => {
       const results = await mentionSearchFn(query, mentionSearchParams);
-      const items: DefaultReactSuggestionItem[] = results.map((item) => ({
+      const items: MentionSuggestionItem[] = results.map((item) => ({
+        id: item.id,
+        entityType: item.entityType,
         title: item.name,
         subtext: item.entityType,
         icon: item.icon as React.ReactElement | undefined,
@@ -76,7 +88,7 @@ export function BlockNoteEditorMentionSuggestionMenu({
         },
       }));
       if (items.length === 0) {
-        items.push({ title: KEEP_OPEN_SENTINEL_TITLE, onItemClick: () => {} });
+        items.push({ id: KEEP_OPEN_SENTINEL_TITLE, title: KEEP_OPEN_SENTINEL_TITLE, onItemClick: () => {} });
       }
       return items;
     },

@@ -2,7 +2,8 @@
 
 import { ArrowUp } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useId, useState, type KeyboardEvent } from "react";
+import { useCallback, useId, useState, type FC, type KeyboardEvent } from "react";
+import type { DefaultReactSuggestionItem, SuggestionMenuProps } from "@blocknote/react";
 import { BlockNoteEditorContainer } from "../../../../components/editors/BlockNoteEditorContainer";
 import type { MentionResolveFn } from "../../../../components/editors/BlockNoteEditorMentionInlineContent";
 import type { MentionItem } from "../../../../components/editors/BlockNoteEditorSuggestionMenuController";
@@ -14,6 +15,11 @@ interface Props {
   mentionSearchFn?: (query: string, params?: Record<string, string>) => Promise<MentionItem[]>;
   mentionSearchParams?: Record<string, string>;
   mentionResolveFn?: MentionResolveFn;
+  /**
+   * Custom mention menu. Without one BlockNote renders its default menu, which
+   * keys rows on the item title — duplicate entity names then collide.
+   */
+  suggestionMenuComponent?: FC<SuggestionMenuProps<DefaultReactSuggestionItem>>;
 }
 
 /**
@@ -61,6 +67,7 @@ export function AssistantBlockNoteComposer({
   mentionSearchFn,
   mentionSearchParams,
   mentionResolveFn,
+  suggestionMenuComponent,
 }: Props) {
   const t = useTranslations();
   // React's generated ids carry delimiters (`:r0:` / `«r0»`) and this value ends
@@ -110,6 +117,7 @@ export function AssistantBlockNoteComposer({
             mentionSearchFn={mentionSearchFn}
             mentionSearchParams={mentionSearchParams}
             mentionResolveFn={mentionResolveFn}
+            suggestionMenuComponent={suggestionMenuComponent}
             onChange={(content: unknown, empty: boolean) => {
               setBlocks(Array.isArray(content) ? content : []);
               setIsEmpty(empty);

@@ -30,10 +30,14 @@ describe("Assistant.createJsonApi", () => {
     expect(payload.data.attributes.content).toBe("hello");
   });
 
-  it("emits contentBlocks when the composer supplied a rich document", () => {
+  it("serialises the rich document into `content` when the composer supplied one", () => {
+    // BlockNote-backed fields travel as a JSON string inside the entity's own
+    // string attribute (same convention as Npc.description) — there is no
+    // separate `contentBlocks` attribute on the wire.
     const blocks = [{ type: "paragraph", content: [] }];
     const payload: any = new Assistant().createJsonApi({ firstMessage: "hello", contentBlocks: blocks });
-    expect(payload.data.attributes.contentBlocks).toBe(blocks);
+    expect(payload.data.attributes.content).toBe(JSON.stringify(blocks));
+    expect(payload.data.attributes.contentBlocks).toBeUndefined();
   });
 
   it("omits the relationships key entirely when no content is bound", () => {

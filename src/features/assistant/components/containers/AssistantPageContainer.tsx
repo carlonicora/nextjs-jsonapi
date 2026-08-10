@@ -1,5 +1,6 @@
 "use client";
 
+import type { DefaultReactSuggestionItem, SuggestionMenuProps } from "@blocknote/react";
 import { Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type React from "react";
@@ -21,6 +22,12 @@ interface Props {
   mentionSearchFn?: (query: string, params?: Record<string, string>) => Promise<MentionItem[]>;
   mentionSearchParams?: Record<string, string>;
   mentionResolveFn?: MentionResolveFn;
+  /**
+   * Custom mention menu for the composer. Without one BlockNote renders its
+   * default menu, which keys rows on the item title — duplicate entity names
+   * then collide.
+   */
+  suggestionMenuComponent?: React.FC<SuggestionMenuProps<DefaultReactSuggestionItem>>;
   /** Rendered inside the sidebar's details panel above the thread list. */
   detailsTitle: string;
   detailsIcon: React.ReactNode;
@@ -37,6 +44,7 @@ export function AssistantPageContainer({
   mentionSearchFn,
   mentionSearchParams,
   mentionResolveFn,
+  suggestionMenuComponent,
   detailsTitle,
   detailsIcon,
 }: Props) {
@@ -107,6 +115,7 @@ export function AssistantPageContainer({
           mentionSearchFn={mentionSearchFn}
           mentionSearchParams={mentionSearchParams}
           mentionResolveFn={mentionResolveFn}
+          suggestionMenuComponent={suggestionMenuComponent}
         />
       </div>
     </RoundPageContainer>
