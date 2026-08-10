@@ -121,20 +121,25 @@ export function TokenStatusIndicator({ className, size = "md", showExtraPages = 
 
   return (
     <Tooltip>
-      <TooltipTrigger>
-        <div
-          className={cn("inline-flex items-center gap-1.5 cursor-default", className)}
-          aria-label={t("billing.tokens.status", { defaultValue: "Page Status" })}
-        >
-          {getBatteryIcon()}
-          <span className={cn(textSize, "text-muted-foreground font-medium")}>{availableMonthlyCredits}</span>
-          {showExtraPages && availableExtraCredits > 0 && (
-            <div className="inline-flex items-center gap-0.5">
-              <PlusCircle className={cn(smallIconSize, "text-blue-500")} />
-              <span className={cn(textSize, "text-blue-500 font-medium")}>{availableExtraCredits}</span>
-            </div>
-          )}
-        </div>
+      {/* The layout classes live on the trigger itself, which renders the
+          <button>. Wrapping them in a nested inline-flex div instead makes that
+          child sit on the button's text baseline, so the button reserves
+          descender space below it and the icons render ~2px above the centre of
+          any flex row the indicator is placed in (e.g. the app header). */}
+      <TooltipTrigger
+        className={cn("inline-flex items-center gap-1.5 cursor-default", className)}
+        aria-label={t("billing.tokens.status", { defaultValue: "Page Status" })}
+      >
+        {getBatteryIcon()}
+        <span className={cn(textSize, "text-muted-foreground font-medium leading-none")}>
+          {availableMonthlyCredits}
+        </span>
+        {showExtraPages && availableExtraCredits > 0 && (
+          <span className="inline-flex items-center gap-0.5">
+            <PlusCircle className={cn(smallIconSize, "text-blue-500")} />
+            <span className={cn(textSize, "text-blue-500 font-medium leading-none")}>{availableExtraCredits}</span>
+          </span>
+        )}
       </TooltipTrigger>
       <TooltipContent side="top" className="max-w-xs">
         {tooltipContent}
