@@ -15,6 +15,18 @@ interface TokenStatusIndicatorProps {
 }
 
 /**
+ * Credit balances are consumed fractionally server-side, so a raw balance reads
+ * as noise in the UI ("999.48"). Every credit figure is shown as a whole number.
+ *
+ * Truncate rather than round: rounding 999.6 up to 1000 would advertise capacity
+ * the company does not have. Truncation is used instead of Math.floor because a
+ * balance can go negative (overdrawn extra credits), and floor(-1.09) is -2 —
+ * which overstates the debt. trunc keeps it at -1 and matches floor for
+ * non-negative values.
+ */
+const asWholeCredits = (value: number): string => Math.trunc(value).toLocaleString();
+
+/**
  * TokenStatusIndicator displays the current status of available monthly and extra pages
  * using battery icons to represent the percentage of monthly pages remaining.
  *
@@ -91,7 +103,7 @@ export function TokenStatusIndicator({ className, size = "md", showExtraPages = 
             {t("billing.tokens.monthly", { defaultValue: "Monthly Pages" })}:
           </span>
           <span className={cn("font-medium", getStatusColor())}>
-            {availableMonthlyCredits} / {monthlyCredits}
+            {asWholeCredits(availableMonthlyCredits)} / {asWholeCredits(monthlyCredits)}
           </span>
         </div>
         <div className="flex items-center justify-between gap-4">
@@ -108,7 +120,7 @@ export function TokenStatusIndicator({ className, size = "md", showExtraPages = 
           <span className="text-muted-foreground">
             {t("billing.tokens.available_extra", { defaultValue: "Extra Pages" })}:
           </span>
-          <span className="font-medium text-blue-500">{availableExtraCredits}</span>
+          <span className="font-medium text-blue-500">{asWholeCredits(availableExtraCredits)}</span>
         </div>
         <Link href="/settings/billing?action=subscribe" className="w-full flex justify-end my-4">
           <Button variant="outline" size="sm">
@@ -132,12 +144,14 @@ export function TokenStatusIndicator({ className, size = "md", showExtraPages = 
       >
         {getBatteryIcon()}
         <span className={cn(textSize, "text-muted-foreground font-medium leading-none")}>
-          {availableMonthlyCredits}
+          {asWholeCredits(availableMonthlyCredits)}
         </span>
         {showExtraPages && availableExtraCredits > 0 && (
           <span className="inline-flex items-center gap-0.5">
             <PlusCircle className={cn(smallIconSize, "text-blue-500")} />
-            <span className={cn(textSize, "text-blue-500 font-medium leading-none")}>{availableExtraCredits}</span>
+            <span className={cn(textSize, "text-blue-500 font-medium leading-none")}>
+              {asWholeCredits(availableExtraCredits)}
+            </span>
           </span>
         )}
       </TooltipTrigger>
