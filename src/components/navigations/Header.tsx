@@ -51,8 +51,11 @@ export function Header({ children, mobileChildren, leftContent, logo, className 
               </div>
             )
           : children && (
-              <div className="flex w-64 flex-row items-center justify-end gap-x-4 whitespace-nowrap">
-                <div className="flex flex-row items-center justify-end gap-x-4 whitespace-nowrap">{children}</div>
+              // No fixed width: the widget slot sizes to its content and the
+              // breadcrumb (w-full, above) takes the rest. A `w-64` cap here
+              // clipped consumers whose widget set outgrew 256px.
+              <div className="flex shrink-0 flex-row items-center justify-end gap-x-4 whitespace-nowrap">
+                {children}
               </div>
             )}
       </div>
