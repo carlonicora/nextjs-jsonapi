@@ -184,7 +184,15 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                       <>
                         {props.functions}
                         {props.filters}
-                        <ContentTableSearch data={data} />
+                        {/* `allowSearch !== false`, not `allowSearch`: the search box has
+                            always rendered here whenever `functions`/`filters` were set, and
+                            most callers rely on that without passing the flag. Gating on the
+                            flag alone (as the sibling ContentListGrid does) would silently
+                            remove search from every such list. This only lets a caller whose
+                            retriever ignores `search` — e.g. notifications, whose repository
+                            has no search param and no fulltext index — opt out of a control
+                            that would do nothing. */}
+                        {allowSearch !== false && <ContentTableSearch data={data} />}
                       </>
                     )}
                   </div>
