@@ -8,6 +8,7 @@ import { useSharedContext } from "../../../../contexts";
 import { Modules } from "../../../../core";
 import { usePageUrlGenerator } from "../../../../hooks";
 import { Badge, Link } from "../../../../shadcnui";
+import { isRemoteImageSrc } from "../../../../utils";
 import { RoleInterface } from "../../../role";
 import { UserInterface } from "../../data";
 
@@ -48,6 +49,7 @@ export function UserStanadaloneDetails({ user }: UserDetailsProps) {
               alt={user.name}
               width={800}
               height={600}
+              unoptimized={isRemoteImageSrc(user.avatar)}
               className="h-auto w-full rounded-lg object-contain"
             />
           </div>

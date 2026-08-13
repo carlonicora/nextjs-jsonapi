@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { DropzoneOptions } from "react-dropzone";
 import { FileInput, FileUploader } from "../../../../components";
 import { Button } from "../../../../shadcnui";
+import { isRemoteImageSrc } from "../../../../utils";
 import { UserInterface } from "../../data";
 
 type UserAvatarEditorProps = {
@@ -28,6 +29,8 @@ export function UserAvatarEditor({ user, file, setFile, resetImage, setResetImag
     }
   }, [files]);
 
+  const avatarSrc = file ? URL.createObjectURL(file) : user?.avatar || "";
+
   const dropzone = {
     multiple: false,
     maxSize: 100 * 1024 * 1024,
@@ -48,10 +51,11 @@ export function UserAvatarEditor({ user, file, setFile, resetImage, setResetImag
         <FileInput className="bg-muted text-muted-foreground flex h-full w-full flex-col items-center justify-center">
           {!resetImage && (file || user?.avatar) ? (
             <Image
-              src={file ? URL.createObjectURL(file) : user?.avatar || ""}
+              src={avatarSrc}
               alt={t(`common.avatar`)}
               width={200}
               height={200}
+              unoptimized={isRemoteImageSrc(avatarSrc)}
             />
           ) : (
             <UploadIcon className="my-4 h-8 w-8" />

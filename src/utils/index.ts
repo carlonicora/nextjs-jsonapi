@@ -12,6 +12,7 @@ export { getTableComponents, getTableOptions, TableOptions } from "./table-optio
 export { entityObjectSchema, userObjectSchema, type EntityObject, type UserObject } from "./schemas";
 
 export { getInitials } from "./getInitials";
+export { isRemoteImageSrc } from "./isRemoteImageSrc";
 export {
   validatePartitaIva,
   validateCodiceFiscale,
