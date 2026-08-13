@@ -325,7 +325,16 @@ export function RoundPageContainer({
                     data-testid="round-page-rail"
                     className="hidden shrink-0 border-r p-4 md:flex md:w-56 md:flex-col md:overflow-y-auto"
                   >
-                    <TabsList className="flex h-auto flex-col items-stretch gap-0.5 bg-transparent p-0">
+                    {/* `w-full` is load-bearing: TabsList's base variant carries
+                        `w-fit`, which shrinks the rail list to its widest label.
+                        The active section's background and border then hug the
+                        text instead of spanning the rail, so a short label like
+                        "My Profile" renders as a button rather than a selected
+                        row — visible only in dark mode, where those defaults
+                        actually have contrast. Apps with long section labels
+                        happen to look correct under `w-fit` purely by accident
+                        of label length. */}
+                    <TabsList className="flex h-auto w-full flex-col items-stretch gap-0.5 bg-transparent p-0">
                       {ungrouped.map((tab) => (
                         <TabsTrigger key={tab.label} value={tabValue(tab)} className={railTriggerClass}>
                           {tab.contentLabel ?? tab.label}
