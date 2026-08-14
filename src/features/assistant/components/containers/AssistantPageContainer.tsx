@@ -31,6 +31,12 @@ interface Props {
   /** Rendered inside the sidebar's details panel above the thread list. */
   detailsTitle: string;
   detailsIcon: React.ReactNode;
+  /**
+   * Disables the composer for a reason external to this component (e.g. the
+   * consuming app's credit gate) — ORed with the in-flight `ctx.sending`
+   * disable, never replacing it.
+   */
+  disabled?: boolean;
 }
 
 /**
@@ -47,6 +53,7 @@ export function AssistantPageContainer({
   suggestionMenuComponent,
   detailsTitle,
   detailsIcon,
+  disabled,
 }: Props) {
   const t = useTranslations();
   const ctx = useAssistantContext();
@@ -111,7 +118,7 @@ export function AssistantPageContainer({
         )}
         <AssistantBlockNoteComposer
           onSend={(content, opts) => ctx.sendMessage(content, { contentBlocks: opts.contentBlocks })}
-          disabled={ctx.sending}
+          disabled={ctx.sending || disabled}
           mentionSearchFn={mentionSearchFn}
           mentionSearchParams={mentionSearchParams}
           mentionResolveFn={mentionResolveFn}

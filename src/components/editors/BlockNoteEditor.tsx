@@ -93,6 +93,11 @@ export type BlockNoteEditorProps = {
   // height and scrolls internally. Without it the editor grows to fit its
   // content and pushes the surrounding form to scroll instead.
   stretch?: boolean;
+  // Gates AI on top of `aiConfig` (credit availability, etc.). Defaults to
+  // true so existing callers that only pass `aiConfig` are unaffected. When
+  // false, no AI extension is created, the AI toolbar button and AI slash
+  // items are hidden, and the editor falls back to the plain slash menu.
+  aiEnabled?: boolean;
 };
 
 function isBlockEmpty(block: any): boolean {
@@ -408,6 +413,7 @@ export default function BlockNoteEditor({
   onWarmMentions,
   aiConfig,
   stretch,
+  aiEnabled = true,
 }: BlockNoteEditorProps): React.JSX.Element {
   const t = useTranslations();
   const locale = useI18nLocale();
@@ -483,7 +489,7 @@ export default function BlockNoteEditor({
 
   const companyId = company?.id;
   const aiExtension = useMemo(() => {
-    if (!aiConfig) return undefined;
+    if (!aiConfig || !aiEnabled) return undefined;
     const base = getPublicApiUrl();
     const url = new URL(aiConfig.endpoint, base.endsWith("/") ? base : base + "/").toString();
     return AIExtension({
@@ -524,7 +530,7 @@ export default function BlockNoteEditor({
         },
       }),
     });
-  }, [aiConfig, companyId, locale]);
+  }, [aiConfig, aiEnabled, companyId, locale]);
 
   const uploadImage = useCallback(
     async (file: File): Promise<string> => {
@@ -834,7 +840,7 @@ export default function BlockNoteEditor({
         onChange={handleChange}
         editable={onChange !== undefined}
         formattingToolbar={false}
-        slashMenu={!aiConfig}
+        slashMenu={!aiConfig || !aiEnabled}
         // Follow the app theme: hardcoding "light" leaves dark (light-theme)
         // text on the dark card, which is nearly unreadable in dark mode.
         theme={resolvedTheme === "dark" ? "dark" : "light"}
@@ -854,7 +860,7 @@ export default function BlockNoteEditor({
           size === "sm" && "small",
         )}
       >
-        <BlockNoteEditorFormattingToolbar showAI={!!aiConfig} />
+        <BlockNoteEditorFormattingToolbar showAI={!!aiConfig && aiEnabled} />
         {enableMentions && mentionSearchFn && (
           <BlockNoteEditorMentionSuggestionMenu
             editor={editor}
@@ -867,7 +873,7 @@ export default function BlockNoteEditor({
         {enableMentions && mentionResolveFn && (
           <BlockNoteEditorMentionHoverCard containerRef={editorRef} mentionResolveFn={mentionResolveFn} />
         )}
-        {aiConfig && (
+        {aiConfig && aiEnabled && (
           <SuggestionMenuController
             triggerCharacter="/"
             getItems={async (query: string) =>
@@ -875,7 +881,7 @@ export default function BlockNoteEditor({
             }
           />
         )}
-        {aiConfig && <AIMenuController aiMenu={() => <NarrAIMenu />} />}
+        {aiConfig && aiEnabled && <AIMenuController aiMenu={() => <NarrAIMenu />} />}
       </BlockNoteView>
     </div>
   );
