@@ -112,84 +112,87 @@ export function BillingDashboardContainer() {
       setNoCustomerExists(false);
     } catch (error: unknown) {
       console.error("[BillingDashboard] Failed to load customer:", error);
-      // Check if this is a "not found" error indicating no customer exists
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      if (errorMessage.includes("Not Found") || errorMessage.includes("not found")) {
+      // A 404 means the company has no billing customer yet - a setup prompt, not an error.
+      // Match on the status, never on the message: `statusText` is empty over HTTP/2, so the
+      // error text carries no reason phrase to match against.
+      if ((error as { status?: number })?.status === 404) {
         setNoCustomerExists(true);
-        // Stop loading all sections since no customer exists
-        setLoading({
-          customer: false,
-          subscriptions: false,
-          paymentMethods: false,
-          invoices: false,
-          usage: false,
-        });
-        return; // Don't try to fetch other data
+      } else {
+        setErrors((prev) => ({ ...prev, customer: "Failed to load billing account" }));
       }
-      setErrors((prev) => ({ ...prev, customer: "Failed to load billing account" }));
     } finally {
       setLoading((prev) => ({ ...prev, customer: false }));
     }
 
-    // If we have a customer, fetch the rest of the data
-    if (customer) {
-      // Fetch subscriptions
-      const fetchSubscriptions = async () => {
-        try {
-          const subscriptions = await StripeSubscriptionService.listSubscriptions();
-          setData((prev) => ({ ...prev, subscriptions }));
-          setErrors((prev) => ({ ...prev, subscriptions: null }));
-          return subscriptions;
-        } catch (error) {
-          console.error("[BillingDashboard] Failed to load subscriptions:", error);
-          setErrors((prev) => ({ ...prev, subscriptions: "Failed to load subscriptions" }));
-          return [];
-        } finally {
-          setLoading((prev) => ({ ...prev, subscriptions: false }));
-        }
-      };
+    // Without a customer there is nothing downstream to fetch. Release every section here, or the
+    // cards that are only cleared inside their own fetchers stay skeletons forever.
+    if (!customer) {
+      setLoading({
+        customer: false,
+        subscriptions: false,
+        paymentMethods: false,
+        invoices: false,
+        usage: false,
+      });
+      return;
+    }
 
-      // Fetch payment methods
-      const fetchPaymentMethods = async () => {
-        try {
-          const paymentMethods = await StripeCustomerService.listPaymentMethods();
-          setData((prev) => ({ ...prev, paymentMethods }));
-          setErrors((prev) => ({ ...prev, paymentMethods: null }));
-        } catch (error) {
-          console.error("[BillingDashboard] Failed to load payment methods:", error);
-          setErrors((prev) => ({ ...prev, paymentMethods: "Failed to load payment methods" }));
-        } finally {
-          setLoading((prev) => ({ ...prev, paymentMethods: false }));
-        }
-      };
-
-      // Fetch invoices
-      const fetchInvoices = async () => {
-        try {
-          const invoices = await StripeInvoiceService.listInvoices();
-          setData((prev) => ({ ...prev, invoices }));
-          setErrors((prev) => ({ ...prev, invoices: null }));
-        } catch (error) {
-          console.error("[BillingDashboard] Failed to load invoices:", error);
-          setErrors((prev) => ({ ...prev, invoices: "Failed to load invoices" }));
-        } finally {
-          setLoading((prev) => ({ ...prev, invoices: false }));
-        }
-      };
-
-      // Execute all in parallel
-      const [subscriptions] = await Promise.all([fetchSubscriptions(), fetchPaymentMethods(), fetchInvoices()]);
-
-      // Check if there are metered subscriptions and fetch usage data
-      const hasMetered = subscriptions.some(
-        (sub: StripeSubscriptionInterface) => sub.price?.recurring?.usageType === "metered",
-      );
-
-      if (hasMetered) {
-        await fetchUsageData();
-      } else {
-        setLoading((prev) => ({ ...prev, usage: false }));
+    // Fetch subscriptions
+    const fetchSubscriptions = async () => {
+      try {
+        const subscriptions = await StripeSubscriptionService.listSubscriptions();
+        setData((prev) => ({ ...prev, subscriptions }));
+        setErrors((prev) => ({ ...prev, subscriptions: null }));
+        return subscriptions;
+      } catch (error) {
+        console.error("[BillingDashboard] Failed to load subscriptions:", error);
+        setErrors((prev) => ({ ...prev, subscriptions: "Failed to load subscriptions" }));
+        return [];
+      } finally {
+        setLoading((prev) => ({ ...prev, subscriptions: false }));
       }
+    };
+
+    // Fetch payment methods
+    const fetchPaymentMethods = async () => {
+      try {
+        const paymentMethods = await StripeCustomerService.listPaymentMethods();
+        setData((prev) => ({ ...prev, paymentMethods }));
+        setErrors((prev) => ({ ...prev, paymentMethods: null }));
+      } catch (error) {
+        console.error("[BillingDashboard] Failed to load payment methods:", error);
+        setErrors((prev) => ({ ...prev, paymentMethods: "Failed to load payment methods" }));
+      } finally {
+        setLoading((prev) => ({ ...prev, paymentMethods: false }));
+      }
+    };
+
+    // Fetch invoices
+    const fetchInvoices = async () => {
+      try {
+        const invoices = await StripeInvoiceService.listInvoices();
+        setData((prev) => ({ ...prev, invoices }));
+        setErrors((prev) => ({ ...prev, invoices: null }));
+      } catch (error) {
+        console.error("[BillingDashboard] Failed to load invoices:", error);
+        setErrors((prev) => ({ ...prev, invoices: "Failed to load invoices" }));
+      } finally {
+        setLoading((prev) => ({ ...prev, invoices: false }));
+      }
+    };
+
+    // Execute all in parallel
+    const [subscriptions] = await Promise.all([fetchSubscriptions(), fetchPaymentMethods(), fetchInvoices()]);
+
+    // Check if there are metered subscriptions and fetch usage data
+    const hasMetered = subscriptions.some(
+      (sub: StripeSubscriptionInterface) => sub.price?.recurring?.usageType === "metered",
+    );
+
+    if (hasMetered) {
+      await fetchUsageData();
+    } else {
+      setLoading((prev) => ({ ...prev, usage: false }));
     }
   }, []);
 

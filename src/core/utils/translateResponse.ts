@@ -73,7 +73,10 @@ export async function translateResponse<T extends ApiDataInterface>(params: {
   response.response = params.apiResponse.status;
 
   if (!params.apiResponse.ok) {
-    response.error = params.apiResponse?.data?.message ?? params.apiResponse.statusText;
+    // `statusText` is empty over HTTP/2 (the reason phrase was removed from the protocol), so the
+    // body is the only reliable source of error text. APIs in this stack use either key.
+    response.error =
+      params.apiResponse?.data?.message ?? params.apiResponse?.data?.error ?? params.apiResponse.statusText;
     response.raw = params.apiResponse.data;
     return response;
   }
