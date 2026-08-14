@@ -66,7 +66,7 @@ export function PromoCodeInput({
   if (appliedCode?.valid) {
     return (
       <div className="space-y-2">
-        <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+        <div className="bg-success/15 border-success/30 flex items-center justify-between rounded-lg border p-3">
           <div className="flex items-center gap-2">
             <Check className="text-success h-4 w-4" />
             <span className="text-success font-medium">{appliedCode.code}</span>
@@ -77,7 +77,7 @@ export function PromoCodeInput({
             size="sm"
             onClick={onRemove}
             disabled={disabled}
-            className="text-success hover:bg-green-100 hover:text-success"
+            className="text-success hover:bg-success/25 hover:text-success"
           >
             <X className="h-4 w-4" />
           </Button>

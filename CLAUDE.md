@@ -174,3 +174,32 @@ stylesheet:
 
 Known status: `a360ai` has it (`apps/web/src/app/globals.css`). `neural-erp`
 does **not** — its buttons are pointer-less until the rule is added there.
+
+## Consumer requirement — `success` color token
+
+This package's components style success states with `text-success`,
+`bg-success/15` and `border-success/30` (billing promo codes, credit deltas).
+Tailwind v4 resolves those from `--color-success`, which this package does not
+define — the **consuming app** must, or the classes compile to nothing and the
+text silently inherits the surrounding foreground. On a dark theme that renders
+as invisible text on a light panel.
+
+Add to the app's global stylesheet, alongside `--warning`:
+
+```css
+@theme inline {
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+}
+:root {
+  --success: oklch(0.55 0.14 152);
+  --success-foreground: oklch(0.985 0 0);
+}
+.dark {
+  --success: oklch(0.76 0.15 152);      /* lighter than light mode, as --primary is */
+  --success-foreground: oklch(0.26 0.05 152);
+}
+```
+
+Known status: `narr8` has it. Any other consumer using these components needs
+the same block.

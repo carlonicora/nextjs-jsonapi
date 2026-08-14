@@ -75,7 +75,7 @@ export function CancelSubscriptionDialog({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-y-4">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+            <div className="bg-primary/10 border-primary/30 text-foreground rounded-lg border p-3 text-sm">
               Your subscription will remain active until {periodEndDate}. You can continue using the service until then.
             </div>
 

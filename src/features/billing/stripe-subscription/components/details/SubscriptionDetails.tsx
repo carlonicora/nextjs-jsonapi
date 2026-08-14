@@ -156,7 +156,7 @@ export function SubscriptionDetails({
 
             {/* Cancellation Warning */}
             {subscription.cancelAtPeriodEnd && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+              <div className="bg-warning/15 border-warning/30 rounded-lg border p-3">
                 <p className="text-warning text-xs/relaxed">
                   This subscription will be canceled at the end of the current period on{" "}
                   {formatDate(subscription.currentPeriodEnd)}.

@@ -151,21 +151,21 @@ export function WizardStepReview({
       {/* Proration Preview (for plan changes) */}
       {isChangingPlan && prorationPreview && (
         <div
-          className={`${isTrialUpgrade ? "bg-amber-50 border-amber-200" : "bg-blue-50 border-blue-200"} border rounded-lg p-4 space-y-2`}
+          className={`${isTrialUpgrade ? "bg-warning/15 border-warning/30" : "bg-primary/10 border-primary/30"} space-y-2 rounded-lg border p-4`}
         >
-          <h4 className={`font-medium ${isTrialUpgrade ? "text-warning" : "text-blue-800"}`}>
+          <h4 className={`font-medium ${isTrialUpgrade ? "text-warning" : "text-primary"}`}>
             {isTrialUpgrade ? "Trial Upgrade" : "Proration Summary"}
           </h4>
-          <p className={`text-sm ${isTrialUpgrade ? "text-warning" : "text-blue-700"}`}>
+          <p className={`text-sm ${isTrialUpgrade ? "text-warning" : "text-foreground"}`}>
             {isTrialUpgrade
               ? "Your trial will end immediately and you will be charged the full price."
               : "Your next charge will be adjusted to account for the plan change."}
           </p>
           <div className="flex justify-between text-sm">
-            <span className={`${isTrialUpgrade ? "text-warning" : "text-blue-600"}`}>
+            <span className={`${isTrialUpgrade ? "text-warning" : "text-muted-foreground"}`}>
               {isTrialUpgrade ? "Amount to charge now:" : "Amount due now:"}
             </span>
-            <span className={`font-medium ${isTrialUpgrade ? "text-warning" : "text-blue-800"}`}>
+            <span className={`font-medium ${isTrialUpgrade ? "text-warning" : "text-foreground"}`}>
               {discountedImmediateCharge !== null ? (
                 <>
                   <span className="line-through text-muted-foreground mr-2">
