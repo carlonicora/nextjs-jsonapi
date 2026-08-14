@@ -1,3 +1,5 @@
+## [2.2.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v2.2.1...v2.2.2) (2026-08-14)
+
 ## [2.2.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v2.2.0...v2.2.1) (2026-08-13)
 
 ## [2.2.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v2.1.3...v2.2.0) (2026-08-13)
