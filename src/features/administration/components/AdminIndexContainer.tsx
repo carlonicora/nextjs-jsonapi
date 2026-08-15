@@ -60,7 +60,7 @@ const BILLING_SECTION: AdminSection = {
   icon: CreditCardIcon,
   labelKey: "billing.admin.products.title",
   descriptionKey: "administration.billing.description",
-  href: "/administration/billing",
+  href: "/administration/products",
 };
 
 /** Keys of the built-in platform sections, for `hiddenSections`. */

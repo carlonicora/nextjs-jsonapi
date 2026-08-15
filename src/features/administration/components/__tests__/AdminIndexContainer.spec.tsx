@@ -66,7 +66,7 @@ describe("AdminIndexGrid", () => {
     configure("pk_test_123");
     render(<AdminIndexGrid />);
 
-    expect(screen.getByTestId("admin-index-billing")).toHaveAttribute("href", "/administration/billing");
+    expect(screen.getByTestId("admin-index-billing")).toHaveAttribute("href", "/administration/products");
   });
 
   it("appends additionalGroups after the platform group, in order", () => {

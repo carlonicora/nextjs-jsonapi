@@ -1,2 +1,2 @@
-export * from "./ProductsAdminContainer";
-export * from "./ProductsAdminPageContainer";
+export * from "./ProductContainer";
+export * from "./ProductsListContainer";

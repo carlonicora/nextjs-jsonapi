@@ -1,100 +1,111 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
+import { ReactNode, useCallback, useMemo } from "react";
+import { useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import { z } from "zod";
-import { FormCheckbox, FormInput, FormTextarea } from "../../../../../components";
-import { CommonEditorButtons } from "../../../../../components/forms/CommonEditorButtons";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Form } from "../../../../../shadcnui";
+import { EditorSheet, FormInput, FormTextarea } from "../../../../../components";
+import { Modules } from "../../../../../core";
+import { useI18nRouter } from "../../../../../i18n";
+import { useProductContext } from "../../../contexts/ProductContext";
 import { StripeProductInterface } from "../../data/stripe-product.interface";
-import { StripeProductService } from "../../data/stripe-product.service";
 
-type ProductEditorProps = {
+export type ProductEditorProps = {
   product?: StripeProductInterface;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSuccess: () => void;
+  propagateChanges?: (product: StripeProductInterface) => void;
+  onSuccess?: () => void | Promise<void>;
+  trigger?: ReactNode;
+  forceShow?: boolean;
+  onClose?: () => void;
+  dialogOpen?: boolean;
+  onDialogOpenChange?: (open: boolean) => void;
 };
 
-export function ProductEditor({ product, open, onOpenChange, onSuccess }: ProductEditorProps) {
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+function ProductEditorInternal({
+  product,
+  propagateChanges,
+  onSuccess,
+  trigger,
+  forceShow,
+  onClose,
+  dialogOpen,
+  onDialogOpenChange,
+}: ProductEditorProps) {
+  const t = useTranslations();
+  const router = useI18nRouter();
+  const { createProduct, updateProduct } = useProductContext();
+  const isEdit = !!product;
 
-  const formSchema = z.object({
-    name: z.string().min(1, { message: "Product name is required" }),
-    description: z.string().min(1, { message: "Description is required" }),
-    active: z.boolean(),
-  });
+  const formSchema = useMemo(
+    () =>
+      z.object({
+        id: z.uuidv4(),
+        name: z.string().min(1, { message: t("billing.admin.products.errors.name") }),
+        description: z.string().optional(),
+      }),
+    [t],
+  );
+
+  // `active` is deliberately absent: archiving is the single deactivation path
+  // (ProductArchiver), and a second toggle here would let the two disagree.
+  const getDefaultValues = useCallback(
+    () => ({
+      id: product?.id ?? v4(),
+      name: product?.name ?? "",
+      description: product?.description ?? "",
+    }),
+    [product],
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: product?.name || "",
-      description: product?.description || "",
-      active: product?.active ?? true,
-    },
+    defaultValues: getDefaultValues(),
   });
 
-  const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (values) => {
-    setIsSubmitting(true);
-
-    try {
-      if (product) {
-        // Update existing product
-        await StripeProductService.updateProduct({
-          id: product.id,
-          name: values.name,
-          description: values.description,
-          active: values.active,
-        });
-      } else {
-        // Create new product
-        await StripeProductService.createProduct({
-          id: v4(),
-          name: values.name,
-          description: values.description,
-          active: values.active,
-        });
-      }
-
-      onSuccess();
-      onOpenChange(false);
-    } catch (error) {
-      console.error("[ProductEditor] Failed to save product:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>{product ? "Edit Product" : "Create Product"}</DialogTitle>
-          <DialogDescription>
-            {product ? `Update the details for ${product.name}` : "Create a new product to offer to your customers"}
-          </DialogDescription>
-        </DialogHeader>
-
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-y-4">
-            <FormInput form={form} id="name" name="Product Name" placeholder="Enter product name" isRequired />
-
-            <FormTextarea
-              form={form}
-              id="description"
-              name="Description"
-              placeholder="Enter product description"
-              className="min-h-32"
-            />
-
-            <FormCheckbox form={form} id="active" name="Active" />
-
-            <CommonEditorButtons isEdit={!!product} form={form} disabled={isSubmitting} setOpen={onOpenChange} />
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+    <EditorSheet
+      form={form}
+      entityType={t("billing.admin.products.entity")}
+      entityName={product?.name}
+      isEdit={isEdit}
+      module={Modules.StripeProduct}
+      size="md"
+      propagateChanges={propagateChanges}
+      onSuccess={onSuccess}
+      onNavigate={(url) => router.push(url)}
+      onSubmit={async (values) => {
+        const payload = { id: values.id, name: values.name, description: values.description };
+        return isEdit ? await updateProduct(payload) : await createProduct(payload);
+      }}
+      onReset={getDefaultValues}
+      trigger={trigger}
+      forceShow={forceShow}
+      onClose={onClose}
+      dialogOpen={dialogOpen}
+      onDialogOpenChange={onDialogOpenChange}
+    >
+      <div className="flex w-full flex-col gap-y-4">
+        <FormInput
+          form={form}
+          id="name"
+          name={t("billing.admin.products.fields.name")}
+          placeholder={t("billing.admin.products.placeholders.name")}
+          isRequired
+        />
+        <FormTextarea
+          form={form}
+          id="description"
+          name={t("billing.admin.products.fields.description")}
+          placeholder={t("billing.admin.products.placeholders.description")}
+          className="min-h-32"
+        />
+      </div>
+    </EditorSheet>
   );
+}
+
+export default function ProductEditor(props: ProductEditorProps) {
+  return <ProductEditorInternal {...props} />;
 }

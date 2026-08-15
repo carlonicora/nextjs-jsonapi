@@ -1,218 +1,117 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, PlusIcon, XIcon } from "lucide-react";
-import { useEffect, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { PlusIcon, XIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import { z } from "zod";
-import { FormCheckbox, FormInput, FormSelect, FormTextarea } from "../../../../../components";
-import { CommonEditorButtons } from "../../../../../components/forms/CommonEditorButtons";
-import {
-  Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  Form,
-  Input,
-  Label,
-} from "../../../../../shadcnui";
+import { EditorSheet, FieldLabel, FormCheckbox, FormInput, FormSelect, FormTextarea } from "../../../../../components";
+import { Modules } from "../../../../../core";
+import { useI18nRouter } from "../../../../../i18n";
+import { Alert, AlertDescription, AlertTitle, Button, Checkbox, Input } from "../../../../../shadcnui";
 import { FeatureInterface, FeatureService } from "../../../../feature";
-import { StripePriceInterface, StripePriceService } from "../../data";
+import { priceLabel, usePriceContext } from "../../../contexts/PriceContext";
+import { StripePriceInput, StripePriceInterface } from "../../data/stripe-price.interface";
 
-type PriceEditorProps = {
-  productId: string;
+export type PriceEditorProps = {
+  productId?: string;
   price?: StripePriceInterface;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSuccess: () => void;
+  propagateChanges?: (price: StripePriceInterface) => void;
+  onSuccess?: () => void | Promise<void>;
+  trigger?: ReactNode;
+  forceShow?: boolean;
+  onClose?: () => void;
+  dialogOpen?: boolean;
+  onDialogOpenChange?: (open: boolean) => void;
 };
 
-type PriceFormValues = {
-  unitAmount: number;
-  currency: string;
-  interval: "one_time" | "day" | "week" | "month" | "year";
-  intervalCount?: number;
-  usageType?: "licensed" | "metered";
-  nickname?: string;
-  active: boolean;
-  isTrial: boolean;
-  description?: string;
-  features: string[];
-  token: string;
-  featureIds: string[]; // Platform Feature entity IDs
-};
-
-export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }: PriceEditorProps) {
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+function PriceEditorInternal({
+  productId,
+  price,
+  propagateChanges,
+  onSuccess,
+  trigger,
+  forceShow,
+  onClose,
+  dialogOpen,
+  onDialogOpenChange,
+}: PriceEditorProps) {
+  const t = useTranslations();
+  const router = useI18nRouter();
+  const { createPrice, updatePrice, productId: contextProductId } = usePriceContext();
   const [allFeatures, setAllFeatures] = useState<FeatureInterface[]>([]);
+  const isEdit = !!price;
+  // NOT `price.productId` — that getter throws when the attribute is absent, and
+  // it always is (see the note in PriceContext). Only create mode needs this,
+  // and there it arrives as a prop or from the context.
+  const targetProductId = productId ?? price?.product?.id ?? contextProductId;
 
-  // Fetch all platform features on mount
   useEffect(() => {
     const fetchFeatures = async () => {
-      try {
-        const features = await FeatureService.findMany({});
-        setAllFeatures(features);
-      } catch (error) {
-        console.error("[PriceEditor] Failed to fetch features:", error);
-      }
+      setAllFeatures(await FeatureService.findMany({}));
     };
-    fetchFeatures();
+    void fetchFeatures();
   }, []);
 
-  const formSchema = z.object({
-    unitAmount: z.preprocess(
-      (val) => (typeof val === "string" ? parseFloat(val) : val),
-      z.number().min(0, { message: "Amount must be 0 or greater" }),
-    ),
-    currency: z.string().min(1, { message: "Currency is required" }),
-    interval: z.enum(["one_time", "day", "week", "month", "year"]),
-    intervalCount: z.preprocess(
-      (val) => (val === "" || val === undefined ? undefined : typeof val === "string" ? parseInt(val, 10) : val),
-      z.number().min(1).optional(),
-    ),
-    usageType: z.enum(["licensed", "metered"]).optional(),
-    nickname: z.string().optional(),
-    active: z.boolean(),
-    isTrial: z.boolean(),
-    description: z.string().optional(),
-    features: z.array(z.string()),
-    token: z.string(),
-    featureIds: z.array(z.string()),
-  });
+  const formSchema = useMemo(
+    () =>
+      z.object({
+        unitAmount: z.preprocess(
+          (value) => (typeof value === "string" ? parseFloat(value) : value),
+          z.number().min(0, { message: t("billing.admin.prices.errors.amount") }),
+        ),
+        currency: z.string().min(1, { message: t("billing.admin.prices.errors.currency") }),
+        interval: z.enum(["one_time", "day", "week", "month", "year"]),
+        intervalCount: z.preprocess(
+          (value) =>
+            value === "" || value === undefined ? undefined : typeof value === "string" ? parseInt(value, 10) : value,
+          z.number().min(1).optional(),
+        ),
+        usageType: z.enum(["licensed", "metered"]).optional(),
+        nickname: z.string().optional(),
+        isTrial: z.boolean(),
+        description: z.string().optional(),
+        features: z.array(z.string()),
+        token: z.string(),
+        featureIds: z.array(z.string()),
+      }),
+    [t],
+  );
 
-  const isEditMode = !!price;
+  type PriceFormValues = z.infer<typeof formSchema>;
 
-  // Convert cents to dollars for display
-  const defaultUnitAmount = price?.unitAmount ? price.unitAmount / 100 : 0;
-
-  // Get core feature IDs that should always be selected
-  const coreFeatureIds = allFeatures.filter((f) => f.isCore).map((f) => f.id);
-
-  // Combine existing price features with core features (ensure no duplicates)
-  const defaultFeatureIds = [...new Set([...(price?.priceFeatures?.map((f) => f.id) ?? []), ...coreFeatureIds])];
+  // Fed to BOTH useForm and EditorSheet.onReset. The previous implementation
+  // reseeded with its own `useEffect(… form.reset)` on open; EditorSheet already
+  // owns that (EditorSheet.tsx:163-190) and running both fights over the form.
+  //
+  // `active` is absent on purpose: archiving is the single deactivation path
+  // (PriceArchiver), and a second toggle here would let the two disagree.
+  const getDefaultValues = useCallback((): PriceFormValues => {
+    const coreFeatureIds = allFeatures.filter((feature) => feature.isCore).map((feature) => feature.id);
+    return {
+      unitAmount: price?.unitAmount ? price.unitAmount / 100 : 0,
+      currency: price?.currency ?? "usd",
+      interval: price?.priceType === "one_time" ? "one_time" : (price?.recurring?.interval ?? "month"),
+      intervalCount: price?.recurring?.intervalCount ?? 1,
+      usageType: price?.recurring?.usageType ?? "licensed",
+      nickname: price?.nickname ?? "",
+      isTrial: price?.isTrial ?? false,
+      description: price?.description ?? "",
+      features: price?.features ?? [],
+      token: price?.token?.toString() ?? "",
+      featureIds: [...new Set([...(price?.priceFeatures?.map((f) => f.id) ?? []), ...coreFeatureIds])],
+    };
+  }, [price, allFeatures]);
 
   const form = useForm<PriceFormValues>({
     resolver: zodResolver(formSchema) as any,
-    defaultValues: {
-      unitAmount: defaultUnitAmount,
-      currency: price?.currency || "usd",
-      interval: price?.priceType === "one_time" ? "one_time" : price?.recurring?.interval || "month",
-      intervalCount: price?.recurring?.intervalCount || 1,
-      usageType: price?.recurring?.usageType || "licensed",
-      nickname: price?.nickname || "",
-      active: price?.active ?? true,
-      isTrial: price?.isTrial ?? false,
-      description: price?.description || "",
-      features: price?.features || [],
-      token: price?.token?.toString() ?? "",
-      featureIds: defaultFeatureIds,
-    },
+    defaultValues: getDefaultValues(),
   });
-
-  // Reset form when dialog opens to ensure fresh state
-  useEffect(() => {
-    if (open) {
-      // Recalculate core feature IDs with current allFeatures
-      const currentCoreFeatureIds = allFeatures.filter((f) => f.isCore).map((f) => f.id);
-      const resetFeatureIds = [
-        ...new Set([...(price?.priceFeatures?.map((f) => f.id) ?? []), ...currentCoreFeatureIds]),
-      ];
-
-      form.reset({
-        unitAmount: price?.unitAmount ? price.unitAmount / 100 : 0,
-        currency: price?.currency || "usd",
-        interval: price?.priceType === "one_time" ? "one_time" : price?.recurring?.interval || "month",
-        intervalCount: price?.recurring?.intervalCount || 1,
-        usageType: price?.recurring?.usageType || "licensed",
-        nickname: price?.nickname || "",
-        active: price?.active ?? true,
-        isTrial: price?.isTrial ?? false,
-        description: price?.description || "",
-        features: price?.features || [],
-        token: price?.token?.toString() ?? "",
-        featureIds: resetFeatureIds,
-      });
-    }
-  }, [open, price?.id, allFeatures]);
 
   const watchInterval = form.watch("interval");
   const isRecurring = watchInterval !== "one_time";
-
-  const onSubmit: SubmitHandler<PriceFormValues> = async (values) => {
-    setIsSubmitting(true);
-
-    try {
-      // Convert dollars to cents
-      const unitAmountInCents = Math.round(values.unitAmount * 100);
-
-      if (isEditMode) {
-        // Update existing price (nickname, description, features, token, isTrial can be updated - Stripe fields are limited)
-        await StripePriceService.updatePrice({
-          id: price.id,
-          nickname: values.nickname || undefined,
-          description: values.description || undefined,
-          features: values.features.filter((f) => f.trim()) || undefined,
-          token: values.token ? parseInt(values.token, 10) : undefined,
-          // Only include isTrial and featureIds for recurring prices
-          ...(price?.priceType === "recurring" ? { isTrial: values.isTrial, featureIds: values.featureIds } : {}),
-        });
-      } else {
-        // Create new price
-        const createInput: any = {
-          id: v4(),
-          productId: productId,
-          currency: values.currency,
-          unitAmount: unitAmountInCents,
-        };
-
-        // Add recurring details if interval is not one_time
-        if (isRecurring) {
-          createInput.recurring = {
-            interval: values.interval as "day" | "week" | "month" | "year",
-            intervalCount: values.intervalCount || 1,
-            usageType: values.usageType || "licensed",
-          };
-        }
-
-        if (values.nickname) {
-          createInput.nickname = values.nickname;
-        }
-
-        if (values.description) {
-          createInput.description = values.description;
-        }
-
-        const filteredFeatures = values.features.filter((f) => f.trim());
-        if (filteredFeatures.length > 0) {
-          createInput.features = filteredFeatures;
-        }
-
-        if (values.token) {
-          createInput.token = parseInt(values.token, 10);
-        }
-
-        // Add isTrial and platform feature IDs only for recurring prices (Neo4j only, not sent to Stripe)
-        if (isRecurring) {
-          createInput.isTrial = values.isTrial;
-          if (values.featureIds.length > 0) {
-            createInput.featureIds = values.featureIds;
-          }
-        }
-
-        await StripePriceService.createPrice(createInput);
-      }
-
-      onSuccess();
-      onOpenChange(false);
-    } catch (error) {
-      console.error("[PriceEditor] Failed to save price:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   const currencyOptions = [
     { id: "usd", text: "USD ($)" },
@@ -221,208 +120,242 @@ export function PriceEditor({ productId, price, open, onOpenChange, onSuccess }:
   ];
 
   const intervalOptions = [
-    { id: "one_time", text: "One-time" },
-    { id: "day", text: "Daily" },
-    { id: "week", text: "Weekly" },
-    { id: "month", text: "Monthly" },
-    { id: "year", text: "Yearly" },
+    { id: "one_time", text: t("billing.admin.prices.interval.one_time") },
+    { id: "day", text: t("billing.admin.prices.interval.day") },
+    { id: "week", text: t("billing.admin.prices.interval.week") },
+    { id: "month", text: t("billing.admin.prices.interval.month") },
+    { id: "year", text: t("billing.admin.prices.interval.year") },
   ];
 
   const usageTypeOptions = [
-    { id: "licensed", text: "Licensed (per unit)" },
-    { id: "metered", text: "Metered (usage-based)" },
+    { id: "licensed", text: t("billing.admin.prices.usage.licensed") },
+    { id: "metered", text: t("billing.admin.prices.usage.metered") },
   ];
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>{isEditMode ? "Edit Price" : "Create Price"}</DialogTitle>
-          <DialogDescription>
-            {isEditMode
-              ? "Update the price details. Note: Only nickname and active status can be changed."
-              : "Create a new price for this product"}
-          </DialogDescription>
-        </DialogHeader>
+    <EditorSheet
+      form={form}
+      entityType={t("billing.admin.prices.entity")}
+      entityName={price ? priceLabel(price) : undefined}
+      isEdit={isEdit}
+      module={Modules.StripePrice}
+      size="lg"
+      propagateChanges={propagateChanges}
+      onSuccess={onSuccess}
+      onNavigate={(url) => router.push(url)}
+      onSubmit={async (values) => {
+        const trimmedFeatures = values.features.filter((feature) => feature.trim());
 
-        {isEditMode && (
-          <div className="bg-primary/10 border-primary/30 flex gap-x-3 rounded-lg border p-4">
-            <AlertCircle className="text-primary mt-0.5 h-5 w-5 flex-shrink-0" />
-            <div className="text-foreground text-sm">
-              <p className="font-semibold mb-1">Stripe Price Immutability</p>
-              <p>
-                Due to Stripe's architecture, only the nickname and active status can be modified after creation. To
-                change amount, currency, or billing interval, create a new price.
-              </p>
+        if (isEdit) {
+          const patch: StripePriceInput = {
+            id: price.id,
+            nickname: values.nickname || undefined,
+            description: values.description || undefined,
+            features: trimmedFeatures.length > 0 ? trimmedFeatures : undefined,
+            token: values.token ? parseInt(values.token, 10) : undefined,
+            // Stripe one-time prices carry neither a trial flag nor platform
+            // features, so those two only travel for recurring prices.
+            ...(price.priceType === "recurring" ? { isTrial: values.isTrial, featureIds: values.featureIds } : {}),
+          };
+          return await updatePrice(patch);
+        }
+
+        if (!targetProductId) throw new Error("PriceEditor requires a productId to create a price");
+
+        const payload: StripePriceInput = {
+          id: v4(),
+          productId: targetProductId,
+          currency: values.currency,
+          unitAmount: Math.round(values.unitAmount * 100),
+        };
+        if (isRecurring) {
+          payload.recurring = {
+            interval: values.interval as "day" | "week" | "month" | "year",
+            intervalCount: values.intervalCount ?? 1,
+            usageType: values.usageType ?? "licensed",
+          };
+          payload.isTrial = values.isTrial;
+          if (values.featureIds.length > 0) payload.featureIds = values.featureIds;
+        }
+        if (values.nickname) payload.nickname = values.nickname;
+        if (values.description) payload.description = values.description;
+        if (trimmedFeatures.length > 0) payload.features = trimmedFeatures;
+        if (values.token) payload.token = parseInt(values.token, 10);
+
+        return await createPrice(payload);
+      }}
+      onReset={getDefaultValues}
+      trigger={trigger}
+      forceShow={forceShow}
+      onClose={onClose}
+      dialogOpen={dialogOpen}
+      onDialogOpenChange={onDialogOpenChange}
+    >
+      <div className="flex w-full flex-col gap-y-4">
+        {isEdit && (
+          <Alert>
+            <AlertTitle>{t("billing.admin.prices.immutability.title")}</AlertTitle>
+            <AlertDescription>{t("billing.admin.prices.immutability.description")}</AlertDescription>
+          </Alert>
+        )}
+
+        <div className="grid grid-cols-2 gap-x-4">
+          {/* type="decimal", NOT type="currency": the currency variant hardcodes
+              a Euro symbol (FormInput.tsx:105-106), which contradicts the
+              currency selector sitting next to it. */}
+          <FormInput
+            form={form}
+            id="unitAmount"
+            type="decimal"
+            name={t("billing.admin.prices.fields.amount")}
+            placeholder={t("billing.admin.prices.placeholders.amount")}
+            disabled={isEdit}
+            isRequired
+          />
+          <FormSelect
+            form={form}
+            id="currency"
+            name={t("billing.admin.prices.fields.currency")}
+            values={currencyOptions}
+            disabled={isEdit}
+          />
+        </div>
+
+        <FormSelect
+          form={form}
+          id="interval"
+          name={t("billing.admin.prices.fields.interval")}
+          values={intervalOptions}
+          disabled={isEdit}
+        />
+
+        {isRecurring && (
+          <div className="grid grid-cols-2 gap-x-4">
+            <FormInput
+              form={form}
+              id="intervalCount"
+              type="number"
+              name={t("billing.admin.prices.fields.intervalCount")}
+              placeholder={t("billing.admin.prices.placeholders.intervalCount")}
+              disabled={isEdit}
+            />
+            <FormSelect
+              form={form}
+              id="usageType"
+              name={t("billing.admin.prices.fields.usageType")}
+              values={usageTypeOptions}
+              disabled={isEdit}
+            />
+          </div>
+        )}
+
+        <FormInput
+          form={form}
+          id="nickname"
+          name={t("billing.admin.prices.fields.nickname")}
+          placeholder={t("billing.admin.prices.placeholders.nickname")}
+        />
+
+        <FormTextarea
+          form={form}
+          id="description"
+          name={t("billing.admin.prices.fields.description")}
+          placeholder={t("billing.admin.prices.placeholders.description")}
+          className="min-h-24"
+        />
+
+        <FormInput
+          form={form}
+          id="token"
+          type="number"
+          name={t("billing.admin.prices.fields.token")}
+          placeholder={t("billing.admin.prices.placeholders.token")}
+        />
+
+        <div className="flex flex-col gap-y-2">
+          <FieldLabel>{t("billing.admin.prices.fields.features")}</FieldLabel>
+          {form.watch("features").map((_, index) => (
+            <div key={index} className="flex gap-2">
+              <Input
+                {...form.register(`features.${index}`)}
+                placeholder={t("billing.admin.prices.placeholders.feature", { index: index + 1 })}
+                className="flex-1"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                aria-label={t("billing.admin.prices.actions.removeFeature")}
+                onClick={() =>
+                  form.setValue(
+                    "features",
+                    form.getValues("features").filter((_, i) => i !== index),
+                  )
+                }
+              >
+                <XIcon />
+              </Button>
+            </div>
+          ))}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="self-start"
+            onClick={() => form.setValue("features", [...form.getValues("features"), ""])}
+          >
+            <PlusIcon />
+            {t("billing.admin.prices.actions.addFeature")}
+          </Button>
+        </div>
+
+        {isRecurring && allFeatures.length > 0 && (
+          <div className="flex flex-col gap-y-2">
+            <FieldLabel>{t("billing.admin.prices.fields.platformFeatures")}</FieldLabel>
+            <div className="flex max-h-48 flex-col gap-y-2 overflow-y-auto rounded-md border p-4">
+              {allFeatures.map((feature) => {
+                const isChecked = form.watch("featureIds").includes(feature.id);
+                return (
+                  <div key={feature.id} className="flex items-center gap-x-2">
+                    <Checkbox
+                      id={`feature-${feature.id}`}
+                      checked={isChecked}
+                      disabled={feature.isCore}
+                      onCheckedChange={(checked) => {
+                        const current = form.getValues("featureIds");
+                        if (checked) form.setValue("featureIds", [...new Set([...current, feature.id])]);
+                        else if (!feature.isCore)
+                          form.setValue(
+                            "featureIds",
+                            current.filter((id) => id !== feature.id),
+                          );
+                      }}
+                    />
+                    <FieldLabel htmlFor={`feature-${feature.id}`}>{feature.name}</FieldLabel>
+                    {/* Typography role 12 (caption) — token colour, never text-gray-*. */}
+                    {feature.isCore && (
+                      <span className="text-muted-foreground text-xs">{t("billing.admin.prices.help.core")}</span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-y-4">
-            <div className="grid grid-cols-2 gap-x-4">
-              <FormInput
-                form={form}
-                id="unitAmount"
-                name="Amount (in dollars)"
-                placeholder="9.99"
-                disabled={isEditMode}
-                isRequired
-              />
-
-              <FormSelect form={form} id="currency" name="Currency" values={currencyOptions} disabled={isEditMode} />
-            </div>
-
-            <FormSelect
-              form={form}
-              id="interval"
-              name="Billing Interval"
-              values={intervalOptions}
-              disabled={isEditMode}
-            />
-
-            {isRecurring && (
-              <div className="grid grid-cols-2 gap-x-4">
-                <FormInput
-                  form={form}
-                  id="intervalCount"
-                  name="Interval Count"
-                  placeholder="1"
-                  type="number"
-                  disabled={isEditMode}
-                />
-
-                <FormSelect
-                  form={form}
-                  id="usageType"
-                  name="Usage Type"
-                  values={usageTypeOptions}
-                  disabled={isEditMode}
-                />
-              </div>
-            )}
-
-            <FormInput
-              form={form}
-              id="nickname"
-              name="Nickname (optional)"
-              placeholder="e.g., Standard Plan, Pro Tier"
-            />
-
-            <FormTextarea
-              form={form}
-              id="description"
-              name="Description (optional)"
-              placeholder="Describe what this price tier includes..."
-              className="min-h-24"
-            />
-
-            <FormInput form={form} id="token" name="Token (optional)" placeholder="Enter token value" />
-
-            {/* Features List */}
-            <div className="space-y-2">
-              <Label>Features (optional)</Label>
-              <div className="space-y-2">
-                {form.watch("features").map((_, index) => (
-                  <div key={index} className="flex gap-2">
-                    <Input
-                      {...form.register(`features.${index}`)}
-                      placeholder={`Feature ${index + 1}`}
-                      className="flex-1"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={() => {
-                        const currentFeatures = form.getValues("features");
-                        form.setValue(
-                          "features",
-                          currentFeatures.filter((_, i) => i !== index),
-                        );
-                      }}
-                    >
-                      <XIcon className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const currentFeatures = form.getValues("features");
-                    form.setValue("features", [...currentFeatures, ""]);
-                  }}
-                  className="mt-2"
-                >
-                  <PlusIcon className="h-4 w-4 mr-2" />
-                  Add Feature
-                </Button>
-              </div>
-            </div>
-
-            {/* Platform Features Checkbox List - Only show for recurring prices */}
-            {isRecurring && allFeatures.length > 0 && (
-              <div className="space-y-2">
-                <Label>Platform Features</Label>
-                <div className="border rounded-md p-4 space-y-2 max-h-48 overflow-y-auto">
-                  {allFeatures.map((feature) => {
-                    const isCore = feature.isCore;
-                    const isChecked = form.watch("featureIds").includes(feature.id);
-
-                    return (
-                      <div key={feature.id} className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id={`feature-${feature.id}`}
-                          checked={isChecked}
-                          disabled={isCore}
-                          onChange={(e) => {
-                            const currentIds = form.getValues("featureIds");
-                            if (e.target.checked) {
-                              form.setValue("featureIds", [...currentIds, feature.id]);
-                            } else {
-                              // Don't allow unchecking core features
-                              if (!isCore) {
-                                form.setValue(
-                                  "featureIds",
-                                  currentIds.filter((id) => id !== feature.id),
-                                );
-                              }
-                            }
-                          }}
-                          className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary disabled:opacity-50"
-                        />
-                        <label
-                          htmlFor={`feature-${feature.id}`}
-                          className={`text-sm ${isCore ? "text-muted-foreground" : ""}`}
-                        >
-                          {feature.name}
-                          {isCore && <span className="ml-2 text-xs text-muted-foreground">(Core - Required)</span>}
-                        </label>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            <FormCheckbox form={form} id="active" name="Active" />
-
-            {isRecurring && (
-              <FormCheckbox
-                form={form}
-                id="isTrial"
-                name="Trial Price"
-                description="Mark this as the trial subscription plan (only one price should be marked as trial)"
-              />
-            )}
-
-            <CommonEditorButtons isEdit={isEditMode} form={form} disabled={isSubmitting} setOpen={onOpenChange} />
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+        {isRecurring && (
+          <FormCheckbox
+            form={form}
+            id="isTrial"
+            name={t("billing.admin.prices.fields.trial")}
+            description={t("billing.admin.prices.help.trial")}
+          />
+        )}
+      </div>
+    </EditorSheet>
   );
+}
+
+export default function PriceEditor(props: PriceEditorProps) {
+  return <PriceEditorInternal {...props} />;
 }

@@ -19,6 +19,8 @@ export * from "../hooks";
 import { useCompanyTableStructure } from "../features/company/hooks";
 import { useRoleTableStructure } from "../features/role/hooks";
 import { useUserTableStructure } from "../features/user/hooks";
+import { useStripePriceTableStructure } from "../features/billing/stripe-price/hooks/useStripePriceTableStructure";
+import { useStripeProductTableStructure } from "../features/billing/stripe-product/hooks/useStripeProductTableStructure";
 import { registerTableGenerator } from "../hooks";
 
 export * from "../features/content/hooks";
@@ -30,4 +32,6 @@ export * from "../features/company/hooks/useSubscriptionStatus";
 registerTableGenerator("roles", useRoleTableStructure);
 registerTableGenerator("users", useUserTableStructure);
 registerTableGenerator("companies", useCompanyTableStructure);
+registerTableGenerator("stripe-products", useStripeProductTableStructure);
+registerTableGenerator("stripe-prices", useStripePriceTableStructure);
 // Note: Content registration moved to app-level to support app-specific cellTopic
