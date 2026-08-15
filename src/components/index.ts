@@ -20,6 +20,7 @@ export { parseFiscalData } from "../utils/fiscal-utils";
 
 // Feature components
 export * from "../features/auth/components";
+export * from "../features/administration";
 // Billing components moved to separate entry point: @carlonicora/nextjs-jsonapi/billing
 export * from "../features/company/components";
 export * from "../features/content/components";

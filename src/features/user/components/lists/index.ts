@@ -1,5 +1,6 @@
 export * from "./AdminUsersList";
 export * from "./CompanyUsersList";
+export * from "./PlatformUsersList";
 export * from "./ContributorsList";
 export * from "./RelevantUsersList";
 export * from "./RoleUsersList";

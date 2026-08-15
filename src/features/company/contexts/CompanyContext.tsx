@@ -43,10 +43,22 @@ export const CompanyProvider = ({ children, dehydratedCompany, configurationEdit
   const breadcrumb = () => {
     const response: BreadcrumbItemData[] = [];
 
+    // The list root always comes first, exactly as UserProvider does it —
+    // without it the company list rendered a breadcrumb of just "Home", while
+    // every sibling administration page showed its own name.
+    //
+    // Linked ONLY when it is not the current page: the Company module's
+    // `pageUrl` is /companies, which the administration tree does not route, so
+    // a link from the list itself would land on a 404.
+    response.push({
+      name: t(`entities.companies`, { count: 2 }),
+      ...(company ? { href: generateUrl({ page: Modules.Company }) } : {}),
+    });
+
     if (company)
       response.push({
         name: company.name,
-        href: generateUrl({ page: Modules.Company }),
+        href: generateUrl({ page: Modules.Company, id: company.id }),
       });
 
     return response;

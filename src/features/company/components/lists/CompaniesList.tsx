@@ -9,7 +9,17 @@ import { CompanyFields, CompanyInterface } from "../../data";
 import { CompanyService } from "../../data/company.service";
 import { CompanyEditor } from "../forms/CompanyEditor";
 
-export function CompaniesList() {
+type CompaniesListProps = {
+  /**
+   * Pass this whenever the list is the page's own content inside a
+   * `RoundPageContainer fullWidth`. Without it ContentListTable wraps itself in
+   * `rounded-md border`, drawing a second bordered card inside the page's
+   * rounded shell — two borders fighting each other at every corner.
+   */
+  fullWidth?: boolean;
+};
+
+export function CompaniesList({ fullWidth }: CompaniesListProps = {}) {
   const t = useTranslations();
 
   const data: DataListRetriever<CompanyInterface> = useDataListRetriever({
@@ -26,6 +36,7 @@ export function CompaniesList() {
       fields={[CompanyFields.name]}
       tableGeneratorType={Modules.Company}
       functions={functions}
+      fullWidth={fullWidth}
       title={t(`entities.companies`, { count: 2 })}
     />
   );

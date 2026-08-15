@@ -68,6 +68,23 @@ export const useUserTableStructure: UseTableStructureHook<UserInterface, UserFie
       enableSorting: false,
       enableHiding: false,
     }),
+    // Only meaningful on a platform-wide list (PlatformUsersList), where users
+    // from every company sit in one table; a company-scoped list would repeat
+    // the same value on every row.
+    [UserFields.company]: () => ({
+      id: "company",
+      accessorKey: "company",
+      header: t(`entities.companies`, { count: 1 }),
+      cell: ({ row }: { row: Row<TableContent<UserInterface>> }) => {
+        const company = (row.original.jsonApiData as UserInterface).company;
+
+        if (!company) return <span className="text-muted-foreground text-xs">—</span>;
+
+        return <Link href={generateUrl({ page: Modules.Company, id: company.id })}>{company.name}</Link>;
+      },
+      enableSorting: false,
+      enableHiding: false,
+    }),
     [UserFields.relevance]: () => ({
       id: "relevance",
       accessorKey: "relevance",
