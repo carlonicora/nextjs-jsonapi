@@ -108,7 +108,12 @@ function UserEditorInternal({
   const formSchema = useMemo(
     () =>
       z.object({
-        id: z.uuidv4(),
+        // Any UUID version: on edit this is the PERSISTED id, and seeded/legacy
+        // users can carry a non-v4 uuid (the migration-created Administrator is
+        // v1). `z.uuidv4()` rejected those, and because `id` has no rendered
+        // field the failure was invisible — handleSubmit simply never fired.
+        // New users still get a v4 from `v4()` in getDefaultValues.
+        id: z.uuid(),
         name: z.string().min(1, { message: t(`user.fields.name.error`) }),
         email: z.string().min(1, { message: t(`common.fields.email.error`) }),
         password: z.string().optional(),
@@ -205,7 +210,11 @@ function UserEditorInternal({
           avatar: resetImage ? undefined : values.avatar,
           roleIds: values.roleIds,
           sendInvitationEmail: values.sendInvitationEmail,
-          companyId: company!.id,
+          // Optional: `companyId` only sets the `x-companyid` header, and a user
+          // can legitimately have no company (the seeded Administrator does), in
+          // which case `company` is null here. `company!.id` threw a TypeError
+          // and surfaced as a generic "update failed" toast.
+          companyId: company?.id,
           adminCreated: adminCreated,
         };
 
