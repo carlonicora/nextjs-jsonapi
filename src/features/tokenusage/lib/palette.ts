@@ -3,16 +3,29 @@
  *
  * Every value here is a documented step of the dataviz skill's reference ramps —
  * nothing was eyeballed, nothing was hand-mixed. The palette was run through the
- * skill's validator against THIS application's real chart surfaces (from
- * `apps/web/src/app/globals.css`: light `oklch(1 0 0)` = `#ffffff`, dark
- * `oklch(0.145 0 0)` = `#0a0a0a`) in both modes. The verbatim output is below.
+ * skill's validator against THIS application's real chart surfaces in both modes.
+ * The verbatim output is below.
+ *
+ * The surface is `--card`, NOT `--background`. Every chart that uses this palette
+ * is painted inside a `<Card>`, so the card is the surface the marks actually sit
+ * on — and in dark mode it is the *lighter* of the two (`oklch(0.205 0 0)` vs the
+ * background's `oklch(0.145 0 0)`), which is the harder case for contrast. Taken
+ * from `apps/web/src/app/globals.css` (narr8 declares two `:root`/`.dark` pairs;
+ * the LATER pair wins, and it is the one read here) — light `oklch(1 0 0)`, dark
+ * `oklch(0.205 0 0)`. a360ai declares the same two values.
+ *
+ * oklch→hex conversion: the algebraic inverse of the Björn Ottosson OKLab
+ * matrices — the same matrices the validator applies in the forward direction —
+ * giving light `#ffffff` and dark `#171717`. Cross-checked by feeding it the
+ * previously recorded background value, which it reproduces exactly:
+ * `oklch(0.145 0 0)` → `#0a0a0a`. ✓
  *
  * Light and dark are two SELECTED sets of steps, chosen for their own surface —
  * never one set with its lightness flipped at runtime. Consumers pick a set from
  * the resolved theme (`seriesColor(i, mode)` / `sequentialColor(i, mode)`).
  *
  * ---------------------------------------------------------------------------
- * VALIDATOR OUTPUT — dataviz `scripts/validate_palette.js`, run 2026-08-07
+ * VALIDATOR OUTPUT — dataviz `scripts/validate_palette.js`, run 2026-08-15
  * ---------------------------------------------------------------------------
  *
  * $ node scripts/validate_palette.js "#2a78d6,#eb6834,#1baf7a,#eda100,#e87ba4,#008300,#4a3aa7" --mode light --surface "#ffffff"
@@ -27,9 +40,9 @@
  *   → ALL CHECKS PASS  (CVD in the 6–8 floor band is legal ONLY with secondary encoding: direct labels, gaps, or texture)
  *   scope: categorical palettes only. For a lone status/text color check WCAG text contrast; for a sequential ramp, lightness monotonicity.
  *
- * $ node scripts/validate_palette.js "#3987e5,#d95926,#199e70,#c98500,#d55181,#008300,#9085e9" --mode dark --surface "#0a0a0a"
+ * $ node scripts/validate_palette.js "#3987e5,#d95926,#199e70,#c98500,#d55181,#008300,#9085e9" --mode dark --surface "#171717"
  *
- * Palette (dark, surface #0a0a0a, categorical): 7 slots
+ * Palette (dark, surface #171717, categorical): 7 slots
  *   [PASS] Lightness band         all 7 inside L 0.48–0.67
  *   [PASS] Chroma floor           all 7 >= 0.1
  *   [PASS] CVD separation         worst adjacent #c98500↔#199e70 ΔE 8.4 (protan) · tritan 8.7
@@ -49,29 +62,39 @@
  *
  *   → ALL CHECKS PASS  (ordinal: one hue, monotone L, visible step gaps, light end clears surface)
  *
- * $ node scripts/validate_palette.js "#9ec5f4,#6da7ec,#3987e5,#256abf,#184f95" --mode dark --surface "#0a0a0a" --ordinal
+ * $ node scripts/validate_palette.js "#9ec5f4,#6da7ec,#3987e5,#256abf,#184f95" --mode dark --surface "#171717" --ordinal
  *
- * Palette (dark, surface #0a0a0a, ordinal ramp): 5 slots
+ * Palette (dark, surface #171717, ordinal ramp): 5 slots
  *   [PASS] Lightness monotone     steps read light→dark
  *   [PASS] Adjacent ΔL            all gaps >= 0.06
- *   [PASS] Light-end contrast     #184f95 at 2.44:1 vs surface
+ *   [PASS] Light-end contrast     #184f95 at 2.21:1 vs surface
  *   [PASS] Single hue             hue spread 3°
  *
  *   → ALL CHECKS PASS  (ordinal: one hue, monotone L, visible step gaps, light end clears surface)
  *
  * OTHER_COLOR is achromatic, so the categorical checks (which gate hue identity)
  * do not apply to it; it was gated on contrast alone with the validator's own
- * `contrast()` export: 3.59:1 on `#ffffff`, 5.51:1 on `#0a0a0a` — both clear 3:1.
+ * `contrast()` export: 3.59:1 on `#ffffff`, 4.99:1 on `#171717` — both clear 3:1.
  *
  * ---------------------------------------------------------------------------
  * WHAT THE RESULTS OBLIGE US TO DO
  * ---------------------------------------------------------------------------
  *
+ * - NO COLOUR VALUE CHANGED in the move from `--background` to `--card`. Every
+ *   gate that passed on the background still passes on the card, so re-stepping
+ *   a hue would have been churn, not a fix. Only the recorded surface, the
+ *   recorded numbers and this prose changed.
+ * - The dark set still clears 3:1 on the LIGHTER card surface: the worst slot is
+ *   green `#008300` at 3.63:1, and the ordinal ramp's surface-nearest step lands
+ *   at 2.21:1 (down from 2.44:1 on the background) — still above the 2:1 gate.
+ *   That headroom is thin, so a future card-surface lightening MUST re-run these
+ *   four commands rather than assume the set still holds.
  * - The light-mode contrast WARN is NOT dismissable. Three slots (aqua, yellow,
  *   magenta) sit below 3:1 on white, so every surface that paints with this
  *   palette MUST ship the relief channel: a visible legend, direct labels and a
  *   tooltip carrying the value in text. The timeline chart and the breakdown
- *   table both do.
+ *   table both do. The light card is `#ffffff`, identical to the light
+ *   background, so this WARN is unchanged rather than newly incurred.
  * - CVD separation is measured on ADJACENT pairs, which is the correct pairlist
  *   for stacked bars, grouped bars and lines — the only forms this palette paints.
  *   A scatter / bubble / small-multiples chart would need `--pairs all`, which
@@ -82,10 +105,14 @@
 /** Which surface the colours are being painted on. */
 export type ChartMode = "light" | "dark";
 
-/** The chart surfaces the palette was validated against (globals.css). */
+/**
+ * The chart surfaces the palette was validated against (globals.css `--card`).
+ *
+ * `--card`, never `--background`: the charts are painted inside a `<Card>`.
+ */
 export const CHART_SURFACE: Readonly<Record<ChartMode, string>> = {
   light: "#ffffff",
-  dark: "#0a0a0a",
+  dark: "#171717",
 };
 
 /**
@@ -133,7 +160,7 @@ export const CATEGORICAL_CEILING = CATEGORICAL_LIGHT.length;
 /**
  * The "other" rollup colour: deliberately achromatic so it reads as "not an
  * identity" beside the seven hues. Same step in both modes — it clears 3:1 on
- * both surfaces (3.59:1 light, 5.51:1 dark).
+ * both card surfaces (3.59:1 on `#ffffff`, 4.99:1 on `#171717`).
  */
 export const OTHER_COLOR = "#898781";
 

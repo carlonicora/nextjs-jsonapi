@@ -14,6 +14,7 @@ import {
 } from "../../../shadcnui";
 import { TokenUsageAdminTimelineInterface } from "../data/tokenusage-admin-timeline.interface";
 import { Metric, StackBy } from "../data/tokenusage-admin.types";
+import { useUsageFormatters } from "../lib/formatters";
 import { operationLabel } from "../lib/operation-label";
 import { CATEGORICAL_CEILING, ChartMode, OTHER_COLOR, seriesColor } from "../lib/palette";
 
@@ -71,13 +72,6 @@ const inferGranularity = (buckets: string[]): "day" | "week" | "month" => {
   return "day";
 };
 
-const bucketFormatter = (granularity: "day" | "week" | "month"): Intl.DateTimeFormat =>
-  granularity === "month"
-    ? new Intl.DateTimeFormat("it-IT", { month: "short", year: "numeric", timeZone: "UTC" })
-    : new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "short", timeZone: "UTC" });
-
-const compactNumber = new Intl.NumberFormat("it-IT", { notation: "compact", maximumFractionDigits: 1 });
-
 /**
  * Usage over time as a stacked bar chart.
  *
@@ -93,6 +87,7 @@ const compactNumber = new Intl.NumberFormat("it-IT", { notation: "compact", maxi
  */
 export function TokenUsageTimelineChart({ rows, metric, stackBy, className }: TokenUsageTimelineChartProps) {
   const t = useTranslations();
+  const { compact, bucketDate, metricValue: formatValue } = useUsageFormatters();
   const { resolvedTheme } = useTheme();
   const mode: ChartMode = resolvedTheme === "dark" ? "dark" : "light";
 
@@ -134,7 +129,7 @@ export function TokenUsageTimelineChart({ rows, metric, stackBy, className }: To
   const seriesLabel = (series: string): string => {
     if (series === OTHER_SERIES) {
       const key = "token_usage.series.other";
-      return t.has(key) ? t(key) : "Altro";
+      return t.has(key) ? t(key) : "Other";
     }
     // Stacking by company makes the series a company NAME, which is data, not
     // vocabulary — it is never looked up. Scope and type keys are vocabulary the
@@ -156,13 +151,12 @@ export function TokenUsageTimelineChart({ rows, metric, stackBy, className }: To
     const key = "token_usage.timeline.empty";
     return (
       <p className={className ? `text-muted-foreground text-sm ${className}` : "text-muted-foreground text-sm"}>
-        {t.has(key) ? t(key) : "Nessun dato nel periodo selezionato"}
+        {t.has(key) ? t(key) : "No data in the selected period"}
       </p>
     );
   }
 
   const granularity = inferGranularity(chartData.map((entry) => entry.bucket));
-  const formatBucket = bucketFormatter(granularity);
   const seriesColorFor = (series: string, index: number) =>
     series === OTHER_SERIES ? OTHER_COLOR : seriesColor(index, mode);
 
@@ -186,19 +180,27 @@ export function TokenUsageTimelineChart({ rows, metric, stackBy, className }: To
             axisLine={false}
             tickMargin={8}
             minTickGap={16}
-            tickFormatter={(value: string) => formatBucket.format(new Date(`${value}T00:00:00.000Z`))}
+            tickFormatter={(value: string) => bucketDate(value, granularity)}
           />
           <YAxis
             tickLine={false}
             axisLine={false}
             tickMargin={8}
             width={48}
-            tickFormatter={(value: number) => compactNumber.format(value)}
+            tickFormatter={(value: number) => compact(value)}
           />
           <ChartTooltip
             content={
               <ChartTooltipContent
-                labelFormatter={(value) => formatBucket.format(new Date(`${String(value)}T00:00:00.000Z`))}
+                labelFormatter={(value) => bucketDate(String(value), granularity)}
+                // Without this the tooltip falls back to toLocaleString() and
+                // prints the raw stored precision (credits carry 4 decimals),
+                // which disagrees with every other number on the page.
+                valueFormatter={(value) => formatValue(Number(value), metric)}
+                // Every series appears in every bucket's payload, so a day with
+                // one active operation would otherwise list the whole vocabulary
+                // as zeros and bury the one number that matters.
+                hideZeroValues
               />
             }
           />

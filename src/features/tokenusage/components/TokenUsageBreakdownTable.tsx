@@ -7,7 +7,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { cn } from "../../../utils";
 import type { TokenUsageAdminBreakdownInterface } from "../data/tokenusage-admin-breakdown.interface";
 import type { Metric } from "../data/tokenusage-admin.types";
-import { cacheHitPercentage, formatDecimal, formatMetricValue, formatPercent, metricValue } from "../lib/metrics";
+import { useUsageFormatters } from "../lib/formatters";
+import { cacheHitPercentage, metricValue } from "../lib/metrics";
 
 type Props = {
   rows: TokenUsageAdminBreakdownInterface[];
@@ -28,6 +29,7 @@ type SortState = { key: SortKey; direction: "asc" | "desc" };
  */
 export function TokenUsageBreakdownTable({ rows, metric }: Props) {
   const t = useTranslations();
+  const { decimal, metricValue: formatValue, percent, compare } = useUsageFormatters();
   const [sort, setSort] = useState<SortState | undefined>(undefined);
 
   // The company dimension is the only one that reports active users. Rather than
@@ -61,11 +63,11 @@ export function TokenUsageBreakdownTable({ rows, metric }: Props) {
       const left = sortValue(a, sort.key);
       const right = sortValue(b, sort.key);
       if (typeof left === "string" || typeof right === "string") {
-        return String(left).localeCompare(String(right), "it-IT") * factor;
+        return compare(String(left), String(right)) * factor;
       }
       return (left - right) * factor;
     });
-  }, [rows, sort, metric]);
+  }, [rows, sort, metric, compare]);
 
   // First click on a column sorts descending: on a spend table the interesting
   // end of every numeric column is the top one.
@@ -136,20 +138,18 @@ export function TokenUsageBreakdownTable({ rows, metric }: Props) {
                 <TableCell className="text-muted-foreground text-xs">{row.sublabel ?? ""}</TableCell>
                 {showActiveUsers && (
                   <TableCell className="text-right text-xs tabular-nums">
-                    {row.activeUsers === undefined ? "" : formatDecimal(row.activeUsers, 0)}
+                    {row.activeUsers === undefined ? "" : decimal(row.activeUsers, 0)}
                   </TableCell>
                 )}
-                <TableCell className="text-right text-xs tabular-nums">{formatDecimal(row.calls, 0)}</TableCell>
-                <TableCell className="text-right text-xs tabular-nums">{formatDecimal(row.tokensIn, 0)}</TableCell>
-                <TableCell className="text-right text-xs tabular-nums">{formatDecimal(row.tokensOut, 0)}</TableCell>
+                <TableCell className="text-right text-xs tabular-nums">{decimal(row.calls, 0)}</TableCell>
+                <TableCell className="text-right text-xs tabular-nums">{decimal(row.tokensIn, 0)}</TableCell>
+                <TableCell className="text-right text-xs tabular-nums">{decimal(row.tokensOut, 0)}</TableCell>
                 <TableCell className="text-right text-xs tabular-nums">
-                  {formatPercent(cacheHitPercentage(row.cached, row.tokensIn))}
+                  {percent(cacheHitPercentage(row.cached, row.tokensIn))}
                 </TableCell>
-                <TableCell className="text-right text-xs tabular-nums">{formatMetricValue(row.cost, "cost")}</TableCell>
-                <TableCell className="text-right text-xs tabular-nums">
-                  {formatMetricValue(row.credits, "credits")}
-                </TableCell>
-                <TableCell className="text-right text-xs tabular-nums">{formatPercent(share)}</TableCell>
+                <TableCell className="text-right text-xs tabular-nums">{formatValue(row.cost, "cost")}</TableCell>
+                <TableCell className="text-right text-xs tabular-nums">{formatValue(row.credits, "credits")}</TableCell>
+                <TableCell className="text-right text-xs tabular-nums">{percent(share)}</TableCell>
               </TableRow>
             );
           })}

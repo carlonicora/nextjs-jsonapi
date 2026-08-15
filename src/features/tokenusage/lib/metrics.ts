@@ -1,6 +1,14 @@
 import type { Metric } from "../data/tokenusage-admin.types";
 
 /**
+ * Locale-free arithmetic for the token-usage surfaces.
+ *
+ * Everything that turns a number into a STRING lives in `./formatters` instead,
+ * because it depends on the request's locale and the app's configured currency.
+ * This file stays pure arithmetic so it needs neither.
+ */
+
+/**
  * The metric field set every admin token-usage resource carries. Declared
  * structurally so it accepts the summary, timeline and breakdown interfaces
  * alike — all three expose exactly these getters.
@@ -14,37 +22,11 @@ export type TokenUsageMetrics = {
   calls: number;
 };
 
-/** UI copy is Italian, so every figure is formatted with the Italian locale. */
-const LOCALE = "it-IT";
-
 /** Reads the single number a row contributes for the currently selected metric. */
 export function metricValue(row: TokenUsageMetrics, metric: Metric): number {
   if (metric === "cost") return row.cost;
   if (metric === "credits") return row.credits;
   return row.tokensIn + row.tokensOut;
-}
-
-/** Locale-aware fixed-decimal number, e.g. 9.46 → "9,46". */
-export function formatDecimal(value: number, decimals: number): string {
-  return value.toLocaleString(LOCALE, {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  });
-}
-
-/**
- * Formats a metric value for display: euros carry a "€ " prefix and 2 decimals,
- * credits 2 decimals, token counts are whole numbers.
- */
-export function formatMetricValue(value: number, metric: Metric): string {
-  if (metric === "cost") return `€ ${formatDecimal(value, 2)}`;
-  if (metric === "credits") return formatDecimal(value, 2);
-  return formatDecimal(value, 0);
-}
-
-/** Percentage with one decimal, e.g. 60 → "60,0 %". */
-export function formatPercent(value: number, decimals = 1): string {
-  return `${formatDecimal(value, decimals)} %`;
 }
 
 /**

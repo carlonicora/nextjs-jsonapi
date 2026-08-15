@@ -28,3 +28,21 @@ export {
 } from "./tokenusage-admin.module";
 
 export { TOKEN_USAGE_ADMIN_I18N_KEYS } from "./i18n-keys";
+
+// Self-service ("report") token-usage dashboard — the company-scoped mirror of
+// the administrative trio above, reusing its chart components verbatim.
+
+export { TokenUsageReportProvider, useTokenUsageReport } from "./contexts/TokenUsageReportContext";
+export type { TokenUsageReportContextType, TokenUsageReportFilterState } from "./contexts/TokenUsageReportContext";
+
+export { TokenUsageReportContainer } from "./components/TokenUsageReportContainer";
+export { TokenUsageReportFilterBar } from "./components/TokenUsageReportFilterBar";
+export { TokenUsageReportTiles } from "./components/TokenUsageReportTiles";
+export type { TokenUsageBalances } from "./components/TokenUsageReportTiles";
+
+export { tokenUsageModules } from "./tokenusage.modules";
+export { configureTokenUsage, getTokenUsageCurrency } from "./lib/config";
+export { createUsageFormatters, useUsageFormatters } from "./lib/formatters";
+export type { UsageFormatters } from "./lib/formatters";
+
+export { TOKEN_USAGE_REPORT_I18N_KEYS } from "./i18n-keys";

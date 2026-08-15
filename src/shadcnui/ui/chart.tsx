@@ -115,6 +115,8 @@ function ChartTooltipContent({
   labelFormatter,
   labelClassName,
   formatter,
+  valueFormatter,
+  hideZeroValues = false,
   color,
   nameKey,
   labelKey,
@@ -124,6 +126,21 @@ function ChartTooltipContent({
   label?: string | number;
   labelFormatter?: (label: unknown, payload: PayloadItem[]) => React.ReactNode;
   formatter?: (value: unknown, name: string, item: PayloadItem, index: number, payload: unknown) => React.ReactNode;
+  /**
+   * Formats the VALUE half of a row while keeping the default layout — colour
+   * swatch, series name, alignment. `formatter` replaces the whole row, so it
+   * is the wrong tool when all a chart needs is its own number formatting.
+   * Defaults to `toLocaleString()`, which is what every existing caller gets.
+   */
+  valueFormatter?: (value: number | string) => React.ReactNode;
+  /**
+   * Drops rows whose value is zero. On a stacked chart every series appears in
+   * every bucket's payload, so a bucket with one active series still lists all
+   * of them — the reader has to scan a column of zeros to find the one number
+   * that matters. Off by default: a chart comparing a fixed set of series may
+   * want the zeros visible.
+   */
+  hideZeroValues?: boolean;
   hideLabel?: boolean;
   hideIndicator?: boolean;
   indicator?: "line" | "dot" | "dashed";
@@ -173,6 +190,7 @@ function ChartTooltipContent({
       <div className="grid gap-1.5">
         {payload
           .filter((item) => item.type !== "none")
+          .filter((item) => !hideZeroValues || Number(item.value) !== 0)
           .map((item, index) => {
             const key = `${nameKey || item.name || item.dataKey || "value"}`;
             const itemConfig = getPayloadConfigFromPayload(config, item, key);
@@ -212,7 +230,11 @@ function ChartTooltipContent({
                     )}
                     <div
                       className={cn(
-                        "flex flex-1 justify-between leading-none",
+                        // gap-4 is load-bearing: without it a long series name
+                        // runs straight into its value ("Decision suggestions0")
+                        // because justify-between leaves no room once the row
+                        // fills. The gap also widens the tooltip to fit.
+                        "flex flex-1 justify-between gap-4 leading-none",
                         nestLabel ? "items-end" : "items-center",
                       )}
                     >
@@ -220,8 +242,13 @@ function ChartTooltipContent({
                         {nestLabel ? tooltipLabel : null}
                         <span className="text-muted-foreground">{itemConfig?.label || item.name}</span>
                       </div>
-                      {item.value && (
-                        <span className="text-foreground font-medium tabular-nums">{item.value.toLocaleString()}</span>
+                      {item.value !== undefined && item.value !== null && (
+                        // Tested against undefined/null rather than truthiness:
+                        // a value of exactly 0 is falsy, and the old guard
+                        // dropped the number while still drawing its row.
+                        <span className="text-foreground font-medium tabular-nums">
+                          {valueFormatter ? valueFormatter(item.value) : item.value.toLocaleString()}
+                        </span>
                       )}
                     </div>
                   </>

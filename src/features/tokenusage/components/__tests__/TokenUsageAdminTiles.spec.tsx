@@ -18,8 +18,10 @@ describe("TokenUsageAdminTiles", () => {
   it("shows both cost centres with their deltas against the previous window", () => {
     render(<TokenUsageAdminTiles summary={summary} metric="cost" singleCustomerMode={false} />);
 
-    expect(screen.getByTestId("tile-customer")).toHaveTextContent("9,46");
-    expect(screen.getByTestId("tile-platform")).toHaveTextContent("9,47");
+    // The suite mocks useLocale() as "en", and formatting now honours the
+    // locale instead of a hard-coded it-IT, so the separator is a point.
+    expect(screen.getByTestId("tile-customer")).toHaveTextContent("9.46");
+    expect(screen.getByTestId("tile-platform")).toHaveTextContent("9.47");
     // customer 9.46 vs 8.00 => +18%
     expect(screen.getByTestId("tile-customer-delta")).toHaveTextContent("18");
     // platform 9.47 vs 10.00 => -5%

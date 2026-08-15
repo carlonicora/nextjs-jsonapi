@@ -6,15 +6,8 @@ import { Card, CardContent } from "../../../shadcnui";
 import { cn } from "../../../utils";
 import type { TokenUsageAdminSummaryInterface } from "../data/tokenusage-admin-summary.interface";
 import type { Metric } from "../data/tokenusage-admin.types";
-import {
-  cacheHitPercentage,
-  formatDecimal,
-  formatMetricValue,
-  formatPercent,
-  metricValue,
-  percentageDelta,
-  type TokenUsageMetrics,
-} from "../lib/metrics";
+import { useUsageFormatters } from "../lib/formatters";
+import { cacheHitPercentage, metricValue, percentageDelta, type TokenUsageMetrics } from "../lib/metrics";
 
 type Props = {
   /** The six summary rows: {customer, platform, total} × {current, previous}. */
@@ -38,6 +31,7 @@ const ZERO: TokenUsageMetrics = { cost: 0, credits: 0, tokensIn: 0, tokensOut: 0
  */
 export function TokenUsageAdminTiles({ summary, metric, singleCustomerMode }: Props) {
   const t = useTranslations();
+  const { decimal, metricValue: formatValue, currency, percent } = useUsageFormatters();
 
   const rowFor = (scope: string, window: string): TokenUsageMetrics =>
     summary.find((r) => r.scope === scope && r.window === window) ?? ZERO;
@@ -58,17 +52,19 @@ export function TokenUsageAdminTiles({ summary, metric, singleCustomerMode }: Pr
         <LeadTile
           testId="tile-customer"
           label={t("token_usage.admin.customer_spend")}
-          value={formatMetricValue(metricValue(customerCurrent, metric), metric)}
+          value={formatValue(metricValue(customerCurrent, metric), metric)}
           delta={percentageDelta(metricValue(customerCurrent, metric), metricValue(customerPrevious, metric))}
           previousLabel={t("token_usage.admin.vs_previous")}
+          decimal={decimal}
         />
         {!singleCustomerMode && (
           <LeadTile
             testId="tile-platform"
             label={t("token_usage.admin.platform_spend")}
-            value={formatMetricValue(metricValue(platformCurrent, metric), metric)}
+            value={formatValue(metricValue(platformCurrent, metric), metric)}
             delta={percentageDelta(metricValue(platformCurrent, metric), metricValue(platformPrevious, metric))}
             previousLabel={t("token_usage.admin.vs_previous")}
+            decimal={decimal}
           />
         )}
       </div>
@@ -77,18 +73,21 @@ export function TokenUsageAdminTiles({ summary, metric, singleCustomerMode }: Pr
         <SupportingTile
           testId="tile-total"
           label={t("token_usage.admin.total_cost")}
-          value={formatMetricValue(metricValue(totalCurrent, metric), metric)}
+          value={formatValue(metricValue(totalCurrent, metric), metric)}
           delta={percentageDelta(metricValue(totalCurrent, metric), metricValue(totalPrevious, metric))}
+          decimal={decimal}
         />
         <SupportingTile
           testId="tile-avg-per-call"
           label={t("token_usage.admin.avg_per_call")}
-          value={`€ ${formatDecimal(averagePerCall, 4)}`}
+          value={currency(averagePerCall, 4)}
+          decimal={decimal}
         />
         <SupportingTile
           testId="tile-cache-hit"
           label={t("token_usage.admin.cache_hit")}
-          value={formatPercent(cacheHit)}
+          value={percent(cacheHit)}
+          decimal={decimal}
         />
       </div>
     </div>
@@ -101,12 +100,15 @@ function LeadTile({
   value,
   delta,
   previousLabel,
+  decimal,
 }: {
   testId: string;
   label: string;
   value: string;
   delta: number | undefined;
   previousLabel: string;
+  /** Passed down because `Delta` is a plain function, not a component: it cannot call the hook itself. */
+  decimal: (value: number, decimals: number) => string;
 }) {
   return (
     <Card data-testid={testId}>
@@ -114,7 +116,7 @@ function LeadTile({
         <span className="text-muted-foreground text-xs">{label}</span>
         <span className="text-primary text-xl font-semibold tabular-nums">{value}</span>
         <span className="flex items-center gap-1">
-          <Delta testId={`${testId}-delta`} delta={delta} />
+          <Delta testId={`${testId}-delta`} delta={delta} decimal={decimal} />
           <span className="text-muted-foreground text-xs">{previousLabel}</span>
         </span>
       </CardContent>
@@ -127,11 +129,14 @@ function SupportingTile({
   label,
   value,
   delta,
+  decimal,
 }: {
   testId: string;
   label: string;
   value: string;
   delta?: number | undefined;
+  /** Passed down because `Delta` is a plain function, not a component: it cannot call the hook itself. */
+  decimal: (value: number, decimals: number) => string;
 }) {
   return (
     <Card data-testid={testId} size="sm">
@@ -139,7 +144,7 @@ function SupportingTile({
         <span className="text-muted-foreground text-xs">{label}</span>
         <span className="flex items-center gap-2">
           <span className="text-sm font-medium tabular-nums">{value}</span>
-          {delta !== undefined && <Delta testId={`${testId}-delta`} delta={delta} />}
+          {delta !== undefined && <Delta testId={`${testId}-delta`} delta={delta} decimal={decimal} />}
         </span>
       </CardContent>
     </Card>
@@ -150,7 +155,15 @@ function SupportingTile({
  * The delta slot. An undefined delta means the previous window was zero: an
  * em dash says "not comparable" where a percentage would say "infinite growth".
  */
-function Delta({ testId, delta }: { testId: string; delta: number | undefined }) {
+function Delta({
+  testId,
+  delta,
+  decimal,
+}: {
+  testId: string;
+  delta: number | undefined;
+  decimal: (value: number, decimals: number) => string;
+}) {
   if (delta === undefined) {
     return (
       <span data-testid={testId} className="text-muted-foreground text-xs">
@@ -171,7 +184,7 @@ function Delta({ testId, delta }: { testId: string; delta: number | undefined })
       )}
     >
       <Icon aria-hidden className="size-3" />
-      {formatDecimal(Math.abs(delta), 0)} %
+      {decimal(Math.abs(delta), 0)} %
     </span>
   );
 }

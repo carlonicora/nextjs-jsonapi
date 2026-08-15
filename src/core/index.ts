@@ -98,4 +98,14 @@ export * from "../features/referral/referral-stats.module";
 // them in its bootstrapper without pulling the feature's client bundle —
 // same placement as waitlist-stats and referral-stats above.
 export * from "../features/tokenusage/tokenusage-admin.module";
+// The full six-module bundle (administrative + self-service). Same placement
+// rationale as the line above: a bootstrapper needs it, and it must not drag
+// the feature's recharts client bundle in.
+export * from "../features/tokenusage/tokenusage.modules";
+// configureTokenUsage() is called from the app's bootstrap file, which is
+// evaluated on the server as well as the client. Reaching it through the
+// client-marked ./tokenusage barrel makes it a client function, and calling one
+// from the server throws at module evaluation — so it is exported here, exactly
+// like configureJsonApi. lib/config holds no React and no charting code.
+export * from "../features/tokenusage/lib/config";
 export * from "../features/audit-log";

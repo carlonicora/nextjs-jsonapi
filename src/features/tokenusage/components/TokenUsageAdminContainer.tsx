@@ -49,6 +49,21 @@ export function TokenUsageAdminContainer() {
     error,
   } = useTokenUsageAdmin();
 
+  // narr8-shaped deployments record essentially no platform spend (usage with no
+  // owning company), which would leave the platform tile and the
+  // platform-by-operation panel as permanent zeros. Treat "nothing to show" the
+  // same way a company filter is treated — the customer half then takes full
+  // width. a360ai is unaffected: it has real platform spend.
+  const platformIsEmpty = useMemo(
+    () =>
+      summary
+        .filter((row) => row.scope === "platform")
+        .every((row) => row.cost === 0 && row.credits === 0 && row.tokensIn === 0 && row.tokensOut === 0),
+    [summary],
+  );
+
+  const hidePlatform = singleCustomerMode || platformIsEmpty;
+
   const stackByItems = useMemo(
     () => ({
       scope: t("token_usage.admin.stack.scope"),
@@ -81,7 +96,7 @@ export function TokenUsageAdminContainer() {
   return (
     <RoundPageContainer fullWidth forceHeader>
       <div className="flex w-full flex-col gap-4 p-4">
-        <TokenUsageAdminTiles summary={summary} metric={filters.metric} singleCustomerMode={singleCustomerMode} />
+        <TokenUsageAdminTiles summary={summary} metric={filters.metric} singleCustomerMode={hidePlatform} />
 
         <Card>
           <CardHeader>
@@ -142,8 +157,9 @@ export function TokenUsageAdminContainer() {
             Platform spend has no owning company, so a company filter makes that
             half meaningless: the provider skips the request and the card is
             hidden rather than rendered empty, leaving the customer half full
-            width. */}
-        <div className={cn("grid gap-4", !singleCustomerMode && "md:grid-cols-2")}>
+            width. The same holds when the window records no platform spend at
+            all — see `hidePlatform` above. */}
+        <div className={cn("grid gap-4", !hidePlatform && "md:grid-cols-2")}>
           <Card>
             <CardHeader>
               <CardTitle>{t("token_usage.admin.customer_by_operation")}</CardTitle>
@@ -158,7 +174,7 @@ export function TokenUsageAdminContainer() {
             </CardContent>
           </Card>
 
-          {!singleCustomerMode && (
+          {!hidePlatform && (
             <Card>
               <CardHeader>
                 <CardTitle>{t("token_usage.admin.platform_by_operation")}</CardTitle>

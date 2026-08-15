@@ -15,7 +15,9 @@ describe("TokenUsageRankedBar", () => {
       />,
     );
 
-    expect(screen.getByTestId("ranked-value-a")).toHaveTextContent("6,00");
+    // The suite mocks useLocale() as "en", and formatting now honours the
+    // locale instead of a hard-coded it-IT, so the separator is a point.
+    expect(screen.getByTestId("ranked-value-a")).toHaveTextContent("6.00");
     expect(screen.getByTestId("ranked-share-a")).toHaveTextContent("60");
     expect(screen.getByTestId("ranked-share-b")).toHaveTextContent("40");
   });

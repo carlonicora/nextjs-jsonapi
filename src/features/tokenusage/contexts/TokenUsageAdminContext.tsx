@@ -13,8 +13,8 @@ import type { Granularity, Metric, StackBy } from "../data/tokenusage-admin.type
 import { TokenUsageAdminService } from "../data/TokenUsageAdminService";
 
 /**
- * Route the breadcrumb links back to. The page itself lives in the consuming
- * app (a360ai mounts it at `/administration/token-usage`); the constant is here
+ * Default route the breadcrumb links back to. A host app that mounts the page
+ * elsewhere overrides it with the `pageUrl` prop — the constant stays here
  * because the breadcrumb is built by this provider, not by the app.
  */
 const TOKEN_USAGE_ADMIN_PAGE_URL = "/administration/token-usage";
@@ -72,6 +72,8 @@ type TokenUsageAdminProviderProps = {
   initialTo?: string;
   /** Rows per ranked panel. Defaults to 10. */
   topN?: number;
+  /** Route the breadcrumb links back to. */
+  pageUrl?: string;
 };
 
 /**
@@ -89,6 +91,7 @@ export const TokenUsageAdminProvider = ({
   initialFrom,
   initialTo,
   topN = DEFAULT_TOP_N,
+  pageUrl = TOKEN_USAGE_ADMIN_PAGE_URL,
 }: TokenUsageAdminProviderProps) => {
   const t = useTranslations();
   const generateUrl = usePageUrlGenerator();
@@ -185,7 +188,7 @@ export const TokenUsageAdminProvider = ({
   const breadcrumb = (): BreadcrumbItemData[] => [
     {
       name: t("token_usage.admin.title"),
-      href: generateUrl({ page: TOKEN_USAGE_ADMIN_PAGE_URL }),
+      href: generateUrl({ page: pageUrl }),
     },
   ];
 

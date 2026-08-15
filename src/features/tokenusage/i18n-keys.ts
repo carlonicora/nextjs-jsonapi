@@ -63,3 +63,31 @@ export const TOKEN_USAGE_ADMIN_I18N_KEYS = [
   "token_usage.series.other",
   "token_usage.timeline.empty",
 ] as const;
+
+/**
+ * The fixed namespace of i18n keys the self-service token-usage feature reads.
+ * Consuming apps must define each entry in their messages/<locale>.json — this
+ * list is the contract between the package and the app.
+ *
+ * The target panel's title is NOT listed: its key is supplied per app through
+ * the provider's `targetPanelTitleKey`, because what usage is attributed to is
+ * application-specific. Operation labels resolve through
+ * `token_usage.types.<camelCase>` with the raw key as fallback, so that
+ * namespace stays the app's own vocabulary.
+ */
+export const TOKEN_USAGE_REPORT_I18N_KEYS = [
+  // Page + KPI tiles
+  "token_usage.report.title",
+  "token_usage.report.used_in_period",
+  "token_usage.report.vs_previous",
+  "token_usage.report.monthly_left",
+  "token_usage.report.extra_credits",
+  "token_usage.report.calls",
+
+  // Panel titles
+  "token_usage.report.usage_over_time",
+  "token_usage.report.by_operation",
+
+  // Shared states
+  "token_usage.report.no_data",
+] as const;

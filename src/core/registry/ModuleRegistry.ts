@@ -63,6 +63,10 @@ export interface FoundationModuleDefinitions {
   TokenUsageAdminSummary: ModuleWithPermissions;
   TokenUsageAdminTimeline: ModuleWithPermissions;
   TokenUsageAdminBreakdown: ModuleWithPermissions;
+  // Self-service token-usage reporting modules
+  TokenUsageReportSummary: ModuleWithPermissions;
+  TokenUsageReportTimeline: ModuleWithPermissions;
+  TokenUsageReportBreakdown: ModuleWithPermissions;
 }
 
 // App-specific modules - apps will augment this interface ONLY

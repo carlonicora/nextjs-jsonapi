@@ -1,17 +1,33 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import type { TokenUsageAdminBreakdownInterface } from "../data/tokenusage-admin-breakdown.interface";
 import type { Metric } from "../data/tokenusage-admin.types";
-import { formatMetricValue, formatPercent, metricValue } from "../lib/metrics";
+import { useUsageFormatters } from "../lib/formatters";
+import { metricValue, type TokenUsageMetrics } from "../lib/metrics";
 import { operationLabel } from "../lib/operation-label";
 import { SEQUENTIAL_RAMP } from "../lib/palette";
 
+/**
+ * Everything this component actually reads from a row.
+ *
+ * Declared STRUCTURALLY rather than as one of the breakdown interfaces on
+ * purpose: the same list ranks administrative rows (which additionally carry
+ * activeUsers / monthlyCredits / availableMonthlyCredits) and self-service
+ * report rows (which do not). Narrowing this to the administrative interface
+ * would force every self-service caller into a cast, and duplicating the
+ * component would fork the ramp and the share arithmetic.
+ */
+export type TokenUsageRankedRow = TokenUsageMetrics & {
+  /** Row identity; the literal "other" marks the folded tail. */
+  id: string;
+  label: string;
+};
+
 type Props = {
   /** Ranked rows, already ordered descending by the backend, "other" last. */
-  rows: TokenUsageAdminBreakdownInterface[];
+  rows: TokenUsageRankedRow[];
   metric: Metric;
-  /** Italian copy shown when there is nothing to rank. */
+  /** Copy shown when there is nothing to rank, already translated by the caller. */
   emptyLabel: string;
   /**
    * Whether `row.label` is an operation TYPE (vocabulary the consuming app
@@ -37,8 +53,9 @@ type Props = {
  */
 export function TokenUsageRankedBar({ rows, metric, emptyLabel, labelsAreOperationTypes = false }: Props) {
   const t = useTranslations();
+  const { metricValue: formatValue, percent } = useUsageFormatters();
 
-  const renderLabel = (row: TokenUsageAdminBreakdownInterface): string => {
+  const renderLabel = (row: TokenUsageRankedRow): string => {
     if (row.id === "other") return t("token_usage.admin.other");
     if (!labelsAreOperationTypes) return row.label;
     return operationLabel(
@@ -83,13 +100,13 @@ export function TokenUsageRankedBar({ rows, metric, emptyLabel, labelsAreOperati
               </div>
             </div>
             <span data-testid={`ranked-value-${row.id}`} className="text-right text-xs tabular-nums">
-              {formatMetricValue(value, metric)}
+              {formatValue(value, metric)}
             </span>
             <span
               data-testid={`ranked-share-${row.id}`}
               className="text-muted-foreground w-16 text-right text-xs tabular-nums"
             >
-              {formatPercent(share)}
+              {percent(share)}
             </span>
           </div>
         );
