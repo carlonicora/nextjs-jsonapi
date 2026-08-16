@@ -182,8 +182,8 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                     </div>
                     {(props.functions || props.filters || allowSearch) && (
                       <>
-                        {props.functions}
                         {props.filters}
+                        {props.functions}
                         {/* `allowSearch !== false`, not `allowSearch`: the search box has
                             always rendered here whenever `functions`/`filters` were set, and
                             most callers rely on that without passing the flag. Gating on the
