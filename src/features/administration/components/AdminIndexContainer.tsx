@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2Icon, CoinsIcon, CreditCardIcon, ShieldCheckIcon, UsersIcon } from "lucide-react";
+import { Building2Icon, CoinsIcon, CreditCardIcon, PlugZapIcon, ShieldCheckIcon, UsersIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { getStripePublishableKey } from "../../../client/config";
 import { MicroLabel, RoundPageContainer } from "../../../components";
@@ -39,6 +39,13 @@ const PLATFORM_SECTIONS: AdminSection[] = [
     href: "/administration/token-usage",
   },
   {
+    key: "ai-connections",
+    icon: PlugZapIcon,
+    labelKey: "ai_connections.admin.title",
+    descriptionKey: "administration.ai_connections.description",
+    href: "/administration/ai-connections",
+  },
+  {
     key: "rbac",
     icon: ShieldCheckIcon,
     labelKey: "entities.rbac",
@@ -64,7 +71,7 @@ const BILLING_SECTION: AdminSection = {
 };
 
 /** Keys of the built-in platform sections, for `hiddenSections`. */
-export type PlatformSectionKey = "companies" | "users" | "token-usage" | "rbac" | "billing";
+export type PlatformSectionKey = "companies" | "users" | "token-usage" | "ai-connections" | "rbac" | "billing";
 
 type AdminIndexProps = {
   /** Project-specific groups, appended after the built-in platform group. */

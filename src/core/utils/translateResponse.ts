@@ -83,6 +83,12 @@ export async function translateResponse<T extends ApiDataInterface>(params: {
 
   if (params.apiResponse.status === 204) return response;
 
+  // A success with no body (e.g. a 200 from a handler that sends nothing —
+  // @HttpCode is inert when a controller injects @Res, so "204" endpoints can
+  // arrive as empty 200s) translates to an empty success, not a crash on
+  // `.included` below.
+  if (params.apiResponse.data === undefined || params.apiResponse.data === null) return response;
+
   response.raw = params.apiResponse.data;
 
   // Extract meta from JSON:API response

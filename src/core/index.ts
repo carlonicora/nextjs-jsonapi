@@ -55,6 +55,11 @@ export * from "../features/billing/stripe-product";
 export * from "../features/billing/stripe-subscription";
 export * from "../features/billing/stripe-usage";
 export * from "../features/billing/stripe-promotion-code";
+// AI connection administration: data + module only, NOT the feature barrel —
+// that one also re-exports the feature's client components, and core must stay
+// importable from the server (same rationale as the tokenusage entries below).
+export * from "../features/ai-connection/data";
+export * from "../features/ai-connection/ai-connection.module";
 export * from "../features/company/company.module";
 export * from "../features/company/data";
 export * from "../features/content/content.module";
