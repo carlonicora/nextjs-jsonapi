@@ -74,7 +74,31 @@ function PriceEditorInternal({
         isTrial: z.boolean(),
         description: z.string().optional(),
         features: z.array(z.string()),
-        token: z.string(),
+        // Normalised, not a bare `z.string()`: the field renders as
+        // `<FormInput type="number">`, which hands back a number, so a plain
+        // string schema rejects every value with "expected string, received
+        // number".
+        //
+        // Normalised by hand rather than with `z.coerce.string()`, because
+        // zod 4's coercion is `String(input)` — a cleared number input yields
+        // NaN, which would become the TRUTHY string "NaN" and reach
+        // `parseInt` as a NaN token.
+        //
+        // Deliberately NOT converted to the `z.preprocess(... z.number())`
+        // idiom used by unitAmount/intervalCount above. The whole token
+        // pipeline is string-based — seeded with `.toString()` and read back
+        // with `values.token ? parseInt(...)` on both submit branches — and a
+        // number pipeline would make `0` FALSY, silently dropping the token
+        // from the payload. A price with no token is "tokens not configured"
+        // (AI stays enabled), so that would make a zero-token / no-AI plan
+        // impossible to create from this form.
+        token: z.preprocess(
+          (value) =>
+            value === undefined || value === null || value === "" || (typeof value === "number" && Number.isNaN(value))
+              ? ""
+              : String(value),
+          z.string(),
+        ),
         featureIds: z.array(z.string()),
       }),
     [t],
