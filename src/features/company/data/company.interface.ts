@@ -11,6 +11,7 @@ export type CompanyInput = {
   monthlyCredits?: number;
   availableMonthlyCredits?: number;
   availableExtraCredits?: number;
+  aiEnabled?: boolean;
 
   featureIds?: string[];
   moduleIds?: string[];
@@ -37,6 +38,12 @@ export interface CompanyInterface extends ApiDataInterface {
   get monthlyCredits(): number;
   get availableMonthlyCredits(): number;
   get availableExtraCredits(): number;
+
+  /**
+   * Whether this company's plan carries AI. Non-optional: `rehydrate()`
+   * defaults an absent attribute to `true`, so the getter always has a value.
+   */
+  get aiEnabled(): boolean;
 
   get features(): FeatureInterface[];
   get modules(): ModuleInterface[];

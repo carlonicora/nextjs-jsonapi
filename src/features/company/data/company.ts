@@ -14,6 +14,7 @@ export class Company extends AbstractApiData implements CompanyInterface {
   private _monthlyCredits: number = 0;
   private _availableMonthlyCredits: number = 0;
   private _availableExtraCredits: number = 0;
+  private _aiEnabled?: boolean;
 
   private _features?: FeatureInterface[];
   private _modules?: ModuleInterface[];
@@ -56,6 +57,10 @@ export class Company extends AbstractApiData implements CompanyInterface {
 
   get availableExtraCredits(): number {
     return this._availableExtraCredits ?? 0;
+  }
+
+  get aiEnabled(): boolean {
+    return this._aiEnabled ?? true;
   }
 
   get features(): FeatureInterface[] {
@@ -123,6 +128,7 @@ export class Company extends AbstractApiData implements CompanyInterface {
     this._monthlyCredits = data.jsonApi.attributes.monthlyCredits ?? 0;
     this._availableMonthlyCredits = data.jsonApi.attributes.availableMonthlyCredits ?? 0;
     this._availableExtraCredits = data.jsonApi.attributes.availableExtraCredits ?? 0;
+    this._aiEnabled = data.jsonApi.attributes.aiEnabled ?? true;
 
     this._legal_address = data.jsonApi.attributes.legal_address;
     this._street_number = data.jsonApi.attributes.street_number;
@@ -161,6 +167,7 @@ export class Company extends AbstractApiData implements CompanyInterface {
       response.data.attributes.availableMonthlyCredits = data.availableMonthlyCredits;
     if (data.availableExtraCredits !== undefined)
       response.data.attributes.availableExtraCredits = data.availableExtraCredits;
+    if (data.aiEnabled !== undefined) response.data.attributes.aiEnabled = data.aiEnabled;
 
     if (data.legal_address !== undefined) response.data.attributes.legal_address = data.legal_address;
     if (data.street_number !== undefined) response.data.attributes.street_number = data.street_number;
