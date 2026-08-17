@@ -11,7 +11,7 @@ import { AiConnectionsProvider, useAiConnections } from "../../contexts/AiConnec
 import { AiConnectionTypeCard } from "../lists/AiConnectionTypeCard";
 
 /**
- * The eight definable connection types, in the order the page presents them.
+ * The nine definable connection types, in the order the page presents them.
  * Mirrors AI_CONNECTION_TYPES on the backend (core/llm/interfaces/ai-candidate.interface.ts);
  * the frontend renders them blind — every label is an i18n key.
  */
@@ -21,6 +21,7 @@ export const AI_CONNECTION_TYPE_ORDER = [
   "aiLarge",
   "vision",
   "audio",
+  "image",
   "embedder",
   "transcriber",
   "documentAi",

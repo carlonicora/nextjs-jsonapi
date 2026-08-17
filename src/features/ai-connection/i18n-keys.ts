@@ -24,6 +24,7 @@ export const AI_CONNECTIONS_I18N_KEYS = [
   "ai_connections.admin.types.aiLarge",
   "ai_connections.admin.types.vision",
   "ai_connections.admin.types.audio",
+  "ai_connections.admin.types.image",
   "ai_connections.admin.types.embedder",
   "ai_connections.admin.types.transcriber",
   "ai_connections.admin.types.documentAi",
