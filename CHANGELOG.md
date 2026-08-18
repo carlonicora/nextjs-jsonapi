@@ -1,3 +1,9 @@
+## [3.3.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.3.0...v3.3.1) (2026-08-18)
+
+### 🛠 Build System
+
+* **release:** pin the changelog preset to the writer-8 line ([0eba59c](https://github.com/carlonicora/nextjs-jsonapi/commit/0eba59cc244cc4e319958c4b47e4b3ae71f80cbe))
+
 ## [3.3.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.2.0...v3.3.0) (2026-08-17)
 
 ## [3.2.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.1.1...v3.2.0) (2026-08-17)
