@@ -1,3 +1,9 @@
+## [3.3.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.3.2...v3.3.3) (2026-08-19)
+
+### 📦 Code Refactoring
+
+* **company:** simplify canAccessFeatures condition ([f634122](https://github.com/carlonicora/nextjs-jsonapi/commit/f63412204eccc39fd14f89d95adf36f813c98fd8))
+
 ## [3.3.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.3.1...v3.3.2) (2026-08-19)
 
 ### 📦 Code Refactoring
