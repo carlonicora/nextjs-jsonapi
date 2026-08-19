@@ -21,6 +21,7 @@ vi.mock("../../../utils/clearClientStorage", () => ({
 }));
 
 // Import mocked modules for assertions
+import { CURRENT_USER_STORAGE_KEY } from "../../../../user/data/user.storage";
 import { AuthService } from "../../../data/auth.service";
 import { clearClientStorage } from "../../../utils/clearClientStorage";
 
@@ -53,8 +54,8 @@ describe("Logout", () => {
   });
 
   describe("Scenario: Clears storage when storageKeys provided", () => {
-    it("should call clearClientStorage with provided keys before AuthService.logout", async () => {
-      const storageKeys = ["user", "person", "recentPages"];
+    it("should call clearClientStorage with the user key plus the provided keys, before AuthService.logout", async () => {
+      const storageKeys = ["person", "recentPages"];
       const callOrder: string[] = [];
 
       vi.mocked(clearClientStorage).mockImplementation(() => {
@@ -67,7 +68,7 @@ describe("Logout", () => {
       render(<Logout storageKeys={storageKeys} />);
 
       await waitFor(() => {
-        expect(clearClientStorage).toHaveBeenCalledWith(storageKeys);
+        expect(clearClientStorage).toHaveBeenCalledWith([CURRENT_USER_STORAGE_KEY, ...storageKeys]);
       });
 
       expect(AuthService.logout).toHaveBeenCalled();
@@ -76,7 +77,7 @@ describe("Logout", () => {
     });
 
     it("should redirect to home page after logout", async () => {
-      const storageKeys = ["user"];
+      const storageKeys = ["person"];
 
       render(<Logout storageKeys={storageKeys} />);
 
@@ -86,25 +87,28 @@ describe("Logout", () => {
     });
   });
 
-  describe("Scenario: Backward compatible without storageKeys", () => {
-    it("should not call clearClientStorage when storageKeys is not provided", async () => {
+  // The persisted user belongs to this library, not to the consuming app: leaving
+  // it behind makes the client keep rendering a signed-in UI after the cookies are
+  // gone. Clearing it must never depend on the caller remembering to ask.
+  describe("Scenario: Always clears the persisted current user", () => {
+    it("should call clearClientStorage with the user key when storageKeys is not provided", async () => {
       render(<Logout />);
 
       await waitFor(() => {
         expect(AuthService.logout).toHaveBeenCalled();
       });
 
-      expect(clearClientStorage).not.toHaveBeenCalled();
+      expect(clearClientStorage).toHaveBeenCalledWith([CURRENT_USER_STORAGE_KEY]);
     });
 
-    it("should not call clearClientStorage when storageKeys is empty array", async () => {
+    it("should call clearClientStorage with the user key when storageKeys is an empty array", async () => {
       render(<Logout storageKeys={[]} />);
 
       await waitFor(() => {
         expect(AuthService.logout).toHaveBeenCalled();
       });
 
-      expect(clearClientStorage).not.toHaveBeenCalled();
+      expect(clearClientStorage).toHaveBeenCalledWith([CURRENT_USER_STORAGE_KEY]);
     });
 
     it("should still redirect to home page without storageKeys", async () => {

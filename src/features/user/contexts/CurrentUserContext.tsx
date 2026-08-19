@@ -13,6 +13,7 @@ import { CompanyInterface } from "../../company/data/company.interface";
 import { FeatureInterface } from "../../feature";
 import { RoleInterface } from "../../role";
 import { UserInterface, UserService } from "../data";
+import { CURRENT_USER_STORAGE_KEY } from "../data/user.storage";
 
 export interface CurrentUserContextType<T extends UserInterface = UserInterface> {
   currentUser: T | null;
@@ -36,7 +37,7 @@ export interface CurrentUserContextType<T extends UserInterface = UserInterface>
   isRefreshing: boolean;
 }
 
-const userAtom = atomWithStorage("user", null);
+const userAtom = atomWithStorage(CURRENT_USER_STORAGE_KEY, null);
 
 const CurrentUserContext = createContext<CurrentUserContextType | undefined>(undefined);
 
