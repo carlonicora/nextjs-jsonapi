@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { ENV } from "../core/env";
 import { useCurrentUserContext } from "../contexts";
 import { UserInterface } from "../features/user/data";
 import { PushService } from "../features/push/data/push.service";
@@ -43,7 +44,7 @@ export default function usePushNotifications(): void {
             return; // User denied permission, this is not an error
           }
 
-          const vapidPublicKey = (process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "").trim();
+          const vapidPublicKey = ENV.VAPID_PUBLIC_KEY.trim();
           if (!vapidPublicKey) {
             return;
           }

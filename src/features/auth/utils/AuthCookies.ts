@@ -1,5 +1,6 @@
 // Server-only cookie utilities (consumers should provide their own server actions via configureAuth)
 
+import { ENV } from "../../../core/env";
 import { cookies } from "next/headers";
 import { gzip } from "pako";
 
@@ -20,7 +21,7 @@ export async function updateToken(params: {
     };
   }[];
 }): Promise<void> {
-  const isProduction = process.env.NODE_ENV === "production";
+  const isProduction = ENV.IS_PRODUCTION;
 
   if (params.token)
     (await cookies()).set({

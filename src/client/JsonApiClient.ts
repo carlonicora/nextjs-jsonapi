@@ -1,5 +1,6 @@
 "use client";
 
+import { ENV } from "../core/env";
 import { JsonApiDataFactory } from "../core/factories/JsonApiDataFactory";
 import { ApiRequestDataTypeInterface } from "../core/interfaces/ApiRequestDataTypeInterface";
 import { ApiResponseInterface } from "../core/interfaces/ApiResponseInterface";
@@ -40,7 +41,7 @@ export function getClientApiUrl(): string {
   if (_clientConfig?.apiUrl) {
     return _clientConfig.apiUrl;
   }
-  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  const envUrl = ENV.API_URL;
   if (!envUrl) {
     throw new Error(
       "API URL not configured. Use configureClientJsonApi() or set NEXT_PUBLIC_API_URL environment variable.",
@@ -53,7 +54,7 @@ export function getClientAppUrl(): string {
   if (_clientConfig?.appUrl) {
     return _clientConfig.appUrl;
   }
-  const envUrl = process.env.NEXT_PUBLIC_ADDRESS;
+  const envUrl = ENV.APP_URL;
   if (!envUrl) {
     throw new Error(
       "App URL not configured. Use configureClientJsonApi({ appUrl }) or set NEXT_PUBLIC_ADDRESS environment variable.",

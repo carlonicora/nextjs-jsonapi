@@ -1,5 +1,6 @@
 // Server-only utilities (NOT server actions - these cannot be called from client components)
 
+import { ENV } from "../core/env";
 import { JsonApiDataFactory } from "../core/factories/JsonApiDataFactory";
 import { ApiRequestDataTypeInterface } from "../core/interfaces/ApiRequestDataTypeInterface";
 import { ApiResponseInterface } from "../core/interfaces/ApiResponseInterface";
@@ -38,7 +39,7 @@ export function getServerApiUrl(): string {
   if (_serverConfig?.apiUrl) {
     return _serverConfig.apiUrl;
   }
-  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  const envUrl = ENV.API_URL;
   if (!envUrl) {
     throw new Error(
       "API URL not configured. Use configureServerJsonApi() or set NEXT_PUBLIC_API_URL environment variable.",
@@ -51,7 +52,7 @@ export function getServerAppUrl(): string {
   if (_serverConfig?.appUrl) {
     return _serverConfig.appUrl;
   }
-  const envUrl = process.env.NEXT_PUBLIC_ADDRESS;
+  const envUrl = ENV.APP_URL;
   if (!envUrl) {
     throw new Error(
       "App URL not configured. Use configureServerJsonApi({ appUrl }) or set NEXT_PUBLIC_ADDRESS environment variable.",

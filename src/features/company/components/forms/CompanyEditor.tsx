@@ -21,6 +21,7 @@ import {
 } from "../../../../components";
 import type { FiscalDataHandle } from "../../../../components";
 import { SectionHeader } from "../../../../components/typography";
+import { ENV } from "../../../../core/env";
 import { Modules } from "../../../../core";
 import { useI18nRouter } from "../../../../i18n";
 import { getRoleId } from "../../../../roles";
@@ -69,7 +70,7 @@ function CompanyEditorInternal({
   const canAccessFeatures =
     hasRole(getRoleId().Administrator) ||
     (hasRole(getRoleId().CompanyAdministrator) &&
-      process.env.NEXT_PUBLIC_PRIVATE_INSTALLATION?.toLowerCase() === "true");
+      ENV.PRIVATE_INSTALLATION);
 
   // Fetch features when sheet opens
   const handleDialogOpenChange = useCallback(

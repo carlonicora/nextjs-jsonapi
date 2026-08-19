@@ -1,3 +1,4 @@
+import { ENV } from "../core/env";
 import { JsonApiDataFactory } from "../core/factories/JsonApiDataFactory";
 import { ApiData } from "../core/interfaces/ApiData";
 import { ApiRequestDataTypeInterface } from "../core/interfaces/ApiRequestDataTypeInterface";
@@ -136,7 +137,7 @@ export function getApiUrl(): string {
     return _staticConfig.apiUrl;
   }
   // Fallback to environment variable
-  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  const envUrl = ENV.API_URL;
   if (!envUrl) {
     throw new Error("API URL not configured. Use configureJsonApi() or set NEXT_PUBLIC_API_URL environment variable.");
   }
@@ -148,7 +149,7 @@ export function getAppUrl(): string {
     return _staticConfig.appUrl;
   }
   // Fallback to environment variable
-  const envUrl = process.env.NEXT_PUBLIC_ADDRESS;
+  const envUrl = ENV.APP_URL;
   if (!envUrl) {
     throw new Error(
       "App URL not configured. Use configureJsonApi({ appUrl }) or set NEXT_PUBLIC_ADDRESS environment variable.",

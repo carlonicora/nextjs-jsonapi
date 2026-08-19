@@ -1,6 +1,7 @@
 "use client";
 
 import { ModuleWithPermissions } from "../permissions/types";
+import { ENV } from "../core/env";
 import { setBootstrapper } from "../core/registry/bootstrapStore";
 import { _setStaticHelpContent } from "../core/registry/helpStore";
 import type { HelpContentConfig } from "../features/help/interfaces/help-content-config.interface";
@@ -65,10 +66,7 @@ export function getApiUrl(): string {
   if (_clientConfig?.apiUrl) {
     return _clientConfig.apiUrl;
   }
-  if (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL;
-  }
-  return "";
+  return ENV.API_URL;
 }
 
 /**
@@ -80,10 +78,7 @@ export function getApiUrl(): string {
  * OAuth hrefs).
  */
 export function getPublicApiUrl(): string {
-  if (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL;
-  }
-  return "";
+  return ENV.API_URL;
 }
 
 /**
@@ -93,8 +88,8 @@ export function getAppUrl(): string {
   if (_clientConfig?.appUrl) {
     return _clientConfig.appUrl;
   }
-  if (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_APP_URL) {
-    return process.env.NEXT_PUBLIC_APP_URL;
+  if (ENV.APP_URL_ALTERNATE) {
+    return ENV.APP_URL_ALTERNATE;
   }
   if (typeof window !== "undefined") {
     return window.location.origin;

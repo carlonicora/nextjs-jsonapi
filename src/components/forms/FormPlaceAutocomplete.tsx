@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ENV } from "../../core/env";
 import { Input } from "../../shadcnui";
 import { cn } from "../../utils";
 import { FormFieldWrapper } from "./FormFieldWrapper";
@@ -86,7 +87,7 @@ export function FormPlaceAutocomplete({
 
   // Initialize API key
   useEffect(() => {
-    const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+    const key = ENV.GOOGLE_MAPS_API_KEY;
 
     if (!key) {
       console.error("Google Maps API key not found. Please set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY environment variable.");

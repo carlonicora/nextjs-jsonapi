@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
+import { ENV } from "../core/env";
 import { Modules, rehydrate } from "../core";
 import { NotificationInterface } from "../features/notification/data";
 
@@ -45,7 +46,7 @@ export function useSocket({ token }: UseSocketOptions): UseSocketReturn {
   useEffect(() => {
     if (!token) return;
 
-    const globalSocketKey = `__socket_${process.env.NEXT_PUBLIC_API_URL?.replace(/[^a-zA-Z0-9]/g, "_")}`;
+    const globalSocketKey = `__socket_${ENV.API_URL.replace(/[^a-zA-Z0-9]/g, "_")}`;
 
     if (typeof window !== "undefined") {
       const _allSocketKeys = Object.keys(window).filter((key) => key.startsWith("__socket_"));
@@ -79,7 +80,7 @@ export function useSocket({ token }: UseSocketOptions): UseSocketReturn {
       shouldConnect.current = false;
 
       try {
-        currentSocket = io(process.env.NEXT_PUBLIC_API_URL as string, {
+        currentSocket = io(ENV.API_URL, {
           auth: { token },
           transports: ["websocket"],
           timeout: 20000,
@@ -147,7 +148,7 @@ export function useSocket({ token }: UseSocketOptions): UseSocketReturn {
 
       // In development, preserve socket in window for HMR but remove listeners
       if (currentSocket) {
-        if (process.env.NODE_ENV === "development") {
+        if (ENV.IS_DEVELOPMENT) {
           currentSocket.off("connect", handleConnect);
           currentSocket.off("disconnect", handleDisconnect);
           currentSocket.off("message", handleMessage);
