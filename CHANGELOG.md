@@ -1,3 +1,9 @@
+## [3.3.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.3.1...v3.3.2) (2026-08-19)
+
+### 📦 Code Refactoring
+
+* **core:** add an ENV gateway for every NEXT_PUBLIC read ([8644f0e](https://github.com/carlonicora/nextjs-jsonapi/commit/8644f0e2e883f8ea577115e8f9a74b27a7cad24c))
+
 ## [3.3.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.3.0...v3.3.1) (2026-08-18)
 
 ### 🛠 Build System
