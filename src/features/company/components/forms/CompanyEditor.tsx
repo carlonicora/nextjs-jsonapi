@@ -68,9 +68,7 @@ function CompanyEditorInternal({
   const addressComponentsRef = useRef<Record<string, string>>({});
 
   const canAccessFeatures =
-    hasRole(getRoleId().Administrator) ||
-    (hasRole(getRoleId().CompanyAdministrator) &&
-      ENV.PRIVATE_INSTALLATION);
+    hasRole(getRoleId().Administrator) || (hasRole(getRoleId().CompanyAdministrator) && ENV.PRIVATE_INSTALLATION);
 
   // Fetch features when sheet opens
   const handleDialogOpenChange = useCallback(
