@@ -1,3 +1,9 @@
+## [3.3.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.3.3...v3.3.4) (2026-08-19)
+
+### 🐛 Bug Fixes
+
+* **auth:** clear the persisted current user on logout ([6f19cac](https://github.com/carlonicora/nextjs-jsonapi/commit/6f19caccb4eef859fac383c740d93b5b28b9a2fe))
+
 ## [3.3.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.3.2...v3.3.3) (2026-08-19)
 
 ### 📦 Code Refactoring
