@@ -1,3 +1,9 @@
+## [3.3.5](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.3.4...v3.3.5) (2026-08-21)
+
+### 🐛 Bug Fixes
+
+* **DatePickerPopover:** render the child as the trigger instead of wrapping it ([dff550a](https://github.com/carlonicora/nextjs-jsonapi/commit/dff550a6f6fda3021f4464d9744484e50f7b38d9))
+
 ## [3.3.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.3.3...v3.3.4) (2026-08-19)
 
 ### 🐛 Bug Fixes
