@@ -2,7 +2,7 @@
 
 import { isValid, parse } from "date-fns";
 import { Calendar as CalendarIcon, CircleXIcon } from "lucide-react";
-import { ReactNode, useMemo, useState } from "react";
+import { ReactElement, useMemo, useState } from "react";
 import { useI18nDateFnsLocale, useI18nLocale } from "../../i18n";
 import {
   Calendar,
@@ -19,7 +19,19 @@ import {
 import { cn } from "../../utils";
 
 type DatePickerPopoverProps = {
-  children: ReactNode;
+  /** MUST be a single element — it becomes the trigger element itself (see `render` below). */
+  children: ReactElement;
+  /**
+   * Whether the element passed as `children` is a real <button>.
+   *
+   * Base UI's trigger assumes it renders a native button. When `render` swaps
+   * in something else (a table cell's <div> wrapper), that assumption is wrong:
+   * native button semantics are lost and Base UI warns on every mount. Passing
+   * `false` makes it apply role="button" plus the keyboard handling itself, so
+   * a non-button trigger stays operable and accessible.
+   */
+  nativeButton?: boolean;
+
   value?: Date;
   onSelect: (date?: Date) => void;
   minDate?: Date;
@@ -29,6 +41,7 @@ type DatePickerPopoverProps = {
 
 export const DatePickerPopover = ({
   children,
+  nativeButton = true,
   value,
   onSelect,
   minDate,
@@ -126,7 +139,22 @@ export const DatePickerPopover = ({
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger>{children}</PopoverTrigger>
+      {/*
+        `render`, NOT `<PopoverTrigger>{children}</PopoverTrigger>`. Base UI's
+        Popover.Trigger otherwise renders its OWN <button> WRAPPING the child
+        and binds the open handler to that button. Two consequences, both real:
+        - Table callers pass a cell wrapper whose onClick calls
+          stopPropagation() (so clicking the cell does not trigger the row's
+          navigation). Being the deeper element, its handler runs FIRST, the
+          click never bubbles to Base UI's button, and the popover could never
+          open — for mouse users as much as for tests.
+        - Form callers pass a <Button>, which the wrapper turned into a
+          <button> inside a <button>: invalid HTML and a hydration error.
+        With `render` the child IS the trigger, so the handlers share one
+        element (stopPropagation stops ANCESTOR propagation, not other handlers
+        on the same node) and no nested button is produced.
+      */}
+      <PopoverTrigger nativeButton={nativeButton} render={children} />
       <PopoverContent className={cn("p-0", className)} align={align} onClick={(e) => e.stopPropagation()}>
         <div className="p-3">
           {/* Manual Input */}
