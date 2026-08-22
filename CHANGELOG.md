@@ -1,3 +1,9 @@
+## [3.3.7](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.3.6...v3.3.7) (2026-08-22)
+
+### 🐛 Bug Fixes
+
+* **DateRangeSelector:** improve formatting of test expectations for clarity ([a6ef96a](https://github.com/carlonicora/nextjs-jsonapi/commit/a6ef96a64bf89e7f80747df0761cb2a28b741ffe))
+
 ## [3.3.6](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.3.5...v3.3.6) (2026-08-22)
 
 ### 🐛 Bug Fixes
