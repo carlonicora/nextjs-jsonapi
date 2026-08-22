@@ -61,14 +61,17 @@ describe("nextDateRange", () => {
   });
 
   it("opens a range from the empty state", () => {
-    expect(
-      nextDateRange({ current: undefined, computed: { from: AUG_10, to: AUG_10 }, triggerDate: AUG_10 }),
-    ).toEqual({ from: AUG_10, to: AUG_10 });
+    expect(nextDateRange({ current: undefined, computed: { from: AUG_10, to: AUG_10 }, triggerDate: AUG_10 })).toEqual({
+      from: AUG_10,
+      to: AUG_10,
+    });
   });
 
   // react-day-picker returns undefined to DESELECT; that must survive the
   // complete-range branch rather than being turned into a new start.
   it("clears when react-day-picker deselects", () => {
-    expect(nextDateRange({ current: { from: AUG_10, to: AUG_10 }, computed: undefined, triggerDate: AUG_10 })).toBeUndefined();
+    expect(
+      nextDateRange({ current: { from: AUG_10, to: AUG_10 }, computed: undefined, triggerDate: AUG_10 }),
+    ).toBeUndefined();
   });
 });
