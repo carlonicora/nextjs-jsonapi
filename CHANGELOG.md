@@ -1,3 +1,9 @@
+## [3.3.8](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.3.7...v3.3.8) (2026-08-22)
+
+### 🐛 Bug Fixes
+
+* **release:** update action versions for improved stability ([6ac444f](https://github.com/carlonicora/nextjs-jsonapi/commit/6ac444f39e68580fbe6a7e04775d5099a23d0050))
+
 ## [3.3.7](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.3.6...v3.3.7) (2026-08-22)
 
 ### 🐛 Bug Fixes
