@@ -9,6 +9,39 @@ import { useI18nDateFnsLocale } from "../../i18n";
 import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from "../../shadcnui";
 import { cn } from "../../utils";
 
+/**
+ * Decides the range to hold after react-day-picker reports a selection.
+ *
+ * react-day-picker's `addToRange` NEVER moves `from` when the current range is
+ * already COMPLETE and the clicked day falls after it — it returns
+ * `{ from, to: clickedDay }` (see its `from && to` branch). So "did `from`
+ * change?" cannot distinguish "the user is starting a new range" from "the user
+ * moved the end": it is true only for a click BEFORE `from`.
+ *
+ * That is the asymmetry this component shipped with. Its default range is the
+ * whole CURRENT month, so clicking any day in the current month landed after
+ * `from` and silently became the END date — the start could never be moved
+ * forward — while clicking a day in a PAST month fell before `from`, changed it,
+ * and appeared to work.
+ *
+ * A click on a complete range therefore starts a NEW range at the clicked day,
+ * which is the conventional range-picker behaviour. `triggerDate` is the day
+ * react-day-picker reports as the one that was clicked (`onSelect`'s second
+ * argument) — the only reliable source for it, since the computed range hides it.
+ */
+export function nextDateRange(params: {
+  current: DateRange | undefined;
+  computed: DateRange | undefined;
+  triggerDate: Date;
+}): DateRange | undefined {
+  const { current, computed, triggerDate } = params;
+  // react-day-picker returns undefined to DESELECT (clicking the only selected
+  // day of a single-day range). Honour that before anything else.
+  if (!computed) return undefined;
+  if (current?.from && current?.to) return { from: triggerDate, to: undefined };
+  return computed;
+}
+
 type DateRangeSelectorProps = {
   onDateChange: (date?: DateRange) => void;
   avoidSettingDates?: boolean;
@@ -49,18 +82,9 @@ export function DateRangeSelector({ onDateChange, avoidSettingDates, showPreviou
     }
   }, [date, prevRange, onDateChange]);
 
-  // Custom handler to reset end date if a new start date is picked
-  const handleSelect = (range: DateRange | undefined) => {
-    if (!range) {
-      setDate(undefined);
-      return;
-    }
-    // If a new start date is picked, reset end date
-    if (range.from && (!date?.from || range.from.getTime() !== date.from.getTime())) {
-      setDate({ from: range.from, to: undefined });
-    } else {
-      setDate(range);
-    }
+  // A click on an already-complete range starts a new one — see nextDateRange().
+  const handleSelect = (range: DateRange | undefined, triggerDate: Date) => {
+    setDate(nextDateRange({ current: date, computed: range, triggerDate }));
   };
 
   // Show placeholder button during SSR to prevent hydration mismatch
