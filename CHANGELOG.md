@@ -1,3 +1,9 @@
+## [3.3.6](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.3.5...v3.3.6) (2026-08-22)
+
+### 🐛 Bug Fixes
+
+* **DateRangeSelector:** let a click start a new range instead of moving the end ([b44d8a7](https://github.com/carlonicora/nextjs-jsonapi/commit/b44d8a718c651b6d9f533611e59e7b5f7a7e2474))
+
 ## [3.3.5](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.3.4...v3.3.5) (2026-08-21)
 
 ### 🐛 Bug Fixes
