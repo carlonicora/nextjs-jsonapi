@@ -1,3 +1,9 @@
+## [3.3.9](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.3.8...v3.3.9) (2026-08-24)
+
+### ♻️ Chores
+
+* **eslint:** declare vitest globals instead of jest ([f3f0475](https://github.com/carlonicora/nextjs-jsonapi/commit/f3f0475c9bfa747a29e1a6e39c41057cf92992e0))
+
 ## [3.3.8](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.3.7...v3.3.8) (2026-08-22)
 
 ### 🐛 Bug Fixes
