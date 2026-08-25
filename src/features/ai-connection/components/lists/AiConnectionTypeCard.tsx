@@ -123,7 +123,7 @@ export function AiConnectionTypeCard({ connectionType }: AiConnectionTypeCardPro
       className={cn("flex items-center gap-3 px-3 py-2", readOnly && "opacity-50")}
       data-testid={`ai-connection-row-${connection.id}`}
     >
-      <span className="text-muted-foreground w-5 text-right text-xs tabular-nums">{index + 1}</span>
+      <span className="text-muted-foreground w-5 text-end text-xs tabular-nums">{index + 1}</span>
       <div className="flex min-w-0 flex-1 flex-col">
         <span className="truncate text-sm">{connection.name}</span>
         <span className="text-muted-foreground truncate text-xs">

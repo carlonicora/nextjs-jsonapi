@@ -30,6 +30,11 @@ function estimateLabelWidth(node: D3Node): number {
 
 /**
  * Custom hook for D3 graph visualization with larger circles and more interactive features
+ *
+ * Direction: the hook stamps `dir="ltr"` (and `direction: ltr`) on the SVG it
+ * owns — the layout is coordinate-based, so it is a deliberate LTR island and
+ * never mirrors under `dir="rtl"`. Consumers do not need to set anything; a
+ * wrapping container may still mirror around the graph.
  */
 export function useCustomD3Graph(
   nodes: D3Node[],
@@ -199,6 +204,17 @@ export function useCustomD3Graph(
   );
 
   useEffect(() => {
+    // The graph lives in SVG user space: node positions, link endpoints and label
+    // offsets are all computed coordinates, so an RTL ancestor must not mirror it.
+    // Stamped on the element the hook owns rather than left to each caller, so no
+    // consumer can forget it. Both the attribute and the inline property are set
+    // because `dir` is an HTML attribute and does not reliably reach SVG.
+    // rtl-ok: deliberate LTR island (chart)
+    if (svgRef.current) {
+      svgRef.current.setAttribute("dir", "ltr");
+      svgRef.current.style.direction = "ltr";
+    }
+
     if (!nodes.length || !svgRef.current) return;
 
     const visibleNodes = visibleNodeIds

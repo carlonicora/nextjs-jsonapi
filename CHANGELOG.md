@@ -1,3 +1,9 @@
+## [3.4.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.3.9...v3.4.0) (2026-08-25)
+
+### 🚀 Features
+
+* add RTL support across all components ([b0dd949](https://github.com/carlonicora/nextjs-jsonapi/commit/b0dd94990f04d1a52e85bf49ef41e20205dcc51e))
+
 ## [3.3.9](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.3.8...v3.3.9) (2026-08-24)
 
 ### ♻️ Chores

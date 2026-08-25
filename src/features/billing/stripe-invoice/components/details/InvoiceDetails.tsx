@@ -95,14 +95,14 @@ export function InvoiceDetails({
               <table className="w-full">
                 <thead className="bg-muted">
                   <tr>
-                    <th className="text-left p-3 text-sm font-medium">Description</th>
-                    <th className="text-right p-3 text-sm font-medium">Amount</th>
+                    <th className="text-start p-3 text-sm font-medium">Description</th>
+                    <th className="text-end p-3 text-sm font-medium">Amount</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr className="border-t">
                     <td className="p-3">{productName}</td>
-                    <td className="p-3 text-right">{formatCurrency(invoice.subtotal, invoice.currency)}</td>
+                    <td className="p-3 text-end">{formatCurrency(invoice.subtotal, invoice.currency)}</td>
                   </tr>
                 </tbody>
               </table>
@@ -149,21 +149,21 @@ export function InvoiceDetails({
           <div className="flex flex-wrap gap-2 pt-4 border-t">
             {invoice.stripePdfUrl && (
               <Button variant="outline" onClick={handleDownloadPDF}>
-                <Download className="mr-2 h-4 w-4" />
+                <Download className="me-2 h-4 w-4" />
                 Download PDF
               </Button>
             )}
 
             {invoice.status === InvoiceStatus.OPEN && invoice.attempted && (
               <Button variant="default" onClick={handleRetryPayment}>
-                <RefreshCw className="mr-2 h-4 w-4" />
+                <RefreshCw className="me-2 h-4 w-4" />
                 Retry Payment
               </Button>
             )}
 
             {invoice.stripeHostedInvoiceUrl && (
               <Button variant="outline" onClick={handleViewInStripe}>
-                <ExternalLink className="mr-2 h-4 w-4" />
+                <ExternalLink className="me-2 h-4 w-4" />
                 View in Stripe
               </Button>
             )}

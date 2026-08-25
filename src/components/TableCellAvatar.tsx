@@ -10,7 +10,7 @@ type TableCellAvatarProps = {
 
 export function TableCellAvatar({ image, name, className }: TableCellAvatarProps) {
   return (
-    <Avatar className={cn("mr-2 h-10 w-10 shrink-0", className)}>
+    <Avatar className={cn("me-2 h-10 w-10 shrink-0", className)}>
       {image ? <AvatarImage src={image} alt={name} /> : null}
       <AvatarFallback className="text-xs">{getInitials(name)}</AvatarFallback>
     </Avatar>

@@ -103,7 +103,7 @@ export function InvoicesSummaryCard({ invoices, loading, error, onViewAllClick }
               {openInvoices.length > 0 && <span className="text-warning">{openInvoices.length} open</span>}
               <span className="flex items-center">
                 View all
-                <ChevronRight className="h-3 w-3 ml-1" />
+                <ChevronRight className="h-3 w-3 ms-1 rtl:rotate-180" />
               </span>
             </div>
           </div>

@@ -54,7 +54,7 @@ export function SubscriptionConfirmation({ price, isLoading, onConfirm, onCancel
           <Button onClick={onConfirm} disabled={isLoading}>
             {isLoading ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                <Loader2 className="h-4 w-4 animate-spin me-2" />
                 Processing...
               </>
             ) : (

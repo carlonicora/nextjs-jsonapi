@@ -94,7 +94,7 @@ export function useWaitlistTableStructure({
         if (entry.status === "confirmed") {
           return (
             <Button size="sm" variant="outline" onClick={() => onInvite(entry)}>
-              <Send className="mr-2 h-4 w-4" />
+              <Send className="me-2 h-4 w-4" />
               {t("waitlist.admin.actions.invite")}
             </Button>
           );

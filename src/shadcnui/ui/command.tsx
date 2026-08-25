@@ -137,7 +137,7 @@ function CommandItem({ className, children, ...props }: React.ComponentProps<typ
       {...props}
     >
       {children}
-      <CheckIcon className="ml-auto opacity-0 group-has-[[data-slot=command-shortcut]]/command-item:hidden group-data-[checked=true]/command-item:opacity-100" />
+      <CheckIcon className="ms-auto opacity-0 group-has-[[data-slot=command-shortcut]]/command-item:hidden group-data-[checked=true]/command-item:opacity-100" />
     </CommandPrimitive.Item>
   );
 }
@@ -147,7 +147,7 @@ function CommandShortcut({ className, ...props }: React.ComponentProps<"span">) 
     <span
       data-slot="command-shortcut"
       className={cn(
-        "text-muted-foreground group-data-[selected=true]/command-item:text-foreground ml-auto text-xs tracking-widest",
+        "text-muted-foreground group-data-[selected=true]/command-item:text-foreground ms-auto text-xs tracking-widest",
         className,
       )}
       {...props}

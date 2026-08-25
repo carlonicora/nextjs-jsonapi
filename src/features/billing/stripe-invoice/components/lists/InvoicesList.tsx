@@ -36,7 +36,7 @@ export function InvoicesList({ invoices, onInvoicesChange }: InvoicesListProps) 
               <TableHead>Invoice #</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
+              <TableHead className="text-end">Amount</TableHead>
               <TableHead>Period</TableHead>
             </TableRow>
           </TableHeader>
@@ -58,7 +58,7 @@ export function InvoicesList({ invoices, onInvoicesChange }: InvoicesListProps) 
                   <TableCell>
                     <InvoiceStatusBadge status={invoice.status} />
                   </TableCell>
-                  <TableCell className="text-right font-medium">{amount}</TableCell>
+                  <TableCell className="text-end font-medium">{amount}</TableCell>
                   <TableCell className="text-muted-foreground text-xs">{period}</TableCell>
                 </TableRow>
               );

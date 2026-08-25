@@ -91,7 +91,7 @@ export function PaymentMethodCard({ paymentMethod, onUpdate }: PaymentMethodCard
       <Card className="relative">
         {/* Default Badge */}
         {isDefault && (
-          <Badge variant="softGreen" className="absolute right-2 top-2">
+          <Badge variant="softGreen" className="absolute end-2 top-2">
             Default
           </Badge>
         )}

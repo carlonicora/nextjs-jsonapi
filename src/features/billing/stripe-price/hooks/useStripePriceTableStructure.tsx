@@ -49,9 +49,9 @@ export const useStripePriceTableStructure: UseTableStructureHook<StripePriceInte
       header: t("billing.admin.prices.fields.amount"),
       cell: ({ row }: { row: TableContent<StripePriceInterface> }) => {
         const price: StripePriceInterface = row.original.jsonApiData;
-        // Typography role 15 (numeric): tabular-nums, right-aligned. NEVER font-mono.
+        // Typography role 15 (numeric): tabular-nums, end-aligned. NEVER font-mono.
         return (
-          <span className="block text-xs tabular-nums text-right">
+          <span className="block text-xs tabular-nums text-end">
             {formatCurrency(price.unitAmount, price.currency)}
           </span>
         );
@@ -77,7 +77,7 @@ export const useStripePriceTableStructure: UseTableStructureHook<StripePriceInte
       header: t("billing.admin.prices.fields.token"),
       cell: ({ row }: { row: TableContent<StripePriceInterface> }) => {
         const price: StripePriceInterface = row.original.jsonApiData;
-        return <span className="block text-xs tabular-nums text-right">{price.token ?? ""}</span>;
+        return <span className="block text-xs tabular-nums text-end">{price.token ?? ""}</span>;
       },
       enableSorting: false,
       enableHiding: false,

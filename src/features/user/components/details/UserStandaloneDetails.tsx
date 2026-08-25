@@ -29,7 +29,7 @@ export function UserStanadaloneDetails({ user }: UserDetailsProps) {
         <div className="flex flex-wrap gap-2">
           {user.roles.map((role: RoleInterface, _index: number) => (
             <Link key={role.id} href={generateUrl({ page: Modules.Role, id: role.id })}>
-              <Badge className="mr-2" variant={`default`}>
+              <Badge className="me-2" variant={`default`}>
                 {t(`role.roles`, { role: role.id.replaceAll(`-`, ``) })}
               </Badge>
             </Link>

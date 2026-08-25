@@ -27,8 +27,8 @@ export default function HowToCommandViewer({ howTo, onBack, onStartChat }: HowTo
       {/* Header with back button, title, and reading time */}
       <div className="flex items-center gap-3 border-b px-4 py-3">
         <Button variant="ghost" size="sm" onClick={onBack} className="h-8 px-2">
-          <ArrowLeft className="h-4 w-4" />
-          <span className="ml-1">{t("howto.command.back")}</span>
+          <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
+          <span className="ms-1">{t("howto.command.back")}</span>
         </Button>
         <SectionHeader level={2} className="flex-1 truncate">
           {howTo.name}
@@ -43,14 +43,14 @@ export default function HowToCommandViewer({ howTo, onBack, onStartChat }: HowTo
       <div className="flex min-h-0 flex-1">
         {/* Left sidebar - table of contents */}
         {headings.length > 0 && (
-          <div className="w-50 shrink-0 overflow-y-auto border-r p-4">
+          <div className="w-50 shrink-0 overflow-y-auto border-e p-4">
             <nav className="space-y-1">
               {headings.map((heading) => (
                 <a
                   key={heading.id}
                   href={`#${heading.id}`}
                   className="text-muted-foreground hover:text-foreground block truncate text-sm"
-                  style={{ paddingLeft: `${(heading.level - 1) * 0.75}rem` }}
+                  style={{ paddingInlineStart: `${(heading.level - 1) * 0.75}rem` }}
                 >
                   {heading.text}
                 </a>
@@ -69,7 +69,7 @@ export default function HowToCommandViewer({ howTo, onBack, onStartChat }: HowTo
       {onStartChat && (
         <div className="flex items-center justify-end gap-2 border-t px-4 py-3">
           <Button onClick={onStartChat} variant="default" size="sm">
-            <MessageSquare className="mr-2 h-4 w-4" />
+            <MessageSquare className="me-2 h-4 w-4" />
             {t("howto.command.chat_button")}
           </Button>
         </div>

@@ -103,7 +103,7 @@ export function ApprovalActionCard({ actionId, summary, onResolved }: Props) {
         <ShieldAlert className="text-warning h-3.5 w-3.5" />
         <span>{t("features.assistant.approval.title")}</span>
         {status && status !== "pending" && (
-          <Badge variant={STATUS_VARIANT[status]} className="ml-auto tracking-normal normal-case">
+          <Badge variant={STATUS_VARIANT[status]} className="ms-auto tracking-normal normal-case">
             {t(STATUS_LABEL_KEY[status])}
           </Badge>
         )}

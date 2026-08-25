@@ -99,7 +99,7 @@ function CompanyDeleterInternal({ company, isAdministrator }: CompanyDeleterInte
             <div className="flex w-full flex-col">
               <Label className="flex items-center">
                 {t(`company.fields.name.label`)}
-                <span className="ml-1 text-destructive">*</span>
+                <span className="ms-1 text-destructive">*</span>
               </Label>
               <Input
                 className={`w-full`}
@@ -109,7 +109,7 @@ function CompanyDeleterInternal({ company, isAdministrator }: CompanyDeleterInte
             </div>
           </div>
           <div className="flex justify-end">
-            <Button className="mr-2" variant={"outline"} type={`button`} onClick={() => setOpen(false)}>
+            <Button className="me-2" variant={"outline"} type={`button`} onClick={() => setOpen(false)}>
               {t(`ui.buttons.cancel`)}
             </Button>
             <Button
@@ -136,7 +136,7 @@ function CompanyDeleterInternal({ company, isAdministrator }: CompanyDeleterInte
           </AlertDialogHeader>
           <div className="bg-destructive/10 border-destructive text-destructive rounded-md border p-4 text-sm">
             <p className="mb-3 font-semibold">{t(`common.delete.finalWarning.description`)}</p>
-            <ul className="list-disc space-y-1 pl-5">
+            <ul className="list-disc space-y-1 ps-5">
               <li>{t(`common.delete.finalWarning.bullet1`)}</li>
               <li>{t(`common.delete.finalWarning.bullet2`)}</li>
               <li>{t(`common.delete.finalWarning.bullet3`)}</li>
@@ -145,7 +145,7 @@ function CompanyDeleterInternal({ company, isAdministrator }: CompanyDeleterInte
             </ul>
           </div>
           <div className="flex justify-end">
-            <Button className="mr-2" variant={"outline"} type={`button`} onClick={handleGoBack} disabled={isDeleting}>
+            <Button className="me-2" variant={"outline"} type={`button`} onClick={handleGoBack} disabled={isDeleting}>
               {t(`ui.buttons.go_back`)}
             </Button>
             <Button

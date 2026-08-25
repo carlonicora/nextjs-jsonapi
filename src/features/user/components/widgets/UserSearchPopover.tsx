@@ -45,20 +45,20 @@ export const UserSearchPopover = ({ children, onSelect, align = "start", classNa
       <PopoverContent align={align} onClick={(e) => e.stopPropagation()} className={className ?? "w-80"}>
         <Command shouldFilter={false}>
           <div className="relative mb-2 w-full">
-            <SearchIcon className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
+            <SearchIcon className="text-muted-foreground absolute top-2.5 start-2.5 h-4 w-4" />
             <Input
               placeholder={t(`ui.search.placeholder`, { type: t(`entities.users`, { count: 1 }) })}
               type="text"
-              className="w-full pr-8 pl-8"
+              className="w-full pe-8 ps-8"
               onChange={(e) => setSearchQuery(e.target.value)}
               value={searchQuery}
               onClick={(e) => e.stopPropagation()}
             />
             {isLoading ? (
-              <RefreshCwIcon className="text-muted-foreground absolute top-2.5 right-2.5 h-4 w-4 animate-spin" />
+              <RefreshCwIcon className="text-muted-foreground absolute top-2.5 end-2.5 h-4 w-4 animate-spin" />
             ) : searchQuery ? (
               <XIcon
-                className="text-muted-foreground hover:text-foreground absolute top-2.5 right-2.5 h-4 w-4 cursor-pointer"
+                className="text-muted-foreground hover:text-foreground absolute top-2.5 end-2.5 h-4 w-4 cursor-pointer"
                 onClick={(e) => {
                   e.stopPropagation();
                   clearSearch();
@@ -74,7 +74,7 @@ export const UserSearchPopover = ({ children, onSelect, align = "start", classNa
                   className="cursor-pointer hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent"
                   onSelect={() => handleSelectUser(user.id)}
                 >
-                  <UserAvatar user={user} className="mr-2 h-4 w-4" showLink={false} />
+                  <UserAvatar user={user} className="me-2 h-4 w-4" showLink={false} />
                   <span>{user.name}</span>
                 </CommandItem>
               ))

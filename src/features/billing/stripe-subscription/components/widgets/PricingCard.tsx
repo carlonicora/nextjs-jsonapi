@@ -61,7 +61,7 @@ export function PricingCard({
       )}
     >
       {isCurrentPlan && (
-        <Badge variant="secondary" className="absolute top-2 right-2">
+        <Badge variant="secondary" className="absolute top-2 end-2">
           Current
         </Badge>
       )}
@@ -73,7 +73,7 @@ export function PricingCard({
       <CardContent className="pb-4 grow">
         <div className="mb-4">
           <span className="text-3xl font-bold">{formattedPrice}</span>
-          <span className="text-muted-foreground ml-1">{interval}</span>
+          <span className="text-muted-foreground ms-1">{interval}</span>
         </div>
 
         {features.length > 0 && (

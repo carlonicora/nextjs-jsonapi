@@ -169,7 +169,7 @@ export default function EntitySelector<T extends BaseEntity>({
                     hasValue(effectiveValue) ? "" : "text-muted-foreground"
                   } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
                 >
-                  <span className="min-w-0 flex-1 truncate text-left">
+                  <span className="min-w-0 flex-1 truncate text-start">
                     {hasValue(effectiveValue)
                       ? getSelectedItemDisplay
                         ? getSelectedItemDisplay(effectiveValue)
@@ -178,7 +178,7 @@ export default function EntitySelector<T extends BaseEntity>({
                   </span>
                   {hasValue(effectiveValue) && !disabled && (
                     <CircleX
-                      className="text-muted hover:text-destructive ml-auto h-4 w-4 shrink-0 cursor-pointer"
+                      className="text-muted hover:text-destructive ms-auto h-4 w-4 shrink-0 cursor-pointer"
                       onClick={(e) => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -191,19 +191,19 @@ export default function EntitySelector<T extends BaseEntity>({
               <PopoverContent align="start" className="w-(--anchor-width) pointer-events-auto">
                 <Command shouldFilter={false}>
                   <div className="relative mb-2 w-full">
-                    <SearchIcon className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
+                    <SearchIcon className="text-muted-foreground absolute top-2.5 start-2.5 h-4 w-4" />
                     <Input
                       placeholder={placeholder}
                       type="text"
-                      className="w-full pr-8 pl-8"
+                      className="w-full pe-8 ps-8"
                       onChange={(e) => setSearchTerm(e.target.value)}
                       value={searchTerm}
                     />
                     {isSearching ? (
-                      <RefreshCwIcon className="text-muted-foreground absolute top-2.5 right-2.5 h-4 w-4 animate-spin" />
+                      <RefreshCwIcon className="text-muted-foreground absolute top-2.5 end-2.5 h-4 w-4 animate-spin" />
                     ) : searchTermRef.current ? (
                       <XIcon
-                        className="absolute top-2.5 right-2.5 h-4 w-4 cursor-pointer"
+                        className="absolute top-2.5 end-2.5 h-4 w-4 cursor-pointer"
                         onClick={() => {
                           setSearchTerm("");
                           search("");
@@ -221,9 +221,9 @@ export default function EntitySelector<T extends BaseEntity>({
                         onSelect={handleCreateNew}
                       >
                         {isCreating ? (
-                          <RefreshCwIcon className="mr-2 h-4 w-4 animate-spin" />
+                          <RefreshCwIcon className="me-2 h-4 w-4 animate-spin" />
                         ) : (
-                          <Plus className="mr-2 h-4 w-4" />
+                          <Plus className="me-2 h-4 w-4" />
                         )}
                         <span>{createNewLabel ? createNewLabel(searchTerm) : searchTerm.trim() || ""}</span>
                       </CommandItem>

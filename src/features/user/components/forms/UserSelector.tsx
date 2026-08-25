@@ -97,7 +97,7 @@ export function UserSelector({ id, form, label, placeholder, onChange, isRequire
                   {field.value ? (
                     <div className="bg-input/20 dark:bg-input/30 border-input flex h-7 w-full flex-row items-center justify-start rounded-md border px-2 py-0.5 text-sm md:text-xs/relaxed">
                       <div className="*:ring-border *:ring-1">
-                        <Avatar className={`mr-2 h-4 w-4`}>
+                        <Avatar className={`me-2 h-4 w-4`}>
                           <AvatarImage src={field.value?.avatar} />
                           <AvatarFallback>
                             {field.value?.name
@@ -117,7 +117,7 @@ export function UserSelector({ id, form, label, placeholder, onChange, isRequire
               </PopoverTrigger>
               {field.value && (
                 <CircleX
-                  className="text-muted hover:text-destructive ml-2 h-4 w-4 shrink-0 cursor-pointer"
+                  className="text-muted hover:text-destructive ms-2 h-4 w-4 shrink-0 cursor-pointer"
                   onClick={() => setUser()}
                 />
               )}
@@ -125,19 +125,19 @@ export function UserSelector({ id, form, label, placeholder, onChange, isRequire
             <PopoverContent align="start" className="w-(--anchor-width)">
               <Command shouldFilter={false}>
                 <div className="relative mb-2 w-full">
-                  <SearchIcon className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
+                  <SearchIcon className="text-muted-foreground absolute top-2.5 start-2.5 h-4 w-4" />
                   <Input
                     placeholder={t(`ui.search.placeholder`, { type: t(`entities.users`, { count: 1 }) })}
                     type="text"
-                    className="w-full pr-8 pl-8"
+                    className="w-full pe-8 ps-8"
                     onChange={(e) => setSearchTerm(e.target.value)}
                     value={searchTerm}
                   />
                   {isSearching ? (
-                    <RefreshCwIcon className="text-muted-foreground absolute top-2.5 right-2.5 h-4 w-4 animate-spin" />
+                    <RefreshCwIcon className="text-muted-foreground absolute top-2.5 end-2.5 h-4 w-4 animate-spin" />
                   ) : searchTermRef.current ? (
                     <XIcon
-                      className={`absolute top-2.5 right-2.5 h-4 w-4 ${searchTermRef.current ? "cursor-pointer" : "text-muted-foreground"}`}
+                      className={`absolute top-2.5 end-2.5 h-4 w-4 ${searchTermRef.current ? "cursor-pointer" : "text-muted-foreground"}`}
                       onClick={() => {
                         setSearchTerm("");
                         search("");
@@ -156,7 +156,7 @@ export function UserSelector({ id, form, label, placeholder, onChange, isRequire
                         key={user.id}
                         onSelect={() => setUser(user)}
                       >
-                        <UserAvatar user={user} className={`mr-2 h-4 w-4`} />
+                        <UserAvatar user={user} className={`me-2 h-4 w-4`} />
                         <span className="">{user.name}</span>
                       </CommandItem>
                     ))}

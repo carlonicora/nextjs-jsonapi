@@ -21,7 +21,7 @@ export function ContributorsList({ content }: ContributorsListProps) {
         href={generateUrl({ page: Modules.User, id: content.author.id })}
         onClick={(e: React.MouseEvent<HTMLAnchorElement>) => e.stopPropagation()}
       >
-        <UserAvatar user={content.author} className="mr-1 h-6 w-6" />
+        <UserAvatar user={content.author} className="me-1 h-6 w-6" />
       </Link>
       <div className="flex flex-row-reverse justify-end -space-x-1 space-x-reverse">
         {content.editors

@@ -107,7 +107,7 @@ describe.skip("FormCheckbox", () => {
       expect(labelIndex).toBeLessThan(checkboxIndex);
     });
 
-    it("should apply ml-3 class to label when label is after checkbox", () => {
+    it("should apply ms-3 class to label when label is after checkbox", () => {
       render(
         <FormWrapper defaultValues={{ active: false }}>
           {(form) => <FormCheckbox form={form} id="active" name="Active" />}
@@ -115,10 +115,10 @@ describe.skip("FormCheckbox", () => {
       );
 
       const label = screen.getByText("Active");
-      expect(label).toHaveClass("ml-3");
+      expect(label).toHaveClass("ms-3");
     });
 
-    it("should not apply ml-3 class when labelBefore is true", () => {
+    it("should not apply ms-3 class when labelBefore is true", () => {
       render(
         <FormWrapper defaultValues={{ active: false }}>
           {(form) => <FormCheckbox form={form} id="active" name="Active" labelBefore={true} />}
@@ -126,7 +126,7 @@ describe.skip("FormCheckbox", () => {
       );
 
       const label = screen.getByText("Active");
-      expect(label).not.toHaveClass("ml-3");
+      expect(label).not.toHaveClass("ms-3");
     });
   });
 

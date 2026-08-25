@@ -104,7 +104,7 @@ export function TokenUsageBreakdownTable({ rows, metric }: Props) {
         <TableHeader>
           <TableRow>
             {columns.map((column) => (
-              <TableHead key={column.key} className={cn(column.numeric && "text-right")}>
+              <TableHead key={column.key} className={cn(column.numeric && "text-end")}>
                 <button
                   type="button"
                   onClick={() => toggleSort(column.key)}
@@ -137,19 +137,19 @@ export function TokenUsageBreakdownTable({ rows, metric }: Props) {
                 </TableCell>
                 <TableCell className="text-muted-foreground text-xs">{row.sublabel ?? ""}</TableCell>
                 {showActiveUsers && (
-                  <TableCell className="text-right text-xs tabular-nums">
+                  <TableCell className="text-end text-xs tabular-nums">
                     {row.activeUsers === undefined ? "" : decimal(row.activeUsers, 0)}
                   </TableCell>
                 )}
-                <TableCell className="text-right text-xs tabular-nums">{decimal(row.calls, 0)}</TableCell>
-                <TableCell className="text-right text-xs tabular-nums">{decimal(row.tokensIn, 0)}</TableCell>
-                <TableCell className="text-right text-xs tabular-nums">{decimal(row.tokensOut, 0)}</TableCell>
-                <TableCell className="text-right text-xs tabular-nums">
+                <TableCell className="text-end text-xs tabular-nums">{decimal(row.calls, 0)}</TableCell>
+                <TableCell className="text-end text-xs tabular-nums">{decimal(row.tokensIn, 0)}</TableCell>
+                <TableCell className="text-end text-xs tabular-nums">{decimal(row.tokensOut, 0)}</TableCell>
+                <TableCell className="text-end text-xs tabular-nums">
                   {percent(cacheHitPercentage(row.cached, row.tokensIn))}
                 </TableCell>
-                <TableCell className="text-right text-xs tabular-nums">{formatValue(row.cost, "cost")}</TableCell>
-                <TableCell className="text-right text-xs tabular-nums">{formatValue(row.credits, "credits")}</TableCell>
-                <TableCell className="text-right text-xs tabular-nums">{percent(share)}</TableCell>
+                <TableCell className="text-end text-xs tabular-nums">{formatValue(row.cost, "cost")}</TableCell>
+                <TableCell className="text-end text-xs tabular-nums">{formatValue(row.credits, "credits")}</TableCell>
+                <TableCell className="text-end text-xs tabular-nums">{percent(share)}</TableCell>
               </TableRow>
             );
           })}

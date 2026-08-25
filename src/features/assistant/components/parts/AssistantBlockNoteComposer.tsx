@@ -126,10 +126,10 @@ export function AssistantBlockNoteComposer({
           />
         </div>
         <Button onClick={submit} disabled={!canSend} size="sm" className="h-8">
-          <ArrowUp className="mr-1 h-4 w-4" /> {t("features.assistant.send")}
+          <ArrowUp className="me-1 h-4 w-4" /> {t("features.assistant.send")}
         </Button>
       </div>
-      <div className="text-muted-foreground text-right text-xs">{t("features.assistant.keyboard_hint")}</div>
+      <div className="text-muted-foreground text-end text-xs">{t("features.assistant.keyboard_hint")}</div>
     </div>
   );
 }

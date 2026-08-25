@@ -315,14 +315,14 @@ export function FormPlaceAutocomplete({
 
             {/* Loading indicator */}
             {isLoading && (
-              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+              <div className="absolute end-3 top-1/2 -translate-y-1/2">
                 <div className="border-primary h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"></div>
               </div>
             )}
 
             {/* Suggestions dropdown */}
             {showSuggestions && suggestions.length > 0 && (
-              <div className="bg-background absolute left-0 right-0 top-full z-50 mt-1 max-h-60 overflow-auto rounded-md border shadow-lg">
+              <div className="bg-background absolute start-0 end-0 top-full z-50 mt-1 max-h-60 overflow-auto rounded-md border shadow-lg">
                 {suggestions.map((suggestion, index) => (
                   <div
                     key={suggestion.place_id || index}

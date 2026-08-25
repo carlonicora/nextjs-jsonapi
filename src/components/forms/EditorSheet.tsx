@@ -57,12 +57,20 @@ function resolveTriggerIsNativeButton(trigger: ReactNode): boolean {
   return true;
 }
 
+/**
+ * The sheet opens on the inline end (`side="end"`), which SheetContent resolves
+ * to the physical `right` in LTR and `left` in RTL — and its own width classes
+ * are keyed to that resolved physical side. Each size therefore has to be
+ * declared for BOTH sides, or an RTL sheet would fall back to SheetContent's
+ * base `data-[side=left]:sm:max-w-sm`.
+ */
+// rtl-ok: keyed to the resolved physical side, not to a writing direction
 const sizeClasses: Record<EditorSheetSize, string> = {
-  sm: "data-[side=right]:sm:max-w-2xl",
-  md: "data-[side=right]:sm:max-w-3xl",
-  lg: "data-[side=right]:sm:max-w-5xl",
-  xl: "data-[side=right]:sm:max-w-7xl",
-  "2xl": "data-[side=right]:sm:!max-w-[min(96rem,90vw)]",
+  sm: "data-[side=right]:sm:max-w-2xl data-[side=left]:sm:max-w-2xl",
+  md: "data-[side=right]:sm:max-w-3xl data-[side=left]:sm:max-w-3xl",
+  lg: "data-[side=right]:sm:max-w-5xl data-[side=left]:sm:max-w-5xl",
+  xl: "data-[side=right]:sm:max-w-7xl data-[side=left]:sm:max-w-7xl",
+  "2xl": "data-[side=right]:sm:!max-w-[min(96rem,90vw)] data-[side=left]:sm:!max-w-[min(96rem,90vw)]",
 };
 
 export type EditorSheetProps<T extends FieldValues> = {
@@ -106,7 +114,7 @@ export type EditorSheetProps<T extends FieldValues> = {
     closeWithoutConfirm: (open: boolean) => void;
   }) => ReactNode;
 
-  /** Rendered on the right-hand side of the header, next to the title/description
+  /** Rendered on the inline-end side of the header, next to the title/description
    *  block. This sits OUTSIDE the <form> element — interactive elements here must
    *  use onClick handlers, never type="submit". */
   actions?: ReactNode;
@@ -271,11 +279,12 @@ export function EditorSheet<T extends FieldValues>({
               )}
             </SheetTrigger>
           ))}
-        <SheetContent side="right" className={sizeClasses[size]}>
+        <SheetContent side="end" className={sizeClasses[size]}>
           <SheetHeader className="border-b px-6 py-4">
             {actions ? (
-              // pr-10 clears the SheetContent close button (absolute top-4 right-4).
-              <div className="flex items-start justify-between gap-x-4 pr-10">
+              // pe-10 clears the SheetContent close button, which sits at the
+              // inline end of the sheet (absolute top-4 end-4).
+              <div className="flex items-start justify-between gap-x-4 pe-10">
                 <div className="flex min-w-0 flex-col gap-y-1.5">
                   <SheetTitle>{headerTitle}</SheetTitle>
                   <SheetDescription>{headerDescription}</SheetDescription>

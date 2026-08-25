@@ -161,7 +161,11 @@ export function TokenUsageTimelineChart({ rows, metric, stackBy, className }: To
     series === OTHER_SERIES ? OTHER_COLOR : seriesColor(index, mode);
 
   return (
-    <div className={className}>
+    // The chart is a coordinate system, not prose: recharts lays the axes and the
+    // stacked bars out left-to-right, so the whole chart stays an LTR island even
+    // under dir="rtl". Only the labels inside it are translated.
+    // rtl-ok: deliberate LTR island (chart)
+    <div className={className} dir="ltr">
       {/* The pivot, exposed for assertions and for screen readers that would
           otherwise get nothing from the SVG. */}
       <span className="sr-only" data-testid="timeline-data">

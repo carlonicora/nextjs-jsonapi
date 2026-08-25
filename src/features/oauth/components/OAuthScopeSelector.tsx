@@ -78,7 +78,7 @@ export function OAuthScopeSelector({
         {Object.entries(groupedScopes).map(([groupName, scopes]) => (
           <div key={groupName} className="space-y-2">
             <h4 className="text-sm font-medium capitalize">{groupName}</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pl-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 ps-2">
               {scopes.map((scopeInfo) => {
                 const isChecked = value.includes(scopeInfo.scope);
                 const isAdmin = scopeInfo.scope === "admin";
@@ -99,7 +99,7 @@ export function OAuthScopeSelector({
                     <div className="flex-1">
                       <Label htmlFor={`scope-${scopeInfo.scope}`} className="cursor-pointer">
                         {scopeInfo.name}
-                        {isAdmin && <span className="ml-2 text-xs text-destructive">(Dangerous)</span>}
+                        {isAdmin && <span className="ms-2 text-xs text-destructive">(Dangerous)</span>}
                       </Label>
                       <p className="text-xs text-muted-foreground">{scopeInfo.description}</p>
                     </div>

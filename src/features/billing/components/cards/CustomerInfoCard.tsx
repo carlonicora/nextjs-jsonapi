@@ -103,7 +103,7 @@ export function CustomerInfoCard({ customer, loading, error }: CustomerInfoCardP
           )}
           <Button variant="outline" size="sm" className="mt-2" onClick={handlePortalClick} disabled={portalLoading}>
             {portalLoading ? "Loading..." : "Manage in Stripe Portal"}
-            <ExternalLink className="h-4 w-4 ml-1" />
+            <ExternalLink className="h-4 w-4 ms-1" />
           </Button>
         </div>
       </CardContent>

@@ -44,7 +44,7 @@ export function NotificationsList({ archived }: NotificationsListProps) {
         <Card key={i}>
           <CardContent className="p-2">
             <div className="flex w-full flex-row items-center">
-              <Skeleton className="mr-4 h-8 w-8 rounded-full" />
+              <Skeleton className="me-4 h-8 w-8 rounded-full" />
               <div className="flex-1 space-y-2">
                 <Skeleton className="h-4 w-3/4" />
                 <Skeleton className="h-3 w-1/2" />
@@ -108,7 +108,7 @@ export function NotificationsList({ archived }: NotificationsListProps) {
                               e.stopPropagation();
                               archiveNotification(notification);
                             }}
-                            className="text-muted-foreground hover:text-destructive ml-2"
+                            className="text-muted-foreground hover:text-destructive ms-2"
                           >
                             <ArchiveIcon className="h-4 w-4 cursor-pointer" />
                           </Button>

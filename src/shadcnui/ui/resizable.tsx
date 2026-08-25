@@ -44,6 +44,7 @@ function ResizableHandle({
         "aria-[orientation=vertical]:h-full aria-[orientation=vertical]:w-px",
         "aria-[orientation=horizontal]:h-px aria-[orientation=horizontal]:w-full",
         // Hit area for dragging (wider than visible line)
+        // rtl-ok: symmetric centering — react-resizable-panels is order-based, the handle sits on the axis midpoint
         "after:absolute after:inset-y-0 after:left-1/2 after:w-3 after:-translate-x-1/2",
         "aria-[orientation=vertical]:after:inset-y-0 aria-[orientation=vertical]:after:w-3",
         "aria-[orientation=horizontal]:after:inset-x-0 aria-[orientation=horizontal]:after:h-3 aria-[orientation=horizontal]:after:inset-y-auto",

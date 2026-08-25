@@ -18,13 +18,7 @@ export function OnboardingCard({
 }: OnboardingCardRenderProps) {
   return (
     <Card className="w-[320px] relative" data-shepherd-card>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute right-2 top-2"
-        onClick={onClose}
-        aria-label={labels.close}
-      >
+      <Button variant="ghost" size="icon" className="absolute end-2 top-2" onClick={onClose} aria-label={labels.close}>
         <X className="h-4 w-4" />
       </Button>
       <CardHeader>

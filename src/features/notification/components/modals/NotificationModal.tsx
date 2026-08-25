@@ -200,7 +200,7 @@ function NotificationModalContent({ isOpen, setIsOpen }: NotificationModalProps)
           {t(`entities.notifications`, { count: 2 })}
         </SidebarMenuButton>
       </PopoverTrigger>
-      <PopoverContent className="relative left-10 w-80 border-0 p-0 shadow-none">
+      <PopoverContent className="relative start-10 w-80 border-0 p-0 shadow-none">
         <Card>
           <CardHeader className="p-4">
             <CardTitle>{t(`entities.notifications`, { count: 2 })}</CardTitle>

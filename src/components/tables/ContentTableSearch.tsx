@@ -74,13 +74,13 @@ export function ContentTableSearch({ data }: ContentTableSearchProps) {
           Labels reuse keys that exist in every consuming app; a new package-level key would
           throw MISSING_MESSAGE wherever it had not been added. */}
       {isExpanded ? (
-        <Search aria-hidden className="text-muted-foreground absolute top-1 left-1 size-4" />
+        <Search aria-hidden className="text-muted-foreground absolute top-1 start-1 size-4" />
       ) : (
         <Button
           data-testid="content-table-search-trigger"
           variant="ghost"
           size="icon-sm"
-          className="text-muted-foreground hover:text-foreground absolute top-0 left-0"
+          className="text-muted-foreground hover:text-foreground absolute top-0 start-0"
           onClick={handleSearchIconClick}
         >
           <Search className="size-4" />
@@ -100,19 +100,19 @@ export function ContentTableSearch({ data }: ContentTableSearchProps) {
           onBlur={handleBlur}
           placeholder={t(`ui.search.placeholder_global`)}
           type="text"
-          className="border-border/50 focus-visible:border-border h-10 w-full pr-8 pl-8 text-xs shadow-none focus-visible:ring-0"
+          className="border-border/50 focus-visible:border-border h-10 w-full pe-8 ps-8 text-xs shadow-none focus-visible:ring-0"
           onChange={(e) => setSearchTerm(e.target.value)}
           value={searchTerm}
         />
       )}
       {isExpanded && isSearching && (
-        <RefreshCw className="text-muted-foreground absolute top-1 right-1 h-4 w-4 animate-spin" />
+        <RefreshCw className="text-muted-foreground absolute top-1 end-1 h-4 w-4 animate-spin" />
       )}
       {isExpanded && !isSearching && searchTermRef.current && (
         <Button
           variant="ghost"
           size="icon-sm"
-          className="text-muted-foreground hover:text-foreground absolute top-0 right-0"
+          className="text-muted-foreground hover:text-foreground absolute top-0 end-0"
           onClick={handleClear}
         >
           <X className="size-4" />

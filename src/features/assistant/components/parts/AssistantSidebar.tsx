@@ -29,7 +29,7 @@ export function AssistantSidebar({ threads, activeId, onSelect, onNew }: Props) 
             type="button"
             onClick={() => onSelect(thread.id)}
             className={
-              "block w-full truncate rounded-md px-2 py-1.5 text-left text-sm " +
+              "block w-full truncate rounded-md px-2 py-1.5 text-start text-sm " +
               (activeId === thread.id ? "bg-primary/10 text-primary" : "hover:bg-muted text-foreground")
             }
           >
@@ -41,10 +41,10 @@ export function AssistantSidebar({ threads, activeId, onSelect, onNew }: Props) 
   };
 
   return (
-    <aside className="bg-muted/30 flex w-64 flex-col border-r">
+    <aside className="bg-muted/30 flex w-64 flex-col border-e">
       <div className="border-b p-3">
         <Button onClick={onNew} className="w-full" size="sm">
-          <Plus className="mr-1 h-4 w-4" /> {t("features.assistant.new")}
+          <Plus className="me-1 h-4 w-4" /> {t("features.assistant.new")}
         </Button>
       </div>
       <div className="flex-1 overflow-y-auto p-2">

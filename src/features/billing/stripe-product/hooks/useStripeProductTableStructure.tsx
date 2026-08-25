@@ -59,9 +59,9 @@ export const useStripeProductTableStructure: UseTableStructureHook<StripeProduct
       header: t("billing.admin.products.fields.prices"),
       cell: ({ row }: { row: TableContent<StripeProductInterface> }) => {
         const product: StripeProductInterface = row.original.jsonApiData;
-        // Typography role 15 (numeric): tabular-nums, right-aligned. NEVER
+        // Typography role 15 (numeric): tabular-nums, end-aligned. NEVER
         // font-mono — no monospace font is loaded in these apps.
-        return <span className="block text-xs tabular-nums text-right">{product.stripePrices.length}</span>;
+        return <span className="block text-xs tabular-nums text-end">{product.stripePrices.length}</span>;
       },
       enableSorting: false,
       enableHiding: false,

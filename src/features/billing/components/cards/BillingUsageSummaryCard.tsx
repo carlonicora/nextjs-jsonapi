@@ -87,7 +87,7 @@ export function BillingUsageSummaryCard({
             {meters.length > 1 && <p className="text-xs text-muted-foreground">Across {meters.length} meters</p>}
             <span className="flex items-center text-xs text-muted-foreground">
               View details
-              <ChevronRight className="h-3 w-3 ml-1" />
+              <ChevronRight className="h-3 w-3 ms-1 rtl:rotate-180" />
             </span>
           </div>
         )}
