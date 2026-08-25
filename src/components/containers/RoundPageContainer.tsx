@@ -93,6 +93,24 @@ type RoundPageContainerProps = {
    * navigation — an "info" icon actively misdescribes a conversation list.
    */
   detailsIcon?: ReactNode;
+  /**
+   * Which element scrolls the page.
+   * - `"document"` (default) — the shell's height only FLOORS at the viewport
+   *   and grows with its content, so the document itself is the scroller. That
+   *   is what restores the iOS rubber-band, and with it pull-to-refresh, in an
+   *   installed PWA.
+   * - `"fixed"` — the pre-existing viewport-bound shell: the document cannot
+   *   scroll and every overflow is owned by an inner pane. Required by pages
+   *   whose content is itself viewport-bound — a map or canvas sized `h-full`,
+   *   a kanban board on `100svh`, or any `fillHeight` tab — since those resolve
+   *   to zero (or overflow the viewport) without a definite height above them.
+   *
+   * The mode is published as `data-scroll-mode` on `<html>` so an app's global
+   * stylesheet can scope root-level rules (`overflow: hidden`,
+   * `overscroll-behavior-y: none`) to fixed pages only. Applying those
+   * unscoped is what suppressed the document scroll and the bounce everywhere.
+   */
+  scroll?: "document" | "fixed";
 };
 
 // Rail trigger class: override the horizontal TabsTrigger defaults for a
@@ -124,6 +142,7 @@ export function RoundPageContainer({
   defaultDetailsOpen = false,
   detailsTitle,
   detailsIcon,
+  scroll = "document",
 }: RoundPageContainerProps) {
   const headerChildren = useHeaderChildren();
   const headerLeftContent = useHeaderLeftContent();
@@ -147,6 +166,34 @@ export function RoundPageContainer({
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Publish the mode for the app stylesheet. Deliberately NO cleanup: on a
+  // client navigation the next page's container mounts before this one
+  // unmounts, so resetting the attribute here would stomp the incoming page's
+  // mode. Only one container renders per page, so the last write always
+  // describes the page on screen.
+  useEffect(() => {
+    document.documentElement.dataset.scrollMode = scroll;
+  }, [scroll]);
+
+  const isFixed = scroll === "fixed";
+
+  // `scroll="fixed"` reproduces the previous classes exactly — that mode is the
+  // old behaviour under a name. In document mode every clip and inner scroller
+  // between the shell and the content is dropped so the document is the only
+  // scroller; leaving a single `overflow-hidden` in that chain silently
+  // truncates the page instead of letting it grow.
+  const shellHeight = isFixed
+    ? `h-[calc(100svh-var(--app-header-h,3rem))]`
+    : `min-h-[calc(100svh-var(--app-header-h,3rem))]`;
+  const clip = isFixed ? `overflow-hidden` : ``;
+  const scrollY = isFixed ? `overflow-y-auto` : ``;
+  // The bar is an in-flow sibling of the content (see MobileNavigationBar's own
+  // note). In document mode the column is taller than the viewport, so in-flow
+  // means it only appears once the user reaches the very bottom — `sticky`
+  // pins it to the viewport's bottom edge while keeping it in flow, so it still
+  // settles under the card at the end of the page rather than floating over it.
+  const mobileBarClass = isFixed ? `` : `sticky bottom-0 z-30`;
 
   // Scope the persisted preference PER MODULE. A single global cookie meant
   // collapsing an informational aside on one page silently collapsed a primary
@@ -228,7 +275,8 @@ export function RoundPageContainer({
         <main
           data-testid={testId}
           className={cn(
-            "flex h-[calc(100svh-var(--app-header-h,3rem))] w-full flex-col",
+            "flex w-full flex-col",
+            shellHeight,
             // Deliberately NO bottom safe-area inset, here or in
             // MobileNavigationBar. iOS still reports 34px of bottom inset
             // (measured in an installed PWA), but nothing is drawn in that strip
@@ -247,7 +295,7 @@ export function RoundPageContainer({
           <div className={cn("bg-background flex min-h-0 w-full flex-1", isMobile ? "" : "rounded-lg border p-0")}>
             <div className="flex w-full flex-col" />
           </div>
-          <MobileNavigationBar />
+          <MobileNavigationBar className={mobileBarClass} />
         </main>
       </>
     );
@@ -271,7 +319,8 @@ export function RoundPageContainer({
       <main
         data-testid={testId}
         className={cn(
-          `flex h-[calc(100svh-var(--app-header-h,3rem))] w-full flex-col`,
+          `flex w-full flex-col`,
+          shellHeight,
           // Deliberately NO bottom safe-area inset, here or in
           // MobileNavigationBar. iOS still reports 34px of bottom inset
           // (measured in an installed PWA), but nothing is drawn in that strip
@@ -300,7 +349,7 @@ export function RoundPageContainer({
                 fullWidth={fullWidth}
               />
             )}
-            <div className="flex h-full w-full overflow-hidden">
+            <div className={cn(`flex w-full`, isFixed && `h-full`, clip)}>
               {layout === "rail" && tabs ? (
                 // Rail layout: the vertical-tab navigation is a flush-left
                 // sidebar of the card and the content fills the full remaining
@@ -318,12 +367,15 @@ export function RoundPageContainer({
                   // the shadcn root's default `data-[orientation=horizontal]:flex-col`
                   // to keep the rail and content side by side.
                   orientation="horizontal"
-                  className="flex h-full min-w-0 grow overflow-hidden data-[orientation=horizontal]:flex-row"
+                  className={cn(`flex min-w-0 grow data-[orientation=horizontal]:flex-row`, isFixed && `h-full`, clip)}
                 >
                   {/* Flush-left section rail — md and up */}
                   <aside
                     data-testid="round-page-rail"
-                    className="hidden shrink-0 border-r p-4 md:flex md:w-56 md:flex-col md:overflow-y-auto"
+                    className={cn(
+                      `hidden shrink-0 border-r p-4 md:flex md:w-56 md:flex-col`,
+                      isFixed && `md:overflow-y-auto`,
+                    )}
                   >
                     {/* `w-full` is load-bearing: TabsList's base variant carries
                         `w-fit`, which shrinks the rail list to its widest label.
@@ -359,7 +411,7 @@ export function RoundPageContainer({
                   </aside>
 
                   {/* Content — full width, fills the remaining space */}
-                  <div className="flex min-w-0 grow flex-col overflow-hidden">
+                  <div className={cn(`flex min-w-0 grow flex-col`, clip)}>
                     {/* Section Select — below md */}
                     <div data-testid="round-page-rail-select" className="p-2 md:hidden">
                       <Select
@@ -392,10 +444,7 @@ export function RoundPageContainer({
                       </Select>
                     </div>
                     <div
-                      className={cn(
-                        `min-w-0 grow`,
-                        activeFillHeight ? `flex flex-col overflow-hidden` : `overflow-y-auto p-4`,
-                      )}
+                      className={cn(`min-w-0 grow`, activeFillHeight ? cn(`flex flex-col`, clip) : cn(scrollY, `p-4`))}
                     >
                       {/* Centre and constrain rail content (like the non-rail
                           layout). Fill-height tabs keep the full width. */}
@@ -424,7 +473,7 @@ export function RoundPageContainer({
                   className={cn(
                     `grow`,
                     isMobile ? `p-2` : `p-4`,
-                    activeFillHeight ? `flex flex-col overflow-hidden` : `overflow-y-auto`,
+                    activeFillHeight ? cn(`flex flex-col`, clip) : scrollY,
                     fullWidth && `p-0`,
                   )}
                 >
@@ -479,7 +528,7 @@ export function RoundPageContainer({
                             className={cn(
                               `flex w-full `,
                               isMobile ? `` : `px-4`,
-                              activeFillHeight ? `flex-1 min-h-0` : `overflow-y-auto`,
+                              activeFillHeight ? `flex-1 min-h-0` : scrollY,
                             )}
                           >
                             {tabs.map((tab) => (
@@ -551,7 +600,7 @@ export function RoundPageContainer({
               </div>
             ))}
         </div>
-        <MobileNavigationBar />
+        <MobileNavigationBar className={mobileBarClass} />
       </main>
     </>
   );

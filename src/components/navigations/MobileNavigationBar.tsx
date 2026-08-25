@@ -41,8 +41,15 @@ function SlotContent({ item }: { item: MobileNavigationItem }) {
  *
  * Rendered as an in-flow flex sibling of the page content (NOT position:fixed),
  * so the content column shrinks to fit and can never be hidden behind the bar.
+ *
+ * `className` exists for the one thing that in-flow placement cannot cover: a
+ * document-scrolled shell (RoundPageContainer's `scroll="document"`), where the
+ * column is taller than the viewport and an in-flow bar is only reachable at
+ * the very bottom of the page. That caller passes `sticky bottom-0`, which pins
+ * the bar without taking it out of flow — so the guarantee above still holds at
+ * the end of the page.
  */
-export function MobileNavigationBar() {
+export function MobileNavigationBar({ className }: { className?: string } = {}) {
   const items = useMobileNavigationItems();
   const isMobile = useIsMobile();
   const pathname = usePathname();
@@ -63,7 +70,7 @@ export function MobileNavigationBar() {
     <nav
       aria-label="Primary"
       data-testid="mobile-navigation-bar"
-      className="bg-sidebar flex w-full shrink-0 flex-row items-stretch rounded-lg border"
+      className={cn("bg-sidebar flex w-full shrink-0 flex-row items-stretch rounded-lg border", className)}
     >
       {items.map((item) => {
         const active = item.href ? isActiveHref(pathname, item.href) : false;
