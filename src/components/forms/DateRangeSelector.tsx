@@ -94,7 +94,7 @@ export function DateRangeSelector({ onDateChange, avoidSettingDates, showPreviou
         <Button
           id="date"
           variant={"outline"}
-          className={cn("w-[300px] justify-start text-left font-normal", !date && "text-muted-foreground")}
+          className={cn("w-[300px] justify-start text-start font-normal", !date && "text-muted-foreground")}
         >
           <CalendarIcon />
           {date?.from ? (
@@ -122,7 +122,7 @@ export function DateRangeSelector({ onDateChange, avoidSettingDates, showPreviou
             <Button
               id="date"
               variant={"outline"}
-              className={cn("w-[300px] justify-start text-left font-normal", !date && "text-muted-foreground")}
+              className={cn("w-[300px] justify-start text-start font-normal", !date && "text-muted-foreground")}
             />
           }
         >

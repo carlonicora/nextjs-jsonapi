@@ -43,7 +43,7 @@ function UserReactivatorInterface({ user, propagateChanges }: UserReactivatorPro
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <Button size="sm">
-          <UserCheckIcon className="mr-3 h-3.5 w-3.5" />
+          <UserCheckIcon className="me-3 h-3.5 w-3.5" />
           {t(`user.buttons.reactivate`)}
         </Button>
       </DialogTrigger>
@@ -54,7 +54,7 @@ function UserReactivatorInterface({ user, propagateChanges }: UserReactivatorPro
         </DialogHeader>
         {t(`user.reactivate.description`, { name: user.name })}
         <div className="flex justify-end">
-          <Button className="mr-2" variant={"outline"} type={`button`} onClick={() => setOpen(false)}>
+          <Button className="me-2" variant={"outline"} type={`button`} onClick={() => setOpen(false)}>
             {t(`ui.buttons.cancel`)}
           </Button>
           <Button

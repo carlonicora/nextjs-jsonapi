@@ -21,7 +21,7 @@ src/
 ├── components/      # Pre-built UI components
 │   ├── table/       # @tanstack/react-table integration
 │   ├── form/        # React Hook Form + Zod
-│   └── dialog/      # Radix UI dialogs
+│   └── dialog/      # Base UI dialogs
 ├── contexts/        # React context providers
 ├── testing/         # Testing utilities
 └── billing/         # Stripe integration
@@ -203,3 +203,51 @@ Add to the app's global stylesheet, alongside `--warning`:
 
 Known status: `narr8` has it. Any other consumer using these components needs
 the same block.
+
+## Consumer requirement — RTL
+
+RTL support is app-owned. The package never derives direction from the locale —
+next-intl owns locale resolution, and which locales are RTL is app policy. The
+consumer's locale layout derives `dir` once and feeds both the html attribute
+and the provider (they must never disagree):
+
+```tsx
+// app/[locale]/layout.tsx
+import { getLocale } from "next-intl/server";
+import { NextIntlClientProvider } from "next-intl";
+import { DirectionProvider } from "@carlonicora/nextjs-jsonapi/contexts";
+
+const RTL_LOCALES = new Set(["ar"]);
+
+export default async function LocaleLayout({ children }) {
+  const locale = await getLocale();
+  const dir = RTL_LOCALES.has(locale) ? "rtl" : "ltr";
+
+  return (
+    <html lang={locale} dir={dir}>
+      <body>
+        <NextIntlClientProvider>
+          <DirectionProvider dir={dir}>{children}</DirectionProvider>
+        </NextIntlClientProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+Locale switching through next-intl navigation re-renders this layout, so `dir`
+flips with the locale automatically — one build serves LTR and RTL locales.
+
+Side-positioned components default to LOGICAL sides — `Sidebar` to `"start"`,
+`SheetContent` to `"end"` — and `Drawer` accepts `"start"`/`"end"` for its
+`direction`. RTL apps must use the logical values: an explicit physical
+`side="left"`/`"right"` stays physical and will not mirror (for `Sidebar` it
+also desyncs the in-flow gap from the fixed panel under RTL).
+
+Without the provider, Base UI popups (menus, selects, tooltips) keep resolving
+`align="start"/"end"` as LTR even though the CSS mirrors. Without `<html dir>`,
+nothing mirrors. LTR apps need no changes — `useDir()` defaults to `"ltr"`.
+
+Package rules: use logical Tailwind utilities (`ms-/me-/ps-/pe-/start-/end-/
+text-start/…`) — `scripts/check-rtl-classes.mjs` (runs in `pnpm lint`) rejects
+physical ones; escape deliberate physicals with an `rtl-ok` comment.

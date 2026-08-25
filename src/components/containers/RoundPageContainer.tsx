@@ -114,10 +114,10 @@ type RoundPageContainerProps = {
 };
 
 // Rail trigger class: override the horizontal TabsTrigger defaults for a
-// vertical, left-aligned, dark-filled active state. tailwind-merge inside cn()
+// vertical, start-aligned, dark-filled active state. tailwind-merge inside cn()
 // resolves the conflicts with the base classes.
 const railTriggerClass = cn(
-  "flex w-full items-center justify-start rounded-md px-3 py-1.5 text-left text-sm leading-tight whitespace-normal",
+  "flex w-full items-center justify-start rounded-md px-3 py-1.5 text-start text-sm leading-tight whitespace-normal",
   "text-muted-foreground",
   "hover:bg-muted hover:text-foreground",
   "data-[state=active]:bg-foreground data-[state=active]:text-background",
@@ -285,7 +285,7 @@ export function RoundPageContainer({
             // render 78px tall; below the bar it became a visible gap. The
             // swipe-up gesture region is unaffected either way — it is a gesture
             // area, not painted chrome.
-            isMobile ? "gap-1 p-1 pt-0" : "p-2 pt-0 pl-0",
+            isMobile ? "gap-1 p-1 pt-0" : "p-2 pt-0 ps-0",
           )}
         >
           {/* `min-h-0 flex-1`, NOT `h-full`: the bar below is an in-flow sibling in
@@ -329,7 +329,7 @@ export function RoundPageContainer({
           // render 78px tall; below the bar it became a visible gap. The
           // swipe-up gesture region is unaffected either way — it is a gesture
           // area, not painted chrome.
-          isMobile ? "gap-1 p-1 pt-0" : "p-2 pt-0 pl-0",
+          isMobile ? "gap-1 p-1 pt-0" : "p-2 pt-0 ps-0",
         )}
       >
         {/* `min-h-0 flex-1`, NOT `h-full`: MobileNavigationBar below is an in-flow
@@ -373,7 +373,7 @@ export function RoundPageContainer({
                   <aside
                     data-testid="round-page-rail"
                     className={cn(
-                      `hidden shrink-0 border-r p-4 md:flex md:w-56 md:flex-col`,
+                      `hidden shrink-0 border-e p-4 md:flex md:w-56 md:flex-col`,
                       isFixed && `md:overflow-y-auto`,
                     )}
                   >
@@ -555,7 +555,7 @@ export function RoundPageContainer({
           {details &&
             (isMobile ? (
               <Sheet open={showDetails} onOpenChange={setShowDetails}>
-                <SheetContent side="right">
+                <SheetContent side="end">
                   <SheetHeader>
                     <SheetTitle>{detailsTitle ?? "Details"}</SheetTitle>
                   </SheetHeader>
@@ -582,7 +582,7 @@ export function RoundPageContainer({
                   // vertically too. Making this the containing block lets
                   // `overflow-hidden` clip them again.
                   "relative flex h-full shrink-0 flex-col overflow-hidden transition-all duration-300 ease-in-out",
-                  showDetails ? "w-96 border-l opacity-100" : "ml-0 w-0 border-l-0 opacity-0",
+                  showDetails ? "w-96 border-s opacity-100" : "ms-0 w-0 border-s-0 opacity-0",
                 )}
               >
                 {detailsTitle && (

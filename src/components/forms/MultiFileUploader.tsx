@@ -87,7 +87,7 @@ const FilePreviewItem = ({ file, onRemoveClick }: { file: File; onRemoveClick: (
     <div className="text-muted-foreground group relative aspect-square h-full overflow-hidden rounded-lg border">
       <button
         onClick={onRemoveClick}
-        className="absolute top-1.5 right-1.5 z-20 rounded-full bg-black/60 p-1 text-white opacity-0 transition-all duration-200 ease-in-out group-hover:opacity-100 hover:bg-red-600 focus:outline-none"
+        className="absolute top-1.5 end-1.5 z-20 rounded-full bg-black/60 p-1 text-white opacity-0 transition-all duration-200 ease-in-out group-hover:opacity-100 hover:bg-red-600 focus:outline-none"
         aria-label="Remove file"
       >
         <XIcon className="h-3.5 w-3.5" />

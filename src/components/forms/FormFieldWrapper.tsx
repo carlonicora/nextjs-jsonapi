@@ -43,7 +43,7 @@ export function FormFieldWrapper<T extends FieldValues>({
           {label && (
             <FieldLabel>
               {label}
-              {isRequired && <span className="ml-1 text-destructive">*</span>}
+              {isRequired && <span className="ms-1 text-destructive">*</span>}
             </FieldLabel>
           )}
           {children(field, fieldState)}

@@ -229,32 +229,32 @@ export function EntityMultiSelector<T extends { id: string }>({
                 >
                   {selectedValues.length > 0 ? (
                     <>
-                      <span className="text-foreground min-w-0 flex-1 truncate text-left">{triggerSummary}</span>
+                      <span className="text-foreground min-w-0 flex-1 truncate text-start">{triggerSummary}</span>
                       <span className="bg-primary/10 text-primary shrink-0 rounded-full px-1.5 py-0.5 text-xs font-medium">
                         {selectedValues.length}
                       </span>
                     </>
                   ) : (
-                    <span className="text-muted-foreground flex-1 text-left">{placeholder}</span>
+                    <span className="text-muted-foreground flex-1 text-start">{placeholder}</span>
                   )}
                   <ChevronDownIcon className="text-muted-foreground size-3.5 shrink-0" />
                 </div>
               </PopoverTrigger>
               <PopoverContent className="w-(--anchor-width) flex flex-col gap-0 p-0" align="start">
                 <div className="relative p-1.5">
-                  <SearchIcon className="text-muted-foreground pointer-events-none absolute top-1/2 left-3.5 size-3.5 -translate-y-1/2" />
+                  <SearchIcon className="text-muted-foreground pointer-events-none absolute top-1/2 start-3.5 size-3.5 -translate-y-1/2" />
                   <Input
                     ref={searchInputRef}
                     placeholder={placeholder}
                     type="text"
-                    className="h-8 w-full pr-7 pl-7 text-xs"
+                    className="h-8 w-full pe-7 ps-7 text-xs"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                   {searchTerm && (
                     <button
                       type="button"
-                      className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3.5 -translate-y-1/2"
+                      className="text-muted-foreground hover:text-foreground absolute top-1/2 end-3.5 -translate-y-1/2"
                       onClick={() => setSearchTerm("")}
                     >
                       <XIcon className="size-3.5" />
@@ -271,7 +271,7 @@ export function EntityMultiSelector<T extends { id: string }>({
                         <button
                           key={option.id}
                           type="button"
-                          className="hover:bg-muted flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-left text-xs/relaxed"
+                          className="hover:bg-muted flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-start text-xs/relaxed"
                           onClick={() => toggleEntity(option)}
                         >
                           {renderOption && option.entityData ? (
@@ -313,7 +313,7 @@ export function EntityMultiSelector<T extends { id: string }>({
                   <Badge
                     key={value.id}
                     variant="outline"
-                    className="h-auto gap-1.5 rounded-md px-2.5 py-1 pr-1.5 text-xs"
+                    className="h-auto gap-1.5 rounded-md px-2.5 py-1 pe-1.5 text-xs"
                   >
                     {stableGetFormValueLabel(value)}
                     <button

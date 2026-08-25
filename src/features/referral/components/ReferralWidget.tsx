@@ -110,6 +110,7 @@ async function copyToClipboard(text: string): Promise<boolean> {
     const textArea = document.createElement("textarea");
     textArea.value = text;
     textArea.style.position = "fixed";
+    // rtl-ok: off-screen clipboard fallback, not layout — physical offset is deliberate
     textArea.style.left = "-999999px";
     textArea.style.top = "-999999px";
     document.body.appendChild(textArea);

@@ -184,7 +184,7 @@ export default function HowToCommand({ pathname, extraGroups, onStartChat }: How
                   <CommandGroup heading={t(`howto.command.relevant`)}>
                     {relevantHowTos.map((howTo: HowToInterface) => (
                       <CommandItem key={howTo.id} onSelect={() => setSelectedHowTo(howTo)} className="cursor-pointer">
-                        <ArrowRight className="h-4 w-4" />
+                        <ArrowRight className="h-4 w-4 rtl:rotate-180" />
                         <span>{howTo.name}</span>
                       </CommandItem>
                     ))}
@@ -196,7 +196,7 @@ export default function HowToCommand({ pathname, extraGroups, onStartChat }: How
                   <CommandGroup heading={searchTerm ? undefined : t(`howto.command.all`)}>
                     {otherHowTos.map((howTo: HowToInterface) => (
                       <CommandItem key={howTo.id} onSelect={() => setSelectedHowTo(howTo)} className="cursor-pointer">
-                        <ArrowRight className="h-4 w-4" />
+                        <ArrowRight className="h-4 w-4 rtl:rotate-180" />
                         <span>{howTo.name}</span>
                       </CommandItem>
                     ))}

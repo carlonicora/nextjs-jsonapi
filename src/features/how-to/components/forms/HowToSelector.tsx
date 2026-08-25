@@ -111,7 +111,7 @@ export default function HowToSelector({
               </PopoverTrigger>
               {field.value && (
                 <CircleX
-                  className="text-muted hover:text-destructive ml-2 h-4 w-4 shrink-0 cursor-pointer"
+                  className="text-muted hover:text-destructive ms-2 h-4 w-4 shrink-0 cursor-pointer"
                   onClick={() => setHowTo()}
                 />
               )}
@@ -119,19 +119,19 @@ export default function HowToSelector({
             <PopoverContent align="start" className="w-(--anchor-width)">
               <Command shouldFilter={false}>
                 <div className="relative mb-2 w-full">
-                  <SearchIcon className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
+                  <SearchIcon className="text-muted-foreground absolute top-2.5 start-2.5 h-4 w-4" />
                   <Input
                     placeholder={t(`generic.search.placeholder`, { type: t(`entities.howtos`, { count: 1 }) })}
                     type="text"
-                    className="w-full pr-8 pl-8"
+                    className="w-full pe-8 ps-8"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                     value={searchTerm}
                   />
                   {isSearching ? (
-                    <RefreshCwIcon className="text-muted-foreground absolute top-2.5 right-2.5 h-4 w-4 animate-spin" />
+                    <RefreshCwIcon className="text-muted-foreground absolute top-2.5 end-2.5 h-4 w-4 animate-spin" />
                   ) : searchTermRef.current ? (
                     <XIcon
-                      className={`absolute top-2.5 right-2.5 h-4 w-4 ${searchTermRef.current ? "cursor-pointer" : "text-muted-foreground"}`}
+                      className={`absolute top-2.5 end-2.5 h-4 w-4 ${searchTermRef.current ? "cursor-pointer" : "text-muted-foreground"}`}
                       onClick={() => {
                         setSearchTerm("");
                         search("");

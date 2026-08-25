@@ -30,7 +30,7 @@ export function HelpTOC({ headings }: { headings: readonly HelpHeading[] }) {
       <MicroLabel className="mb-2">{t("help.toc.title")}</MicroLabel>
       <ul className="space-y-1 text-sm">
         {headings.map((h) => (
-          <li key={h.slug} style={{ paddingLeft: `${(h.depth - 2) * 0.75}rem` }}>
+          <li key={h.slug} style={{ paddingInlineStart: `${(h.depth - 2) * 0.75}rem` }}>
             <a
               href={`#${h.slug}`}
               className={

@@ -14,7 +14,7 @@ export function SuggestedQuestionsTab({ questions, onSelect }: Props) {
           key={q}
           type="button"
           onClick={() => onSelect(q)}
-          className="border-border bg-muted/30 hover:bg-muted rounded-md border px-3 py-1.5 text-left text-sm"
+          className="border-border bg-muted/30 hover:bg-muted rounded-md border px-3 py-1.5 text-start text-sm"
         >
           {q}
         </button>

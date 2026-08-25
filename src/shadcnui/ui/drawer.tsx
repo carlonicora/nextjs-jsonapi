@@ -4,9 +4,24 @@ import * as React from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
 
 import { cn } from "@/lib/utils";
+import { resolvePhysicalSide } from "@/lib/direction";
+import { useDir } from "../../contexts/DirectionContext";
 
-function Drawer({ ...props }: React.ComponentProps<typeof DrawerPrimitive.Root>) {
-  return <DrawerPrimitive.Root data-slot="drawer" {...props} />;
+// vaul's DialogProps is an intersection with a discriminated union
+// (WithFadeFromProps | WithoutFadeFromProps); a plain Omit collapses it and
+// breaks the snapPoints/fadeFromIndex correlation, so distribute the Omit.
+type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
+
+function Drawer({
+  direction,
+  ...props
+}: DistributiveOmit<React.ComponentProps<typeof DrawerPrimitive.Root>, "direction"> & {
+  direction?: "top" | "bottom" | "left" | "right" | "start" | "end";
+}) {
+  const dir = useDir();
+  const resolved = direction === "start" || direction === "end" ? resolvePhysicalSide(direction, dir) : direction;
+
+  return <DrawerPrimitive.Root data-slot="drawer" direction={resolved} {...props} />;
 }
 
 function DrawerTrigger({ ...props }: React.ComponentProps<typeof DrawerPrimitive.Trigger>) {
@@ -40,6 +55,7 @@ function DrawerContent({ className, children, ...props }: React.ComponentProps<t
       <DrawerOverlay />
       <DrawerPrimitive.Content
         data-slot="drawer-content"
+        // rtl-ok: data-[vaul-drawer-direction=…] classes key off the RESOLVED physical side
         className={cn(
           "before:bg-background relative flex h-auto flex-col bg-transparent p-2 text-xs/relaxed before:absolute before:inset-2 before:-z-10 before:rounded-xl data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0 data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-[80vh] data-[vaul-drawer-direction=left]:inset-y-0 data-[vaul-drawer-direction=left]:left-0 data-[vaul-drawer-direction=left]:w-3/4 data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:w-3/4 data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-[80vh] data-[vaul-drawer-direction=left]:sm:max-w-sm data-[vaul-drawer-direction=right]:sm:max-w-sm group/drawer-content fixed z-50",
           className,
@@ -58,7 +74,7 @@ function DrawerHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="drawer-header"
       className={cn(
-        "gap-1 p-4 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-center group-data-[vaul-drawer-direction=top]/drawer-content:text-center md:text-left flex flex-col",
+        "gap-1 p-4 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-center group-data-[vaul-drawer-direction=top]/drawer-content:text-center md:text-start flex flex-col",
         className,
       )}
       {...props}

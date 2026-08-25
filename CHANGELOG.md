@@ -1,3 +1,19 @@
+## [3.4.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.4.0...v3.4.1) (2026-08-25)
+
+### 🐛 Bug Fixes
+
+* **release:** restore the pinned conventional-changelog preset ([16f0523](https://github.com/carlonicora/nextjs-jsonapi/commit/16f0523f397ce2bda8e8fee2d9298ef0ba6b5b90))
+
+### ♻️ Chores
+
+* **deps:** dependency sweep 2026-08-25 ([db07486](https://github.com/carlonicora/nextjs-jsonapi/commit/db07486e459deae940cec927afaaa16cd8c5ec5a))
+
+## [3.4.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.3.9...v3.4.0) (2026-08-25)
+
+### 🚀 Features
+
+* add RTL support across all components ([b0dd949](https://github.com/carlonicora/nextjs-jsonapi/commit/b0dd94990f04d1a52e85bf49ef41e20205dcc51e))
+
 ## [3.3.9](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.3.8...v3.3.9) (2026-08-24)
 
 ### ♻️ Chores

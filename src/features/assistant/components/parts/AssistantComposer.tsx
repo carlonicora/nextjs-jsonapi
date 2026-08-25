@@ -47,10 +47,10 @@ export function AssistantComposer({ onSend, disabled, value: controlled, onValue
           className="min-h-[48px] resize-none border-0 bg-transparent focus-visible:ring-0"
         />
         <Button onClick={submit} disabled={!canSend} size="sm" className="h-8">
-          <ArrowUp className="mr-1 h-4 w-4" /> {t("ui.buttons.save")}
+          <ArrowUp className="me-1 h-4 w-4" /> {t("ui.buttons.save")}
         </Button>
       </div>
-      <div className="text-muted-foreground text-right text-xs">{t("features.assistant.keyboard_hint")}</div>
+      <div className="text-muted-foreground text-end text-xs">{t("features.assistant.keyboard_hint")}</div>
     </div>
   );
 }

@@ -84,7 +84,7 @@ export function RemoveUserFromRole({ role, user, refresh }: RemoveUserFromRolePr
           <>
             {t(`role.remove_user.description_allowed`, { role: roleName, user: user.name })}
             <div className="flex justify-end">
-              <Button className="mr-2" variant={"outline"} type={`button`} onClick={() => setOpen(false)}>
+              <Button className="me-2" variant={"outline"} type={`button`} onClick={() => setOpen(false)}>
                 {t(`ui.buttons.cancel`)}
               </Button>
               <Button

@@ -47,7 +47,7 @@ export function FormRoles({ form, id, name, roles }: FormRolesProps) {
                     />
                     <Tooltip>
                       <TooltipTrigger>
-                        <FieldLabel htmlFor={`role-${role.id}`} className="ml-3 cursor-pointer font-normal">
+                        <FieldLabel htmlFor={`role-${role.id}`} className="ms-3 cursor-pointer font-normal">
                           {t(`role.roles`, { role: role.id.replaceAll(`-`, ``) })}
                         </FieldLabel>
                       </TooltipTrigger>

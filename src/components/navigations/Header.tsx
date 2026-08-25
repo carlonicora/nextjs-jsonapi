@@ -37,8 +37,8 @@ export function Header({ children, mobileChildren, leftContent, logo, className 
     <header
       className={`bg-sidebar sticky top-0 z-10 flex h-[var(--app-header-h,calc(3rem_+_env(safe-area-inset-top)))] flex-col items-center justify-start gap-x-4 pt-[env(safe-area-inset-top)] ${className ?? ""}`}
     >
-      <div className="bg-sidebar flex h-12 w-full flex-row items-center justify-between pl-2 pr-4">
-        {isMobile && logo && <div className="flex shrink-0 flex-row items-center pr-1">{logo}</div>}
+      <div className="bg-sidebar flex h-12 w-full flex-row items-center justify-between ps-2 pe-4">
+        {isMobile && logo && <div className="flex shrink-0 flex-row items-center pe-1">{logo}</div>}
         <SidebarTrigger aria-label="Toggle sidebar" id="sidebar-trigger" />
         {leftContent}
         <div className="flex w-full flex-row items-center justify-start">

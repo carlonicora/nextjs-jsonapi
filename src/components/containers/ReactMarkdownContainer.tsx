@@ -57,7 +57,7 @@ export function ReactMarkdownContainer({
               li: ({ children }) => <li className={size === "small" ? "text-xs" : ""}>{children}</li>,
               table: ({ children }) => <table className="w-full table-auto border-collapse border">{children}</table>,
               th: ({ children }) => (
-                <th className={`border px-4 py-2 text-left ${size === "small" ? "px-2 py-1 text-xs" : ""}`}>
+                <th className={`border px-4 py-2 text-start ${size === "small" ? "px-2 py-1 text-xs" : ""}`}>
                   {children}
                 </th>
               ),
@@ -65,9 +65,25 @@ export function ReactMarkdownContainer({
                 <td className={`border px-4 py-2 ${size === "small" ? "px-2 py-1 text-xs" : ""}`}>{children}</td>
               ),
               tr: ({ children }) => <tr className="even:bg-gray-50">{children}</tr>,
-              ul: ({ children }) => <ul className={`list-disc ${size === "small" ? "pl-3" : "pl-4"}`}>{children}</ul>,
+              ul: ({ children }) => <ul className={`list-disc ${size === "small" ? "ps-3" : "ps-4"}`}>{children}</ul>,
               ol: ({ children }) => (
-                <ol className={`list-decimal ${size === "small" ? "pl-3" : "pl-4"}`}>{children}</ol>
+                <ol className={`list-decimal ${size === "small" ? "ps-3" : "ps-4"}`}>{children}</ol>
+              ),
+              // Code is not prose: identifiers, paths and command lines read
+              // left-to-right in every locale, so both the fenced block and the
+              // inline span are deliberate LTR islands. `node` is react-markdown's
+              // hast node — it must not reach the DOM element.
+              // rtl-ok: deliberate LTR island (code)
+              pre: ({ children, node: _node, ...props }) => (
+                <pre dir="ltr" {...props}>
+                  {children}
+                </pre>
+              ),
+              // rtl-ok: deliberate LTR island (code)
+              code: ({ children, node: _node, ...props }) => (
+                <code dir="ltr" {...props}>
+                  {children}
+                </code>
               ),
               h1: ({ children }) => (
                 <h1 className={size === "small" ? "my-1 mt-2 text-sm font-bold" : "my-2 mt-4 text-3xl font-semibold"}>
@@ -98,7 +114,7 @@ export function ReactMarkdownContainer({
         </div>
 
         {collapsible && !isExpanded && showExpandButton && (
-          <div className="pointer-events-none absolute right-0 bottom-0 left-0 h-12 bg-gradient-to-t from-white to-transparent" />
+          <div className="pointer-events-none absolute end-0 bottom-0 start-0 h-12 bg-gradient-to-t from-white to-transparent" />
         )}
       </div>
 

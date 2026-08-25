@@ -51,7 +51,7 @@ export const diffWordInlineContentSpec = createReactInlineContentSpec(
       if (diffType === "buttons") {
         const diffIdList = diffId.split(",");
         return (
-          <span className="ml-2 inline-flex items-center gap-1">
+          <span className="ms-2 inline-flex items-center gap-1">
             <Button
               size="sm"
               variant="ghost"
@@ -108,7 +108,7 @@ export const diffWordInlineContentSpec = createReactInlineContentSpec(
           </span>
 
           {!accepted && !rejected && (diffType === "added" || diffType === "removed") && (
-            <span className="absolute -top-8 left-0 z-10 hidden items-center gap-1 rounded border bg-white p-1 shadow-lg group-hover:flex">
+            <span className="absolute -top-8 start-0 z-10 hidden items-center gap-1 rounded border bg-white p-1 shadow-lg group-hover:flex">
               <Button
                 size="sm"
                 variant="ghost"

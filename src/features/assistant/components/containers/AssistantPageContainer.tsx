@@ -70,7 +70,7 @@ export function AssistantPageContainer({
       details={
         // The panel supplies its own padding and border; cancel both so the
         // sidebar reads as the panel body rather than a card inside it.
-        <div className="-m-4 flex h-full min-h-0 [&>aside]:w-full [&>aside]:border-r-0 [&>aside]:bg-transparent">
+        <div className="-m-4 flex h-full min-h-0 [&>aside]:w-full [&>aside]:border-e-0 [&>aside]:bg-transparent">
           <AssistantSidebar
             threads={ctx.threads}
             activeId={ctx.assistant?.id}

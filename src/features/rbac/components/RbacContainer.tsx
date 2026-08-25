@@ -118,7 +118,7 @@ const ModuleEditor = memo(function ModuleEditor({
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b bg-muted/50">
-              <th className="w-40 px-4 py-2 text-left text-xs font-medium text-muted-foreground">{t("rbac.role")}</th>
+              <th className="w-40 px-4 py-2 text-start text-xs font-medium text-muted-foreground">{t("rbac.role")}</th>
               {ACTION_TYPES.map((action) => (
                 <th key={action} className="min-w-28 px-2 py-2 text-center text-xs font-medium text-muted-foreground">
                   {ACTION_LABELS[action]}
@@ -295,7 +295,7 @@ export default function RbacContainer() {
     <RoundPageContainer fullWidth forceHeader>
       <div className="flex h-full w-full">
         {/* Sidebar: module list */}
-        <aside className="w-60 shrink-0 overflow-y-auto border-r bg-muted/20">
+        <aside className="w-60 shrink-0 overflow-y-auto border-e bg-muted/20">
           <ul className="py-1">
             {sortedModuleIds.map((id) => (
               <li key={id}>
@@ -304,7 +304,7 @@ export default function RbacContainer() {
                   onClick={() => handleSelectModule(id)}
                   aria-current={id === selectedModuleId ? "true" : undefined}
                   className={cn(
-                    "block w-full px-4 py-1.5 text-left text-sm hover:bg-muted",
+                    "block w-full px-4 py-1.5 text-start text-sm hover:bg-muted",
                     id === selectedModuleId && "bg-muted font-medium text-foreground",
                     id !== selectedModuleId && "text-muted-foreground",
                   )}

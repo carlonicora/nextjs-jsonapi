@@ -75,7 +75,7 @@ export const useContentTableStructure = <U extends string = ContentFields>(
         return (
           <div className="relative flex h-5 w-20 items-center justify-center overflow-clip rounded border text-center">
             <div
-              className={`bg-accent absolute top-0 left-0 h-full opacity-${Math.round(content.relevance)}`}
+              className={`bg-accent absolute top-0 start-0 h-full opacity-${Math.round(content.relevance)}`}
               style={{ width: `${content.relevance}%` }}
             ></div>
             <span

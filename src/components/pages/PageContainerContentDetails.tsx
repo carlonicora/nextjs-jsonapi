@@ -64,7 +64,7 @@ export function PageContainerContentDetails({ items, section, module, id }: Page
         </TabsList>
       </div>
 
-      <div className="pr-4">
+      <div className="pe-4">
         {items.map((item) => (
           <TabsContent key={item.title} value={item.title}>
             {item.content}

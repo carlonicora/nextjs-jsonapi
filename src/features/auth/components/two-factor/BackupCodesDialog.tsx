@@ -101,7 +101,7 @@ export function BackupCodesDialog({ remainingCodes, onRegenerate, trigger }: Bac
               <AlertDialogTrigger
                 render={
                   <Button variant="outline" className="w-full">
-                    <RefreshCw className="h-4 w-4 mr-2" />
+                    <RefreshCw className="h-4 w-4 me-2" />
                     {t("auth.two_factor.generate_new_codes")}
                   </Button>
                 }
@@ -131,11 +131,11 @@ export function BackupCodesDialog({ remainingCodes, onRegenerate, trigger }: Bac
             </div>
             <div className="flex gap-2">
               <Button variant="outline" className="flex-1" onClick={handleCopyAll}>
-                <Copy className="h-4 w-4 mr-2" />
+                <Copy className="h-4 w-4 me-2" />
                 {t("auth.two_factor.copy_all")}
               </Button>
               <Button variant="outline" className="flex-1" onClick={handleDownload}>
-                <Download className="h-4 w-4 mr-2" />
+                <Download className="h-4 w-4 me-2" />
                 {t("auth.two_factor.download")}
               </Button>
             </div>

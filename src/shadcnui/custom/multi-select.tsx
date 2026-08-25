@@ -291,11 +291,11 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
                       className={cn(isAnimating ? "animate-bounce" : "", multiSelectVariants({ variant }))}
                       style={{ animationDuration: `${animation}s` }}
                     >
-                      {IconComponent && <IconComponent className="mr-2 h-4 w-4" />}
+                      {IconComponent && <IconComponent className="me-2 h-4 w-4" />}
                       {option?.selectedLabel ?? option?.label}
                       <XCircle
                         data-remove-button
-                        className="ml-2 h-4 w-4 cursor-pointer"
+                        className="ms-2 h-4 w-4 cursor-pointer"
                         onPointerDown={(event) => {
                           event.stopPropagation();
                           event.preventDefault();
@@ -321,7 +321,7 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
                     {`+ ${selectedValues.length - maxCount} more`}
                     <XCircle
                       data-remove-button
-                      className="ml-2 h-4 w-4 cursor-pointer"
+                      className="ms-2 h-4 w-4 cursor-pointer"
                       onPointerDown={(event) => {
                         event.stopPropagation();
                         event.preventDefault();
@@ -388,7 +388,7 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
                   >
                     <div
                       className={cn(
-                        "border-primary mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
+                        "border-primary me-2 flex h-4 w-4 items-center justify-center rounded-sm border",
                         selectedValues.length === options.length
                           ? "bg-primary text-primary-foreground"
                           : "opacity-50 [&_svg]:invisible",
@@ -411,14 +411,14 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
                     >
                       <div
                         className={cn(
-                          "border-primary mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
+                          "border-primary me-2 flex h-4 w-4 items-center justify-center rounded-sm border",
                           isSelected ? "bg-primary text-primary-foreground" : "opacity-50 [&_svg]:invisible",
                         )}
                       >
                         <CheckIcon className="h-4 w-4" />
                       </div>
                       {option.icon && (
-                        <option.icon className={option.iconClassName ?? "text-muted-foreground mr-2 h-4 w-4"} />
+                        <option.icon className={option.iconClassName ?? "text-muted-foreground me-2 h-4 w-4"} />
                       )}
                       <span>{option.label}</span>
                     </CommandItem>

@@ -82,7 +82,7 @@ export function UserRoleAdd({ user, refresh }: UserRoleAddProps) {
   return (
     <>
       <Button size="sm" onClick={() => setOpen(true)}>
-        <PlusCircle className="mr-3 h-3.5 w-3.5" />
+        <PlusCircle className="me-3 h-3.5 w-3.5" />
         {t(`common.association.label`, {
           source: t(`entities.roles`, { count: 1 }),
           destination: t(`entities.users`, { count: 1 }),

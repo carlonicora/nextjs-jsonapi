@@ -96,7 +96,7 @@ export function MessageSourcesPanel({ message, isLatestAssistant, onSelectFollow
         aria-controls={panelId}
         className="text-primary inline-flex items-center gap-1 text-xs font-medium"
       >
-        {open ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+        {open ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3 rtl:rotate-180" />}
         {open
           ? t("features.assistant.message.sources.toggle_hide")
           : t("features.assistant.message.sources.toggle", { count: total })}
@@ -109,7 +109,7 @@ export function MessageSourcesPanel({ message, isLatestAssistant, onSelectFollow
               {visibleTabs.map((key) => (
                 <TabsTrigger key={key} value={key}>
                   {t(`features.assistant.message.sources.tabs.${key === "suggested" ? "suggested_questions" : key}`)}
-                  <span className="text-muted-foreground ml-1.5 text-xs">
+                  <span className="text-muted-foreground ms-1.5 text-xs">
                     {key === "suggested" && suggestionsCount}
                     {key === "references" && refsCount}
                     {key === "citations" && citationsCount}

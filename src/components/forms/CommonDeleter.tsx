@@ -107,7 +107,7 @@ export function CommonDeleter({
         )}
         <div className="flex justify-end">
           <Button
-            className="mr-2"
+            className="me-2"
             variant={"outline"}
             type={`button`}
             onClick={() => setOpen(false)}

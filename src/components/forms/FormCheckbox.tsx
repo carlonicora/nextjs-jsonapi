@@ -15,7 +15,7 @@ type FormCheckboxProps = {
 export function FormCheckbox({ form, id, name, labelBefore, description, isRequired }: FormCheckboxProps) {
   const simpleLabel = () => {
     return (
-      <FieldLabel htmlFor={id} className={`font-normal ${labelBefore ? "" : "ml-3"}`}>
+      <FieldLabel htmlFor={id} className={`font-normal ${labelBefore ? "" : "ms-3"}`}>
         {name}
       </FieldLabel>
     );
@@ -38,10 +38,10 @@ export function FormCheckbox({ form, id, name, labelBefore, description, isRequi
         {(field) => (
           <div className="flex gap-x-4">
             {labelBefore && label()}
-            {labelBefore && isRequired && <span className="ml-1 text-destructive">*</span>}
+            {labelBefore && isRequired && <span className="ms-1 text-destructive">*</span>}
             <Checkbox id={id} checked={field.value ?? false} onCheckedChange={field.onChange} />
             {!labelBefore && label()}
-            {!labelBefore && isRequired && <span className="ml-1 text-destructive">*</span>}
+            {!labelBefore && isRequired && <span className="ms-1 text-destructive">*</span>}
           </div>
         )}
       </FormFieldWrapper>

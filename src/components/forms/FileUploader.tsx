@@ -317,6 +317,7 @@ export const FileUploaderItem = forwardRef<HTMLDivElement, { index: number } & R
         </div>
         <button
           type="button"
+          // rtl-ok: already direction-aware — resolves the physical corner from the component's own `dir` prop
           className={cn("absolute", direction === "rtl" ? "top-1 left-1" : "top-1 right-1")}
           onClick={() => removeFileFromSet(index)}
         >

@@ -77,11 +77,11 @@ function PageSelector({
         <PopoverContent align="start" className="w-(--anchor-width) p-0">
           <Command shouldFilter={false}>
             <div className="relative w-full border-b">
-              <SearchIcon className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
+              <SearchIcon className="text-muted-foreground absolute top-2.5 start-2.5 h-4 w-4" />
               <Input
                 placeholder={placeholder}
                 type="text"
-                className="rounded-none border-0 pl-8 focus-visible:ring-0"
+                className="rounded-none border-0 ps-8 focus-visible:ring-0"
                 onChange={(e) => setSearch(e.target.value)}
                 value={search}
               />
@@ -339,7 +339,7 @@ function HowToEditorInternal({
               />
             ))}
             <Button type="button" variant="outline" size="sm" onClick={addPage}>
-              <PlusIcon className="mr-2 h-4 w-4" />
+              <PlusIcon className="me-2 h-4 w-4" />
               {t(`howto.fields.pages.add`)}
             </Button>
           </div>
