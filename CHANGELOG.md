@@ -1,3 +1,9 @@
+## [3.5.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.5.0...v3.5.1) (2026-08-25)
+
+### ♻️ Chores
+
+* update next.js to version 16.3.3 ([21e2d1e](https://github.com/carlonicora/nextjs-jsonapi/commit/21e2d1ef5eb788f83a5b767b643e814b9b746429))
+
 ## [3.5.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.4.2...v3.5.0) (2026-08-25)
 
 ### 🚀 Features
