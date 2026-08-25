@@ -1,6 +1,6 @@
 {
   "name": "@carlonicora/nextjs-jsonapi",
-  "version": "3.4.1",
+  "version": "3.4.2",
   "description": "Next.js JSON:API client with server/client support and caching",
   "author": "Carlo Nicora",
   "license": "GPL-3.0-or-later",
@@ -205,7 +205,7 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-hook-form": "7.86.0",
-    "semantic-release": "^25.0.8",
+    "semantic-release": "25.0.8",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "vitest": "^4.1.11"

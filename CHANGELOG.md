@@ -1,3 +1,9 @@
+## [3.4.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.4.1...v3.4.2) (2026-08-25)
+
+### ♻️ Chores
+
+* **ci:** pin semantic-release to 25.0.8 ([42720ab](https://github.com/carlonicora/nextjs-jsonapi/commit/42720abcc7de951a20f3392d7e2f816ab7dadb94))
+
 ## [3.4.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.4.0...v3.4.1) (2026-08-25)
 
 ### 🐛 Bug Fixes
