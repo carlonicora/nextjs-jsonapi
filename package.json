@@ -193,7 +193,7 @@
     "@vitejs/plugin-react": "^6.1.0",
     "@vitest/coverage-v8": "^4.1.11",
     "@vitest/ui": "^4.1.11",
-    "conventional-changelog-conventionalcommits": "10.4.0",
+    "conventional-changelog-conventionalcommits": "9.3.1",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
@@ -205,7 +205,7 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-hook-form": "7.86.0",
-    "semantic-release": "^25.0.9",
+    "semantic-release": "^25.0.8",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "vitest": "^4.1.11"
