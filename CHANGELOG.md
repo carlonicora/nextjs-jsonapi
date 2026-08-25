@@ -1,3 +1,9 @@
+## [3.5.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.5.1...v3.5.2) (2026-08-25)
+
+### 🐛 Bug Fixes
+
+* change default scroll behavior to "fixed" in RoundPageContainer ([e8a4703](https://github.com/carlonicora/nextjs-jsonapi/commit/e8a4703ac4c38970f2245ccd07cc5c13c36e08a2))
+
 ## [3.5.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.5.0...v3.5.1) (2026-08-25)
 
 ### ♻️ Chores
