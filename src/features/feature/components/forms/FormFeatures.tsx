@@ -37,7 +37,7 @@ export function FormFeatures({ form, name, features, featureField = "featureIds"
         </SectionHeader>
       )}
       <ScrollArea className="h-[40vh]">
-        <div className="flex flex-col gap-y-2 pr-4">
+        <div className="flex flex-col gap-y-2 pe-4">
           {features
             .filter((feature) => !feature.isCore)
             .map((feature) => (
@@ -49,7 +49,7 @@ export function FormFeatures({ form, name, features, featureField = "featureIds"
                     toggleFeature(feature, val === true);
                   }}
                 />
-                <Label htmlFor={feature.id} className="ml-3 cursor-pointer font-normal">
+                <Label htmlFor={feature.id} className="ms-3 cursor-pointer font-normal">
                   {feature.name}
                 </Label>
               </div>

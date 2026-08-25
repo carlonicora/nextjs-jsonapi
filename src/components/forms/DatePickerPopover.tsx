@@ -163,10 +163,10 @@ export const DatePickerPopover = ({
               value={inputValue}
               onChange={(e) => handleInputChange(e.target.value)}
               placeholder={datePlaceholder}
-              className="pr-16"
+              className="pe-16"
               onClick={(e) => e.stopPropagation()}
             />
-            <div className="absolute right-1 top-1/2 flex -translate-y-1/2 items-center space-x-1">
+            <div className="absolute end-1 top-1/2 flex -translate-y-1/2 items-center space-x-1">
               <button
                 type="button"
                 className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted"

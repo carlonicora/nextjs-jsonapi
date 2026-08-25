@@ -63,18 +63,18 @@ describe("clearClientStorage", () => {
   describe("Scenario: Handles keys with special characters", () => {
     it("should properly remove keys containing colons", () => {
       const keys = [
-        "react-resizable-panels:page-content-container-desktop:left-panel:right-panel",
-        "react-resizable-panels:page-content-container-mobile:left-panel:right-panel",
+        "react-resizable-panels:page-content-container-desktop:left-panel:right-panel", // rtl-ok: localStorage key, not a CSS class
+        "react-resizable-panels:page-content-container-mobile:left-panel:right-panel", // rtl-ok: localStorage key, not a CSS class
       ];
 
       clearClientStorage(keys);
 
       expect(window.localStorage.removeItem).toHaveBeenCalledTimes(2);
       expect(window.localStorage.removeItem).toHaveBeenCalledWith(
-        "react-resizable-panels:page-content-container-desktop:left-panel:right-panel",
+        "react-resizable-panels:page-content-container-desktop:left-panel:right-panel", // rtl-ok: localStorage key, not a CSS class
       );
       expect(window.localStorage.removeItem).toHaveBeenCalledWith(
-        "react-resizable-panels:page-content-container-mobile:left-panel:right-panel",
+        "react-resizable-panels:page-content-container-mobile:left-panel:right-panel", // rtl-ok: localStorage key, not a CSS class
       );
     });
   });

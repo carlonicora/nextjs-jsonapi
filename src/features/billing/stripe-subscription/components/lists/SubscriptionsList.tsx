@@ -60,8 +60,8 @@ export function SubscriptionsList({ subscriptions, onSubscriptionsChange, onChan
               <TableHead>Status</TableHead>
               <TableHead>Plan</TableHead>
               <TableHead>Period</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="text-end">Amount</TableHead>
+              <TableHead className="text-end">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -84,8 +84,8 @@ export function SubscriptionsList({ subscriptions, onSubscriptionsChange, onChan
                   </TableCell>
                   <TableCell className="font-medium">{formatPlanName(price)}</TableCell>
                   <TableCell className="text-muted-foreground text-sm">{period}</TableCell>
-                  <TableCell className="text-right font-medium">{amount}</TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-end font-medium">{amount}</TableCell>
+                  <TableCell className="text-end">
                     {(subscription.status === SubscriptionStatus.ACTIVE ||
                       subscription.status === SubscriptionStatus.TRIALING) &&
                       onChangePlan && (

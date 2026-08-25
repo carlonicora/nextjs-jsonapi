@@ -127,7 +127,7 @@ export function WizardStepReview({
             <p className="font-medium">{selectedPrice.product?.name}</p>
             {selectedPrice.nickname && <p className="text-sm text-muted-foreground">{selectedPrice.nickname}</p>}
           </div>
-          <div className="text-right">
+          <div className="text-end">
             {discountedPrice !== null ? (
               <>
                 <p className="text-sm text-muted-foreground line-through">
@@ -168,7 +168,7 @@ export function WizardStepReview({
             <span className={`font-medium ${isTrialUpgrade ? "text-warning" : "text-foreground"}`}>
               {discountedImmediateCharge !== null ? (
                 <>
-                  <span className="line-through text-muted-foreground mr-2">
+                  <span className="line-through text-muted-foreground me-2">
                     {formatCurrency(prorationPreview.immediateCharge, prorationPreview.currency)}
                   </span>
                   <span className="text-success">

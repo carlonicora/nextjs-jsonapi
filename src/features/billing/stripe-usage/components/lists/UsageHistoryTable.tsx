@@ -47,7 +47,7 @@ export function UsageHistoryTable({ usageRecords }: UsageHistoryTableProps) {
             <TableRow>
               <TableHead>Date & Time</TableHead>
               <TableHead>Meter Event</TableHead>
-              <TableHead className="text-right">Quantity</TableHead>
+              <TableHead className="text-end">Quantity</TableHead>
               <TableHead>Event ID</TableHead>
             </TableRow>
           </TableHeader>
@@ -60,7 +60,7 @@ export function UsageHistoryTable({ usageRecords }: UsageHistoryTableProps) {
                 <TableRow key={record.id}>
                   <TableCell className="font-medium">{dateTime}</TableCell>
                   <TableCell className="text-muted-foreground">{record.meterEventName}</TableCell>
-                  <TableCell className="text-right font-medium">{quantity}</TableCell>
+                  <TableCell className="text-end font-medium">{quantity}</TableCell>
                   <TableCell className="text-muted-foreground text-sm tabular-nums">{record.stripeEventId}</TableCell>
                 </TableRow>
               );

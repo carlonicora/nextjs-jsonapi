@@ -90,21 +90,26 @@ export function TokenUsageRankedBar({ rows, metric, emptyLabel, labelsAreOperati
           <div key={row.id} className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-3 gap-y-0.5 py-0.5">
             <div className="grid min-w-0 gap-0.5">
               <span className="text-muted-foreground truncate text-xs">{renderLabel(row)}</span>
-              <div className="bg-muted h-2 w-full overflow-hidden rounded-r-[4px]">
+              {/* The bar itself is a magnitude drawn on an axis, not prose: it always grows
+                  rightward and only its trailing corner is rounded, so the track and its fill
+                  stay an LTR island. The label, value and share around it mirror normally.
+                  rtl-ok: deliberate LTR island (chart) */}
+              <div className="bg-muted h-2 w-full overflow-hidden rounded-r-[4px]" dir="ltr">
                 <div
                   data-testid={`ranked-fill-${row.id}`}
                   data-ramp-step={String(step)}
+                  /* rtl-ok: inside the LTR island above */
                   className="h-full rounded-r-[4px]"
                   style={{ width: `${width}%`, backgroundColor: SEQUENTIAL_RAMP[step] }}
                 />
               </div>
             </div>
-            <span data-testid={`ranked-value-${row.id}`} className="text-right text-xs tabular-nums">
+            <span data-testid={`ranked-value-${row.id}`} className="text-end text-xs tabular-nums">
               {formatValue(value, metric)}
             </span>
             <span
               data-testid={`ranked-share-${row.id}`}
-              className="text-muted-foreground w-16 text-right text-xs tabular-nums"
+              className="text-muted-foreground w-16 text-end text-xs tabular-nums"
             >
               {percent(share)}
             </span>

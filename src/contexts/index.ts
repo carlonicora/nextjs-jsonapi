@@ -8,6 +8,7 @@ export * from "../features/how-to/contexts/HowToContext";
 export * from "../features/rbac/contexts/RbacContext";
 export * from "../features/assistant/contexts/AssistantContext";
 export * from "./CommonContext";
+export * from "./DirectionContext";
 export * from "./HeaderChildrenContext";
 export * from "./HeaderLeftContentContext";
 export * from "./HeaderLogoContext";

@@ -24,7 +24,7 @@ export function AssistantContainerWithApprovals() {
             onResolved={ctx.appendResolvedMessage}
           />
         ) : (
-          <div className="bg-muted text-foreground rounded-2xl rounded-bl-sm px-3.5 py-2.5 text-sm leading-relaxed">
+          <div className="bg-muted text-foreground rounded-2xl rounded-es-sm px-3.5 py-2.5 text-sm leading-relaxed">
             {message.content}
           </div>
         )

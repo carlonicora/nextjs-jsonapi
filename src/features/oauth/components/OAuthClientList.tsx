@@ -80,7 +80,7 @@ export function OAuthClientList({
           <SectionHeader level={2}>{title}</SectionHeader>
           {onCreateClick && (
             <Button onClick={onCreateClick}>
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-4 w-4 me-2" />
               New App
             </Button>
           )}
@@ -91,7 +91,7 @@ export function OAuthClientList({
           <p className="text-muted-foreground mb-4">{emptyStateMessage}</p>
           {onCreateClick && (
             <Button onClick={onCreateClick}>
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-4 w-4 me-2" />
               Create Application
             </Button>
           )}
@@ -107,7 +107,7 @@ export function OAuthClientList({
         <SectionHeader level={2}>{title}</SectionHeader>
         {onCreateClick && (
           <Button onClick={onCreateClick}>
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="h-4 w-4 me-2" />
             New App
           </Button>
         )}

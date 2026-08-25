@@ -59,6 +59,7 @@ function buildMessageStub(p: {
 }
 
 describe("MessageItem", () => {
+  // rtl-ok: prose in the test name, not a CSS class
   it("user message is in a right-aligned bubble with plain text", () => {
     const msg = buildMessageStub({ role: "user", content: "hello" });
     render(<MessageItem message={msg} isLatestAssistant={false} onSelectFollowUp={vi.fn()} />);

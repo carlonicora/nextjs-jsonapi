@@ -30,6 +30,7 @@ export function PageContentContainer({ header, details, footer, content, fullBle
   // Returns saved layout and callback to save changes
   const { defaultLayout, onLayoutChanged } = useDefaultLayout({
     id: layoutId,
+    // rtl-ok: persisted panel identifiers, not CSS
     panelIds: ["left-panel", "right-panel"],
     storage: typeof window !== "undefined" ? localStorage : undefined,
   });
@@ -47,7 +48,7 @@ export function PageContentContainer({ header, details, footer, content, fullBle
 
   return (
     <div className="flex h-[calc(100dvh-4rem)] w-full flex-col transition-opacity duration-150 animate-in fade-in">
-      {header && <div className="mb-4 flex w-full shrink-0 border-b pr-4">{header}</div>}
+      {header && <div className="mb-4 flex w-full shrink-0 border-b pe-4">{header}</div>}
       <div className="min-h-0 flex-1">
         {details || footer ? (
           <ResizablePanelGroup
@@ -57,18 +58,20 @@ export function PageContentContainer({ header, details, footer, content, fullBle
             onLayoutChanged={onLayoutChanged}
           >
             <ResizablePanel
+              // rtl-ok: persisted panel identifier, not CSS
               id="left-panel"
               defaultSize={leftPanelDefaultSize}
               minSize={leftPanelMinSize}
               maxSize={leftPanelMaxSize}
             >
-              <div className={`@container flex h-full flex-col ${isMobile ? "pb-4" : "pr-4"}`}>
+              <div className={`@container flex h-full flex-col ${isMobile ? "pb-4" : "pe-4"}`}>
                 <div className="flex-1 overflow-y-auto">{details}</div>
                 {footer && <div className="flex flex-col gap-y-2 pt-2 pb-2">{footer}</div>}
               </div>
             </ResizablePanel>
             <ResizableHandle withHandle />
             <ResizablePanel
+              // rtl-ok: persisted panel identifier, not CSS
               id="right-panel"
               defaultSize={rightPanelDefaultSize}
               className={cn("w-full", isMobile ? "pt-4" : "")}

@@ -68,7 +68,7 @@ export function OAuthClientCard({ client, onClick, onEdit, onDelete }: OAuthClie
                         onEdit();
                       }}
                     >
-                      <Pencil className="h-4 w-4 mr-2" />
+                      <Pencil className="h-4 w-4 me-2" />
                       Edit
                     </DropdownMenuItem>
                   )}
@@ -80,7 +80,7 @@ export function OAuthClientCard({ client, onClick, onEdit, onDelete }: OAuthClie
                       }}
                       className="text-destructive"
                     >
-                      <Trash2 className="h-4 w-4 mr-2" />
+                      <Trash2 className="h-4 w-4 me-2" />
                       Delete
                     </DropdownMenuItem>
                   )}

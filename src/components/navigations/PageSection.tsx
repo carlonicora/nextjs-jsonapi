@@ -47,7 +47,7 @@ export function PageSection({ children, title, options, open, small, onToggle }:
             {isOpen ? (
               <ChevronDownIcon className={`text-primary h-4 w-4`} />
             ) : (
-              <ChevronRightIcon className="text-primary h-4 w-4" />
+              <ChevronRightIcon className="text-primary h-4 w-4 rtl:rotate-180" />
             )}
             <h2 className={`flex w-full ${small === true ? `text-sm` : `text-lg`} text-primary font-semibold`}>
               {title}

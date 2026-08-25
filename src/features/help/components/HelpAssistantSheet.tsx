@@ -10,8 +10,9 @@ export function HelpAssistantSheet({ open, onOpenChange }: { open: boolean; onOp
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
-        side="right"
-        className="flex w-full flex-col data-[side=right]:sm:max-w-2xl data-[side=right]:lg:max-w-3xl"
+        side="end"
+        /* rtl-ok: keyed to the resolved physical side ("right" in LTR, "left" in RTL) */
+        className="flex w-full flex-col data-[side=right]:sm:max-w-2xl data-[side=right]:lg:max-w-3xl data-[side=left]:sm:max-w-2xl data-[side=left]:lg:max-w-3xl"
       >
         <AssistantProvider manageUrl={false}>
           <HelpAssistantSheetBody />

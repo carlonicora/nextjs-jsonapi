@@ -39,7 +39,7 @@ export function UserListInAdd({ data, existingUsers, setSelectedUser, setLevelOp
                 >
                   <div className="flex w-full flex-row items-center justify-between px-4 py-1">
                     <UserAvatar user={user} />
-                    <div className="ml-5 flex w-full flex-col">
+                    <div className="ms-5 flex w-full flex-col">
                       <div className="text-sm font-medium">{user.name}</div>
                       <div className="text-xs font-normal">{user.email}</div>
                     </div>

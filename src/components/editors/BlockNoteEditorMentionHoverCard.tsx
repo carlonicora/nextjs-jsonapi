@@ -87,6 +87,7 @@ export function BlockNoteEditorMentionHoverCard({
       style={{
         position: "fixed",
         top: rect.bottom + 4,
+        // rtl-ok: viewport-anchored floating position
         left: rect.left,
         zIndex: 50,
       }}

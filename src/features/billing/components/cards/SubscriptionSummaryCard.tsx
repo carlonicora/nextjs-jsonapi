@@ -106,7 +106,7 @@ export function SubscriptionSummaryCard({
               }}
             >
               View Plans
-              <ChevronRight className="h-4 w-4 ml-1" />
+              <ChevronRight className="h-4 w-4 ms-1 rtl:rotate-180" />
             </Button>
           </div>
         ) : primarySubscription ? (

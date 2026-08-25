@@ -18,7 +18,7 @@ export function RelevanceMeter({ value, className = "" }: Props) {
       aria-label={`Relevance ${label}`}
       className={`bg-muted relative mx-auto flex h-5 w-20 items-center justify-center overflow-hidden rounded border ${className}`}
     >
-      <div className="bg-accent absolute top-0 left-0 h-full" style={{ width: `${pct}%` }} />
+      <div className="bg-accent absolute top-0 start-0 h-full" style={{ width: `${pct}%` }} />
       <span
         className={`relative text-xs ${pct < 40 ? "text-muted-foreground" : "text-accent-foreground font-semibold"}`}
       >

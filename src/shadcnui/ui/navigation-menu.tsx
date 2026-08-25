@@ -62,7 +62,7 @@ function NavigationMenuTrigger({
         <>
           {" "}
           <ChevronDownIcon
-            className="relative top-[1px] ml-1 size-3 transition duration-300 group-data-open/navigation-menu-trigger:rotate-180 group-data-popup-open/navigation-menu-trigger:rotate-180"
+            className="relative top-[1px] ms-1 size-3 transition duration-300 group-data-open/navigation-menu-trigger:rotate-180 group-data-popup-open/navigation-menu-trigger:rotate-180"
             aria-hidden="true"
           />
         </>
@@ -139,7 +139,7 @@ function NavigationMenuIndicator({
       )}
       {...props}
     >
-      <div className="bg-border rounded-tl-sm shadow-md relative top-[60%] h-2 w-2 rotate-45" />
+      <div className="bg-border rounded-ss-sm shadow-md relative top-[60%] h-2 w-2 rotate-45" />
     </NavigationMenuPrimitive.Icon>
   );
 }

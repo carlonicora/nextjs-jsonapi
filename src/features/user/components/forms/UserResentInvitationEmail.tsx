@@ -63,7 +63,7 @@ function UserResentInvitationEmailInternal({ user }: UserResentInvitationEmailPr
         </DialogHeader>
         {t(`user.resend_activation.description`, { email: user.email })}
         <div className="flex justify-end">
-          <Button className="mr-2" variant={"outline"} type={`button`} onClick={() => setOpen(false)}>
+          <Button className="me-2" variant={"outline"} type={`button`} onClick={() => setOpen(false)}>
             {t(`ui.buttons.cancel`)}
           </Button>
           <Button

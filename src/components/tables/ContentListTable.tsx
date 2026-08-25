@@ -159,7 +159,7 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
             {props.title && (
               <TableRow>
                 <TableHead
-                  className="bg-card rounded-t-lg text-primary p-4 text-left font-bold"
+                  className="bg-card rounded-t-lg text-primary p-4 text-start font-bold"
                   colSpan={tableColumns.length}
                 >
                   <div className="flex w-full items-center justify-between gap-x-2">
@@ -271,7 +271,7 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
           {showFooter && (
             <TableFooter>
               <TableRow>
-                <TableCell colSpan={tableColumns.length} className="bg-card py-4 text-right">
+                <TableCell colSpan={tableColumns.length} className="bg-card py-4 text-end">
                   <div className="flex items-center justify-end space-x-2">
                     <Button
                       variant="outline"
@@ -286,7 +286,7 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                       {pendingDirection === "prev" ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        <ChevronLeft className="h-4 w-4" />
+                        <ChevronLeft className="h-4 w-4 rtl:rotate-180" />
                       )}
                     </Button>
                     {data.pageInfo && (
@@ -307,7 +307,7 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                       {pendingDirection === "next" ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        <ChevronRight className="h-4 w-4" />
+                        <ChevronRight className="h-4 w-4 rtl:rotate-180" />
                       )}
                     </Button>
                   </div>

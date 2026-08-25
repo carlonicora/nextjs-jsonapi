@@ -156,7 +156,7 @@ export default function RbacByRoleContainer() {
   return (
     <RoundPageContainer fullWidth forceHeader>
       <div className="flex h-full w-full">
-        <aside className="w-60 shrink-0 overflow-y-auto border-r bg-muted/20">
+        <aside className="w-60 shrink-0 overflow-y-auto border-e bg-muted/20">
           <ul className="py-1">
             {sortedRoleIds.map((id) => (
               <li key={id}>
@@ -165,7 +165,7 @@ export default function RbacByRoleContainer() {
                   onClick={() => handleSelectRole(id)}
                   aria-current={id === selectedRoleId ? "true" : undefined}
                   className={cn(
-                    "block w-full px-4 py-1.5 text-left text-sm hover:bg-muted",
+                    "block w-full px-4 py-1.5 text-start text-sm hover:bg-muted",
                     id === selectedRoleId && "bg-muted font-medium text-foreground",
                     id !== selectedRoleId && "text-muted-foreground",
                   )}
@@ -184,7 +184,7 @@ export default function RbacByRoleContainer() {
                 <table className="w-full text-sm">
                   <thead className="sticky top-0 z-10">
                     <tr className="border-b bg-muted/80 backdrop-blur-sm">
-                      <th className="w-40 px-4 py-2 text-left text-xs font-medium text-muted-foreground">
+                      <th className="w-40 px-4 py-2 text-start text-xs font-medium text-muted-foreground">
                         {t("rbac.module")}
                       </th>
                       {ACTION_TYPES.map((action) => (

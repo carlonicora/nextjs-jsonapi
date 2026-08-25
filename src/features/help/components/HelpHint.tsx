@@ -52,7 +52,7 @@ export function HelpHint({ contextKey }: { contextKey: string }) {
       <SheetTrigger render={<Button variant="ghost" size="icon-sm" aria-label={t("help.hint.trigger")} />}>
         <HelpCircleIcon className="h-4 w-4" />
       </SheetTrigger>
-      <SheetContent side="right" className="w-full max-w-md sm:max-w-lg">
+      <SheetContent side="end" className="w-full max-w-md sm:max-w-lg">
         <SheetHeader>
           <SheetTitle>{active ? active.name : t("help.hint.pickArticle")}</SheetTitle>
           <SheetDescription>{active?.summary ?? ""}</SheetDescription>
@@ -71,7 +71,7 @@ export function HelpHint({ contextKey }: { contextKey: string }) {
                 <button
                   type="button"
                   onClick={() => setPicked(a)}
-                  className="hover:bg-muted block w-full rounded px-2 py-1 text-left text-sm"
+                  className="hover:bg-muted block w-full rounded px-2 py-1 text-start text-sm"
                 >
                   <div className="font-medium">{a.name}</div>
                   <div className="text-muted-foreground text-xs">{a.summary}</div>

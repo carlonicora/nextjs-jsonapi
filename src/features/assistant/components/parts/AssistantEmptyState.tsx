@@ -55,7 +55,7 @@ export function AssistantEmptyState({ onSend, operatorMode = false, onOperatorMo
               <button
                 key={k}
                 type="button"
-                className="border-border bg-muted/30 hover:bg-muted rounded-lg border p-3 text-left text-sm"
+                className="border-border bg-muted/30 hover:bg-muted rounded-lg border p-3 text-start text-sm"
                 onClick={() => setDraft(text)}
               >
                 {text}

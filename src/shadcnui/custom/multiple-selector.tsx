@@ -213,6 +213,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
     const [onScrollbar, setOnScrollbar] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const dropdownRef = React.useRef<HTMLDivElement>(null);
+    // rtl-ok: viewport-anchored floating position (physical viewport coordinates, not a layout inset)
     const [dropdownPosition, setDropdownPosition] = React.useState({ top: 0, left: 0, width: 0 });
 
     const [selected, setSelected] = React.useState<Option[]>(value || []);
@@ -331,6 +332,8 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
           const rect = containerRef.current.getBoundingClientRect();
           setDropdownPosition({
             top: rect.bottom + window.scrollY + 4,
+            // rtl-ok: viewport-anchored floating position — the portal is placed at the
+            // container's measured rect and spans its full width, so it matches in RTL too
             left: rect.left + window.scrollX,
             width: rect.width,
           });
@@ -502,7 +505,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
                   <button
                     type="button"
                     className={cn(
-                      "ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2",
+                      "ms-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2",
                       (disabled || option.fixed) && "hidden",
                     )}
                     onKeyDown={(e) => {
@@ -550,7 +553,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
                 "flex-1 self-baseline bg-transparent outline-none placeholder:text-muted-foreground text-foreground caret-foreground",
                 {
                   "w-full": hidePlaceholderWhenSelected,
-                  "ml-1": selected.length !== 0,
+                  "ms-1": selected.length !== 0,
                 },
                 inputProps?.className,
               )}
@@ -653,6 +656,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
               className="fixed z-50 max-h-80 rounded-md border bg-background text-foreground shadow-md outline-none animate-in"
               style={{
                 top: dropdownPosition.top,
+                // rtl-ok: viewport-anchored floating position (measured px, not a logical inset)
                 left: dropdownPosition.left,
                 width: dropdownPosition.width,
               }}

@@ -117,7 +117,7 @@ export function FormDateTime({
                   render={
                     <Button
                       variant={"outline"}
-                      className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
+                      className={cn("w-full ps-3 text-start font-normal", !field.value && "text-muted-foreground")}
                     />
                   }
                 >
@@ -126,11 +126,11 @@ export function FormDateTime({
                   ) : (
                     <span>{placeholder ? placeholder : t(`common.pick_date_time`)}</span>
                   )}
-                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                  <CalendarIcon className="ms-auto h-4 w-4 opacity-50" />
                 </PopoverTrigger>
                 {field.value && allowEmpty !== false && (
                   <CircleXIcon
-                    className="text-muted hover:text-destructive ml-2 h-6 w-6 cursor-pointer"
+                    className="text-muted hover:text-destructive ms-2 h-6 w-6 cursor-pointer"
                     onClick={() => {
                       if (onChange) onChange(undefined);
                       form.setValue(id, "");

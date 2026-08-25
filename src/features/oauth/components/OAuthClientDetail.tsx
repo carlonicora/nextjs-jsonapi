@@ -194,13 +194,13 @@ export function OAuthClientDetail({
           <div className="flex gap-3 pt-4">
             {onEdit && (
               <Button variant="outline" onClick={onEdit} disabled={isLoading}>
-                <Pencil className="h-4 w-4 mr-2" />
+                <Pencil className="h-4 w-4 me-2" />
                 Edit
               </Button>
             )}
             {onDelete && (
               <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)} disabled={isLoading}>
-                <Trash2 className="h-4 w-4 mr-2" />
+                <Trash2 className="h-4 w-4 me-2" />
                 Delete
               </Button>
             )}
