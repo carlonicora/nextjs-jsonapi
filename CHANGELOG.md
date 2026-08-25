@@ -1,3 +1,9 @@
+## [3.5.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.4.2...v3.5.0) (2026-08-25)
+
+### 🚀 Features
+
+* add scroll mode support to RoundPageContainer and enhance MobileNavigationBar for in-flow placement ([637e2c1](https://github.com/carlonicora/nextjs-jsonapi/commit/637e2c11d169e0371940555973f130e448b24f05))
+
 ## [3.4.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.4.1...v3.4.2) (2026-08-25)
 
 ### ♻️ Chores
