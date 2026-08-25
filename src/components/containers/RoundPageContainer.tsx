@@ -142,7 +142,7 @@ export function RoundPageContainer({
   defaultDetailsOpen = false,
   detailsTitle,
   detailsIcon,
-  scroll = "document",
+  scroll = "fixed",
 }: RoundPageContainerProps) {
   const headerChildren = useHeaderChildren();
   const headerLeftContent = useHeaderLeftContent();
