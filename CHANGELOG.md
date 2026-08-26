@@ -1,3 +1,9 @@
+## [3.5.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.5.2...v3.5.3) (2026-08-26)
+
+### 🐛 Bug Fixes
+
+* **slider:** use data-[orientation=*] selectors ([ef38cc4](https://github.com/carlonicora/nextjs-jsonapi/commit/ef38cc4bb579511b1d7c927fb9b33662d99b399d))
+
 ## [3.5.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.5.1...v3.5.2) (2026-08-25)
 
 ### 🐛 Bug Fixes
