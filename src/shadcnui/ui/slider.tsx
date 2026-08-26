@@ -13,7 +13,7 @@ function Slider({ className, defaultValue, value, min = 0, max = 100, ...props }
 
   return (
     <SliderPrimitive.Root
-      className="data-horizontal:w-full data-vertical:h-full"
+      className="data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full"
       data-slot="slider"
       defaultValue={defaultValue}
       value={value}
@@ -25,17 +25,17 @@ function Slider({ className, defaultValue, value, min = 0, max = 100, ...props }
       <SliderPrimitive.Control
         data-slot="slider-control"
         className={cn(
-          "data-vertical:min-h-40 relative flex w-full touch-none items-center select-none cursor-pointer data-disabled:cursor-not-allowed data-disabled:opacity-50 data-vertical:h-full data-vertical:w-auto data-vertical:flex-col",
+          "data-[orientation=vertical]:min-h-40 relative flex w-full touch-none items-center select-none cursor-pointer data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col",
           className,
         )}
       >
         <SliderPrimitive.Track
           data-slot="slider-track"
-          className="bg-muted rounded-md data-horizontal:h-3 data-horizontal:w-full data-vertical:h-full data-vertical:w-3 relative overflow-hidden select-none"
+          className="bg-muted rounded-md data-[orientation=horizontal]:h-3 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-3 relative overflow-hidden select-none"
         >
           <SliderPrimitive.Indicator
             data-slot="slider-range"
-            className="bg-primary select-none data-horizontal:h-full data-vertical:w-full"
+            className="bg-primary select-none data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full"
           />
         </SliderPrimitive.Track>
         {Array.from({ length: _values.length }, (_, index) => (
