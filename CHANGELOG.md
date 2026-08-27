@@ -1,3 +1,9 @@
+## [3.5.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.5.3...v3.5.4) (2026-08-27)
+
+### ♻️ Chores
+
+* **deps:** bump @types/node to ^26.4.0 ([f338326](https://github.com/carlonicora/nextjs-jsonapi/commit/f3383266b6be89312ab312845ea873829d5bb533))
+
 ## [3.5.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.5.2...v3.5.3) (2026-08-26)
 
 ### 🐛 Bug Fixes
