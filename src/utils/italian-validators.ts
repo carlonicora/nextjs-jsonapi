@@ -45,7 +45,7 @@ export function validateCodiceFiscale(codiceFiscale: string, options?: CodiceFis
     if (CodiceFiscale.check(cleaned)) {
       return true;
     }
-  } catch (error) {
+  } catch {
     // fall through to the optional Partita IVA check
   }
 

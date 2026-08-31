@@ -1,6 +1,5 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import { CommonDeleter } from "../../../../components";
 import { Modules } from "../../../../core";
 import { usePageUrlGenerator } from "../../../../hooks";
@@ -12,7 +11,6 @@ type HowToDeleterProps = {
 };
 
 function HowToDeleterInternal({ howTo }: HowToDeleterProps) {
-  const t = useTranslations();
   const generateUrl = usePageUrlGenerator();
 
   if (!howTo) return null;
