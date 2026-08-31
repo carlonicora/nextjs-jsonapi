@@ -1,3 +1,9 @@
+## [3.5.6](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.5.5...v3.5.6) (2026-08-31)
+
+### ♻️ Chores
+
+* **deps:** remove the TypeScript 6 deprecation hatch ([de3f6d0](https://github.com/carlonicora/nextjs-jsonapi/commit/de3f6d062f2f2d50a60a27cbdccf4fe6ae738d2a))
+
 ## [3.5.5](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.5.4...v3.5.5) (2026-08-31)
 
 ### ♻️ Chores
