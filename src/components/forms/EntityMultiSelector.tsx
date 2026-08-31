@@ -222,10 +222,12 @@ export function EntityMultiSelector<T extends { id: string }>({
       <FormFieldWrapper form={form} name={id} label={label} isRequired={isRequired} description={description}>
         {() => (
           <div className="flex flex-col gap-2">
-            <Popover open={open} onOpenChange={setOpen} modal>
-              <PopoverTrigger className="w-full">
+            <Popover open={disabled ? false : open} onOpenChange={disabled ? undefined : setOpen} modal>
+              <PopoverTrigger className="w-full" disabled={disabled}>
                 <div
-                  className={`bg-input/20 dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring/30 focus-visible:ring-[2px] flex min-h-7 w-full items-center gap-2 rounded-md border px-2 text-sm md:text-xs/relaxed`}
+                  className={`bg-input/20 dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring/30 focus-visible:ring-[2px] flex min-h-7 w-full items-center gap-2 rounded-md border px-2 text-sm md:text-xs/relaxed ${
+                    disabled ? "cursor-not-allowed opacity-50" : ""
+                  }`}
                 >
                   {selectedValues.length > 0 ? (
                     <>
@@ -316,13 +318,15 @@ export function EntityMultiSelector<T extends { id: string }>({
                     className="h-auto gap-1.5 rounded-md px-2.5 py-1 pe-1.5 text-xs"
                   >
                     {stableGetFormValueLabel(value)}
-                    <button
-                      type="button"
-                      className="text-muted-foreground hover:text-foreground rounded-sm p-0.5 transition-colors"
-                      onClick={() => removeEntity(value.id)}
-                    >
-                      <XIcon className="size-3" />
-                    </button>
+                    {!disabled && (
+                      <button
+                        type="button"
+                        className="text-muted-foreground hover:text-foreground rounded-sm p-0.5 transition-colors"
+                        onClick={() => removeEntity(value.id)}
+                      >
+                        <XIcon className="size-3" />
+                      </button>
+                    )}
                   </Badge>
                 ))}
               </div>
