@@ -1,3 +1,13 @@
+## [3.5.7](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.5.6...v3.5.7) (2026-08-31)
+
+### 🐛 Bug Fixes
+
+* **forms:** apply the disabled prop in EntityMultiSelector ([07ca03e](https://github.com/carlonicora/nextjs-jsonapi/commit/07ca03e5af9041c340569e60f52283a424436435))
+
+### ♻️ Chores
+
+* drop unused bindings flagged by no-unused-vars ([0d5c91f](https://github.com/carlonicora/nextjs-jsonapi/commit/0d5c91f5b531134d811d0529bfd86b922f5f0acb))
+
 ## [3.5.6](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.5.5...v3.5.6) (2026-08-31)
 
 ### ♻️ Chores
