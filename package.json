@@ -207,7 +207,7 @@
     "react-hook-form": "7.86.0",
     "semantic-release": "25.0.8",
     "tsup": "^8.5.1",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "vitest": "^4.1.11"
   },
   "keywords": [
