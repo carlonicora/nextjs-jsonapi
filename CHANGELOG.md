@@ -1,3 +1,9 @@
+## [3.5.5](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.5.4...v3.5.5) (2026-08-31)
+
+### ♻️ Chores
+
+* **deps:** move to TypeScript 6 ([8d9b7c2](https://github.com/carlonicora/nextjs-jsonapi/commit/8d9b7c27763b64d6ea6e2733dfcba8b8fdad34aa))
+
 ## [3.5.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.5.3...v3.5.4) (2026-08-27)
 
 ### ♻️ Chores
