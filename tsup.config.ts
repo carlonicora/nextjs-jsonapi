@@ -47,7 +47,14 @@ export default defineConfig({
   // on `build`) always see a valid dist/. See turbo.json (dev dependsOn build).
   clean: false,
   // Bundle type generation with resolution
-  dts: { resolve: true },
+  // `ignoreDeprecations` is tsup's, not ours: its dts build sets
+  // `baseUrl: compilerOptions.baseUrl || "."` unconditionally
+  // (tsup/dist/rollup.js), and TypeScript 6 makes `baseUrl` a hard error
+  // (TS5101). tsconfig.json no longer sets baseUrl, so the suppression is
+  // scoped to the tool that reintroduces it. tsup must be replaced before
+  // TypeScript 7 regardless — 7 deleted the JavaScript compiler API its dts
+  // build depends on.
+  dts: { resolve: true, compilerOptions: { ignoreDeprecations: "6.0" } },
   external: [
     "@tanstack/react-table",
     "@stripe/react-stripe-js",
