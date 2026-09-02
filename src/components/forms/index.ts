@@ -26,6 +26,6 @@ export * from "./FormSlider";
 export * from "./FormSwitch";
 export * from "./FormTextarea";
 export * from "./GdprConsentCheckbox";
-export * from "./MultiFileUploader";
+export { default as MultiFileUploader } from "./MultiFileUploader";
 export * from "./PasswordInput";
 export * from "./useEditorDialog";

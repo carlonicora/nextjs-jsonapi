@@ -65,12 +65,23 @@ function resolveTriggerIsNativeButton(trigger: ReactNode): boolean {
  * base `data-[side=left]:sm:max-w-sm`.
  */
 // rtl-ok: keyed to the resolved physical side, not to a writing direction
+/**
+ * On a phone an editor IS the page. SheetContent's base is `w-3/4`, which
+ * leaves a dead 25% strip of the page showing behind the form and squeezes
+ * every field — so each size takes the full width and hands over to its
+ * `sm:max-w-*` cap from the `sm` breakpoint up. Same width utility and same
+ * variant as the base, so `cn`'s tailwind-merge replaces it rather than
+ * fighting it on specificity.
+ */
+// rtl-ok: keyed to the resolved physical side, not to a writing direction
+const fullWidthOnMobile = "data-[side=right]:w-full data-[side=left]:w-full";
+
 const sizeClasses: Record<EditorSheetSize, string> = {
-  sm: "data-[side=right]:sm:max-w-2xl data-[side=left]:sm:max-w-2xl",
-  md: "data-[side=right]:sm:max-w-3xl data-[side=left]:sm:max-w-3xl",
-  lg: "data-[side=right]:sm:max-w-5xl data-[side=left]:sm:max-w-5xl",
-  xl: "data-[side=right]:sm:max-w-7xl data-[side=left]:sm:max-w-7xl",
-  "2xl": "data-[side=right]:sm:!max-w-[min(96rem,90vw)] data-[side=left]:sm:!max-w-[min(96rem,90vw)]",
+  sm: `${fullWidthOnMobile} data-[side=right]:sm:max-w-2xl data-[side=left]:sm:max-w-2xl`,
+  md: `${fullWidthOnMobile} data-[side=right]:sm:max-w-3xl data-[side=left]:sm:max-w-3xl`,
+  lg: `${fullWidthOnMobile} data-[side=right]:sm:max-w-5xl data-[side=left]:sm:max-w-5xl`,
+  xl: `${fullWidthOnMobile} data-[side=right]:sm:max-w-7xl data-[side=left]:sm:max-w-7xl`,
+  "2xl": `${fullWidthOnMobile} data-[side=right]:sm:!max-w-[min(96rem,90vw)] data-[side=left]:sm:!max-w-[min(96rem,90vw)]`,
 };
 
 export type EditorSheetProps<T extends FieldValues> = {

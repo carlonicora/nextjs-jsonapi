@@ -10,18 +10,31 @@ import { FileInput, FileUploader } from "./FileUploader";
 type MultiFileUploaderProps = {
   files: File[];
   setFiles: (files: File[]) => void;
+  /**
+   * Let one trip through the picker return several files. OPT-IN, and it stays
+   * that way: every existing caller was written against one-file-at-a-time, so
+   * flipping the default would change behaviour in every app consuming this
+   * package to suit whichever one asked last.
+   */
+  multiple?: boolean;
+  /**
+   * Extra classes for the tile grid — density is the caller's business. The
+   * default is one column on the smallest screens, which suits a desktop form;
+   * a phone-first caller can ask for more columns without moving the default
+   * out from under anyone else.
+   */
+  className?: string;
 };
 
 const dropzone = {
-  multiple: false,
   maxSize: 100 * 1024 * 1024,
   preventDropOnDocument: false,
   accept: {
     "application/images": [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".docx", ".xslx", ".pdf", ".txt", ".md"],
   },
-} satisfies DropzoneOptions;
+} satisfies Omit<DropzoneOptions, "multiple">;
 
-export default function MultiFileUploader({ files, setFiles }: MultiFileUploaderProps) {
+export default function MultiFileUploader({ files, setFiles, multiple = false, className }: MultiFileUploaderProps) {
   const uploadFiles = (newFiles: File[] | null) => {
     if (!newFiles) return;
 
@@ -33,11 +46,16 @@ export default function MultiFileUploader({ files, setFiles }: MultiFileUploader
   };
 
   return (
-    <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+    <div
+      className={cn(
+        "grid w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6",
+        className,
+      )}
+    >
       <FileUploader
         value={files}
         onValueChange={uploadFiles}
-        dropzoneOptions={dropzone}
+        dropzoneOptions={{ ...dropzone, multiple }}
         className="text-muted-foreground hover:text-primary relative aspect-square h-full cursor-pointer overflow-hidden rounded-lg border"
       >
         <FileInput className={cn("text-muted-foreground flex h-full w-full flex-col items-center justify-center")}>

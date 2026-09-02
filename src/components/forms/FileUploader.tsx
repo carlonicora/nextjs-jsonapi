@@ -112,10 +112,26 @@ export const FileUploader = forwardRef<HTMLDivElement, FileUploaderProps & React
 
     const handleKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (!value) return;
+
+        // Only swallow the keys this component actually handles. Blanket
+        // preventDefault() killed Space / PageDown / arrow scrolling for as long
+        // as focus was anywhere inside the uploader — the page simply stopped
+        // responding to the keyboard while a file was selected.
+        const handledKeys = [
+          "ArrowLeft",
+          "ArrowRight",
+          "ArrowUp",
+          "ArrowDown",
+          "Enter",
+          "Space",
+          "Delete",
+          "Backspace",
+          "Escape",
+        ];
+        if (!handledKeys.includes(e.key)) return;
         e.preventDefault();
         e.stopPropagation();
-
-        if (!value) return;
 
         const moveNext = () => {
           const nextIndex = activeIndex + 1;
