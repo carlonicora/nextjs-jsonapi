@@ -1,3 +1,9 @@
+## [3.5.8](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.5.7...v3.5.8) (2026-09-02)
+
+### 🐛 Bug Fixes
+
+* **forms:** export MultiFileUploader by name and make uploader/editor sheet phone-friendly ([28e802f](https://github.com/carlonicora/nextjs-jsonapi/commit/28e802f9a6fcb5c2626140a25e4bfb908d5d793e))
+
 ## [3.5.7](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.5.6...v3.5.7) (2026-08-31)
 
 ### 🐛 Bug Fixes
