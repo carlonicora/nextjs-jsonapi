@@ -272,23 +272,34 @@ export function EditorSheet<T extends FieldValues>({
             // warned on every native-button trigger).
             <SheetTrigger nativeButton={resolveTriggerIsNativeButton(trigger)} render={trigger as ReactElement} />
           ) : (
-            <SheetTrigger>
-              {isEdit ? (
-                <Button
-                  render={<div />}
-                  nativeButton={false}
-                  size="sm"
-                  variant="ghost"
-                  className="text-muted-foreground"
-                >
-                  <PencilIcon />
-                </Button>
-              ) : (
-                <Button render={<div />} nativeButton={false} size="sm" variant="outline">
-                  {t("ui.buttons.create")}
-                </Button>
-              )}
-            </SheetTrigger>
+            // The default trigger goes through `render` for the SAME reason the
+            // caller-supplied one above does. As CHILDREN, the Button rendered a
+            // second `role="button"` inside SheetTrigger's own button: two nodes
+            // with one accessible name, which a screen reader announces as a
+            // button inside a button and which makes
+            // `getByRole("button", { name })` ambiguous (e2e DRQ-01 failed strict
+            // mode on exactly this). `nativeButton={false}` because both variants
+            // render a <div>, matching the element the trigger actually emits.
+            <SheetTrigger
+              nativeButton={false}
+              render={
+                isEdit ? (
+                  <Button
+                    render={<div />}
+                    nativeButton={false}
+                    size="sm"
+                    variant="ghost"
+                    className="text-muted-foreground"
+                  >
+                    <PencilIcon />
+                  </Button>
+                ) : (
+                  <Button render={<div />} nativeButton={false} size="sm" variant="outline">
+                    {t("ui.buttons.create")}
+                  </Button>
+                )
+              }
+            />
           ))}
         <SheetContent side="end" className={sizeClasses[size]}>
           <SheetHeader className="border-b px-6 py-4">
