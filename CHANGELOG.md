@@ -1,3 +1,9 @@
+## [3.5.9](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.5.8...v3.5.9) (2026-09-04)
+
+### 🐛 Bug Fixes
+
+* **forms:** render EditorSheet's default trigger instead of nesting it ([fd0a386](https://github.com/carlonicora/nextjs-jsonapi/commit/fd0a386ccd893958d32e9047e029027d336a08fb))
+
 ## [3.5.8](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.5.7...v3.5.8) (2026-09-02)
 
 ### 🐛 Bug Fixes
