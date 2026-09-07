@@ -1,3 +1,9 @@
+## [3.5.10](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.5.9...v3.5.10) (2026-09-07)
+
+### 🐛 Bug Fixes
+
+* **registry:** replace the stored class when a module re-registers ([c4f22a8](https://github.com/carlonicora/nextjs-jsonapi/commit/c4f22a8fcbcac373cd6f5e56f6331d03e3798fd7))
+
 ## [3.5.9](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.5.8...v3.5.9) (2026-09-04)
 
 ### 🐛 Bug Fixes
