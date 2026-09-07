@@ -12,10 +12,13 @@ export class DataClassRegistry {
     key: ApiRequestDataTypeInterface,
     classConstructor: { new (): ApiDataInterface },
   ): void {
-    const classKey = key.name;
-    if (!this._map.has(classKey)) {
-      this._map.set(classKey, classConstructor);
-    }
+    // Last registration wins. An earlier version skipped re-registration, which
+    // silently pinned the registry to the FIRST constructor seen by the process.
+    // In dev that made a long-lived `next dev` server keep rehydrating with the
+    // pre-edit class after any model change, so SSR produced a different tree
+    // from the freshly bundled client and React threw a hydration mismatch.
+    // Production is unaffected either way: bootstrap runs once per process.
+    this._map.set(key.name, classConstructor);
   }
 
   public static get(classKey: ApiRequestDataTypeInterface): {

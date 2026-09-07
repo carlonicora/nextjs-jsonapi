@@ -58,6 +58,20 @@ describe("DataClassRegistry", () => {
       // Should not throw, just ignore duplicate
       expect(() => DataClassRegistry.get(module)).not.toThrow();
     });
+
+    // Re-registering the same key MUST replace the constructor. Keeping the first
+    // one pins a long-lived dev server to the pre-edit class, so SSR rehydrates
+    // with stale getters and React reports a hydration mismatch against the
+    // freshly bundled client.
+    it("should replace the constructor when the same key is registered again", () => {
+      class MockArticleV2 extends MockArticle {}
+      const module = createMockModule({ name: "articles" });
+
+      DataClassRegistry.registerObjectClass(module, MockArticle as any);
+      DataClassRegistry.registerObjectClass(module, MockArticleV2 as any);
+
+      expect(DataClassRegistry.get(module)).toBe(MockArticleV2);
+    });
   });
 
   describe("get", () => {
