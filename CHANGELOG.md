@@ -1,3 +1,9 @@
+## [3.6.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.5.10...v3.6.0) (2026-09-08)
+
+### 🚀 Features
+
+* **generate-web-module:** ignore empty BlockNote editors in the dirty check ([52ac600](https://github.com/carlonicora/nextjs-jsonapi/commit/52ac600587f72ec33c0b0d15c48a21e430252cf5))
+
 ## [3.5.10](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.5.9...v3.5.10) (2026-09-07)
 
 ### 🐛 Bug Fixes
