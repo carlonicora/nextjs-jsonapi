@@ -22,6 +22,78 @@ import {
  * @param data - Frontend template data
  * @returns Generated file content
  */
+/**
+ * Rich-text (BlockNote) fields rendered by the editor. When the module extends
+ * Content, `abstract` is owned by the AI pipeline and is not rendered.
+ */
+function getRichTextFields(data: FrontendTemplateData): FrontendField[] {
+  const { fields, extendsContent } = data;
+  const rendered = extendsContent ? fields.filter((f) => !["name", "tldr", "abstract"].includes(f.name)) : fields;
+  return rendered.filter((f) => f.isContentField);
+}
+
+/** `isDescriptionEmpty` / `setIsDescriptionEmpty` names for a rich-text field. */
+function emptyStateNames(field: FrontendField): { state: string; setter: string } {
+  const pascal = toPascalCase(field.name);
+  return { state: `is${pascal}Empty`, setter: `setIs${pascal}Empty` };
+}
+
+/**
+ * Dirty tracking that ignores empty BlockNote editors.
+ *
+ * BlockNote fires `onChange` once on mount for an empty editor (it inserts a
+ * trailing paragraph), which marks the field dirty and makes EditorSheet show
+ * the discard dialog on an untouched form. Emptiness is reported by
+ * `FormBlockNote`'s `onEmptyChange`; an empty rich-text field never counts as
+ * dirty. Pattern: wyrdli ClueEditor / a360ai OpportunityEditor.
+ */
+function generateDirtyState(data: FrontendTemplateData): string {
+  const richText = getRichTextFields(data);
+  if (richText.length === 0) return "";
+  const camel = data.names.camelCase;
+  const seed = (f: FrontendField) =>
+    `!${camel}?.${f.name} || (Array.isArray(${camel}.${f.name}) && ${camel}.${f.name}.length === 0)`;
+  const states = richText
+    .map((f) => {
+      const { state, setter } = emptyStateNames(f);
+      return `  const [${state}, ${setter}] = useState<boolean>(\n    ${seed(f)},\n  );`;
+    })
+    .join("\n");
+  const strips = richText
+    .map((f) => `    if (dirty.${f.name} && ${emptyStateNames(f).state}) delete dirty.${f.name};`)
+    .join("\n");
+  const deps = richText.map((f) => emptyStateNames(f).state).join(", ");
+  return `
+  // BlockNote reports a mount-time change for an empty editor, which would mark the field dirty and
+  // trigger the discard dialog on an untouched form. Emptiness comes from \`onEmptyChange\`; an empty
+  // rich-text field never counts as dirty.
+${states}
+  const { dirtyFields } = form.formState;
+  const isFormDirty = useCallback(() => {
+    const dirty: Record<string, unknown> = { ...dirtyFields };
+${strips}
+    return Object.keys(dirty).length > 0;
+  }, [dirtyFields, ${deps}]);
+`;
+}
+
+/** `onReset` re-seeds the emptiness flags from the entity before returning the defaults. */
+function generateOnReset(data: FrontendTemplateData): string {
+  const richText = getRichTextFields(data);
+  if (richText.length === 0) return "onReset={getDefaultValues}";
+  const camel = data.names.camelCase;
+  const resets = richText
+    .map(
+      (f) =>
+        `        ${emptyStateNames(f).setter}(!${camel}?.${f.name} || (Array.isArray(${camel}.${f.name}) && ${camel}.${f.name}.length === 0));`,
+    )
+    .join("\n");
+  return `onReset={() => {
+${resets}
+        return getDefaultValues();
+      }}`;
+}
+
 export function generateEditorTemplate(data: FrontendTemplateData): string {
   const { names, relationships } = data;
   const i18nKey = names.pluralCamel.toLowerCase();
@@ -34,6 +106,9 @@ export function generateEditorTemplate(data: FrontendTemplateData): string {
   const defaultsInner = generateDefaultValuesInner(data);
   const onSubmitBody = generateOnSubmitBody(data);
   const formFields = generateFormFields(data);
+  const dirtyState = generateDirtyState(data);
+  const onReset = generateOnReset(data);
+  const hasRichText = getRichTextFields(data).length > 0;
 
   const hasAuthor = relationships.some((r) => r.variant === AUTHOR_VARIANT);
 
@@ -74,17 +149,17 @@ ${defaultsInner}
     resolver: zodResolver(formSchema),
     defaultValues: getDefaultValues(),
   });
-${
-  hasAuthor
-    ? `
+${dirtyState}${
+    hasAuthor
+      ? `
   useEffect(() => {
     if (currentUser && !form.getValues("author")?.id) {
       form.setValue("author", { id: currentUser.id, name: currentUser.name, avatar: currentUser.avatar });
     }
   }, [currentUser]);
 `
-    : ""
-}
+      : ""
+  }
   return (
     <EditorSheet
       form={form}
@@ -93,13 +168,13 @@ ${
       isEdit={!!${camel}}
       module={Modules.${names.pascalCase}}
       propagateChanges={propagateChanges}
-      size="md"
+${hasRichText ? "      isFormDirty={isFormDirty}\n" : ""}      size="md"
       onSubmit={async (values) => {
 ${onSubmitBody}
       }}
       onRevalidate={revalidatePaths}
       onNavigate={(url) => router.push(url)}
-      onReset={getDefaultValues}
+      ${onReset}
       onClose={onClose}
       trigger={trigger}
       forceShow={forceShow}
@@ -154,7 +229,9 @@ function generateImports(data: FrontendTemplateData): string {
       // Foundation components use MultiSelect, generated modules use MultiSelector
       const componentName = rel.single
         ? `${rel.name}Selector`
-        : (rel.isFoundation ? `${rel.name}MultiSelect` : `${rel.name}MultiSelector`);
+        : rel.isFoundation
+          ? `${rel.name}MultiSelect`
+          : `${rel.name}MultiSelector`;
       if (seenImports.has(componentName)) return;
       seenImports.add(componentName);
       if (rel.isFoundation) {
@@ -203,7 +280,9 @@ function generateImports(data: FrontendTemplateData): string {
   // Check for description/textarea fields
   // Rich-text (BlockNote) fields render as FormBlockNote even when named
   // "description", so they must not pull in FormTextarea.
-  const hasTextareaFields = fields.some((f) => !f.isContentField && (f.name === "description" || f.type === "textarea"));
+  const hasTextareaFields = fields.some(
+    (f) => !f.isContentField && (f.name === "description" || f.type === "textarea"),
+  );
   if (hasTextareaFields) {
     componentImports.push("FormTextarea");
   }
@@ -228,7 +307,10 @@ function generateImports(data: FrontendTemplateData): string {
   // Other imports
   imports.push(`import { zodResolver } from "@hookform/resolvers/zod";`);
   imports.push(`import { useTranslations } from "next-intl";`);
-  imports.push(`import { ReactNode, useCallback, useMemo${hasAuthor ? ", useEffect" : ""} } from "react";`);
+  const hasRichText = getRichTextFields(data).length > 0;
+  imports.push(
+    `import { ReactNode, useCallback${hasAuthor ? ", useEffect" : ""}, useMemo${hasRichText ? ", useState" : ""} } from "react";`,
+  );
   imports.push(`import { useForm } from "react-hook-form";`);
   imports.push(`import { v4 } from "uuid";`);
   imports.push(`import { z } from "zod";`);
@@ -385,7 +467,11 @@ function generateDefaultValuesInner(data: FrontendTemplateData): string {
   // Relationship defaults
   relationships.forEach((rel) => {
     const fieldId = toCamelCase(rel.alias || rel.variant || rel.name);
-    const propertyName = rel.alias ? toCamelCase(rel.alias) : rel.variant ? toCamelCase(rel.variant) : toCamelCase(rel.name);
+    const propertyName = rel.alias
+      ? toCamelCase(rel.alias)
+      : rel.variant
+        ? toCamelCase(rel.variant)
+        : toCamelCase(rel.name);
     const pluralPropertyName = pluralize(toCamelCase(rel.alias || rel.name));
 
     if (rel.variant === AUTHOR_VARIANT) {
@@ -514,6 +600,7 @@ function generateFormFields(data: FrontendTemplateData): string {
                 name={t(\`features.${names.camelCase.toLowerCase()}.fields.${field.name}.label\`)}
                 placeholder={t(\`features.${names.camelCase.toLowerCase()}.fields.${field.name}.placeholder\`)}
                 type="${names.camelCase}"
+                onEmptyChange={${emptyStateNames(field).setter}}
               />`);
     } else if (field.name === "description" || field.type === "textarea") {
       // Use FormTextarea for description and textarea fields
