@@ -60,6 +60,15 @@ function makeHydratedData(attributeOverrides: Record<string, any> = {}) {
         language: "en",
         directFormat: "json",
         directProvider: "groq",
+        costPerImage: 0.01,
+        negativePrompt: "watermark, text",
+        width: 1024,
+        height: 1024,
+        steps: 30,
+        cfgScale: 5.5,
+        safeMode: false,
+        hideWatermark: true,
+        imageFormat: "png",
         hasApiKey: true,
         hasGoogleCredentials: false,
         companyId: "company-1",
@@ -114,6 +123,15 @@ describe("AiConnection.rehydrate", () => {
     expect(connection.language).toBe("en");
     expect(connection.directFormat).toBe("json");
     expect(connection.directProvider).toBe("groq");
+    expect(connection.costPerImage).toBe(0.01);
+    expect(connection.negativePrompt).toBe("watermark, text");
+    expect(connection.width).toBe(1024);
+    expect(connection.height).toBe(1024);
+    expect(connection.steps).toBe(30);
+    expect(connection.cfgScale).toBe(5.5);
+    expect(connection.safeMode).toBe(false);
+    expect(connection.hideWatermark).toBe(true);
+    expect(connection.imageFormat).toBe("png");
     expect(connection.hasApiKey).toBe(true);
     expect(connection.hasGoogleCredentials).toBe(false);
     expect(connection.companyId).toBe("company-1");
@@ -185,6 +203,39 @@ describe("AiConnection.createJsonApi", () => {
     expect(payload.data.attributes.enabled).toBe(false);
     expect(payload.data.attributes.position).toBe(0);
     expect(payload.data.attributes.maxOutputTokens).toBe(0);
+  });
+
+  it("serialises the venice image knobs, safe_mode: false included", () => {
+    const payload = new AiConnection().createJsonApi(
+      makeInput({
+        connectionType: "image",
+        provider: "venice",
+        model: "lustify-v8",
+        width: 1024,
+        height: 1024,
+        steps: 30,
+        cfgScale: 5.5,
+        safeMode: false,
+        hideWatermark: true,
+        imageFormat: "png",
+        negativePrompt: "watermark, text",
+        costPerImage: 0.01,
+      }),
+    );
+
+    expect(payload.data.attributes).toMatchObject({
+      width: 1024,
+      height: 1024,
+      steps: 30,
+      cfgScale: 5.5,
+      // A tri-state flag: `false` is a REQUEST, not an absent value, so it must
+      // survive serialisation rather than being dropped as falsy.
+      safeMode: false,
+      hideWatermark: true,
+      imageFormat: "png",
+      negativePrompt: "watermark, text",
+      costPerImage: 0.01,
+    });
   });
 });
 
