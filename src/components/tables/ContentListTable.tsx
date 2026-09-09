@@ -49,6 +49,14 @@ type ContentListTableProps = {
   getSubRows?: (row: any) => any[];
   defaultExpanded?: boolean | ExpandedState;
   fullWidth?: boolean;
+  /**
+   * Title typography, opt-in and independent of `fullWidth`. Defaults to the
+   * `fullWidth ? lg : sm` behaviour, so every existing caller is unchanged; pass
+   * it only for the exception — a full-width list nested inside another surface
+   * (the document browser's right pane), which needs `fullWidth` to drop the card
+   * border but must keep the card-sized title of the panels around it.
+   */
+  titleSize?: "sm" | "lg";
   groupBy?: string;
   groupLabel?: (key: string) => ReactNode;
   groupOrder?: string[];
@@ -150,6 +158,10 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
 
   const showFooter = !!(data.next || data.previous);
 
+  // The icon follows the title, not `fullWidth` on its own: a 24px icon beside a
+  // 12px title is the mismatch the opt-in exists to avoid.
+  const titleIsLarge = (props.titleSize ?? (fullWidth ? `lg` : `sm`)) === `lg`;
+
   return (
     <div className="flex w-full flex-col">
       {/* <div className="overflow-clip rounded-md border"> */}
@@ -168,13 +180,13 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                       <div
                         className={cn(
                           "text-muted-foreground flex items-center gap-x-2  font-light whitespace-nowrap",
-                          fullWidth ? `text-lg` : `text-sm`,
+                          titleIsLarge ? `text-lg` : `text-sm`,
                         )}
                       >
                         {props.titleActions}
                         {props.tableGeneratorType.icon && (
                           <props.tableGeneratorType.icon
-                            className={cn(`text-primary`, fullWidth ? `h-6 w-6` : `h-4 w-4`)}
+                            className={cn(`text-primary`, titleIsLarge ? `h-6 w-6` : `h-4 w-4`)}
                           />
                         )}
                         {props.title}
