@@ -1,3 +1,9 @@
+## [3.7.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.6.0...v3.7.0) (2026-09-09)
+
+### 🚀 Features
+
+* **ContentListTable:** let a caller pick the title size independently of fullWidth ([9b16563](https://github.com/carlonicora/nextjs-jsonapi/commit/9b1656318251fa722e7f506e593b92b32dbd6bbd))
+
 ## [3.6.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.5.10...v3.6.0) (2026-09-08)
 
 ### 🚀 Features
