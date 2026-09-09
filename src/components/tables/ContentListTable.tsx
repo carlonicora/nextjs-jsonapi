@@ -62,6 +62,12 @@ type ContentListTableProps = {
   groupOrder?: string[];
   hideHeader?: boolean;
   emptyState?: ReactNode;
+  /**
+   * Suppress the prev/next `TableFooter` even when the API returned
+   * `links.next`. For capped lists (a dashboard block showing the first five
+   * rows) whose header link goes to the full page instead.
+   */
+  hidePagination?: boolean;
   onRowClick?: (rowData: any) => void;
 };
 
@@ -156,7 +162,7 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
     }));
   }, [props.groupBy, props.groupOrder, rowModel]);
 
-  const showFooter = !!(data.next || data.previous);
+  const showFooter = !props.hidePagination && !!(data.next || data.previous);
 
   // The icon follows the title, not `fullWidth` on its own: a 24px icon beside a
   // 12px title is the mismatch the opt-in exists to avoid.
