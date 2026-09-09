@@ -47,6 +47,15 @@ function toInput(connection: AiConnectionInterface, overrides: Partial<AiConnect
     language: connection.language,
     directFormat: connection.directFormat,
     directProvider: connection.directProvider,
+    costPerImage: connection.costPerImage,
+    negativePrompt: connection.negativePrompt,
+    width: connection.width,
+    height: connection.height,
+    steps: connection.steps,
+    cfgScale: connection.cfgScale,
+    safeMode: connection.safeMode,
+    hideWatermark: connection.hideWatermark,
+    imageFormat: connection.imageFormat,
     ...overrides,
   };
 }

@@ -47,6 +47,15 @@ export interface AiConnectionInterface extends ApiDataInterface {
   get language(): string | undefined;
   get directFormat(): string | undefined;
   get directProvider(): string | undefined;
+  get costPerImage(): number | undefined;
+  get negativePrompt(): string | undefined;
+  get width(): number | undefined;
+  get height(): number | undefined;
+  get steps(): number | undefined;
+  get cfgScale(): number | undefined;
+  get safeMode(): boolean | undefined;
+  get hideWatermark(): boolean | undefined;
+  get imageFormat(): string | undefined;
   /** Secrets are never serialised — the API returns presence flags instead. */
   get hasApiKey(): boolean;
   get hasGoogleCredentials(): boolean;
@@ -82,6 +91,15 @@ export type AiConnectionInput = {
   language?: string;
   directFormat?: string;
   directProvider?: string;
+  costPerImage?: number;
+  negativePrompt?: string;
+  width?: number;
+  height?: number;
+  steps?: number;
+  cfgScale?: number;
+  safeMode?: boolean;
+  hideWatermark?: boolean;
+  imageFormat?: string;
   /** Set on creation only — scope is immutable thereafter. */
   companyId?: string;
 };

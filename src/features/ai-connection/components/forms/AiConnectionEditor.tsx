@@ -19,6 +19,7 @@ const COST_FIELDS = [
   "cachedInputCostPer1MTokens",
   "costPerMinute",
   "costPerPage",
+  "costPerImage",
 ];
 
 type AiConnectionFormValues = {

@@ -25,6 +25,15 @@ export class AiConnection extends AbstractApiData implements AiConnectionInterfa
   private _language?: string;
   private _directFormat?: string;
   private _directProvider?: string;
+  private _costPerImage?: number;
+  private _negativePrompt?: string;
+  private _width?: number;
+  private _height?: number;
+  private _steps?: number;
+  private _cfgScale?: number;
+  private _safeMode?: boolean;
+  private _hideWatermark?: boolean;
+  private _imageFormat?: string;
   private _hasApiKey?: boolean;
   private _hasGoogleCredentials?: boolean;
   private _companyId?: string;
@@ -121,6 +130,42 @@ export class AiConnection extends AbstractApiData implements AiConnectionInterfa
     return this._directProvider;
   }
 
+  get costPerImage(): number | undefined {
+    return this._costPerImage;
+  }
+
+  get negativePrompt(): string | undefined {
+    return this._negativePrompt;
+  }
+
+  get width(): number | undefined {
+    return this._width;
+  }
+
+  get height(): number | undefined {
+    return this._height;
+  }
+
+  get steps(): number | undefined {
+    return this._steps;
+  }
+
+  get cfgScale(): number | undefined {
+    return this._cfgScale;
+  }
+
+  get safeMode(): boolean | undefined {
+    return this._safeMode;
+  }
+
+  get hideWatermark(): boolean | undefined {
+    return this._hideWatermark;
+  }
+
+  get imageFormat(): string | undefined {
+    return this._imageFormat;
+  }
+
   get hasApiKey(): boolean {
     return this._hasApiKey ?? false;
   }
@@ -161,6 +206,15 @@ export class AiConnection extends AbstractApiData implements AiConnectionInterfa
     this._language = attributes.language;
     this._directFormat = attributes.directFormat;
     this._directProvider = attributes.directProvider;
+    this._costPerImage = attributes.costPerImage;
+    this._negativePrompt = attributes.negativePrompt;
+    this._width = attributes.width;
+    this._height = attributes.height;
+    this._steps = attributes.steps;
+    this._cfgScale = attributes.cfgScale;
+    this._safeMode = attributes.safeMode;
+    this._hideWatermark = attributes.hideWatermark;
+    this._imageFormat = attributes.imageFormat;
     this._hasApiKey = attributes.hasApiKey;
     this._hasGoogleCredentials = attributes.hasGoogleCredentials;
     this._companyId = attributes.companyId;
@@ -208,6 +262,15 @@ export class AiConnection extends AbstractApiData implements AiConnectionInterfa
         "language",
         "directFormat",
         "directProvider",
+        "costPerImage",
+        "negativePrompt",
+        "width",
+        "height",
+        "steps",
+        "cfgScale",
+        "safeMode",
+        "hideWatermark",
+        "imageFormat",
       ] as const
     ).forEach(setIfDefined);
 
