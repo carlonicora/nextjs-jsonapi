@@ -1,3 +1,9 @@
+## [3.8.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.8.0...v3.8.1) (2026-09-10)
+
+### 🐛 Bug Fixes
+
+* **usePushNotifications:** register the push-only sw-dev.js outside production ([157bfe7](https://github.com/carlonicora/nextjs-jsonapi/commit/157bfe74406a56351a84edc9c4b1747450f5e0f0))
+
 ## [3.8.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.7.0...v3.8.0) (2026-09-09)
 
 ### 🚀 Features
