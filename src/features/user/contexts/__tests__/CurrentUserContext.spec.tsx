@@ -118,6 +118,46 @@ describe("CurrentUserProvider", () => {
     expect(localStorage.getItem("user")).toBe(JSON.stringify(storedUser));
   });
 
+  it("loads the user from the session when a token cookie exists but localStorage is empty", async () => {
+    // An iOS home-screen web app shares Safari's cookies but starts with an
+    // empty localStorage: the server renders a logged-in page while the client
+    // has no user. The provider must reconcile from the cookie session.
+    vi.mocked(getCookie).mockImplementation((name: any) => (name === "token" ? "jwt" : undefined));
+    const dehydrated = { id: "user-from-session", roles: [], company: null, modules: [] };
+    vi.mocked(UserService.findFullUser).mockResolvedValue({ ...dehydrated, dehydrate: () => dehydrated } as any);
+    const updateToken = vi.fn().mockResolvedValue(undefined);
+    vi.mocked(getTokenHandler).mockReturnValue({ updateToken, removeToken: vi.fn() } as any);
+
+    const { getByTestId } = render(
+      <CurrentUserProvider>
+        <Consumer />
+      </CurrentUserProvider>,
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    expect(UserService.findFullUser).toHaveBeenCalledTimes(1);
+    expect(getByTestId("current-user-id").textContent).toBe("user-from-session");
+    // The cookies are what we read FROM; rewriting them would reload the page.
+    expect(updateToken).not.toHaveBeenCalled();
+  });
+
+  it("does not hit the API when localStorage already holds the user", async () => {
+    vi.mocked(getCookie).mockImplementation((name: any) => (name === "token" ? "jwt" : undefined));
+    localStorage.setItem("user", JSON.stringify({ id: "cached", roles: [], company: null, modules: [] }));
+
+    const { getByTestId } = render(
+      <CurrentUserProvider>
+        <Consumer />
+      </CurrentUserProvider>,
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    expect(UserService.findFullUser).not.toHaveBeenCalled();
+    expect(getByTestId("current-user-id").textContent).toBe("cached");
+  });
+
   it("awaits updateToken before writing the user atom in refreshUser", async () => {
     const oldUser = { id: "old", roles: [], company: null, modules: [] };
     localStorage.setItem("user", JSON.stringify(oldUser));

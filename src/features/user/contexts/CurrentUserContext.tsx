@@ -1,5 +1,6 @@
 "use client";
 
+import { getCookie } from "cookies-next";
 import { useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { usePathname } from "next/navigation";
@@ -195,6 +196,29 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
   // Use ref for stable refreshUser reference to avoid effect re-runs
   const refreshUserRef = useRef(refreshUser);
   refreshUserRef.current = refreshUser;
+
+  // Reconcile the local cache with the session on mount.
+  //
+  // `userAtom` is a localStorage CACHE of the user; the session itself is the
+  // token cookie. The two can disagree — an iOS home-screen web app shares
+  // Safari's cookies but starts with an empty localStorage — and nothing used
+  // to reconcile them: the user was written only by the login flow or by
+  // RefreshUser, which fires only when the proxy refreshes a token. With a
+  // cookie and no cached user the server rendered a logged-in page while every
+  // client surface (avatar, sidebar, campaign role) saw nobody.
+  //
+  // localStorage is read directly rather than through `dehydratedUser`:
+  // atomWithStorage reports its initial value on the first render and only
+  // then hydrates from storage, so the atom alone would trigger a needless
+  // fetch on every mount. skipCookieUpdate because the cookies are what we are
+  // reading FROM; rewriting them through the Server Action would reload the page.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.localStorage.getItem(CURRENT_USER_STORAGE_KEY)) return;
+    if (!getCookie("token")) return;
+    void refreshUserRef.current({ skipCookieUpdate: true });
+    // Mount-only: this is a one-shot reconciliation, not a subscription.
+  }, []);
 
   // Track refresh in progress to prevent duplicate API calls
   const isRefreshingRef = useRef(false);
