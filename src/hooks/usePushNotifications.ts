@@ -30,7 +30,12 @@ export default function usePushNotifications(): void {
           const sessionKey = `push_registered_${currentUser?.id}`;
           const lastRegisteredSubscription = sessionStorage.getItem(sessionKey);
 
-          const registration = await navigator.serviceWorker.register(`${getAppUrl()}/sw.js`);
+          // Dev uses a push-ONLY worker (public/sw-dev.js) with no fetch handler,
+          // so it can't cache stale Turbopack chunks the way the prod worker
+          // (sw.ts) would. Prod uses the full worker. Both live at scope "/", so
+          // the push subscription is identical either way.
+          const swUrl = ENV.IS_PRODUCTION ? `${getAppUrl()}/sw.js` : `${getAppUrl()}/sw-dev.js`;
+          const registration = await navigator.serviceWorker.register(swUrl);
 
           // Check current permission status first
           let permission = Notification.permission;
