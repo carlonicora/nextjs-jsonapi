@@ -1,3 +1,9 @@
+## [3.8.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.7.0...v3.8.0) (2026-09-09)
+
+### 🚀 Features
+
+* **ContentListTable:** let a caller suppress the pagination footer ([e908798](https://github.com/carlonicora/nextjs-jsonapi/commit/e9087988b1c899124d675263b0603dcbc4bc6ab8))
+
 ## [3.7.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.6.0...v3.7.0) (2026-09-09)
 
 ### 🚀 Features
