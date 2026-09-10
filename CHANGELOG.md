@@ -1,3 +1,9 @@
+## [3.8.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.8.1...v3.8.2) (2026-09-10)
+
+### 🐛 Bug Fixes
+
+* **CurrentUserProvider:** hydrate the user from the token cookie when localStorage is empty ([a89c02b](https://github.com/carlonicora/nextjs-jsonapi/commit/a89c02b37c72783c4235ea32a5b9c3dd8d277209))
+
 ## [3.8.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.8.0...v3.8.1) (2026-09-10)
 
 ### 🐛 Bug Fixes
