@@ -8,12 +8,21 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { InputGroup, InputGroupAddon } from "@/components/ui/input-group";
 import { SearchIcon, CheckIcon } from "lucide-react";
 
+/**
+ * Inside a dialog the Command must NOT paint `bg-popover`: `DialogContent` is
+ * `bg-background`, and the two tokens are only identical in the light theme
+ * (both white). In dark they differ — `--background` oklch(0.148) vs
+ * `--popover` oklch(0.218) — so the command block renders as a lighter panel
+ * seamed against the dialog's own header. Inheriting the dialog surface keeps a
+ * command dialog one colour in both themes.
+ */
 function Command({ className, ...props }: React.ComponentProps<typeof CommandPrimitive>) {
   return (
     <CommandPrimitive
       data-slot="command"
       className={cn(
         "bg-popover text-popover-foreground rounded-xl p-1 flex size-full flex-col overflow-hidden",
+        "[[data-slot=dialog-content]_&]:bg-transparent [[data-slot=dialog-content]_&]:text-foreground",
         className,
       )}
       {...props}
