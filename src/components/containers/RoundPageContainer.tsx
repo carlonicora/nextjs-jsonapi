@@ -263,7 +263,9 @@ export function RoundPageContainer({
     [module, id, rewriteUrl, onSectionChange],
   );
 
-  const activeFillHeight = tabs?.find((t) => tabValue(t) === activeTab)?.fillHeight === true;
+  const activeTabDefinition = tabs?.find((t) => tabValue(t) === activeTab);
+  const activeFillHeight = activeTabDefinition?.fillHeight === true;
+  const activeConstrainWidth = activeTabDefinition?.constrainWidth === true;
 
   // Rail partition — only consumed by `layout="rail"` but cheap to compute.
   const { ungrouped, groups } = useMemo(() => partitionTabs(tabs ?? []), [tabs]);
@@ -463,10 +465,13 @@ export function RoundPageContainer({
                       className={cn(`min-w-0 grow`, activeFillHeight ? cn(`flex flex-col`, clip) : cn(scrollY, `p-4`))}
                     >
                       {/* Centre and constrain rail content (like the non-rail
-                          layout). Fill-height tabs keep the full width. */}
+                          layout). Fill-height tabs are full-bleed — a canvas, a
+                          map or a two-pane browser wants the width — unless the
+                          tab asks for the reading column with `constrainWidth`. */}
                       <div
                         className={cn(
                           activeFillHeight ? `flex min-h-0 w-full flex-1 flex-col` : `mx-auto w-full max-w-6xl`,
+                          activeFillHeight && activeConstrainWidth && `mx-auto max-w-6xl`,
                         )}
                       >
                         {header}

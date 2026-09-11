@@ -37,6 +37,16 @@ export type Tab = {
    * because it doesn't own the surrounding scroll container.
    */
   fillHeight?: boolean;
+  /**
+   * Keep the tab's content in the centred reading column (`max-w-6xl`) under
+   * `layout="rail"` even when `fillHeight` is set.
+   *
+   * A rail's `fillHeight` tab is full-bleed by default, which is what a
+   * two-pane browser, a canvas or a map wants. Prose does not: an editor
+   * stretched across a wide screen is unreadable. Non-fill-height tabs are
+   * already constrained, so this flag only matters alongside `fillHeight`.
+   */
+  constrainWidth?: boolean;
 };
 
 type TabsContainerProps = {

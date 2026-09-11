@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { isValidElement, ReactElement, ReactNode, useCallback, useEffect, useRef } from "react";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 import { PencilIcon } from "lucide-react";
+import { ActionBarProvider, useIsInActionBar } from "../../contexts/ActionBarContext";
 import { ModuleWithPermissions } from "../../permissions/types";
 import { usePageUrlGenerator } from "../../hooks/usePageUrlGenerator";
 import {
@@ -109,6 +110,13 @@ export type EditorSheetProps<T extends FieldValues> = {
   centerButtons?: ReactNode;
 
   trigger?: ReactNode;
+  /**
+   * Force the default edit trigger to show / hide its text label. Left unset it
+   * follows `useIsInActionBar()`: labelled in a page action bar, glyph-only in
+   * a table row or an inline cell, where there is no room for the word. The
+   * create trigger is always labelled.
+   */
+  showLabel?: boolean;
   forceShow?: boolean;
   onClose?: () => void;
   dialogOpen?: boolean;
@@ -154,6 +162,7 @@ export function EditorSheet<T extends FieldValues>({
   hideSubmit,
   centerButtons,
   trigger,
+  showLabel,
   forceShow,
   onClose,
   dialogOpen,
@@ -164,6 +173,8 @@ export function EditorSheet<T extends FieldValues>({
 }: EditorSheetProps<T>) {
   const t = useTranslations();
   const generateUrl = usePageUrlGenerator();
+  const inActionBar = useIsInActionBar();
+  const isLabelled = showLabel ?? inActionBar;
 
   const defaultIsFormDirty = useCallback(() => {
     return Object.keys(form.formState.dirtyFields).length > 0;
@@ -288,10 +299,11 @@ export function EditorSheet<T extends FieldValues>({
                     render={<div />}
                     nativeButton={false}
                     size="sm"
-                    variant="ghost"
+                    variant={isLabelled ? "outline" : "ghost"}
                     className="text-muted-foreground"
                   >
                     <PencilIcon />
+                    {isLabelled && t("ui.buttons.edit")}
                   </Button>
                 ) : (
                   <Button render={<div />} nativeButton={false} size="sm" variant="outline">
@@ -302,53 +314,59 @@ export function EditorSheet<T extends FieldValues>({
             />
           ))}
         <SheetContent side="end" className={sizeClasses[size]}>
-          <SheetHeader className="border-b px-6 py-4">
-            {actions ? (
-              // pe-10 clears the SheetContent close button, which sits at the
-              // inline end of the sheet (absolute top-4 end-4).
-              <div className="flex items-start justify-between gap-x-4 pe-10">
-                <div className="flex min-w-0 flex-col gap-y-1.5">
+          {/* The sheet's own content is NOT the action bar, even when the
+              trigger that opened it lives there — context flows through the
+              portal, so reset it or a CommonDeleter passed as `actions` would
+              inherit the bar's labelled trigger. */}
+          <ActionBarProvider value={false}>
+            <SheetHeader className="border-b px-6 py-4">
+              {actions ? (
+                // pe-10 clears the SheetContent close button, which sits at the
+                // inline end of the sheet (absolute top-4 end-4).
+                <div className="flex items-start justify-between gap-x-4 pe-10">
+                  <div className="flex min-w-0 flex-col gap-y-1.5">
+                    <SheetTitle>{headerTitle}</SheetTitle>
+                    <SheetDescription>{headerDescription}</SheetDescription>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-x-2">{actions}</div>
+                </div>
+              ) : (
+                <>
                   <SheetTitle>{headerTitle}</SheetTitle>
                   <SheetDescription>{headerDescription}</SheetDescription>
-                </div>
-                <div className="flex shrink-0 items-center gap-x-2">{actions}</div>
-              </div>
-            ) : (
-              <>
-                <SheetTitle>{headerTitle}</SheetTitle>
-                <SheetDescription>{headerDescription}</SheetDescription>
-              </>
-            )}
-          </SheetHeader>
-          <Form {...form}>
-            <form
-              onSubmit={(e) => {
-                // The Sheet content is portaled, but React synthetic events still
-                // bubble up the React tree — so without stopPropagation an inner
-                // EditorSheet's submit also triggers the outer form's submit
-                // (e.g. a create dialog opened from within another editor).
-                e.stopPropagation();
-                return form.handleSubmit(wrappedOnSubmit)(e);
-              }}
-              className="flex min-h-0 flex-1 flex-col"
-            >
-              <div className="flex-1 overflow-y-auto px-6 py-4">{children}</div>
-              <SheetFooter className="shrink-0 border-t px-6 py-4">
-                {renderFooter ? (
-                  renderFooter({ form, isEdit, setOpen: handleOpenChange, closeWithoutConfirm: setOpen })
-                ) : (
-                  <CommonEditorButtons
-                    form={form}
-                    setOpen={handleOpenChange}
-                    isEdit={isEdit}
-                    disabled={disabled}
-                    hideSubmit={hideSubmit}
-                    centerButtons={centerButtons}
-                  />
-                )}
-              </SheetFooter>
-            </form>
-          </Form>
+                </>
+              )}
+            </SheetHeader>
+            <Form {...form}>
+              <form
+                onSubmit={(e) => {
+                  // The Sheet content is portaled, but React synthetic events still
+                  // bubble up the React tree — so without stopPropagation an inner
+                  // EditorSheet's submit also triggers the outer form's submit
+                  // (e.g. a create dialog opened from within another editor).
+                  e.stopPropagation();
+                  return form.handleSubmit(wrappedOnSubmit)(e);
+                }}
+                className="flex min-h-0 flex-1 flex-col"
+              >
+                <div className="flex-1 overflow-y-auto px-6 py-4">{children}</div>
+                <SheetFooter className="shrink-0 border-t px-6 py-4">
+                  {renderFooter ? (
+                    renderFooter({ form, isEdit, setOpen: handleOpenChange, closeWithoutConfirm: setOpen })
+                  ) : (
+                    <CommonEditorButtons
+                      form={form}
+                      setOpen={handleOpenChange}
+                      isEdit={isEdit}
+                      disabled={disabled}
+                      hideSubmit={hideSubmit}
+                      centerButtons={centerButtons}
+                    />
+                  )}
+                </SheetFooter>
+              </form>
+            </Form>
+          </ActionBarProvider>
         </SheetContent>
       </Sheet>
       <CommonEditorDiscardDialog {...discardDialogProps} />

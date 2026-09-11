@@ -2,6 +2,7 @@
 
 import { LoaderCircleIcon, Trash2Icon } from "lucide-react";
 import { isValidElement, ReactNode, useState } from "react";
+import { useIsInActionBar } from "../../contexts/ActionBarContext";
 import { useI18nRouter, useI18nTranslations } from "../../i18n";
 import {
   AlertDialog,
@@ -28,6 +29,12 @@ type CommonDeleterProps = {
   testId?: string;
   /** Custom trigger element replacing the default trash button. */
   trigger?: ReactNode;
+  /**
+   * Force the default trigger to show / hide its text label. Left unset it
+   * follows `useIsInActionBar()`: labelled in a page action bar, glyph-only in
+   * a table row or a sheet header, where there is no room for the word.
+   */
+  showLabel?: boolean;
   onSuccess?: () => void | Promise<void>;
   /** Fired after a successful delete, in addition to redirect/onSuccess. */
   propagateChanges?: () => void;
@@ -43,10 +50,15 @@ export function CommonDeleter({
   forceShow,
   testId,
   trigger,
+  showLabel,
   onSuccess,
   propagateChanges,
 }: CommonDeleterProps) {
   const t = useI18nTranslations();
+  // Called unconditionally: `showLabel ?? useIsInActionBar()` would skip the
+  // hook whenever the prop is set, breaking the rules of hooks.
+  const inActionBar = useIsInActionBar();
+  const isLabelled = showLabel ?? inActionBar;
   const router = useI18nRouter();
   const [open, setOpen] = useState<boolean>(forceShow || false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
@@ -80,11 +92,12 @@ export function CommonDeleter({
               render={<div />}
               nativeButton={false}
               size="sm"
-              variant={"ghost"}
+              variant={isLabelled ? "outline" : "ghost"}
               className="text-muted-foreground hover:text-destructive"
               data-testid={testId}
             >
               <Trash2Icon />
+              {isLabelled && t(`ui.buttons.delete`)}
             </Button>
           )}
         </AlertDialogTrigger>

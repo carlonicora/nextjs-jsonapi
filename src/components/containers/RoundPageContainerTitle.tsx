@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Tooltip, TooltipContent, TooltipTrigger } from "@/components";
-import { useSharedContext } from "@/contexts";
+import { ActionBarProvider, useSharedContext } from "@/contexts";
 import { ModuleWithPermissions } from "@/permissions";
 import { cn, useIsMobile } from "@/utils";
 import { InfoIcon } from "lucide-react";
@@ -82,8 +82,11 @@ export function RoundPageContainerTitle({
         )}
       </div>
       {title.actionBar && (
-        <div data-testid="round-page-action-bar" className="flex w-full items-center border-t px-4 py-2">
-          {title.actionBar}
+        <div data-testid="round-page-action-bar" className="flex w-full items-center gap-x-2 border-t px-4 py-2">
+          {/* The bar is the page's command row, so the commands inside it label
+              themselves ("Edit", "Delete") instead of rendering the bare glyph
+              they use in a table row. See ActionBarContext. */}
+          <ActionBarProvider value={true}>{title.actionBar}</ActionBarProvider>
         </div>
       )}
     </div>
