@@ -20,6 +20,7 @@ import {
 import { partitionTabs, Tab } from "@/components/containers";
 import { HEADER_ROW_MIN_H, RoundPageContainerTitle } from "@/components/containers/RoundPageContainerTitle";
 import { Header, MobileNavigationBar } from "@/components/navigations";
+import { MicroLabel } from "@/components/typography";
 import { useHeaderChildren, useHeaderLeftContent, useHeaderLogo, useHeaderMobileChildren } from "@/contexts";
 import { useUrlRewriter } from "@/hooks";
 import { cn, useIsMobile } from "@/index";
@@ -113,15 +114,33 @@ type RoundPageContainerProps = {
   scroll?: "document" | "fixed";
 };
 
-// Rail trigger class: override the horizontal TabsTrigger defaults for a
-// vertical, start-aligned, dark-filled active state. tailwind-merge inside cn()
-// resolves the conflicts with the base classes.
+// Rail trigger class: the rail is a LIST, not a column of buttons — the same
+// treatment as the handbook reader's section rail (HandbookPageNavigator /
+// HandbookPageToc in a360ai): entries at `text-xs` on a `border-s-2` rule, and
+// the active one marked by turning that rule and its label `primary` rather
+// than by growing a filled box around it.
+//
+// Every override below is written in the SAME class group AND the same variant
+// modifiers as the base `TabsTrigger` class it has to beat, because that is the
+// only way tailwind-merge inside cn() drops the base one; a differently-scoped
+// utility (`data-active:` against a `dark:data-active:` base) would survive as
+// a second rule and win or lose on stylesheet order.
+//
+// The previous version targeted `data-[state=active]`, which these Base UI tabs
+// never set — the active row was therefore still wearing the base
+// `data-active:bg-background` box, which is the button look this replaces.
 const railTriggerClass = cn(
-  "flex w-full items-center justify-start rounded-md px-3 py-1.5 text-start text-sm leading-tight whitespace-normal",
-  "text-muted-foreground",
-  "hover:bg-muted hover:text-foreground",
-  "data-[state=active]:bg-foreground data-[state=active]:text-background",
-  "data-[state=active]:font-semibold data-[state=active]:shadow-none",
+  "flex h-auto w-full items-center justify-start px-3 py-1 text-start text-xs leading-tight whitespace-normal",
+  // `border-0` first: the base sets a 1px box on all four sides, and only a
+  // later border-width utility of the same group removes it. `border-s-2` then
+  // draws the rail itself.
+  "rounded-none border-0 border-s-2 border-transparent bg-transparent",
+  "text-muted-foreground dark:text-muted-foreground transition-colors",
+  "hover:bg-transparent hover:text-primary dark:hover:text-primary",
+  "data-active:bg-transparent dark:data-active:bg-transparent",
+  "data-active:border-primary dark:data-active:border-primary",
+  "data-active:text-primary dark:data-active:text-primary",
+  "data-active:font-medium data-active:shadow-none",
 );
 
 /** Stable value for the URL `?section=` and active-tab matching. */
@@ -394,12 +413,9 @@ export function RoundPageContainer({
                       ))}
                       {groups.map((group) => (
                         <Fragment key={group.label}>
-                          <div
-                            role="presentation"
-                            className="text-muted-foreground px-3 pt-3 pb-1 text-[10px] font-bold tracking-wider uppercase"
-                          >
+                          <MicroLabel as="span" role="presentation" className="block px-3 pt-3 pb-1">
                             {group.label}
-                          </div>
+                          </MicroLabel>
                           {group.items.map((tab) => (
                             <TabsTrigger key={tab.label} value={tabValue(tab)} className={railTriggerClass}>
                               {tab.contentLabel ?? tab.label}
