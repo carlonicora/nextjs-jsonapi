@@ -1,3 +1,9 @@
+## [3.10.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.9.0...v3.10.0) (2026-09-12)
+
+### 🚀 Features
+
+* **assistant:** approval card renders resolved names; onboarding on driver.js ([fda9c2b](https://github.com/carlonicora/nextjs-jsonapi/commit/fda9c2b6f6577ae61acb9b9867010ac753933f82))
+
 ## [3.9.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.8.2...v3.9.0) (2026-09-12)
 
 ### 🚀 Features
