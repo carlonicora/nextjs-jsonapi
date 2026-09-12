@@ -1,3 +1,17 @@
+## [3.9.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.8.2...v3.9.0) (2026-09-12)
+
+### 🚀 Features
+
+* **containers:** label action-bar commands and constrain rail content ([8beaf67](https://github.com/carlonicora/nextjs-jsonapi/commit/8beaf67b1bfa159cf551819a4c47fd46f16e8cac))
+
+### 🐛 Bug Fixes
+
+* **command:** keep a command dialog one surface in dark mode ([5f29746](https://github.com/carlonicora/nextjs-jsonapi/commit/5f29746995770caf563edbf79c2d786a213b21b0))
+
+### 💎 Styles
+
+* **containers:** render rail tabs as a list, not buttons ([9ece26c](https://github.com/carlonicora/nextjs-jsonapi/commit/9ece26c71cc1f3e99263d407a4b965593be22352))
+
 ## [3.8.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.8.1...v3.8.2) (2026-09-10)
 
 ### 🐛 Bug Fixes
