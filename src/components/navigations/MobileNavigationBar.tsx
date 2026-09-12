@@ -70,6 +70,7 @@ export function MobileNavigationBar({ className }: { className?: string } = {}) 
     <nav
       aria-label="Primary"
       data-testid="mobile-navigation-bar"
+      data-help="shell.mobile-nav"
       className={cn("bg-sidebar flex w-full shrink-0 flex-row items-stretch rounded-lg border", className)}
     >
       {items.map((item) => {

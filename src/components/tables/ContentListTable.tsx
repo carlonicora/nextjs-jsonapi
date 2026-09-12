@@ -169,7 +169,7 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
   const titleIsLarge = (props.titleSize ?? (fullWidth ? `lg` : `sm`)) === `lg`;
 
   return (
-    <div className="flex w-full flex-col">
+    <div data-help="list.table" className="flex w-full flex-col">
       {/* <div className="overflow-clip rounded-md border"> */}
       <div className={cn(`overflow-clip`, fullWidth ? `` : `rounded-md border`)}>
         <Table>

@@ -43,7 +43,7 @@ export function ContentListGrid<T>(props: ContentListGridProps<T>) {
   }, [data.next]);
 
   return (
-    <div className="flex w-full flex-col">
+    <div data-help="list.grid" className="flex w-full flex-col">
       <div className={cn("overflow-clip", fullWidth ? "" : "rounded-md border")}>
         {props.title !== undefined && (
           <div className="bg-card text-primary flex items-center justify-between gap-x-2 rounded-t-lg border-b p-4 font-bold">

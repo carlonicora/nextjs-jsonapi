@@ -4,7 +4,6 @@ import { X } from "lucide-react";
 import { Button, Card, CardContent, CardHeader, CardTitle } from "../../../shadcnui";
 import { OnboardingCardRenderProps } from "../interfaces";
 
-// Matches a360ai ShepherdCard design exactly
 export function OnboardingCard({
   step,
   currentIndex,
@@ -17,7 +16,7 @@ export function OnboardingCard({
   isLast,
 }: OnboardingCardRenderProps) {
   return (
-    <Card className="w-[320px] relative" data-shepherd-card>
+    <Card className="w-[320px] relative" data-onboarding-card>
       <Button variant="ghost" size="icon" className="absolute end-2 top-2" onClick={onClose} aria-label={labels.close}>
         <X className="h-4 w-4" />
       </Button>

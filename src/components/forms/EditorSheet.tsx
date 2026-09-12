@@ -296,6 +296,7 @@ export function EditorSheet<T extends FieldValues>({
               render={
                 isEdit ? (
                   <Button
+                    data-help="editor.edit"
                     render={<div />}
                     nativeButton={false}
                     size="sm"
@@ -306,7 +307,7 @@ export function EditorSheet<T extends FieldValues>({
                     {isLabelled && t("ui.buttons.edit")}
                   </Button>
                 ) : (
-                  <Button render={<div />} nativeButton={false} size="sm" variant="outline">
+                  <Button data-help="editor.create" render={<div />} nativeButton={false} size="sm" variant="outline">
                     {t("ui.buttons.create")}
                   </Button>
                 )

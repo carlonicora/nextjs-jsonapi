@@ -4,6 +4,8 @@ import { AssistantActionInput, AssistantActionInterface, AssistantActionStatus }
 export class AssistantAction extends AbstractApiData implements AssistantActionInterface {
   private _status?: AssistantActionStatus;
   private _toolName?: string;
+  private _toolArgs?: string;
+  private _proposal?: string;
   private _summary?: string;
   private _resolvedAt?: Date;
   private _expiresAt?: Date;
@@ -15,6 +17,14 @@ export class AssistantAction extends AbstractApiData implements AssistantActionI
 
   get toolName(): string {
     return this._toolName ?? "";
+  }
+
+  get toolArgs(): string {
+    return this._toolArgs ?? "";
+  }
+
+  get proposal(): string {
+    return this._proposal ?? "";
   }
 
   get summary(): string {
@@ -34,6 +44,8 @@ export class AssistantAction extends AbstractApiData implements AssistantActionI
 
     this._status = data.jsonApi.attributes.status;
     this._toolName = data.jsonApi.attributes.toolName;
+    this._toolArgs = data.jsonApi.attributes.toolArgs;
+    this._proposal = data.jsonApi.attributes.proposal;
     this._summary = data.jsonApi.attributes.summary;
     this._resolvedAt = data.jsonApi.attributes.resolvedAt ? new Date(data.jsonApi.attributes.resolvedAt) : undefined;
     this._expiresAt = data.jsonApi.attributes.expiresAt ? new Date(data.jsonApi.attributes.expiresAt) : undefined;

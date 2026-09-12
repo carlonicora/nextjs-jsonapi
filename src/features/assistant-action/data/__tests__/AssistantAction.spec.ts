@@ -50,6 +50,7 @@ function makeHydratedData(overrides: Record<string, any> = {}) {
         status: "pending",
         toolName: "createNpc",
         toolArgs: '{"name":"A"}',
+        proposal: '{"type":"npcs","attributes":{"name":"A"}}',
         summary: "Create a new record",
         threadId: "thread-1",
         userModuleIds: ["module-1"],
@@ -72,6 +73,14 @@ describe("AssistantAction model", () => {
     expect(action.status).toBe("pending");
     expect(action.toolName).toBe("createNpc");
     expect(action.summary).toBe("Create a new record");
+  });
+
+  it("rehydrates the resolved proposal payload", () => {
+    const action = new AssistantAction();
+    action.rehydrate(makeHydratedData() as any);
+
+    expect(action.toolArgs).toBe('{"name":"A"}');
+    expect(action.proposal).toBe('{"type":"npcs","attributes":{"name":"A"}}');
   });
 
   it("parses expiresAt into a Date", () => {
@@ -114,6 +123,8 @@ describe("AssistantAction model", () => {
     // Missing status defaults to the fail-safe, non-actionable "expired" — never the actionable "pending".
     expect(action.status).toBe("expired");
     expect(action.toolName).toBe("");
+    // A pre-`proposal` action must degrade to the empty string, never to undefined.
+    expect(action.proposal).toBe("");
     expect(action.summary).toBe("");
     expect(action.resolvedAt).toBeUndefined();
     expect(action.expiresAt).toBeUndefined();

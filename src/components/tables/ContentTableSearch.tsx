@@ -78,6 +78,7 @@ export function ContentTableSearch({ data }: ContentTableSearchProps) {
       ) : (
         <Button
           data-testid="content-table-search-trigger"
+          data-help="list.search"
           variant="ghost"
           size="icon-sm"
           className="text-muted-foreground hover:text-foreground absolute top-0 start-0"

@@ -86,6 +86,7 @@ export function TabsContainer({
     <Tabs defaultValue={defaultValue} className="w-full">
       <div className="flex w-full items-center justify-between">
         <TabsList
+          data-help="page.tabs"
           className={cn(
             `${style ? `my-4 flex w-full justify-start rounded-none border-b bg-transparent pb-0` : ``}`,
             tabsListClassName,

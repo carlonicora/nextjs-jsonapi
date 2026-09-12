@@ -1,38 +1,33 @@
-/* Shepherd Modal Overlay */
-.shepherd-modal-overlay-container.shepherd-modal-is-visible {
-  opacity: 1 !important;
+/* driver.js chrome is hidden: the React card mounted by OnboardingContext is the whole popover. */
+.driver-popover.onboarding-popover {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  border-radius: 0;
+  max-width: none;
+  width: auto;
+  /* The card is the popover; driver.js's own clipping would cut it off. */
+  overflow: visible;
+  color: inherit;
 }
 
-.shepherd-modal-overlay-container path {
-  fill: rgba(0, 0, 0, 0.75) !important;
+.driver-popover.onboarding-popover .driver-popover-title,
+.driver-popover.onboarding-popover .driver-popover-description,
+.driver-popover.onboarding-popover .driver-popover-footer,
+.driver-popover.onboarding-popover .driver-popover-close-btn {
+  display: none;
 }
 
-/* Remove default shepherd styling - we use custom React card */
-.shepherd-element {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  max-width: none !important;
+/* Arrow colour follows the card surface so it reads as part of it. */
+.driver-popover.onboarding-popover .driver-popover-arrow-side-top {
+  border-top-color: var(--card);
 }
-
-.shepherd-content,
-.shepherd-text {
-  padding: 0 !important;
+.driver-popover.onboarding-popover .driver-popover-arrow-side-bottom {
+  border-bottom-color: var(--card);
 }
-
-/* Arrow styling to match card background */
-.shepherd-arrow::before {
-  background: hsl(var(--card)) !important;
+.driver-popover.onboarding-popover .driver-popover-arrow-side-left {
+  border-left-color: var(--card);
 }
-
-/* Hide default Shepherd header and footer - we render custom ones */
-.shepherd-header,
-.shepherd-footer {
-  display: none !important;
-}
-
-/* Dark mode support */
-.dark .shepherd-arrow::before {
-  background: hsl(var(--card)) !important;
+.driver-popover.onboarding-popover .driver-popover-arrow-side-right {
+  border-right-color: var(--card);
 }

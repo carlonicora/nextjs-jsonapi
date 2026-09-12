@@ -393,6 +393,7 @@ export function RoundPageContainer({
                   {/* Flush-left section rail — md and up */}
                   <aside
                     data-testid="round-page-rail"
+                    data-help="page.rail"
                     className={cn(
                       `hidden shrink-0 border-e p-4 md:flex md:w-56 md:flex-col`,
                       isFixed && `md:overflow-y-auto`,
@@ -536,7 +537,7 @@ export function RoundPageContainer({
                             </div>
                           ) : (
                             <div className="p-4">
-                              <TabsList>
+                              <TabsList data-help="page.tabs">
                                 {tabs.map((tab) => (
                                   <TabsTrigger key={tab.label} value={tabValue(tab)} className="px-4">
                                     {tab.contentLabel ?? tab.label}

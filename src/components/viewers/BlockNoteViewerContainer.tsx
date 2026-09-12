@@ -5,6 +5,9 @@ import React from "react";
 
 const BlockNoteViewer = dynamic(() => import("./BlockNoteViewer").then((m) => m.BlockNoteViewer), { ssr: false });
 
-export const BlockNoteViewerContainer = React.memo(function ViewerContainer(props: { content: unknown }) {
+export const BlockNoteViewerContainer = React.memo(function ViewerContainer(props: {
+  content: unknown;
+  size?: "default" | "sm";
+}) {
   return <BlockNoteViewer {...props} />;
 });

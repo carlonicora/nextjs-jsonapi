@@ -64,6 +64,7 @@ export function RoundPageContainerTitle({
               <Tooltip>
                 <TooltipTrigger>
                   <Button
+                    data-help="page.details"
                     render={<div />}
                     nativeButton={false}
                     variant={showDetails ? `ghost` : `default`}
@@ -82,7 +83,11 @@ export function RoundPageContainerTitle({
         )}
       </div>
       {title.actionBar && (
-        <div data-testid="round-page-action-bar" className="flex w-full items-center gap-x-2 border-t px-4 py-2">
+        <div
+          data-testid="round-page-action-bar"
+          data-help="page.action-bar"
+          className="flex w-full items-center gap-x-2 border-t px-4 py-2"
+        >
           {/* The bar is the page's command row, so the commands inside it label
               themselves ("Edit", "Delete") instead of rendering the bare glyph
               they use in a table row. See ActionBarContext. */}

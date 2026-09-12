@@ -18,6 +18,15 @@ export type AssistantActionInput = {
 export interface AssistantActionInterface extends ApiDataInterface {
   get status(): AssistantActionStatus;
   get toolName(): string;
+  /** Raw JSON string of the frozen tool call's arguments. Audit copy — never rendered. */
+  get toolArgs(): string;
+  /**
+   * JSON string of the operator's presentation payload: the record being
+   * written with every referenced id already resolved to a display name.
+   * Empty when the action predates the payload (the card then falls back to
+   * the attributes in `toolArgs`).
+   */
+  get proposal(): string;
   get summary(): string;
   get resolvedAt(): Date | undefined;
   get expiresAt(): Date | undefined;

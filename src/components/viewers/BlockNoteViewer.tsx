@@ -8,6 +8,7 @@ import type { PartialBlock } from "@blocknote/core";
 import { BlockNoteView } from "@blocknote/shadcn";
 import "@blocknote/shadcn/style.css";
 import { useTheme } from "next-themes";
+import { cn } from "../../utils";
 
 function normalize(content: unknown): PartialBlock[] | undefined {
   if (Array.isArray(content) && content.length > 0) return content as PartialBlock[];
@@ -22,10 +23,20 @@ function normalize(content: unknown): PartialBlock[] | undefined {
   return undefined;
 }
 
-export function BlockNoteViewer({ content }: { content: unknown }) {
+export function BlockNoteViewer({ content, size }: { content: unknown; size?: "default" | "sm" }) {
   const editor = useCreateBlockNote({ initialContent: normalize(content) });
   // Outside a next-themes ThemeProvider (public pages) resolvedTheme is
   // undefined, so this falls back to "light".
   const { resolvedTheme } = useTheme();
-  return <BlockNoteView editor={editor} editable={false} theme={resolvedTheme === "dark" ? "dark" : "light"} />;
+  return (
+    <BlockNoteView
+      editor={editor}
+      editable={false}
+      theme={resolvedTheme === "dark" ? "dark" : "light"}
+      // Same two classes BlockNoteEditor applies for its `size` prop: the app
+      // stylesheet keys the compact recipe off `.BlockNoteView.small`, so a
+      // viewer that omits them can only ever render at reading-page size.
+      className={cn("BlockNoteView", size === "sm" && "small")}
+    />
+  );
 }

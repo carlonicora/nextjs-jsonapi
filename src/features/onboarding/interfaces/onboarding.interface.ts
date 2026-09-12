@@ -70,6 +70,8 @@ export interface OnboardingContextValue {
   totalSteps: number;
 }
 
+export type OnboardingTourEndReason = "finished" | "skipped" | "dismissed";
+
 export interface OnboardingProviderProps {
   children: React.ReactNode;
   tours?: OnboardingTourConfig[];
@@ -77,6 +79,8 @@ export interface OnboardingProviderProps {
   labels?: OnboardingLabels;
   renderCard?: (props: OnboardingCardRenderProps) => ReactNode;
   zIndex?: number;
+  /** Fires once when a tour ends. "finished" = last-step Finish, "skipped" = card Skip/close, "dismissed" = overlay click or Escape. */
+  onTourEnd?: (tourId: string, reason: OnboardingTourEndReason) => void;
 }
 
 export interface OnboardingCardRenderProps {

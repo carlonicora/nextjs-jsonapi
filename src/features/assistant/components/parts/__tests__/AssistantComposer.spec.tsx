@@ -25,8 +25,8 @@ describe("AssistantComposer", () => {
 
   it("Send is disabled on empty/whitespace", () => {
     render(<AssistantComposer onSend={vi.fn()} />);
-    // "save" appears inside the ui.buttons.save key → button text matches /save/i
-    const send = screen.getByRole("button", { name: /save/i });
+    // The send button renders the raw features.assistant.send key under the test intl stub.
+    const send = screen.getByRole("button", { name: /features\.assistant\.send/i });
     expect(send).toBeDisabled();
   });
 });

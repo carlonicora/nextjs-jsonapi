@@ -22,7 +22,7 @@ type Props = {
  */
 export function TokenUsageReportFilterBar({ onChange }: Props) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div data-help="tokenusage.filters" className="flex flex-wrap items-center gap-2">
       <DateRangeSelector
         onDateChange={(range) => {
           if (!range?.from || !range?.to) return;

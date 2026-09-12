@@ -15,6 +15,7 @@ export { HelpArticleBody } from "./components/HelpArticleBody";
 export { HelpTOC } from "./components/HelpTOC";
 export { HelpHint } from "./components/HelpHint";
 export { HelpAskAi } from "./components/HelpAskAi";
+export { HelpAssistantSheet } from "./components/HelpAssistantSheet";
 export { HelpSearchResultRow } from "./components/HelpSearchResultRow";
 export { useHelpFilter } from "./hooks/useHelpFilter";
 export { articleUrl, modeUrl } from "./utils/articleUrl";
