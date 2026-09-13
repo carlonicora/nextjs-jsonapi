@@ -19,7 +19,7 @@ import {
   Breadcrumb as UIBreadcrumb,
 } from "../../shadcnui";
 
-type BreadcrumbProps = { items: BreadcrumbItemData[]; rootLabel?: string };
+type BreadcrumbProps = { items: BreadcrumbItemData[]; rootLabel?: string; showRoot?: boolean };
 
 const ITEMS_TO_DISPLAY = 4;
 
@@ -27,20 +27,26 @@ function BreadcrumbDesktop({
   items,
   generateUrl,
   rootLabel,
+  showRoot,
 }: {
   items: BreadcrumbItemData[];
   generateUrl: ReturnType<typeof usePageUrlGenerator>;
   rootLabel: string;
+  showRoot: boolean;
 }) {
   const [open, setOpen] = useState<boolean>(false);
 
   return (
     <UIBreadcrumb>
       <BreadcrumbList>
-        <BreadcrumbItem>
-          <Link href={generateUrl({ page: `/` })}>{rootLabel}</Link>
-        </BreadcrumbItem>
-        {items.length > 0 && <BreadcrumbSeparator />}
+        {showRoot && (
+          <>
+            <BreadcrumbItem>
+              <Link href={generateUrl({ page: `/` })}>{rootLabel}</Link>
+            </BreadcrumbItem>
+            {items.length > 0 && <BreadcrumbSeparator />}
+          </>
+        )}
 
         {items.length > ITEMS_TO_DISPLAY ? (
           <>
@@ -113,17 +119,23 @@ function BreadcrumbMobile({
   items,
   generateUrl,
   rootLabel,
+  showRoot,
 }: {
   items: BreadcrumbItemData[];
   generateUrl: ReturnType<typeof usePageUrlGenerator>;
   rootLabel: string;
+  showRoot: boolean;
 }) {
   const [open, setOpen] = useState<boolean>(false);
 
   const lastItem = items[items.length - 1];
-  const allItems = [{ name: rootLabel, href: generateUrl({ page: `/` }) }, ...items];
+  const allItems: BreadcrumbItemData[] = showRoot
+    ? [{ name: rootLabel, href: generateUrl({ page: `/` }) }, ...items]
+    : items;
 
   if (!lastItem && items.length === 0) {
+    // Nothing to show at all once the root entry is suppressed.
+    if (!showRoot) return null;
     return (
       <UIBreadcrumb>
         <BreadcrumbList>
@@ -158,7 +170,7 @@ function BreadcrumbMobile({
   );
 }
 
-export function BreadcrumbNavigation({ items, rootLabel }: BreadcrumbProps) {
+export function BreadcrumbNavigation({ items, rootLabel, showRoot = true }: BreadcrumbProps) {
   const generateUrl = usePageUrlGenerator();
   const t = useTranslations();
   const isMobile = useIsMobile();
@@ -166,8 +178,8 @@ export function BreadcrumbNavigation({ items, rootLabel }: BreadcrumbProps) {
   const root = rootLabel?.trim() ? rootLabel : t(`common.home`);
 
   if (isMobile) {
-    return <BreadcrumbMobile items={items} generateUrl={generateUrl} rootLabel={root} />;
+    return <BreadcrumbMobile items={items} generateUrl={generateUrl} rootLabel={root} showRoot={showRoot} />;
   }
 
-  return <BreadcrumbDesktop items={items} generateUrl={generateUrl} rootLabel={root} />;
+  return <BreadcrumbDesktop items={items} generateUrl={generateUrl} rootLabel={root} showRoot={showRoot} />;
 }
