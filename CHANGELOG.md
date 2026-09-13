@@ -1,3 +1,13 @@
+## [3.12.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.11.0...v3.12.0) (2026-09-13)
+
+### 🚀 Features
+
+* **billing:** clone, export and import prices from the prices list ([e408cc6](https://github.com/carlonicora/nextjs-jsonapi/commit/e408cc65450e65fb6dd104fe0473d92f18e2da96))
+
+### ♻️ Chores
+
+* retrigger release ([532afb4](https://github.com/carlonicora/nextjs-jsonapi/commit/532afb4155420d2e92d914d9fd2df7d38d998135))
+
 ## [3.11.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.10.0...v3.11.0) (2026-09-13)
 
 ### 🚀 Features
