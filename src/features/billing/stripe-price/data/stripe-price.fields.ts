@@ -5,4 +5,5 @@ export enum StripePriceFields {
   interval = "interval",
   token = "token",
   status = "status",
+  actions = "actions",
 }

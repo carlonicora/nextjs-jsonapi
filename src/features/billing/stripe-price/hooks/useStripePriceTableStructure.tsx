@@ -1,20 +1,40 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import { CopyIcon, DownloadIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { Modules } from "../../../../core";
 import { registerTableGenerator, TableContent, usePageUrlGenerator, UseTableStructureHook } from "../../../../hooks";
-import { Badge, Link } from "../../../../shadcnui";
+import { Badge, Button, Link } from "../../../../shadcnui";
 import { formatCurrency, formatInterval } from "../../components/utils/currency";
 import { StripePriceFields } from "../data/stripe-price.fields";
 import { StripePriceInterface } from "../data/stripe-price.interface";
+
+/**
+ * Row-level handlers the ACTIONS column calls. They reach this hook through
+ * `ContentListTable`'s `context` prop, which the table forwards verbatim as
+ * `params.context` (ContentListTable.tsx:88-95, hooks/types.ts:27) — the table
+ * generator registry hands the hook nothing else from the call site.
+ *
+ * Both are optional on purpose: the same generator serves lists that render the
+ * actions column without wiring anything (or that omit the column entirely), so
+ * each button is rendered only when its handler is actually present rather than
+ * rendering a dead control.
+ */
+type StripePriceRowActions = {
+  onClone?: (price: StripePriceInterface) => void;
+  onExport?: (price: StripePriceInterface) => void;
+};
 
 export const useStripePriceTableStructure: UseTableStructureHook<StripePriceInterface, StripePriceFields> = (
   params,
 ) => {
   const t = useTranslations();
   const generateUrl = usePageUrlGenerator();
+
+  const onClone = params.context?.onClone as StripePriceRowActions["onClone"];
+  const onExport = params.context?.onExport as StripePriceRowActions["onExport"];
 
   const tableData = useMemo(() => {
     return params.data.map((price: StripePriceInterface) => {
@@ -105,13 +125,57 @@ export const useStripePriceTableStructure: UseTableStructureHook<StripePriceInte
       enableSorting: false,
       enableHiding: false,
     }),
+    [StripePriceFields.actions]: () => ({
+      id: "actions",
+      accessorKey: "actions",
+      header: t("billing.admin.prices.fields.actions"),
+      cell: ({ row }: { row: TableContent<StripePriceInterface> }) => {
+        const price: StripePriceInterface = row.original.jsonApiData;
+        return (
+          <span className="flex items-center justify-end gap-x-1">
+            {onClone && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-label={t("billing.admin.prices.actions.clone")}
+                onClick={(event) => {
+                  // The row itself can be clickable (ContentListTable's
+                  // `onRowClick`), so a row action must never bubble into it.
+                  event.stopPropagation();
+                  onClone(price);
+                }}
+              >
+                <CopyIcon />
+              </Button>
+            )}
+            {onExport && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-label={t("billing.admin.prices.actions.export")}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onExport(price);
+                }}
+              >
+                <DownloadIcon />
+              </Button>
+            )}
+          </span>
+        );
+      },
+      enableSorting: false,
+      enableHiding: false,
+    }),
   };
 
   const columns = useMemo(() => {
     return params.fields.map((field) => fieldColumnMap[field]?.()).filter((col) => col !== undefined) as ColumnDef<
       TableContent<StripePriceInterface>
     >[];
-  }, [params.fields, fieldColumnMap, t, generateUrl]);
+  }, [params.fields, fieldColumnMap, t, generateUrl, onClone, onExport]);
 
   return useMemo(() => ({ data: tableData, columns: columns }), [tableData, columns]);
 };

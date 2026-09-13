@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon, XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import { z } from "zod";
@@ -11,13 +11,27 @@ import { EditorSheet, FieldLabel, FormCheckbox, FormInput, FormSelect, FormTexta
 import { Modules } from "../../../../../core";
 import { useI18nRouter } from "../../../../../i18n";
 import { Alert, AlertDescription, AlertTitle, Button, Checkbox, Input } from "../../../../../shadcnui";
+import { showToast } from "../../../../../utils/toast";
 import { FeatureInterface, FeatureService } from "../../../../feature";
 import { priceLabel, usePriceContext } from "../../../contexts/PriceContext";
 import { StripePriceInput, StripePriceInterface } from "../../data/stripe-price.interface";
+import { StripePriceSeed } from "../../data/stripe-price.transfer";
 
 export type PriceEditorProps = {
   productId?: string;
   price?: StripePriceInterface;
+  /**
+   * Pre-fills a NEW price — the Clone (a row in the prices list) and Import (a
+   * JSON document) paths both hand over the same seed.
+   *
+   * The seed deliberately carries NO identity: no Stripe price id, no internal
+   * id and no product id. A clone/import is a brand-new price, minted fresh by
+   * Stripe and attached to whatever product this editor is mounted for
+   * (`productId` / the context), so copying any identity across would either
+   * collide or silently re-point the new price at the source environment's
+   * objects. Seeding therefore never makes this an edit — see `isEdit` below.
+   */
+  seed?: StripePriceSeed;
   propagateChanges?: (price: StripePriceInterface) => void;
   onSuccess?: () => void | Promise<void>;
   trigger?: ReactNode;
@@ -30,6 +44,7 @@ export type PriceEditorProps = {
 function PriceEditorInternal({
   productId,
   price,
+  seed,
   propagateChanges,
   onSuccess,
   trigger,
@@ -42,6 +57,9 @@ function PriceEditorInternal({
   const router = useI18nRouter();
   const { createPrice, updatePrice, productId: contextProductId } = usePriceContext();
   const [allFeatures, setAllFeatures] = useState<FeatureInterface[]>([]);
+  // Stays `!!price`, never `!!price || !!seed`: a seeded editor is a CREATE, so
+  // the create branch of onSubmit (fresh v4(), targetProductId, no id reuse)
+  // must run for it exactly as it does for an empty form.
   const isEdit = !!price;
   // NOT `price.productId` — that getter throws when the attribute is absent, and
   // it always is (see the note in PriceContext). Only create mode needs this,
@@ -106,6 +124,24 @@ function PriceEditorInternal({
 
   type PriceFormValues = z.infer<typeof formSchema>;
 
+  // Seeds carry platform features as NAMES, never ids: Feature ids differ per
+  // environment, names are the stable handle. A name this environment does not
+  // know is DROPPED rather than failing the whole seed — the effect below
+  // reports the dropped ones once.
+  const resolvePlatformFeatures = useCallback(
+    (names: string[] | undefined): { ids: string[]; unknown: string[] } => {
+      const ids: string[] = [];
+      const unknown: string[] = [];
+      for (const name of names ?? []) {
+        const match = allFeatures.find((feature) => feature.name === name);
+        if (match) ids.push(match.id);
+        else unknown.push(name);
+      }
+      return { ids, unknown };
+    },
+    [allFeatures],
+  );
+
   // Fed to BOTH useForm and EditorSheet.onReset. The previous implementation
   // reseeded with its own `useEffect(… form.reset)` on open; EditorSheet already
   // owns that (EditorSheet.tsx:163-190) and running both fights over the form.
@@ -114,6 +150,30 @@ function PriceEditorInternal({
   // (PriceArchiver), and a second toggle here would let the two disagree.
   const getDefaultValues = useCallback((): PriceFormValues => {
     const coreFeatureIds = allFeatures.filter((feature) => feature.isCore).map((feature) => feature.id);
+
+    // Seed branch: create mode only (`price` always wins — an edit form must
+    // show the price it edits, never a seed). Mirrors the `price` branch below
+    // field for field, including the /100: the seed keeps Stripe's MINOR units
+    // while the form field is in MAJOR units.
+    if (!price && seed) {
+      return {
+        unitAmount: seed.unitAmount / 100,
+        currency: seed.currency,
+        interval: seed.interval,
+        intervalCount: seed.intervalCount ?? 1,
+        usageType: seed.usageType ?? "licensed",
+        nickname: seed.nickname ?? "",
+        isTrial: seed.isTrial ?? false,
+        description: seed.description ?? "",
+        features: seed.features ?? [],
+        // `.toString()`, for the same reason the schema keeps the token
+        // pipeline string-based: a seeded `0` must survive as "0" and not be
+        // dropped as falsy.
+        token: seed.token?.toString() ?? "",
+        featureIds: [...new Set([...resolvePlatformFeatures(seed.platformFeatures).ids, ...coreFeatureIds])],
+      };
+    }
+
     return {
       unitAmount: price?.unitAmount ? price.unitAmount / 100 : 0,
       currency: price?.currency ?? "usd",
@@ -127,12 +187,58 @@ function PriceEditorInternal({
       token: price?.token?.toString() ?? "",
       featureIds: [...new Set([...(price?.priceFeatures?.map((f) => f.id) ?? []), ...coreFeatureIds])],
     };
-  }, [price, allFeatures]);
+  }, [price, seed, allFeatures, resolvePlatformFeatures]);
 
   const form = useForm<PriceFormValues>({
     resolver: zodResolver(formSchema) as any,
     defaultValues: getDefaultValues(),
   });
+
+  // ── The seeding race ──────────────────────────────────────────────────────
+  // `getDefaultValues` reads `allFeatures`, which the fetch effect above
+  // resolves asynchronously — so `useForm` has ALREADY seeded from an empty
+  // list by the time the features land, and every id-bearing default
+  // (`featureIds`: the core features, plus whatever the seed named) is missing.
+  //
+  // Nothing else fixes it: EditorSheet re-seeds on open only when `isEdit`
+  // (EditorSheet.tsx:209 — create defaults usually contain a fresh uuid, so an
+  // unconditional reset there would fire on every open and clobber parents that
+  // pre-fill via form.setValue). That is exactly why the core-feature
+  // checkboxes come up empty on a first create today.
+  //
+  // So catch up here, once, and only when it is safe:
+  //  - `!isEdit`      — the edit path is EditorSheet's, do not fight it.
+  //  - `length > 0`   — this is the empty → loaded transition, not the initial
+  //                     render (and not a genuinely empty feature list).
+  //  - the ref        — one shot per mount, so a later `allFeatures` identity
+  //                     change cannot re-reset a form the user is using.
+  //  - `!isDirty`     — never clobber anything already typed; a user who edited
+  //                     before the fetch returned keeps their input, and the
+  //                     one-shot ref is burned either way.
+  const hasCaughtUpWithFeatures = useRef(false);
+  useEffect(() => {
+    if (isEdit || hasCaughtUpWithFeatures.current || allFeatures.length === 0) return;
+    hasCaughtUpWithFeatures.current = true;
+    if (form.formState.isDirty) return;
+    form.reset(getDefaultValues());
+  }, [allFeatures, isEdit, form, getDefaultValues]);
+
+  // Unknown platform feature names are reported ONCE per seed, not per render:
+  // `seed` typically arrives as an object literal from the list row or the
+  // import dialog, so its identity changes on every parent render — the guard
+  // keys on the names themselves instead. Waits for `allFeatures`, since before
+  // the fetch resolves every name looks unknown.
+  const warnedUnknownFor = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    if (isEdit || !seed || allFeatures.length === 0) return;
+    const fingerprint = JSON.stringify(seed.platformFeatures ?? []);
+    if (warnedUnknownFor.current === fingerprint) return;
+    warnedUnknownFor.current = fingerprint;
+
+    const { unknown } = resolvePlatformFeatures(seed.platformFeatures);
+    if (unknown.length > 0)
+      showToast(t("billing.admin.prices.import.warnings.unknownFeatures", { features: unknown.join(", ") }));
+  }, [seed, isEdit, allFeatures, resolvePlatformFeatures, t]);
 
   const watchInterval = form.watch("interval");
   const isRecurring = watchInterval !== "one_time";
