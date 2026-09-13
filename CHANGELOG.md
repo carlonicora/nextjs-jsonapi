@@ -1,3 +1,9 @@
+## [3.11.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.10.0...v3.11.0) (2026-09-13)
+
+### 🚀 Features
+
+* **navigations:** let a section hide the root breadcrumb entry ([56f3260](https://github.com/carlonicora/nextjs-jsonapi/commit/56f326014cc349acb9f364b5fd845c1031001393))
+
 ## [3.10.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.9.0...v3.10.0) (2026-09-12)
 
 ### 🚀 Features
