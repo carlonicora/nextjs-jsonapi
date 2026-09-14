@@ -1,3 +1,9 @@
+## [3.14.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.14.0...v3.14.1) (2026-09-14)
+
+### 🐛 Bug Fixes
+
+* **i18n:** make the feature key contracts load-bearing ([928913c](https://github.com/carlonicora/nextjs-jsonapi/commit/928913c86ede7731b7c32e3af81eaf909fe729f9))
+
 ## [3.14.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.13.0...v3.14.0) (2026-09-14)
 
 ### 🚀 Features
