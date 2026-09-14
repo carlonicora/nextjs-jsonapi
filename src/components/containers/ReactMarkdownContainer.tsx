@@ -8,6 +8,29 @@ import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 
 import { cn } from "../../utils/cn";
+import { MermaidDiagram } from "./MermaidDiagram";
+
+/**
+ * The source of a ```mermaid fence, or `undefined` for any other `pre`.
+ *
+ * Reads react-markdown's hast node rather than the rendered children: the
+ * language lives in the inner `code` element's `language-*` class, and the
+ * source is its raw text. Pulling it off the React children would mean
+ * unpicking elements that the `code` override has already transformed.
+ */
+function mermaidSourceOf(node: unknown): string | undefined {
+  const pre = node as { children?: { tagName?: string; properties?: { className?: unknown }; children?: unknown[] }[] };
+  const code = pre?.children?.[0];
+  if (code?.tagName !== "code") return undefined;
+
+  const classNames = Array.isArray(code.properties?.className) ? (code.properties.className as string[]) : [];
+  if (!classNames.includes("language-mermaid")) return undefined;
+
+  const text = code.children?.[0] as { type?: string; value?: string } | undefined;
+  if (text?.type !== "text" || typeof text.value !== "string") return undefined;
+
+  return text.value;
+}
 
 type ReactMarkdownContainerProps = {
   content: string;
@@ -100,15 +123,25 @@ export function ReactMarkdownContainer({
               // left-to-right in every locale, so both the fenced block and the
               // inline span are deliberate LTR islands. `node` is react-markdown's
               // hast node — it must not reach the DOM element.
-              // A fenced block scrolls on its own rather than widening the
-              // page: a long command line is unbreakable, and without this the
-              // whole layout is pushed sideways to accommodate it.
+              // A ```mermaid fence is a DIAGRAM, not code. It is caught here on
+              // the `pre` rather than on the `code` inside it, because the
+              // diagram replaces the whole block — catching it a level down
+              // would leave it wrapped in the `pre` chrome it is not.
+              //
+              // A fenced block otherwise scrolls on its own rather than
+              // widening the page: a long command line is unbreakable, and
+              // without this the whole layout is pushed sideways.
               // rtl-ok: deliberate LTR island (code)
-              pre: ({ children, node: _node, ...props }) => (
-                <pre dir="ltr" {...props} className="overflow-x-auto">
-                  {children}
-                </pre>
-              ),
+              pre: ({ children, node, ...props }) => {
+                const diagram = mermaidSourceOf(node);
+                if (diagram !== undefined) return <MermaidDiagram chart={diagram} />;
+
+                return (
+                  <pre dir="ltr" {...props} className="overflow-x-auto">
+                    {children}
+                  </pre>
+                );
+              },
               // No wrap rule HERE. The same component renders inline spans, the
               // contents of fenced blocks and the contents of table cells; the
               // last two live in their own scrollers, and breaking a path
