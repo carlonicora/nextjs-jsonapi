@@ -5,7 +5,7 @@ export type ContentInput = {
   id: string;
   name?: string;
 
-  authorId: string;
+  authorId?: string;
   editorIds?: string[];
 };
 

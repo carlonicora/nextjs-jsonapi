@@ -129,6 +129,8 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
     content: string;
     howToMode?: boolean;
     limitToHowToId?: string;
+    handbookMode?: boolean;
+    limitToHandbookPageId?: string;
     contentBlocks?: unknown[];
   }) {
     return {
@@ -142,18 +144,41 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
           content: params.contentBlocks !== undefined ? JSON.stringify(params.contentBlocks) : params.content,
           ...(params.howToMode !== undefined ? { howToMode: params.howToMode } : {}),
           ...(params.limitToHowToId !== undefined ? { limitToHowToId: params.limitToHowToId } : {}),
+          ...(params.handbookMode !== undefined ? { handbookMode: params.handbookMode } : {}),
+          ...(params.limitToHandbookPageId !== undefined
+            ? { limitToHandbookPageId: params.limitToHandbookPageId }
+            : {}),
         },
       },
     };
   }
 
   static buildOptimistic(params: { content: string; position: number; assistantId?: string }): AssistantMessage {
+    return AssistantMessage.buildLocal({ ...params, role: "user", isOptimistic: true });
+  }
+
+  /**
+   * A message that exists only on the client, for a surface that renders the
+   * chat presentation without persisting a thread.
+   *
+   * `buildOptimistic` is the user-turn case and delegates here. The handbook
+   * ask surface is the other caller: it has no Assistant and no stored
+   * messages, but it renders through MessageList/MessageItem like every other
+   * chat in the product, so it needs both roles.
+   */
+  static buildLocal(params: {
+    role: AssistantMessageRole;
+    content: string;
+    position: number;
+    assistantId?: string;
+    isOptimistic?: boolean;
+  }): AssistantMessage {
     const msg = new AssistantMessage();
     const jsonApi: Record<string, unknown> = {
       id: uuidv4(),
       type: Modules.AssistantMessage.name,
       attributes: {
-        role: "user",
+        role: params.role,
         content: params.content,
         position: params.position,
       },
@@ -164,7 +189,7 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
       };
     }
     msg.rehydrate({ jsonApi: jsonApi as any, included: [] });
-    msg._isOptimistic = true;
+    msg._isOptimistic = params.isOptimistic ?? false;
     return msg;
   }
 }

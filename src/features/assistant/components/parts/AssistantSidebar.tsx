@@ -12,9 +12,17 @@ interface Props {
   activeId?: string;
   onSelect: (id: string) => void;
   onNew: () => void;
+  /**
+   * Label of the "start a new thread" button. Defaults to the assistant's own
+   * copy; a surface that is not the assistant (the handbook chat) passes its
+   * own so the control does not read "New assistant" on a handbook page.
+   */
+  newLabel?: string;
+  /** Shown when there are no threads. Same rationale as `newLabel`. */
+  emptyLabel?: string;
 }
 
-export function AssistantSidebar({ threads, activeId, onSelect, onNew }: Props) {
+export function AssistantSidebar({ threads, activeId, onSelect, onNew, newLabel, emptyLabel }: Props) {
   const t = useTranslations();
   const groups = groupThreadsByBucket(threads);
 
@@ -44,12 +52,14 @@ export function AssistantSidebar({ threads, activeId, onSelect, onNew }: Props) 
     <aside className="bg-muted/30 flex w-64 flex-col border-e">
       <div className="border-b p-3">
         <Button onClick={onNew} className="w-full" size="sm">
-          <Plus className="me-1 h-4 w-4" /> {t("features.assistant.new")}
+          <Plus className="me-1 h-4 w-4" /> {newLabel ?? t("features.assistant.new")}
         </Button>
       </div>
       <div className="flex-1 overflow-y-auto p-2">
         {threads.length === 0 ? (
-          <div className="text-muted-foreground mt-6 text-center text-xs">{t("features.assistant.empty_sidebar")}</div>
+          <div className="text-muted-foreground mt-6 text-center text-xs">
+            {emptyLabel ?? t("features.assistant.empty_sidebar")}
+          </div>
         ) : (
           <>
             {renderSection(t("features.assistant.bucket_today"), groups.today)}

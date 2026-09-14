@@ -455,6 +455,38 @@ describe("AssistantContext", () => {
     );
   });
 
+  it("forwards handbookMode passed on the send", async () => {
+    const existing = buildAssistantDehydrated({ id: "a-3", title: "Existing" });
+    AssistantService.appendMessage = vi.fn().mockResolvedValue([]);
+
+    const { result } = renderHook(() => useAssistantContext(), {
+      wrapper: ({ children }) => <AssistantProvider dehydratedAssistant={existing}>{children}</AssistantProvider>,
+    });
+    await act(async () => {
+      await result.current.sendMessage("Come funziona il modulo chunk?", { handbookMode: true });
+    });
+
+    expect(AssistantService.appendMessage).toHaveBeenCalledWith(expect.objectContaining({ handbookMode: true }));
+  });
+
+  it("forwards the provider's retrievalMode when the send passes nothing", async () => {
+    const existing = buildAssistantDehydrated({ id: "a-4", title: "Existing" });
+    AssistantService.appendMessage = vi.fn().mockResolvedValue([]);
+
+    const { result } = renderHook(() => useAssistantContext(), {
+      wrapper: ({ children }) => (
+        <AssistantProvider dehydratedAssistant={existing} retrievalMode={{ handbookMode: true }}>
+          {children}
+        </AssistantProvider>
+      ),
+    });
+    await act(async () => {
+      await result.current.sendMessage("Come funziona il modulo chunk?");
+    });
+
+    expect(AssistantService.appendMessage).toHaveBeenCalledWith(expect.objectContaining({ handbookMode: true }));
+  });
+
   it("calls service without opts when called with content only (regression)", async () => {
     const replaceState = vi.spyOn(window.history, "replaceState").mockImplementation(() => {});
     const created = buildAssistantStub({ id: "a-1" });

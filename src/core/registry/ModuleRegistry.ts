@@ -16,6 +16,10 @@ export interface FoundationModuleDefinitions {
   Module: ModuleWithPermissions;
   Content: ModuleWithPermissions;
   HowTo: ModuleWithPermissions;
+  HandbookPage: ModuleWithPermissions;
+  HandbookSection: ModuleWithPermissions;
+  HandbookThread: ModuleWithPermissions;
+  HandbookThreadMessage: ModuleWithPermissions;
   Assistant: ModuleWithPermissions;
   AssistantMessage: ModuleWithPermissions;
   AssistantAction: ModuleWithPermissions;

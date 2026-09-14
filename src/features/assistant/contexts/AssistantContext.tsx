@@ -22,7 +22,13 @@ interface AssistantContextValue {
   failedMessageIds: Set<string>;
   sendMessage(
     content: string,
-    opts?: { howToMode?: boolean; limitToHowToId?: string; contentBlocks?: unknown[] },
+    opts?: {
+      howToMode?: boolean;
+      limitToHowToId?: string;
+      handbookMode?: boolean;
+      limitToHandbookPageId?: string;
+      contentBlocks?: unknown[];
+    },
   ): Promise<void>;
   retrySend(tempId: string): Promise<void>;
   selectThread(id: string): Promise<void>;
@@ -55,6 +61,13 @@ interface Props {
    * it, so a scoped surface never shows or creates cross-scope threads.
    */
   scope?: { type: string; id: string };
+  /**
+   * Confines every turn of this provider to one retrieval mode. The handbook
+   * surface sets `{ handbookMode: true }` so the flag does not have to be
+   * threaded through the composer on each send — the same reason `scope`
+   * exists on this provider.
+   */
+  retrievalMode?: { handbookMode?: boolean; limitToHandbookPageId?: string };
   /**
    * Builds the browser URL for a thread. Defaults to `/assistants/{id}` (or
    * `/assistants` when no thread is active), which is only correct for the
@@ -100,6 +113,7 @@ export function AssistantProvider({
   titleOverride,
   breadcrumbsOverride,
   scope,
+  retrievalMode,
   threadUrl,
 }: Props) {
   const t = useTranslations();
@@ -130,7 +144,16 @@ export function AssistantProvider({
   const { socket } = useSocketContext();
 
   const sendMessage = useCallback(
-    async (content: string, opts?: { howToMode?: boolean; limitToHowToId?: string; contentBlocks?: unknown[] }) => {
+    async (
+      content: string,
+      opts?: {
+        howToMode?: boolean;
+        limitToHowToId?: string;
+        handbookMode?: boolean;
+        limitToHandbookPageId?: string;
+        contentBlocks?: unknown[];
+      },
+    ) => {
       const trimmed = content.trim();
       if (!trimmed) return;
 
@@ -155,6 +178,8 @@ export function AssistantProvider({
             firstMessage: trimmed,
             howToMode: opts?.howToMode,
             limitToHowToId: opts?.limitToHowToId,
+            handbookMode: opts?.handbookMode ?? retrievalMode?.handbookMode,
+            limitToHandbookPageId: opts?.limitToHandbookPageId ?? retrievalMode?.limitToHandbookPageId,
             contentBlocks: opts?.contentBlocks,
             boundContent: scope,
           };
@@ -180,6 +205,8 @@ export function AssistantProvider({
                 content: trimmed,
                 howToMode: opts?.howToMode,
                 limitToHowToId: opts?.limitToHowToId,
+                handbookMode: opts?.handbookMode ?? retrievalMode?.handbookMode,
+                limitToHandbookPageId: opts?.limitToHandbookPageId ?? retrievalMode?.limitToHandbookPageId,
                 contentBlocks: opts?.contentBlocks,
               });
           setMessages((prev) => [...stripOptimistic(prev), ...result]);
@@ -196,7 +223,7 @@ export function AssistantProvider({
         setStatus(undefined);
       }
     },
-    [assistant, messages, socket, operatorMode, scope, manageUrl, resolveThreadUrl],
+    [assistant, messages, socket, operatorMode, scope, retrievalMode, manageUrl, resolveThreadUrl],
   );
 
   const appendResolvedMessage = useCallback((message: AssistantMessageInterface) => {

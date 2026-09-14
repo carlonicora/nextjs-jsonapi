@@ -67,6 +67,8 @@ export class AssistantService extends AbstractService {
     content: string;
     howToMode?: boolean;
     limitToHowToId?: string;
+    handbookMode?: boolean;
+    limitToHandbookPageId?: string;
     /** BlockNote document. Serialised by the model into `content`; never its own attribute. */
     contentBlocks?: unknown[];
   }): Promise<AssistantMessageInterface[]> {
@@ -83,6 +85,8 @@ export class AssistantService extends AbstractService {
         content: params.content,
         howToMode: params.howToMode,
         limitToHowToId: params.limitToHowToId,
+        handbookMode: params.handbookMode,
+        limitToHandbookPageId: params.limitToHandbookPageId,
         contentBlocks: params.contentBlocks,
       }),
       overridesJsonApiCreation: true,

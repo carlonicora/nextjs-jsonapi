@@ -59,6 +59,19 @@ export class HowToService extends AbstractService {
     });
   }
 
+  /**
+   * POST /howtos/reindex — re-queues every guide for chunking. Replies 204.
+   * Chunking otherwise only happens on create and update, so a guide that was
+   * never chunked stays invisible to help-mode retrieval with no way back.
+   */
+  static async reindex(): Promise<void> {
+    await this.callApi({
+      type: Modules.HowTo,
+      method: HttpMethod.POST,
+      endpoint: new EndpointCreator({ endpoint: Modules.HowTo, id: "reindex" }).generate(),
+    });
+  }
+
   static async findPublished(params: { howToType?: string } = {}): Promise<HowToInterface[]> {
     const endpoint = new EndpointCreator({ endpoint: `public/${Modules.HowTo.name}` });
     if (params.howToType) endpoint.addAdditionalParam("type", params.howToType);

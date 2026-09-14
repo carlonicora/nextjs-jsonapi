@@ -7,5 +7,6 @@ export { default as HowToDetails } from "./details/HowToDetails";
 export { default as HowToDeleter } from "./forms/HowToDeleter";
 export { default as HowToEditor } from "./forms/HowToEditor";
 export { default as HowToMultiSelector } from "./forms/HowToMultiSelector";
+export { default as HowToReindexButton } from "./forms/HowToReindexButton";
 export { default as HowToSelector } from "./forms/HowToSelector";
 export { default as HowToList } from "./lists/HowToList";

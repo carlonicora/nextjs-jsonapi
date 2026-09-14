@@ -87,7 +87,11 @@ export function MessageSourcesContainer({ message, isLatestAssistant, onSelectFo
 
   useEffect(() => {
     if (groups.size === 0) {
-      setResolved([]);
+      // Functional update, and a no-op when it is already empty. A bare
+      // `setResolved([])` sets a NEW array on every run, so a caller whose
+      // `message.citations` identity changes per render loops here until React
+      // gives up with "Maximum update depth exceeded".
+      setResolved((current) => (current.length === 0 ? current : []));
       return;
     }
     let cancelled = false;

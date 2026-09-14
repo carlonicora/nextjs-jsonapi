@@ -10,6 +10,7 @@ import { HowToInterface } from "../../data/HowToInterface";
 import { HowToService } from "../../data/HowToService";
 import "../../hooks/useHowToTableStructure";
 import HowToEditor from "../forms/HowToEditor";
+import HowToReindexButton from "../forms/HowToReindexButton";
 
 type HowToListProps = {
   fullWidth?: boolean;
@@ -24,7 +25,10 @@ export default function HowToList({ fullWidth }: HowToListProps) {
     retrieverParams: {},
   });
 
-  const functions: ReactNode[] = [<HowToEditor key="create-how-to" />];
+  const functions: ReactNode[] = [
+    <HowToReindexButton key="reindex-how-tos" refresh={data.refresh} />,
+    <HowToEditor key="create-how-to" />,
+  ];
 
   return (
     <ContentListTable

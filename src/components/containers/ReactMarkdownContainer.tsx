@@ -4,7 +4,10 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
+
+import { cn } from "../../utils/cn";
 
 type ReactMarkdownContainerProps = {
   content: string;
@@ -52,10 +55,34 @@ export function ReactMarkdownContainer({
         <div ref={contentRef} style={clampStyle} className="transition-all duration-300 ease-in-out">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
+            // `rehype-slug` puts a stable `id` on every heading. Nothing linked
+            // to a heading before, so no markdown surface in the package could
+            // carry an in-page table of contents; the handbook reader's one
+            // reads these ids straight out of the DOM.
+            rehypePlugins={[rehypeSlug]}
             components={{
-              p: ({ children }) => <p className={size === "small" ? "text-xs" : ""}>{children}</p>,
-              li: ({ children }) => <li className={size === "small" ? "text-xs" : ""}>{children}</li>,
-              table: ({ children }) => <table className="w-full table-auto border-collapse border">{children}</table>,
+              // `overflow-wrap:anywhere`, not `break-words`: prose here is full
+              // of file paths, and there is no space in
+              // `packages/nestjs-neo4jsonapi/src/core/health.controller.ts` for
+              // `break-words` to break at. Without it one path widens the page
+              // and the whole layout scrolls sideways.
+              p: ({ children }) => (
+                <p className={cn("[overflow-wrap:anywhere]", size === "small" && "text-xs")}>{children}</p>
+              ),
+              li: ({ children }) => (
+                <li className={cn("[overflow-wrap:anywhere]", size === "small" && "text-xs")}>{children}</li>
+              ),
+              // Wrapped in its own scroller for the same reason as `pre`: a
+              // three-column table of file paths is wider than any reading
+              // column, and unwrapped it drags the page sideways with it.
+              table: ({ children }) => (
+                <div className="overflow-x-auto">
+                  {/* `min-w-max` so columns keep their natural width and the
+                      wrapper scrolls, rather than the table squeezing until a
+                      path breaks mid-word inside a cell. */}
+                  <table className="w-full min-w-max table-auto border-collapse border">{children}</table>
+                </div>
+              ),
               th: ({ children }) => (
                 <th className={`border px-4 py-2 text-start ${size === "small" ? "px-2 py-1 text-xs" : ""}`}>
                   {children}
@@ -73,37 +100,60 @@ export function ReactMarkdownContainer({
               // left-to-right in every locale, so both the fenced block and the
               // inline span are deliberate LTR islands. `node` is react-markdown's
               // hast node — it must not reach the DOM element.
+              // A fenced block scrolls on its own rather than widening the
+              // page: a long command line is unbreakable, and without this the
+              // whole layout is pushed sideways to accommodate it.
               // rtl-ok: deliberate LTR island (code)
               pre: ({ children, node: _node, ...props }) => (
-                <pre dir="ltr" {...props}>
+                <pre dir="ltr" {...props} className="overflow-x-auto">
                   {children}
                 </pre>
               ),
+              // No wrap rule HERE. The same component renders inline spans, the
+              // contents of fenced blocks and the contents of table cells; the
+              // last two live in their own scrollers, and breaking a path
+              // mid-word inside them is worse than scrolling to it. The rule
+              // that catches inline code sits on `p` and `li`, which is where
+              // inline code actually lives.
               // rtl-ok: deliberate LTR island (code)
               code: ({ children, node: _node, ...props }) => (
                 <code dir="ltr" {...props}>
                   {children}
                 </code>
               ),
-              h1: ({ children }) => (
-                <h1 className={size === "small" ? "my-1 mt-2 text-sm font-bold" : "my-2 mt-4 text-3xl font-semibold"}>
+              // The heading overrides spread the node's props, exactly as `pre`
+              // and `code` already do: dropping them would throw away the `id`
+              // rehype-slug just set and leave every heading unlinkable again.
+              // `node` is react-markdown's hast node — it must not reach the DOM.
+              h1: ({ children, node: _node, ...props }) => (
+                <h1
+                  {...props}
+                  className={size === "small" ? "my-1 mt-2 text-sm font-bold" : "my-2 mt-4 text-3xl font-semibold"}
+                >
                   {children}
                 </h1>
               ),
-              h2: ({ children }) => (
+              h2: ({ children, node: _node, ...props }) => (
                 <h2
+                  {...props}
                   className={size === "small" ? "my-1 mt-2 text-sm font-semibold" : "my-2 mt-4 text-2xl font-semibold"}
                 >
                   {children}
                 </h2>
               ),
-              h3: ({ children }) => (
-                <h3 className={size === "small" ? "my-1 mt-2 text-sm font-medium" : "my-2 mt-4 text-xl font-semibold"}>
+              h3: ({ children, node: _node, ...props }) => (
+                <h3
+                  {...props}
+                  className={size === "small" ? "my-1 mt-2 text-sm font-medium" : "my-2 mt-4 text-xl font-semibold"}
+                >
                   {children}
                 </h3>
               ),
-              h4: ({ children }) => (
-                <h4 className={size === "small" ? "my-1 mt-2 text-sm font-medium" : "my-2 mt-4 text-lg font-semibold"}>
+              h4: ({ children, node: _node, ...props }) => (
+                <h4
+                  {...props}
+                  className={size === "small" ? "my-1 mt-2 text-sm font-medium" : "my-2 mt-4 text-lg font-semibold"}
+                >
                   {children}
                 </h4>
               ),

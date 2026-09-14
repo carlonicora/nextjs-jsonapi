@@ -26,6 +26,7 @@ export * from "../features/ai-connection";
 export * from "../features/company/components";
 export * from "../features/content/components";
 export * from "../features/how-to/components";
+export * from "../features/handbook/components";
 export * from "../features/assistant/components";
 export * from "../features/assistant-message/components";
 export * from "../features/assistant-action/components";

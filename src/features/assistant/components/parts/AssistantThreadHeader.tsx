@@ -21,9 +21,16 @@ interface Props {
   assistant: AssistantInterface;
   onRename: (title: string) => Promise<void>;
   onDelete: () => Promise<void>;
+  /**
+   * Placeholder of the rename field. Defaults to the assistant's own copy
+   * ("name this assistant"), which misnames the thread on any other surface.
+   */
+  renamePlaceholder?: string;
+  /** Body of the delete confirmation. Same rationale as `renamePlaceholder`. */
+  deleteConfirmLabel?: string;
 }
 
-export function AssistantThreadHeader({ assistant, onRename, onDelete }: Props) {
+export function AssistantThreadHeader({ assistant, onRename, onDelete, renamePlaceholder, deleteConfirmLabel }: Props) {
   const t = useTranslations();
   const [renameValue, setRenameValue] = useState(assistant.title);
   const [renameOpen, setRenameOpen] = useState(false);
@@ -56,7 +63,7 @@ export function AssistantThreadHeader({ assistant, onRename, onDelete }: Props) 
             <Input
               value={renameValue}
               onChange={(e) => setRenameValue(e.target.value)}
-              placeholder={t("features.assistant.rename_placeholder")}
+              placeholder={renamePlaceholder ?? t("features.assistant.rename_placeholder")}
             />
             <Button onClick={handleRename} size="sm">
               {t("ui.buttons.save")}
@@ -73,7 +80,7 @@ export function AssistantThreadHeader({ assistant, onRename, onDelete }: Props) 
           />
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{t("features.assistant.delete_confirm")}</DialogTitle>
+              <DialogTitle>{deleteConfirmLabel ?? t("features.assistant.delete_confirm")}</DialogTitle>
             </DialogHeader>
             <DialogFooter>
               <Button variant="outline" onClick={() => setDeleteOpen(false)}>

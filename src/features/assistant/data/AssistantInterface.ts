@@ -5,6 +5,8 @@ export type AssistantInput = {
   title?: string;
   howToMode?: boolean;
   limitToHowToId?: string;
+  handbookMode?: boolean;
+  limitToHandbookPageId?: string;
   /**
    * BlockNote document behind `firstMessage`. Sent alongside the flattened
    * text so the server can re-derive the content and read `@`-mentions from

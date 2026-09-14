@@ -10,9 +10,28 @@ interface Props {
   disabled?: boolean;
   value?: string;
   onValueChange?: (v: string) => void;
+  /**
+   * Textarea placeholder. Defaults to the assistant's own copy ("ask me about a
+   * matter, a client, a document…"), which is wrong on any surface that is not
+   * the law-firm assistant.
+   */
+  placeholder?: string;
+  /**
+   * Label of the send button. Defaults to `ui.buttons.save`, which reads
+   * "Salva" — correct nowhere in a chat, kept only so existing callers do not
+   * move.
+   */
+  sendLabel?: string;
 }
 
-export function AssistantComposer({ onSend, disabled, value: controlled, onValueChange }: Props) {
+export function AssistantComposer({
+  onSend,
+  disabled,
+  value: controlled,
+  onValueChange,
+  placeholder,
+  sendLabel,
+}: Props) {
   const t = useTranslations();
   const [internal, setInternal] = useState("");
   const value = controlled ?? internal;
@@ -41,13 +60,13 @@ export function AssistantComposer({ onSend, disabled, value: controlled, onValue
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={onKeyDown}
-          placeholder={t("features.assistant.composer_placeholder")}
+          placeholder={placeholder ?? t("features.assistant.composer_placeholder")}
           disabled={disabled}
           rows={2}
           className="min-h-[48px] resize-none border-0 bg-transparent focus-visible:ring-0"
         />
         <Button onClick={submit} disabled={!canSend} size="sm" className="h-8">
-          <ArrowUp className="me-1 h-4 w-4" /> {t("features.assistant.send")}
+          <ArrowUp className="me-1 h-4 w-4" /> {sendLabel ?? t("features.assistant.send")}
         </Button>
       </div>
       <div className="text-muted-foreground text-end text-xs">{t("features.assistant.keyboard_hint")}</div>

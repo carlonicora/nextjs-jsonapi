@@ -239,7 +239,6 @@ function HowToEditorInternal({
         const payload: HowToInput = {
           id: values.id,
           name: values.name,
-          authorId: "",
           description: values.description,
           pages: HowTo.serializePagesToString(values.pages),
           howToType: values.howToType,
