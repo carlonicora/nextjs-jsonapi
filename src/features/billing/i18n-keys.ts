@@ -93,3 +93,18 @@ export const BILLING_ADMIN_I18N_KEYS = [
   "billing.admin.prices.restore.description",
   "billing.admin.prices.restore.confirm",
 ] as const;
+
+/**
+ * The `billing.tokens.*` namespace, read by the token status indicator rather
+ * than by any administrative surface — which is why it is a second export
+ * instead of an addition to the list above, whose contract is scoped to the
+ * admin screens.
+ */
+export const BILLING_TOKENS_I18N_KEYS = [
+  "billing.tokens.status",
+  "billing.tokens.monthly",
+  "billing.tokens.available",
+  "billing.tokens.available_extra",
+  "billing.tokens.purchase_extra",
+  "billing.tokens.upgrade_plan",
+] as const;

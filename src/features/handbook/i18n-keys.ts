@@ -17,6 +17,7 @@ export const handbookI18nKeys = [
   "handbook.syncFailed",
   "handbook.empty",
   "handbook.notConfigured",
+  "handbook.notFound",
   "handbook.chat.title",
   "handbook.chat.placeholder",
   "handbook.chat.ask",
