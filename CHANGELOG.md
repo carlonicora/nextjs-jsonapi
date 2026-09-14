@@ -1,3 +1,9 @@
+## [3.13.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.12.0...v3.13.0) (2026-09-14)
+
+### 🚀 Features
+
+* **handbook:** handbook feature with contents, page reader and ask sheet ([d9fda46](https://github.com/carlonicora/nextjs-jsonapi/commit/d9fda46fd1a8222ce69bbe622edfa97e06307b4d))
+
 ## [3.12.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.11.0...v3.12.0) (2026-09-13)
 
 ### 🚀 Features
