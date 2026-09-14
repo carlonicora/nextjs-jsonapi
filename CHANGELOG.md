@@ -1,3 +1,9 @@
+## [3.14.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.13.0...v3.14.0) (2026-09-14)
+
+### 🚀 Features
+
+* **markdown:** render mermaid diagrams ([d417dd2](https://github.com/carlonicora/nextjs-jsonapi/commit/d417dd2c71335759ffd140eae44a3dc3713c864a))
+
 ## [3.13.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.12.0...v3.13.0) (2026-09-14)
 
 ### 🚀 Features
