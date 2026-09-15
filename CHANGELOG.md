@@ -1,3 +1,9 @@
+## [3.15.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.15.0...v3.15.1) (2026-09-15)
+
+### 🐛 Bug Fixes
+
+* **context:** simplify return type of useCurrentUserContextOptional ([6e51b14](https://github.com/carlonicora/nextjs-jsonapi/commit/6e51b14996ecca7dc6f77ac1b7c2ddb7c6d1f02a))
+
 ## [3.15.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.14.1...v3.15.0) (2026-09-15)
 
 ### 🚀 Features
