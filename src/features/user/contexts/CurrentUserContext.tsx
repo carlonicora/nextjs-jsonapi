@@ -304,7 +304,6 @@ export function useCurrentUserContext<T extends UserInterface = UserInterface>()
  * so a missing provider fails loudly instead of silently degrading.
  */
 export function useCurrentUserContextOptional<T extends UserInterface = UserInterface>():
-  | CurrentUserContextType<T>
-  | undefined {
+  CurrentUserContextType<T> | undefined {
   return useContext(CurrentUserContext) as unknown as CurrentUserContextType<T> | undefined;
 }
