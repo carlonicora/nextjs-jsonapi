@@ -9,6 +9,7 @@ import {
   ClientJsonApiPatch,
   ClientJsonApiDelete,
 } from "../../client/JsonApiClient";
+import { setLastApiResponse } from "./lastApiResponse";
 // Duplicated to avoid importing from AbstractService which pulls in server code
 // These are exported so client services can import them from here instead of core
 export enum ClientHttpMethod {
@@ -237,6 +238,10 @@ export abstract class ClientAbstractService {
     if (apiResponse.prev && params.previous) params.previous.previous = apiResponse.prev;
     if (apiResponse.self && params.self) params.self.self = apiResponse.self;
     if (apiResponse.meta?.total !== undefined && params.total) params.total.total = apiResponse.meta.total;
+    // Pagination runs through this base, so it must refresh the shared store too —
+    // otherwise `useDataListRetriever` keeps showing the total of whatever list was
+    // loaded before this one.
+    setLastApiResponse(apiResponse.meta);
 
     return apiResponse.data as T;
   }
