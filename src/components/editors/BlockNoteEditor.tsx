@@ -40,7 +40,7 @@ import { useTheme } from "next-themes";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getPublicApiUrl } from "../../client/config";
 import { getClientToken } from "../../client/token";
-import { useCurrentUserContext } from "../../contexts";
+import { useCurrentUserContextOptional } from "../../contexts";
 import { S3Interface } from "../../features/s3/data";
 import { S3Service } from "../../features/s3/data/s3.service";
 import { UserInterface } from "../../features/user/data";
@@ -418,7 +418,11 @@ export default function BlockNoteEditor({
   const t = useTranslations();
   const locale = useI18nLocale();
   const { resolvedTheme } = useTheme();
-  const { company } = useCurrentUserContext<UserInterface>();
+  // Optional on purpose: a host app may mount its own user context instead of
+  // this package's, and the editor already degrades without a company — image
+  // upload reports it (`uploadImage`) and the AI transport simply omits the
+  // company header. Throwing here would take the whole page down instead.
+  const company = useCurrentUserContextOptional<UserInterface>()?.company ?? null;
 
   const [acceptedChanges, setAcceptedChanges] = useState<Set<string>>(new Set());
   const [rejectedChanges, setRejectedChanges] = useState<Set<string>>(new Set());

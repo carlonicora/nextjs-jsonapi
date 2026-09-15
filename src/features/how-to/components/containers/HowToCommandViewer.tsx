@@ -4,7 +4,10 @@ import { ArrowLeft, BookOpen, MessageSquare } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 
-import { BlockNoteEditorContainer } from "../../../../components";
+// Read-only viewer, not the editor: the editor reads the package
+// CurrentUserContext, which an app with its own user provider never mounts,
+// and the panel only ever displays a guide.
+import { BlockNoteViewerContainer } from "../../../../components";
 import { Button } from "../../../../shadcnui";
 import { SectionHeader } from "../../../../components/typography";
 import { HowToInterface } from "../../data/HowToInterface";
@@ -61,7 +64,7 @@ export default function HowToCommandViewer({ howTo, onBack, onStartChat }: HowTo
 
         {/* Right content - scrollable */}
         <div id="howto-viewer-content" className="min-w-0 flex-1 overflow-y-auto p-4">
-          <BlockNoteEditorContainer id={howTo.id} type="howto" initialContent={howTo.description} />
+          <BlockNoteViewerContainer content={howTo.description} />
         </div>
       </div>
 

@@ -38,13 +38,15 @@ function matchPage(pathname: string, pattern: string): boolean {
 type HowToCommandProps = {
   /** Current pathname for page relevance matching */
   pathname: string;
+  /** When given, relevance is by contextualKeys intersection instead of `pages` matching */
+  contextKeys?: string[];
   /** Optional extra command groups to render when not searching */
   extraGroups?: ReactNode;
   /** Called when user starts a chat from the viewer */
   onStartChat?: () => void;
 };
 
-export default function HowToCommand({ pathname, extraGroups, onStartChat }: HowToCommandProps) {
+export default function HowToCommand({ pathname, contextKeys, extraGroups, onStartChat }: HowToCommandProps) {
   const t = useTranslations();
 
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
@@ -53,11 +55,14 @@ export default function HowToCommand({ pathname, extraGroups, onStartChat }: How
   const searchTermRef = useRef<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
 
+  // Relevance is computed client-side over the loaded list, so the list must be
+  // the whole catalogue: with one page of 25 the guides keyed to the current
+  // page are usually on a later page and "relevant" comes back empty.
   const data: DataListRetriever<HowToInterface> = useDataListRetriever({
     retriever: (params) => {
       return HowToService.findMany(params);
     },
-    retrieverParams: {},
+    retrieverParams: { fetchAll: true },
     module: Modules.HowTo,
   });
 
@@ -69,8 +74,9 @@ export default function HowToCommand({ pathname, extraGroups, onStartChat }: How
     const other: HowToInterface[] = [];
 
     (data.data as HowToInterface[]).forEach((howTo) => {
-      const pages = HowTo.parsePagesFromString(howTo.pages);
-      const isRelevant = pages.some((page) => page && matchPage(pathname, page));
+      const isRelevant = contextKeys
+        ? (howTo.contextualKeys ?? []).some((k) => contextKeys.includes(k))
+        : HowTo.parsePagesFromString(howTo.pages).some((page) => page && matchPage(pathname, page));
       if (isRelevant) {
         relevant.push(howTo);
       } else {
@@ -79,7 +85,7 @@ export default function HowToCommand({ pathname, extraGroups, onStartChat }: How
     });
 
     return { relevantHowTos: relevant, otherHowTos: other };
-  }, [data.data, pathname]);
+  }, [data.data, pathname, contextKeys]);
 
   const search = useCallback(
     async (searchedTerm: string) => {
