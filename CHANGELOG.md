@@ -1,3 +1,9 @@
+## [3.15.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.15.1...v3.15.2) (2026-09-15)
+
+### 🐛 Bug Fixes
+
+* **core:** stop a list total leaking between entities ([8e3c835](https://github.com/carlonicora/nextjs-jsonapi/commit/8e3c8358f4ab5f9d0910ae552693c29e22b76867))
+
 ## [3.15.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.15.0...v3.15.1) (2026-09-15)
 
 ### 🐛 Bug Fixes
