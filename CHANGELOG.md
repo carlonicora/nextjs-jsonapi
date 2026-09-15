@@ -1,3 +1,9 @@
+## [3.15.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.14.1...v3.15.0) (2026-09-15)
+
+### 🚀 Features
+
+* **how-to:** host-app hooks for the launcher and list, guides viewed read-only ([bba7b3d](https://github.com/carlonicora/nextjs-jsonapi/commit/bba7b3d496bcc889a0d74a93be44542092bf7675))
+
 ## [3.14.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.14.0...v3.14.1) (2026-09-14)
 
 ### 🐛 Bug Fixes
