@@ -1,3 +1,9 @@
+## [3.16.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.15.2...v3.16.0) (2026-09-16)
+
+### 🚀 Features
+
+* **blocknote:** configurable whole-document AI actions and an external AI handle ([74a967a](https://github.com/carlonicora/nextjs-jsonapi/commit/74a967ab5946033db2ef6e6d41e7ee8eac43179c))
+
 ## [3.15.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.15.1...v3.15.2) (2026-09-15)
 
 ### 🐛 Bug Fixes
