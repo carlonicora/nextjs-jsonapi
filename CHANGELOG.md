@@ -1,3 +1,9 @@
+## [3.16.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.16.0...v3.16.1) (2026-09-16)
+
+### 🐛 Bug Fixes
+
+* **assistant:** scroll a new reply to its top, not the thread bottom ([b6835fa](https://github.com/carlonicora/nextjs-jsonapi/commit/b6835faad81b003b8b685b19b6f796e4ff1c8ac8))
+
 ## [3.16.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.15.2...v3.16.0) (2026-09-16)
 
 ### 🚀 Features
