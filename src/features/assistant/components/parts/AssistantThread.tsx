@@ -27,10 +27,13 @@ export function AssistantThread({
   renderApprovalAction,
   renderMention,
 }: Props) {
-  const endRef = useRef<HTMLDivElement>(null);
+  const lastMessageRef = useRef<HTMLDivElement>(null);
 
+  // `block: "start"` on purpose: the reader should land on the FIRST line of the
+  // newest message, not at the end of the thread. Scrolling to the bottom would
+  // drop them at the last line of a long answer and force them to scroll back up.
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
+    lastMessageRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
   }, [messages.length, sending]);
 
   return (
@@ -42,9 +45,9 @@ export function AssistantThread({
         onRetry={onRetry}
         renderApprovalAction={renderApprovalAction}
         renderMention={renderMention}
+        lastMessageRef={lastMessageRef}
       />
       {sending && <AssistantStatusLine status={status} />}
-      <div ref={endRef} />
     </div>
   );
 }
