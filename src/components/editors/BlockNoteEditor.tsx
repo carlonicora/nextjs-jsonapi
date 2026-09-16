@@ -26,15 +26,7 @@ import {
 import { en as aiEn } from "@blocknote/xl-ai/locales";
 import "@blocknote/xl-ai/style.css";
 import { DefaultChatTransport } from "ai";
-import {
-  CheckIcon,
-  LanguagesIcon,
-  LayoutTemplateIcon,
-  SparklesIcon,
-  TypeIcon,
-  WandSparklesIcon,
-  XIcon,
-} from "lucide-react";
+import { CheckIcon, LanguagesIcon, SparklesIcon, TypeIcon, WandSparklesIcon, XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -48,6 +40,7 @@ import { useI18nLocale } from "../../i18n/config";
 import { Button } from "../../shadcnui";
 import { BlockNoteDiffUtil, BlockNoteWordDiffRendererUtil, cn } from "../../utils";
 import { errorToast } from "../errors";
+import { BlockNoteAiGenerateAction, generateActionItems } from "./BlockNoteEditorAiActions";
 import { BlockNoteEditorFormattingToolbar } from "./BlockNoteEditorFormattingToolbar";
 import { BlockNoteEditorMentionHoverCard } from "./BlockNoteEditorMentionHoverCard";
 import {
@@ -57,10 +50,21 @@ import {
 } from "./BlockNoteEditorMentionInlineContent";
 import { BlockNoteEditorMentionSuggestionMenu } from "./BlockNoteEditorSuggestionMenuController";
 
+/**
+ * Lets app code trigger a whole-document AI action from OUTSIDE the editor
+ * (a visible button next to the field label, for instance) without owning the
+ * BlockNote instance. Delivered through a plain prop, not a React `ref`:
+ * `BlockNoteEditorContainer` is a `next/dynamic` import wrapped in
+ * `React.memo`, and refs do not pass through that reliably.
+ */
+export type BlockNoteAiHandle = { invokeAi: (type: BlockNoteAiGenerateAction) => void };
+
 export type BlockNoteAiConfig = {
   endpoint: string;
   entityType: string;
   entityId?: string;
+  /** Whole-document actions shown when nothing is selected. Default: ["fill-template"]. */
+  actions?: BlockNoteAiGenerateAction[];
 };
 
 export type BlockNoteEditorProps = {
@@ -98,6 +102,10 @@ export type BlockNoteEditorProps = {
   // false, no AI extension is created, the AI toolbar button and AI slash
   // items are hidden, and the editor falls back to the plain slash menu.
   aiEnabled?: boolean;
+  // Filled with a {@link BlockNoteAiHandle} while the editor is mounted and AI
+  // is on, so a control outside the editor can run a whole-document AI action.
+  // Cleared on unmount and whenever AI is unavailable.
+  aiHandleRef?: React.MutableRefObject<BlockNoteAiHandle | null>;
 };
 
 function isBlockEmpty(block: any): boolean {
@@ -195,7 +203,7 @@ const createDiffActionsInlineContentSpec = (
  * The backend dispatcher reads `body.type` and routes to a per-type handler
  * with its own canonical prompt. NO prompt text lives in this file.
  */
-function NarrAIMenu() {
+function NarrAIMenu({ actions }: { actions?: BlockNoteAiGenerateAction[] }) {
   const editor = useBlockNoteEditor();
   const ai = useExtension(AIExtension);
   const dict = useAIDictionary();
@@ -250,32 +258,26 @@ function NarrAIMenu() {
     // free-form (or pending-type) prompt instead of being hijacked.
     if (hasTyped) return [];
 
-    // Generate from Template is shown in BOTH contexts (with and without
-    // selection) because it operates on the whole document — it ignores any
-    // active selection and runs the per-section template-fill flow. Listed
-    // first so it's the default-highlighted item.
-    const generateFromTemplate = {
-      key: "generate_from_template",
-      title: "Generate from Template",
-      aliases: ["generate", "template", "fill"],
-      icon: <LayoutTemplateIcon size={18} />,
-      size: "small" as const,
-      onItemClick: () => {
-        void ai.invokeAI({
-          userPrompt: "fill-template",
-          useSelection: false,
-          chatRequestOptions: { body: { type: "fill-template" } },
-        });
-      },
+    const invokeGenerate = (type: BlockNoteAiGenerateAction) => {
+      void ai.invokeAI({
+        userPrompt: type,
+        useSelection: false,
+        chatRequestOptions: { body: { type } },
+      });
     };
+    // Whole-document items are shown in BOTH contexts (with and without
+    // selection) because they operate on the whole document — they ignore any
+    // active selection. Listed first so the first one is the
+    // default-highlighted item.
+    const generateItems = generateActionItems(actions, invokeGenerate);
 
     if (hasSelection) {
-      // Selection-edit items + the always-available Generate from Template.
+      // Selection-edit items + the always-available whole-document items.
       // Each selection item invokes ai.invokeAI with chatRequestOptions
       // carrying the `type` body field. The userPrompt is a short tag — the
       // backend ignores it and uses the canonical prompt for the type instead.
       return [
-        generateFromTemplate,
+        ...generateItems,
         {
           key: "improve_writing",
           title: "Improve Writing",
@@ -341,11 +343,11 @@ function NarrAIMenu() {
       ];
     }
 
-    // No selection (the /ai slash menu path): just Generate from Template.
+    // No selection (the /ai slash menu path): just the whole-document items.
     // Free-form typing still works — once the user types, items hide and
     // Enter submits with no type (backend defaults to fill-template).
-    return [generateFromTemplate];
-  }, [editor, status, prompt, ai, expandSelectionToBlocks]);
+    return generateItems;
+  }, [editor, status, prompt, ai, expandSelectionToBlocks, actions]);
 
   const handleSubmit = useCallback(
     async (userPrompt: string) => {
@@ -414,6 +416,7 @@ export default function BlockNoteEditor({
   aiConfig,
   stretch,
   aiEnabled = true,
+  aiHandleRef,
 }: BlockNoteEditorProps): React.JSX.Element {
   const t = useTranslations();
   const locale = useI18nLocale();
@@ -670,6 +673,40 @@ export default function BlockNoteEditor({
     ),
   );
 
+  // Publish the outside-the-editor AI trigger. `editor.getExtension(AIExtension)`
+  // is BlockNote 0.54's documented lookup by extension factory (core's
+  // `getExtension` resolves a function argument through `extensionFactories`),
+  // so the instance is reachable without the `useExtension` hook that only
+  // works inside the BlockNote context (NarrAIMenu). The menu MUST be opened
+  // first: `invokeAI` routes every status update through `setAIResponseStatus`,
+  // which is a no-op while `aiMenuState === "closed"` — without the open menu
+  // the request runs but the accept / reject UI never appears.
+  useEffect(() => {
+    if (!aiHandleRef) return;
+    if (!aiConfig || !aiEnabled) {
+      aiHandleRef.current = null;
+      return;
+    }
+    aiHandleRef.current = {
+      invokeAi: (type: BlockNoteAiGenerateAction) => {
+        const ai = editor.getExtension(AIExtension);
+        if (!ai) return;
+        editor.focus();
+        const blocks = editor.document;
+        const anchor = blocks?.[blocks.length - 1];
+        if (anchor?.id) ai.openAIMenuAtBlock(anchor.id);
+        void ai.invokeAI({
+          userPrompt: type,
+          useSelection: false,
+          chatRequestOptions: { body: { type } },
+        });
+      },
+    };
+    return () => {
+      aiHandleRef.current = null;
+    };
+  }, [aiHandleRef, aiConfig, aiEnabled, editor]);
+
   // Tracks the hash of the document the editor itself just emitted via onChange.
   // The sync effect below uses it to skip replaceBlocks when the parent's
   // initialContent is just an echo of our own emission (form-controlled flow).
@@ -885,7 +922,7 @@ export default function BlockNoteEditor({
             }
           />
         )}
-        {aiConfig && aiEnabled && <AIMenuController aiMenu={() => <NarrAIMenu />} />}
+        {aiConfig && aiEnabled && <AIMenuController aiMenu={() => <NarrAIMenu actions={aiConfig.actions} />} />}
       </BlockNoteView>
     </div>
   );
