@@ -50,6 +50,22 @@ type RoundPageContainerProps = {
    */
   layout?: "tabs" | "rail";
   /**
+   * Content pinned ABOVE the section list in `layout="rail"` — an entity's
+   * portrait or cover art, which otherwise only exists inside the collapsible
+   * `details` panel and therefore disappears on the page's default (collapsed)
+   * state.
+   *
+   * The rail is the only column that is always on screen and never holds the
+   * reading content, so a header here costs neither content width nor content
+   * height. Rendered at the rail's own width (`md:w-56` minus its padding) from
+   * `md` up, and — since the rail itself is hidden below `md` — above the
+   * section `Select`, capped to the same width so a phone does not open on a
+   * full-bleed image.
+   *
+   * Ignored by `layout="tabs"`, which has no rail.
+   */
+  railHeader?: ReactNode;
+  /**
    * Fired with the new section value (`tabValue`) on every tab change. Lets a
    * parent mirror the rail's active section (e.g. to drive a breadcrumb) since
    * the rail writes the URL via history.replaceState, which does not re-render
@@ -156,6 +172,7 @@ export function RoundPageContainer({
   forceHeader,
   header,
   layout = "tabs",
+  railHeader,
   onSectionChange,
   testId,
   defaultDetailsOpen = false,
@@ -399,6 +416,9 @@ export function RoundPageContainer({
                       isFixed && `md:overflow-y-auto`,
                     )}
                   >
+                    {/* The rail header owns its own bottom spacing (the entity artwork preview
+                        carries one), so this wrapper adds none. */}
+                    {railHeader && <div>{railHeader}</div>}
                     {/* `w-full` is load-bearing: TabsList's base variant carries
                         `w-fit`, which shrinks the rail list to its widest label.
                         The active section's background and border then hug the
@@ -431,6 +451,11 @@ export function RoundPageContainer({
 
                   {/* Content — full width, fills the remaining space */}
                   <div className={cn(`flex min-w-0 grow flex-col`, clip)}>
+                    {/* The rail is hidden below md, so its header would vanish with
+                        it — render it above the section Select instead, capped to
+                        the rail's width so a phone does not open on a full-bleed
+                        image. */}
+                    {railHeader && <div className="mx-auto w-full max-w-48 px-2 pt-2 md:hidden">{railHeader}</div>}
                     {/* Section Select — below md */}
                     <div data-testid="round-page-rail-select" className="p-2 md:hidden">
                       <Select
