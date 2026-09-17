@@ -1,3 +1,9 @@
+## [3.18.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.17.0...v3.18.0) (2026-09-17)
+
+### 🚀 Features
+
+* **round-page:** add railHeader slot above the section rail ([4eb0c28](https://github.com/carlonicora/nextjs-jsonapi/commit/4eb0c280085b59f33314be165a3674496428a3d8))
+
 ## [3.17.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.16.1...v3.17.0) (2026-09-17)
 
 ### 🚀 Features
