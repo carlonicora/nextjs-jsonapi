@@ -1,3 +1,9 @@
+## [3.17.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.16.1...v3.17.0) (2026-09-17)
+
+### 🚀 Features
+
+* **notification:** improve socket notification handling and add tests ([6627635](https://github.com/carlonicora/nextjs-jsonapi/commit/662763554951f814668a6c93c9de1406642df4f6))
+
 ## [3.16.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.16.0...v3.16.1) (2026-09-16)
 
 ### 🐛 Bug Fixes
