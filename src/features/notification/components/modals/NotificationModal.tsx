@@ -89,8 +89,6 @@ function NotificationModalContent({ isOpen, setIsOpen }: NotificationModalProps)
   // The initial load is owned by NotificationContextProvider's mount effect.
   // The bell still refreshes on open when the cache is stale (see handleOpenChange).
 
-  const processSocketNotificationsRef = useRef<NodeJS.Timeout | null>(null);
-
   const processSocketNotifications = useCallback(() => {
     if (socketNotifications.length === 0) {
       return;
@@ -120,6 +118,9 @@ function NotificationModalContent({ isOpen, setIsOpen }: NotificationModalProps)
           showToast(toastNotification.title, {
             description: toastNotification.description,
             action: toastNotification.action,
+            // A toast that offers something to press stays until dismissed; a
+            // plain notice keeps sonner's default timeout.
+            duration: toastNotification.action ? Infinity : undefined,
           });
         });
 
@@ -139,21 +140,12 @@ function NotificationModalContent({ isOpen, setIsOpen }: NotificationModalProps)
     checkCircuitBreaker,
   ]);
 
-  // 🔗 SOCKET: Throttled processing with 300ms delay
+  // Drain the socket queue in the same commit it arrives in. `useNotificationSync`
+  // (mounted higher in the tree) drains the same queue without toasting; child
+  // effects run first, so the modal wins only if it does not defer. A deferred
+  // drain always found the queue already emptied and no toast ever showed.
   useEffect(() => {
-    if (processSocketNotificationsRef.current) {
-      clearTimeout(processSocketNotificationsRef.current);
-    }
-
-    processSocketNotificationsRef.current = setTimeout(() => {
-      processSocketNotifications();
-    }, 300); // 300ms throttle
-
-    return () => {
-      if (processSocketNotificationsRef.current) {
-        clearTimeout(processSocketNotificationsRef.current);
-      }
-    };
+    processSocketNotifications();
   }, [processSocketNotifications]);
 
   const handleOpenChange = (newlyRequestedOpenState: boolean) => {
