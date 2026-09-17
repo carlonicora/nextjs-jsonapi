@@ -29,6 +29,8 @@ export function FormBlockNote({
   mentionNameResolver,
   onWarmMentions,
   aiConfig,
+  aiHandleRef,
+  headerAction,
 }: {
   form: any;
   id: string;
@@ -58,6 +60,10 @@ export function FormBlockNote({
   mentionNameResolver?: MentionNameResolver;
   onWarmMentions?: (blocks: any[]) => void;
   aiConfig?: import("../editors/BlockNoteEditor").BlockNoteAiConfig;
+  /** Filled by the editor so a control outside it can run an AI action. */
+  aiHandleRef?: React.MutableRefObject<import("../editors/BlockNoteEditor").BlockNoteAiHandle | null>;
+  /** Rendered on the label row, right-aligned — e.g. a "Suggest impression" button. */
+  headerAction?: React.ReactNode;
 }) {
   const initialContentRef = useRef<any>(null);
   const lastEditorContentRef = useRef<any>(undefined);
@@ -74,6 +80,7 @@ export function FormBlockNote({
         form={form}
         name={id}
         label={name}
+        labelAction={headerAction}
         isRequired={isRequired}
         description={description}
         testId={testId}
@@ -108,6 +115,7 @@ export function FormBlockNote({
               mentionNameResolver={mentionNameResolver}
               onWarmMentions={onWarmMentions}
               aiConfig={aiConfig}
+              aiHandleRef={aiHandleRef}
               stretch={stretch}
               className={cn(stretch && "min-h-0 flex-1")}
             />

@@ -1,5 +1,6 @@
 import { ApiRequestDataTypeInterface } from "../interfaces/ApiRequestDataTypeInterface";
 import { ApiResponseInterface } from "../interfaces/ApiResponseInterface";
+import { setLastApiResponse } from "./lastApiResponse";
 
 export enum HttpMethod {
   GET = "GET",
@@ -25,29 +26,10 @@ export interface TotalRef {
   total?: number;
 }
 
-// Store the last total from any API call - accessible by hooks
-let lastApiTotal: number | undefined = undefined;
-
-export function getLastApiTotal(): number | undefined {
-  return lastApiTotal;
-}
-
-export function clearLastApiTotal(): void {
-  lastApiTotal = undefined;
-}
-
-// Store the last full top-level `meta` object from any list API call - accessible by
-// hooks that need aggregate meta beyond `total` (e.g. per-list counts). Same
-// module-global design as lastApiTotal above.
-let lastApiMeta: Record<string, any> | undefined = undefined;
-
-export function getLastApiMeta(): Record<string, any> | undefined {
-  return lastApiMeta;
-}
-
-export function clearLastApiMeta(): void {
-  lastApiMeta = undefined;
-}
+// The last response's `total` and full top-level `meta` live in `lastApiResponse`
+// so `ClientAbstractService` writes the same store (pagination goes through it).
+// Re-exported here because consumers import them from this module.
+export { clearLastApiMeta, clearLastApiTotal, getLastApiMeta, getLastApiTotal } from "./lastApiResponse";
 
 let globalErrorHandler: ((status: number, message: string) => void) | null = null;
 
@@ -266,13 +248,10 @@ export abstract class AbstractService {
     if (apiResponse.next && params.next) params.next.next = apiResponse.next;
     if (apiResponse.prev && params.previous) params.previous.previous = apiResponse.prev;
     if (apiResponse.self && params.self) params.self.self = apiResponse.self;
-    // Always store total for hooks to access, and also populate ref if provided
-    if (apiResponse.meta?.total !== undefined) {
-      lastApiTotal = apiResponse.meta.total;
-      if (params.total) params.total.total = apiResponse.meta.total;
-    }
-    // Store the full top-level meta too, so hooks can read aggregates beyond `total`.
-    lastApiMeta = apiResponse.meta;
+    if (apiResponse.meta?.total !== undefined && params.total) params.total.total = apiResponse.meta.total;
+    // Always record this response's meta/total — including when it has none — so a
+    // hook falling back to the store never reads another entity's total.
+    setLastApiResponse(apiResponse.meta);
 
     return apiResponse.data as T;
   }

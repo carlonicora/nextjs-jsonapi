@@ -1,3 +1,33 @@
+## [3.16.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.16.0...v3.16.1) (2026-09-16)
+
+### 🐛 Bug Fixes
+
+* **assistant:** scroll a new reply to its top, not the thread bottom ([b6835fa](https://github.com/carlonicora/nextjs-jsonapi/commit/b6835faad81b003b8b685b19b6f796e4ff1c8ac8))
+
+## [3.16.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.15.2...v3.16.0) (2026-09-16)
+
+### 🚀 Features
+
+* **blocknote:** configurable whole-document AI actions and an external AI handle ([74a967a](https://github.com/carlonicora/nextjs-jsonapi/commit/74a967ab5946033db2ef6e6d41e7ee8eac43179c))
+
+## [3.15.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.15.1...v3.15.2) (2026-09-15)
+
+### 🐛 Bug Fixes
+
+* **core:** stop a list total leaking between entities ([8e3c835](https://github.com/carlonicora/nextjs-jsonapi/commit/8e3c8358f4ab5f9d0910ae552693c29e22b76867))
+
+## [3.15.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.15.0...v3.15.1) (2026-09-15)
+
+### 🐛 Bug Fixes
+
+* **context:** simplify return type of useCurrentUserContextOptional ([6e51b14](https://github.com/carlonicora/nextjs-jsonapi/commit/6e51b14996ecca7dc6f77ac1b7c2ddb7c6d1f02a))
+
+## [3.15.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.14.1...v3.15.0) (2026-09-15)
+
+### 🚀 Features
+
+* **how-to:** host-app hooks for the launcher and list, guides viewed read-only ([bba7b3d](https://github.com/carlonicora/nextjs-jsonapi/commit/bba7b3d496bcc889a0d74a93be44542092bf7675))
+
 ## [3.14.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.14.0...v3.14.1) (2026-09-14)
 
 ### 🐛 Bug Fixes

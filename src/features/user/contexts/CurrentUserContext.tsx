@@ -292,3 +292,18 @@ export function useCurrentUserContext<T extends UserInterface = UserInterface>()
   }
   return context as unknown as CurrentUserContextType<T>;
 }
+
+/**
+ * Non-throwing variant, for components that can still do their job without a
+ * current user and may render inside a host app that has not adopted this
+ * package's `CurrentUserProvider` (it ships its own fork of this context, so
+ * `useContext` here resolves to `undefined` rather than to the host's value).
+ *
+ * Use it ONLY where every consumer of the result already handles the absent
+ * case. Anything that genuinely needs a user must keep `useCurrentUserContext`,
+ * so a missing provider fails loudly instead of silently degrading.
+ */
+export function useCurrentUserContextOptional<T extends UserInterface = UserInterface>():
+  CurrentUserContextType<T> | undefined {
+  return useContext(CurrentUserContext) as unknown as CurrentUserContextType<T> | undefined;
+}

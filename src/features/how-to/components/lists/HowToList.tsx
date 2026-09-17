@@ -14,9 +14,11 @@ import HowToReindexButton from "../forms/HowToReindexButton";
 
 type HowToListProps = {
   fullWidth?: boolean;
+  /** App-specific actions rendered before the built-in list actions */
+  extraFunctions?: ReactNode[];
 };
 
-export default function HowToList({ fullWidth }: HowToListProps) {
+export default function HowToList({ fullWidth, extraFunctions }: HowToListProps) {
   const t = useTranslations();
 
   const data: DataListRetriever<HowToInterface> = useDataListRetriever({
@@ -26,6 +28,7 @@ export default function HowToList({ fullWidth }: HowToListProps) {
   });
 
   const functions: ReactNode[] = [
+    ...(extraFunctions ?? []),
     <HowToReindexButton key="reindex-how-tos" refresh={data.refresh} />,
     <HowToEditor key="create-how-to" />,
   ];
