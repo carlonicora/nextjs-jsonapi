@@ -1,3 +1,9 @@
+## [3.19.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.18.0...v3.19.0) (2026-09-18)
+
+### 🚀 Features
+
+* **forms:** FormRow accepts four columns ([e5a0cc4](https://github.com/carlonicora/nextjs-jsonapi/commit/e5a0cc41d40f37e622d892bbc7ba237dd76732bb))
+
 ## [3.18.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.17.0...v3.18.0) (2026-09-17)
 
 ### 🚀 Features
