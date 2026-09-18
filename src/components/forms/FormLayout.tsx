@@ -31,13 +31,12 @@ export function FormRow({
   className,
 }: {
   children: ReactNode;
-  columns?: 2 | 3;
+  columns?: 2 | 3 | 4;
   className?: string;
 }) {
+  const columnClass = columns === 4 ? "md:grid-cols-4" : columns === 3 ? "md:grid-cols-3" : "md:grid-cols-2";
   return (
-    <div
-      className={cn("grid grid-cols-1 gap-x-4 gap-y-4", columns === 3 ? "md:grid-cols-3" : "md:grid-cols-2", className)}
-    >
+    <div className={cn("grid grid-cols-1 gap-x-4 gap-y-4", columnClass, className)}>
       {children}
     </div>
   );
