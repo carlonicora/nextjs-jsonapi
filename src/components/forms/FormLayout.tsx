@@ -35,11 +35,7 @@ export function FormRow({
   className?: string;
 }) {
   const columnClass = columns === 4 ? "md:grid-cols-4" : columns === 3 ? "md:grid-cols-3" : "md:grid-cols-2";
-  return (
-    <div className={cn("grid grid-cols-1 gap-x-4 gap-y-4", columnClass, className)}>
-      {children}
-    </div>
-  );
+  return <div className={cn("grid grid-cols-1 gap-x-4 gap-y-4", columnClass, className)}>{children}</div>;
 }
 
 // FormCol — column span for a child inside FormRow (replaces <div className="md:col-span-2">)
