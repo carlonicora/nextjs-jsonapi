@@ -1,3 +1,9 @@
+## [3.19.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.19.0...v3.19.1) (2026-09-18)
+
+### 💎 Styles
+
+* **forms:** collapse the FormRow return onto one line ([b394681](https://github.com/carlonicora/nextjs-jsonapi/commit/b394681c8a9657ba48bb99bfd7b842c77dfeed8e))
+
 ## [3.19.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.18.0...v3.19.0) (2026-09-18)
 
 ### 🚀 Features
