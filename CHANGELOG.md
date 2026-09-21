@@ -1,3 +1,9 @@
+## [3.20.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.19.1...v3.20.0) (2026-09-21)
+
+### 🚀 Features
+
+* **notification:** rebuild the bell popover and the notifications page ([586be63](https://github.com/carlonicora/nextjs-jsonapi/commit/586be63c502e8d74a7b25cb2bcbf94936daa830c))
+
 ## [3.19.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.19.0...v3.19.1) (2026-09-18)
 
 ### 💎 Styles
