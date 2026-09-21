@@ -46,6 +46,15 @@ vi.mock("../../../../../contexts", () =>
 );
 
 vi.mock("../../../../../hooks", () => mocks.barrel({ usePageUrlGenerator: () => (p: unknown) => String(p) }));
+
+// `Modules` is a Proxy that throws for any module the app has not registered,
+// and the "view all" link reads `Modules.Notification` while rendering. Only
+// that key is replaced — the rest of the barrel stays real, because the data
+// layer imported alongside it still extends `AbstractApiData`.
+vi.mock("../../../../../core", async () => {
+  const actual = await vi.importActual<Record<string, unknown>>("../../../../../core");
+  return { ...actual, Modules: { Notification: { name: "notifications", pageUrl: "/notifications" } } };
+});
 vi.mock("next-intl", () => ({ useTranslations: () => (key: string) => key }));
 
 vi.mock("../../../contexts/NotificationContext", () => ({
@@ -66,15 +75,17 @@ vi.mock("../../../contexts/NotificationContext", () => ({
 vi.mock("../../../../../shadcnui", () => {
   const passthrough = ({ children }: { children?: React.ReactNode }) => <div>{children}</div>;
   return mocks.barrel({
-    Card: passthrough,
-    CardHeader: passthrough,
-    CardTitle: passthrough,
+    Link: passthrough,
     Popover: passthrough,
     PopoverContent: passthrough,
+    PopoverHeader: passthrough,
+    PopoverTitle: passthrough,
     PopoverTrigger: passthrough,
     ScrollArea: passthrough,
-    Separator: () => null,
     SidebarMenuButton: passthrough,
+    Tooltip: passthrough,
+    TooltipContent: passthrough,
+    TooltipTrigger: passthrough,
   });
 });
 

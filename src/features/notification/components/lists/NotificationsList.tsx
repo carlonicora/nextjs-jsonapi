@@ -1,130 +1,85 @@
 "use client";
 
-import { ArchiveIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { ReactNode, useEffect, useRef } from "react";
+import { ContentListTable } from "../../../../components/tables/ContentListTable";
 import { Modules } from "../../../../core";
 import { DataListRetriever, useDataListRetriever, usePageUrlGenerator } from "../../../../hooks";
-import {
-  Button,
-  Card,
-  CardContent,
-  Link,
-  Skeleton,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "../../../../shadcnui";
-import { UserAvatar } from "../../../user/components";
+import { useI18nRouter } from "../../../../i18n";
+import { useNotificationContext } from "../../contexts/NotificationContext";
 import { NotificationInterface } from "../../data";
+import { NotificationFields } from "../../data/notification.fields";
 import { NotificationService } from "../../data/notification.service";
+import "../../hooks/useNotificationTableStructure";
 import { generateNotificationData } from "../notifications/Notification";
 
 type NotificationsListProps = {
   archived: boolean;
+  headerControl?: ReactNode;
+  fullWidth?: boolean;
 };
 
-export function NotificationsList({ archived }: NotificationsListProps) {
+export function NotificationsList({ archived, headerControl, fullWidth }: NotificationsListProps) {
   const t = useTranslations();
+  const router = useI18nRouter();
   const generateUrl = usePageUrlGenerator();
+  const { markNotificationsAsRead } = useNotificationContext();
 
   const data: DataListRetriever<NotificationInterface> = useDataListRetriever({
+    module: Modules.Notification,
     retriever: (params) => NotificationService.findMany(params),
     retrieverParams: { isArchived: archived },
-    module: Modules.Notification,
   });
 
-  const archiveNotification = async (notification: NotificationInterface) => {
-    await NotificationService.archive({ id: notification.id });
-    data.removeElement(notification);
+  /* Mark read what this list ACTUALLY SHOWS, on every page. Reading the shared
+     context's list instead would only ever cover the bell's first page, so
+     anything reached by paging forward would stay unread permanently.
+
+     `markedRef` guards the loop: `markNotificationsAsRead` refreshes the shared
+     context, which re-renders this component, and `data.data` is not
+     guaranteed to be reference-stable across renders. Tracking the ids already
+     sent means a second pass finds nothing to do regardless of identity. */
+  const markedRef = useRef<Set<string>>(new Set<string>());
+
+  useEffect(() => {
+    if (!data.isLoaded || !data.data) return;
+
+    const unreadIds = data.data
+      .filter((notification) => !notification.isRead && !markedRef.current.has(notification.id))
+      .map((notification) => notification.id);
+
+    if (unreadIds.length === 0) return;
+
+    unreadIds.forEach((id) => markedRef.current.add(id));
+    markNotificationsAsRead(unreadIds);
+  }, [data.isLoaded, data.data, markNotificationsAsRead]);
+
+  /* The whole row is the click target, matching the popover row — which is a
+     `Link` wrapping its entire body. */
+  const openNotification = (notification: NotificationInterface) => {
+    const url = generateNotificationData({ notification: notification, generateUrl: generateUrl }).url;
+    if (url) router.push(url);
   };
 
-  const LoadingSkeleton = () => (
-    <div className="space-y-4">
-      {Array.from({ length: 3 }).map((_, i) => (
-        <Card key={i}>
-          <CardContent className="p-2">
-            <div className="flex w-full flex-row items-center">
-              <Skeleton className="me-4 h-8 w-8 rounded-full" />
-              <div className="flex-1 space-y-2">
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-3 w-1/2" />
-              </div>
-              <Skeleton className="h-8 w-20" />
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
-
   return (
-    <div className="space-y-4">
-      {data.isLoaded ? (
-        (data.data as NotificationInterface[])?.map((notification: NotificationInterface) => {
-          const notificationData = generateNotificationData({ notification: notification, generateUrl: generateUrl });
-
-          return (
-            <Card key={notification.id}>
-              <CardContent className="p-0">
-                <div className={`flex w-full flex-row items-center p-2`}>
-                  {notificationData.actor ? (
-                    <div className="flex w-12 max-w-12 px-2">
-                      <Link href={generateUrl({ page: Modules.User, id: notificationData.actor.id })}>
-                        <UserAvatar user={notificationData.actor} className="h-8 w-8" />
-                      </Link>
-                    </div>
-                  ) : (
-                    <div className="flex w-14 max-w-14 px-2"></div>
-                  )}
-                  <div className="flex w-full flex-col">
-                    <p className="text-sm">
-                      {t.rich(`notification.${notification.notificationType}.description` as any, {
-                        strong: (chunks: any) => <strong>{chunks}</strong>,
-                        actor: notificationData.actor?.name ?? "",
-                        title: notificationData.title,
-                      })}
-                    </p>
-                    <div className="text-muted-foreground mt-1 w-full text-xs">
-                      {new Date(notification.createdAt).toLocaleString()}
-                    </div>
-                  </div>
-                  <div className="flex flex-row items-center">
-                    {notificationData.url ? (
-                      <Link href={notificationData.url}>
-                        <Button variant={`outline`} size={`sm`} onClick={(e) => e.stopPropagation()}>
-                          {t(`notification.${notification.notificationType}.buttons.action` as any)}
-                        </Button>
-                      </Link>
-                    ) : (
-                      <></>
-                    )}
-                    {!archived && (
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <Button
-                            variant={`link`}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              archiveNotification(notification);
-                            }}
-                            className="text-muted-foreground hover:text-destructive ms-2"
-                          >
-                            <ArchiveIcon className="h-4 w-4 cursor-pointer" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>{t(`notification.buttons.archive`)}</TooltipContent>
-                      </Tooltip>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })
-      ) : (
-        <LoadingSkeleton />
-      )}
-    </div>
+    <ContentListTable
+      data={data}
+      fields={[
+        NotificationFields.icon,
+        NotificationFields.description,
+        NotificationFields.createdAt,
+        NotificationFields.actions,
+      ]}
+      tableGeneratorType={Modules.Notification}
+      title={t(`entities.notifications`, { count: 2 })}
+      filters={headerControl}
+      /* The notifications endpoint takes no search term, so rendering the box
+         would give the page a control that silently does nothing. */
+      allowSearch={false}
+      context={{ archived: archived }}
+      onRowClick={openNotification}
+      emptyState={t(`notification.empty`)}
+      fullWidth={fullWidth}
+    />
   );
 }
