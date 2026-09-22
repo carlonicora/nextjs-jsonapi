@@ -71,6 +71,36 @@ type ContentListTableProps = {
   onRowClick?: (rowData: any) => void;
 };
 
+type CellRenderer = (context: unknown) => ReactNode;
+
+const isClassComponent = (component: unknown): boolean =>
+  typeof component === "function" &&
+  !!(component as { prototype?: { isReactComponent?: unknown } }).prototype?.isReactComponent;
+
+/**
+ * Renders a column's `cell` through one component type that never changes.
+ *
+ * TanStack's `flexRender` mounts a function cell as a component. Every table
+ * structure hook in this codebase recreates its column closures on each
+ * render, so each render handed React a NEW component type per cell and React
+ * unmounted and remounted every cell: an EditorSheet opened from a name cell
+ * closed whenever the list re-rendered, for a socket event, an in-place row
+ * update or a parent re-render (reproduced 2026-09-22 on the Playlists tab).
+ * Calling the closure from here keeps the cell subtree alive across renders;
+ * hooks inside a cell closure still work, since each StableCell instance
+ * always runs the same closure shape.
+ */
+function StableCell({ render, context }: { render: CellRenderer; context: unknown }) {
+  return <>{render(context)}</>;
+}
+
+function renderCell(cellDef: unknown, context: unknown): ReactNode {
+  if (typeof cellDef === "function" && !isClassComponent(cellDef)) {
+    return <StableCell render={cellDef as CellRenderer} context={context} />;
+  }
+  return flexRender(cellDef as any, context as any);
+}
+
 export const ContentListTable = memo(function ContentListTable(props: ContentListTableProps) {
   const { data, fields, checkedIds, toggleId, allowSearch, filters: _filters, fullWidth, onRowClick } = props;
   const t = useTranslations();
@@ -251,7 +281,7 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                           const meta = cell.column.columnDef.meta as { className?: string } | undefined;
                           return (
                             <TableCell key={cell.id} className={meta?.className}>
-                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                              {renderCell(cell.column.columnDef.cell, cell.getContext())}
                             </TableCell>
                           );
                         })}
@@ -270,7 +300,7 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                       const meta = cell.column.columnDef.meta as { className?: string } | undefined;
                       return (
                         <TableCell key={cell.id} className={meta?.className}>
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          {renderCell(cell.column.columnDef.cell, cell.getContext())}
                         </TableCell>
                       );
                     })}
