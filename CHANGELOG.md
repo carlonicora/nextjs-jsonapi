@@ -1,3 +1,9 @@
+## [3.20.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.20.0...v3.20.1) (2026-09-22)
+
+### 🐛 Bug Fixes
+
+* **table:** keep function cells mounted across list re-renders ([443c52e](https://github.com/carlonicora/nextjs-jsonapi/commit/443c52e59d36774a116c2e7ed941c8ea468ed19e))
+
 ## [3.20.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.19.1...v3.20.0) (2026-09-21)
 
 ### 🚀 Features
