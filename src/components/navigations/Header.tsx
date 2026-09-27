@@ -4,7 +4,7 @@ import { useIsMobile } from "@/utils";
 import { useIsBreadcrumbRootHidden } from "../../contexts/BreadcrumbRootContext";
 import { useHeaderRootLabel } from "../../contexts/HeaderChildrenContext";
 import { useSharedContext } from "../../contexts/SharedContext";
-import { SidebarTrigger } from "../../shadcnui";
+import { SidebarTrigger, useOptionalSidebar } from "../../shadcnui";
 import { BreadcrumbNavigation } from "./Breadcrumb";
 
 type HeaderProps = {
@@ -22,6 +22,7 @@ export function Header({ children, mobileChildren, leftContent, logo, className 
   const rootLabel = useHeaderRootLabel();
   const isRootHidden = useIsBreadcrumbRootHidden();
   const isMobile = useIsMobile();
+  const sidebar = useOptionalSidebar();
 
   return (
     // Outer element owns the safe-area inset; the inner row keeps h-12 so the
@@ -41,7 +42,7 @@ export function Header({ children, mobileChildren, leftContent, logo, className 
     >
       <div className="bg-sidebar flex h-12 w-full flex-row items-center justify-between ps-2 pe-4">
         {isMobile && logo && <div className="flex shrink-0 flex-row items-center pe-1">{logo}</div>}
-        <SidebarTrigger aria-label="Toggle sidebar" id="sidebar-trigger" />
+        {sidebar && <SidebarTrigger aria-label="Toggle sidebar" id="sidebar-trigger" />}
         {leftContent}
         <div className="flex w-full flex-row items-center justify-start">
           <BreadcrumbNavigation items={breadcrumbs} rootLabel={rootLabel ?? undefined} showRoot={!isRootHidden} />

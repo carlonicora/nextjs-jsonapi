@@ -24,6 +24,7 @@ import { MicroLabel } from "@/components/typography";
 import { useHeaderChildren, useHeaderLeftContent, useHeaderLogo, useHeaderMobileChildren } from "@/contexts";
 import { useUrlRewriter } from "@/hooks";
 import { cn, useIsMobile } from "@/index";
+import { useOptionalSidebar } from "@/shadcnui";
 import { ModuleWithPermissions } from "@/permissions";
 import { useSearchParams } from "next/navigation";
 import { Fragment, ReactNode, useCallback, useEffect, useMemo, useState } from "react";
@@ -186,6 +187,9 @@ export function RoundPageContainer({
   const headerMobileChildren = useHeaderMobileChildren();
   const [showDetails, setShowDetailsState] = useState(defaultDetailsOpen);
   const isMobile = useIsMobile();
+  // The desktop shell drops its start padding only where a sidebar sits against it. A page
+  // without one (the customer portal) keeps the padding on both sides.
+  const hasSidebar = useOptionalSidebar() !== null;
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -323,7 +327,7 @@ export function RoundPageContainer({
             // render 78px tall; below the bar it became a visible gap. The
             // swipe-up gesture region is unaffected either way — it is a gesture
             // area, not painted chrome.
-            isMobile ? "gap-1 p-1 pt-0" : "p-2 pt-0 ps-0",
+            isMobile ? "gap-1 p-1 pt-0" : cn("p-2 pt-0", hasSidebar && "ps-0"),
           )}
         >
           {/* `min-h-0 flex-1`, NOT `h-full`: the bar below is an in-flow sibling in
@@ -367,7 +371,7 @@ export function RoundPageContainer({
           // render 78px tall; below the bar it became a visible gap. The
           // swipe-up gesture region is unaffected either way — it is a gesture
           // area, not painted chrome.
-          isMobile ? "gap-1 p-1 pt-0" : "p-2 pt-0 ps-0",
+          isMobile ? "gap-1 p-1 pt-0" : cn("p-2 pt-0", hasSidebar && "ps-0"),
         )}
       >
         {/* `min-h-0 flex-1`, NOT `h-full`: MobileNavigationBar below is an in-flow
