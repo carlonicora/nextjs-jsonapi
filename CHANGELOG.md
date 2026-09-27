@@ -1,3 +1,9 @@
+## [3.23.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.22.0...v3.23.0) (2026-09-27)
+
+### 🚀 Features
+
+* **ai-connection:** carry the venice image fields through the editor ([d94c795](https://github.com/carlonicora/nextjs-jsonapi/commit/d94c79598a33e72ff27cf0ac1aee9bbf15d983d0))
+
 ## [3.22.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.21.0...v3.22.0) (2026-09-27)
 
 ### 🚀 Features
