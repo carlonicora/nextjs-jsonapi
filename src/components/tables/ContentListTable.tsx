@@ -69,6 +69,12 @@ type ContentListTableProps = {
    */
   hidePagination?: boolean;
   onRowClick?: (rowData: any) => void;
+  /**
+   * Renders a full-width detail row under an expanded row. Receives the row's
+   * `jsonApiData`. Setting it makes every row expandable; the row's own cell
+   * toggles it via `row.getToggleExpandedHandler()`.
+   */
+  renderExpandedRow?: (rowData: any) => ReactNode;
 };
 
 type CellRenderer = (context: unknown) => ReactNode;
@@ -140,6 +146,14 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
     data: tableData,
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
+    ...(props.renderExpandedRow && {
+      getExpandedRowModel: getExpandedRowModel(),
+      // Key rows by record id so an expansion stays with its record when a search or filter reorders the rows.
+      getRowId: (row: TableContent<any>, index: number) => row.jsonApiData?.id ?? String(index),
+      getRowCanExpand: () => true,
+      onExpandedChange: setExpanded,
+      state: { expanded },
+    }),
     ...(props.expandable && {
       getExpandedRowModel: getExpandedRowModel(),
       getSubRows: props.getSubRows,
@@ -272,39 +286,55 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                       </TableCell>
                     </TableRow>
                     {group.rows.map((row) => (
-                      <TableRow
-                        key={row.id}
-                        onClick={() => onRowClick?.(row.original.jsonApiData)}
-                        className={`group ${onRowClick ? "hover:bg-muted/50 cursor-pointer" : ""}`}
-                      >
-                        {row.getVisibleCells().map((cell) => {
-                          const meta = cell.column.columnDef.meta as { className?: string } | undefined;
-                          return (
-                            <TableCell key={cell.id} className={meta?.className}>
-                              {renderCell(cell.column.columnDef.cell, cell.getContext())}
+                      <React.Fragment key={row.id}>
+                        <TableRow
+                          onClick={() => onRowClick?.(row.original.jsonApiData)}
+                          className={`group ${onRowClick ? "hover:bg-muted/50 cursor-pointer" : ""}`}
+                        >
+                          {row.getVisibleCells().map((cell) => {
+                            const meta = cell.column.columnDef.meta as { className?: string } | undefined;
+                            return (
+                              <TableCell key={cell.id} className={meta?.className}>
+                                {renderCell(cell.column.columnDef.cell, cell.getContext())}
+                              </TableCell>
+                            );
+                          })}
+                        </TableRow>
+                        {props.renderExpandedRow && row.getIsExpanded() && (
+                          <TableRow data-testid="content-list-table-expanded-row">
+                            <TableCell colSpan={tableColumns.length} className="bg-muted/30 px-4 py-3">
+                              {props.renderExpandedRow(row.original.jsonApiData)}
                             </TableCell>
-                          );
-                        })}
-                      </TableRow>
+                          </TableRow>
+                        )}
+                      </React.Fragment>
                     ))}
                   </React.Fragment>
                 ))
               ) : (
                 rowModel.rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    onClick={() => onRowClick?.(row.original.jsonApiData)}
-                    className={`group ${onRowClick ? "hover:bg-muted/50 cursor-pointer" : ""}`}
-                  >
-                    {row.getVisibleCells().map((cell) => {
-                      const meta = cell.column.columnDef.meta as { className?: string } | undefined;
-                      return (
-                        <TableCell key={cell.id} className={meta?.className}>
-                          {renderCell(cell.column.columnDef.cell, cell.getContext())}
+                  <React.Fragment key={row.id}>
+                    <TableRow
+                      onClick={() => onRowClick?.(row.original.jsonApiData)}
+                      className={`group ${onRowClick ? "hover:bg-muted/50 cursor-pointer" : ""}`}
+                    >
+                      {row.getVisibleCells().map((cell) => {
+                        const meta = cell.column.columnDef.meta as { className?: string } | undefined;
+                        return (
+                          <TableCell key={cell.id} className={meta?.className}>
+                            {renderCell(cell.column.columnDef.cell, cell.getContext())}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                    {props.renderExpandedRow && row.getIsExpanded() && (
+                      <TableRow data-testid="content-list-table-expanded-row">
+                        <TableCell colSpan={tableColumns.length} className="bg-muted/30 px-4 py-3">
+                          {props.renderExpandedRow(row.original.jsonApiData)}
                         </TableCell>
-                      );
-                    })}
-                  </TableRow>
+                      </TableRow>
+                    )}
+                  </React.Fragment>
                 ))
               )
             ) : (

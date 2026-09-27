@@ -25,6 +25,8 @@ const badgeVariants = cva(
         softGray: "bg-gray-500/10 text-gray-700 dark:bg-gray-500/15 dark:text-gray-400",
         softOrange: "bg-orange-500/10 text-orange-700 dark:bg-orange-500/15 dark:text-orange-400",
         softAmber: "bg-amber-500/10 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400",
+        softEmerald: "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400",
+        softPurple: "bg-purple-500/10 text-purple-700 dark:bg-purple-500/15 dark:text-purple-400",
         blue: "bg-sky-500 text-primary-foreground [a]:hover:bg-sky-500/80",
         green: "bg-emerald-500 text-primary-foreground [a]:hover:bg-emerald-500/80",
         red: "bg-red-500 text-primary-foreground [a]:hover:bg-red-500/80",
