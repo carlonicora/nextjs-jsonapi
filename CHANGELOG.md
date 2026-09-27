@@ -1,3 +1,9 @@
+## [3.21.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.20.1...v3.21.0) (2026-09-27)
+
+### 🚀 Features
+
+* **table:** expandable detail rows on ContentListTable, soft emerald/purple badges ([fef31ef](https://github.com/carlonicora/nextjs-jsonapi/commit/fef31ef5776246a5541009690d3b57f53154728b))
+
 ## [3.20.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.20.0...v3.20.1) (2026-09-22)
 
 ### 🐛 Bug Fixes
