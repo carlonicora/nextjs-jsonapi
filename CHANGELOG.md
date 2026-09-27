@@ -1,3 +1,9 @@
+## [3.22.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.21.0...v3.22.0) (2026-09-27)
+
+### 🚀 Features
+
+* **layout:** Header and RoundPageContainer work on pages without a sidebar ([ffe680b](https://github.com/carlonicora/nextjs-jsonapi/commit/ffe680b15ddaed53abb1473cada256f38f2c4267))
+
 ## [3.21.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.20.1...v3.21.0) (2026-09-27)
 
 ### 🚀 Features
