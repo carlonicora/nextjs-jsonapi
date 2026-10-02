@@ -1,3 +1,9 @@
+## [3.24.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.23.0...v3.24.0) (2026-10-02)
+
+### 🚀 Features
+
+* OAuth studio selection, assistant mention links and scoped threads ([824ecd7](https://github.com/carlonicora/nextjs-jsonapi/commit/824ecd7d2607aaf5bac6d183b9c40be06df6b94a))
+
 ## [3.23.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.22.0...v3.23.0) (2026-09-27)
 
 ### 🚀 Features
