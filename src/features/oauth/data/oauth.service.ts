@@ -7,6 +7,7 @@ import {
   OAuthConsentInfo,
   OAuthConsentRequest,
 } from "../interfaces/oauth.interface";
+import { OAuthClient } from "./oauth";
 
 /**
  * Service for OAuth client management and authorization consent flow.
@@ -151,14 +152,7 @@ export class OAuthService extends AbstractService {
       type: Modules.OAuth,
       method: HttpMethod.POST,
       endpoint: new EndpointCreator({ endpoint: "oauth/authorize/approve" }).generate(),
-      input: {
-        client_id: params.clientId,
-        redirect_uri: params.redirectUri,
-        scope: params.scope,
-        state: params.state,
-        code_challenge: params.codeChallenge,
-        code_challenge_method: params.codeChallengeMethod,
-      },
+      input: new OAuthClient().createApproveAuthorizationJsonApi(params),
       overridesJsonApiCreation: true,
     });
 
@@ -176,11 +170,7 @@ export class OAuthService extends AbstractService {
       type: Modules.OAuth,
       method: HttpMethod.POST,
       endpoint: new EndpointCreator({ endpoint: "oauth/authorize/deny" }).generate(),
-      input: {
-        client_id: params.clientId,
-        redirect_uri: params.redirectUri,
-        state: params.state,
-      },
+      input: new OAuthClient().createDenyAuthorizationJsonApi(params),
       overridesJsonApiCreation: true,
     });
 

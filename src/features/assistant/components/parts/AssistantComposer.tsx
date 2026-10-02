@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type KeyboardEvent } from "react";
+import { useState, type KeyboardEvent, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { ArrowUp } from "lucide-react";
 import { Button, Textarea } from "../../../../shadcnui";
@@ -22,6 +22,11 @@ interface Props {
    * move.
    */
   sendLabel?: string;
+  /**
+   * Rendered at the bottom-left of the input box, opposite the send button
+   * (e.g. a scope picker). When omitted the box keeps its single-row layout.
+   */
+  leading?: ReactNode;
 }
 
 export function AssistantComposer({
@@ -31,6 +36,7 @@ export function AssistantComposer({
   onValueChange,
   placeholder,
   sendLabel,
+  leading,
 }: Props) {
   const t = useTranslations();
   const [internal, setInternal] = useState("");
@@ -53,22 +59,39 @@ export function AssistantComposer({
     }
   };
 
+  const textarea = (
+    <Textarea
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      onKeyDown={onKeyDown}
+      placeholder={placeholder ?? t("features.assistant.composer_placeholder")}
+      disabled={disabled}
+      rows={2}
+      className="min-h-[48px] resize-none border-0 bg-transparent focus-visible:ring-0"
+    />
+  );
+  const sendButton = (
+    <Button onClick={submit} disabled={!canSend} size="sm" className="h-8">
+      <ArrowUp className="me-1 h-4 w-4" /> {sendLabel ?? t("features.assistant.send")}
+    </Button>
+  );
+
   return (
     <div className="flex flex-col gap-1 border-t p-4">
-      <div className="bg-muted/30 flex items-end gap-2 rounded-lg border p-2">
-        <Textarea
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={onKeyDown}
-          placeholder={placeholder ?? t("features.assistant.composer_placeholder")}
-          disabled={disabled}
-          rows={2}
-          className="min-h-[48px] resize-none border-0 bg-transparent focus-visible:ring-0"
-        />
-        <Button onClick={submit} disabled={!canSend} size="sm" className="h-8">
-          <ArrowUp className="me-1 h-4 w-4" /> {sendLabel ?? t("features.assistant.send")}
-        </Button>
-      </div>
+      {leading ? (
+        <div className="bg-muted/30 flex flex-col gap-2 rounded-lg border p-2">
+          {textarea}
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">{leading}</div>
+            {sendButton}
+          </div>
+        </div>
+      ) : (
+        <div className="bg-muted/30 flex items-end gap-2 rounded-lg border p-2">
+          {textarea}
+          {sendButton}
+        </div>
+      )}
       <div className="text-muted-foreground text-end text-xs">{t("features.assistant.keyboard_hint")}</div>
     </div>
   );

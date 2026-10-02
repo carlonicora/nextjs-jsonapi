@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { EditorSheet } from "../EditorSheet";
+import { EditorSheet, EditorSheetProps } from "../EditorSheet";
 
 // Mock next-intl
 vi.mock("next-intl", () => ({
@@ -33,12 +33,14 @@ const schema = z.object({
   name: z.string().min(1),
 });
 
+type TestValues = z.infer<typeof schema>;
+
 function TestEditor({
   onSubmit = vi.fn().mockResolvedValue({ id: "123" }),
   isEdit = false,
   ...props
-}: Partial<React.ComponentProps<typeof EditorSheet>> & { onSubmit?: any }) {
-  const form = useForm({
+}: Partial<EditorSheetProps<TestValues>> & { onSubmit?: any }) {
+  const form = useForm<TestValues>({
     resolver: zodResolver(schema),
     defaultValues: { name: "" },
   });

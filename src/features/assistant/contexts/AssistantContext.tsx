@@ -1,8 +1,10 @@
 "use client";
 
+import { PlusCircleIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { SharedProvider } from "../../../contexts";
+import { Button } from "../../../shadcnui";
 import { useSocketContext } from "../../../contexts/SocketContext";
 import { BreadcrumbItemData, JsonApiHydratedDataInterface, Modules, rehydrate, rehydrateList } from "../../../core";
 import { usePageUrlGenerator } from "../../../hooks";
@@ -40,6 +42,10 @@ interface AssistantContextValue {
   setOperatorMode(value: boolean): void;
   /** Appends a message returned outside the send flow (e.g. an approve/deny resume). */
   appendResolvedMessage(message: AssistantMessageInterface): void;
+  /** The scope a NEW thread will bind to. Starts from the provider's `scope` prop. */
+  scope?: { type: string; id: string };
+  /** Changes the scope a new thread binds to. Ignored once a thread is active. */
+  setScope(scope?: { type: string; id: string }): void;
 }
 
 const AssistantContext = createContext<AssistantContextValue | undefined>(undefined);
@@ -141,6 +147,9 @@ export function AssistantProvider({
   const [operatorMode, setOperatorMode] = useState<boolean>(
     () => dehydratedAssistant?.jsonApi?.attributes?.engine === "operator",
   );
+  // The scope the next created thread binds to. Starts from the `scope` prop
+  // and can be changed by the host (e.g. a scope picker) until a thread exists.
+  const [pendingScope, setPendingScope] = useState<{ type: string; id: string } | undefined>(scope);
   const { socket } = useSocketContext();
 
   const sendMessage = useCallback(
@@ -172,6 +181,35 @@ export function AssistantProvider({
       };
       socket?.on("assistant:status", handler);
 
+      // A new thread is named and persisted before its answer runs; the server
+      // announces it on `assistant:created` so the thread list and the URL
+      // update immediately instead of when the long create request returns.
+      let createdHandled = false;
+      const createdHandler = (payload: {
+        assistant?: { data?: JsonApiHydratedDataInterface["jsonApi"]; included?: any[] };
+      }) => {
+        if (createdHandled) return;
+        const data = payload?.assistant?.data;
+        if (!data || typeof data !== "object" || typeof data.id !== "string" || !data.id) return;
+        let thread: AssistantInterface;
+        try {
+          thread = rehydrate<AssistantInterface>(Modules.Assistant, {
+            jsonApi: data,
+            included: payload.assistant?.included ?? [],
+          });
+        } catch {
+          return;
+        }
+        if (!thread?.id) return;
+        createdHandled = true;
+        setAssistant(thread);
+        setThreads((prev) => [thread, ...prev.filter((row) => row.id !== thread.id)]);
+        if (manageUrl && typeof window !== "undefined") {
+          window.history.replaceState(null, "", resolveThreadUrl(thread.id));
+        }
+      };
+      if (!assistant) socket?.on("assistant:created", createdHandler);
+
       try {
         if (!assistant) {
           const input = {
@@ -181,7 +219,7 @@ export function AssistantProvider({
             handbookMode: opts?.handbookMode ?? retrievalMode?.handbookMode,
             limitToHandbookPageId: opts?.limitToHandbookPageId ?? retrievalMode?.limitToHandbookPageId,
             contentBlocks: opts?.contentBlocks,
-            boundContent: scope,
+            boundContent: pendingScope,
           };
           const created = operatorMode
             ? await AssistantService.createOperator(input)
@@ -189,7 +227,11 @@ export function AssistantProvider({
           const msgs = await AssistantMessageService.findByAssistant({ assistantId: created.id });
           setAssistant(created);
           setMessages(msgs);
-          setThreads((prev) => [created, ...prev]);
+          setThreads((prev) =>
+            prev.some((row) => row.id === created.id)
+              ? prev.map((row) => (row.id === created.id ? created : row))
+              : [created, ...prev],
+          );
           if (manageUrl && typeof window !== "undefined") {
             window.history.replaceState(null, "", resolveThreadUrl(created.id));
           }
@@ -219,11 +261,12 @@ export function AssistantProvider({
         });
       } finally {
         socket?.off("assistant:status", handler);
+        if (!assistant) socket?.off("assistant:created", createdHandler);
         setSending(false);
         setStatus(undefined);
       }
     },
-    [assistant, messages, socket, operatorMode, scope, retrievalMode, manageUrl, resolveThreadUrl],
+    [assistant, messages, socket, operatorMode, pendingScope, retrievalMode, manageUrl, resolveThreadUrl],
   );
 
   const appendResolvedMessage = useCallback((message: AssistantMessageInterface) => {
@@ -278,10 +321,20 @@ export function AssistantProvider({
     setMessages([]);
     setFailedMessageIds(new Set());
     setOperatorMode(false);
+    setPendingScope(scope);
     if (manageUrl && typeof window !== "undefined") {
       window.history.replaceState(null, "", resolveThreadUrl());
     }
-  }, [manageUrl, resolveThreadUrl]);
+  }, [manageUrl, resolveThreadUrl, scope]);
+
+  const setScope = useCallback(
+    (next?: { type: string; id: string }) => {
+      // An existing thread is already bound; its scope cannot change.
+      if (assistant) return;
+      setPendingScope(next);
+    },
+    [assistant],
+  );
 
   const deleteThread = useCallback(async (id: string) => {
     await AssistantService.delete({ id });
@@ -329,6 +382,8 @@ export function AssistantProvider({
       operatorMode,
       setOperatorMode,
       appendResolvedMessage,
+      scope: pendingScope,
+      setScope,
     }),
     [
       assistant,
@@ -346,6 +401,8 @@ export function AssistantProvider({
       deleteThread,
       operatorMode,
       appendResolvedMessage,
+      pendingScope,
+      setScope,
     ],
   );
 
@@ -360,9 +417,36 @@ export function AssistantProvider({
 
   // `entities.tasks` was a copy-paste from another feature and rendered
   // "Tasks" as the page heading of every assistant page.
-  const title = {
-    type: titleOverride ?? t("entities.assistants", { count: 2 }),
-  };
+  // Shaped like the conversations page heading: the open thread's title as the
+  // element, and the new-thread action in the shared header so it stays
+  // reachable when the thread-list panel is collapsed.
+  const title = useMemo(() => {
+    const response: { type: string; element?: string; functions?: React.ReactNode } = {
+      type: titleOverride ?? t("entities.assistants", { count: assistant ? 1 : 2 }),
+    };
+
+    if (assistant?.title) {
+      response.element = assistant.title.length > 25 ? `${assistant.title.substring(0, 25)}...` : assistant.title;
+    }
+
+    response.functions = [
+      <Button
+        key="new-assistant"
+        data-testid="assistant-new-button"
+        size="sm"
+        variant={`outline`}
+        onClick={(e) => {
+          e.preventDefault();
+          startNew();
+        }}
+      >
+        <PlusCircleIcon className="me-2 h-3.5 w-3.5" />
+        {t("features.assistant.new")}
+      </Button>,
+    ];
+
+    return response;
+  }, [assistant, startNew, t, titleOverride]);
 
   return (
     <AssistantContext.Provider value={value}>

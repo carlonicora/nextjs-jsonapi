@@ -4,6 +4,8 @@ import { AssistantProvider, useAssistantContext } from "../AssistantContext";
 import { AssistantService } from "../../data/AssistantService";
 import { AssistantMessageService } from "../../../assistant-message/data/AssistantMessageService";
 import { useSocketContext } from "../../../../contexts/SocketContext";
+import { useSharedContext } from "../../../../contexts";
+import { render, screen, fireEvent } from "@testing-library/react";
 import type { JsonApiHydratedDataInterface } from "../../../../core";
 import { ModuleRegistry } from "../../../../core/registry/ModuleRegistry";
 import { DataClassRegistry } from "../../../../core/registry/DataClassRegistry";
@@ -635,5 +637,199 @@ describe("AssistantContext", () => {
     expect(AssistantService.appendMessage).toHaveBeenCalledWith(expect.objectContaining({ contentBlocks: blocks }));
 
     replaceState.mockRestore();
+  });
+
+  it("setScope binds the first message's thread", async () => {
+    const replaceState = vi.spyOn(window.history, "replaceState").mockImplementation(() => {});
+    const create = vi.fn().mockResolvedValue(buildAssistantStub({ id: "a-scoped" }));
+    AssistantService.create = create;
+    AssistantMessageService.findByAssistant = vi.fn().mockResolvedValue([]);
+
+    const { result } = renderHook(() => useAssistantContext(), {
+      wrapper: ({ children }) => <AssistantProvider>{children}</AssistantProvider>,
+    });
+    expect(result.current.scope).toBeUndefined();
+
+    act(() => {
+      result.current.setScope({ type: "proceedings", id: "p1" });
+    });
+    expect(result.current.scope).toEqual({ type: "proceedings", id: "p1" });
+
+    await act(async () => {
+      await result.current.sendMessage("hello");
+    });
+
+    expect(create).toHaveBeenCalledWith(expect.objectContaining({ boundContent: { type: "proceedings", id: "p1" } }));
+
+    // Once a thread exists its scope is fixed.
+    act(() => {
+      result.current.setScope({ type: "proceedings", id: "p2" });
+    });
+    expect(result.current.scope).toEqual({ type: "proceedings", id: "p1" });
+    replaceState.mockRestore();
+  });
+
+  it("the provider scope prop still filters the thread list", async () => {
+    const findMany = vi.fn().mockResolvedValue([]);
+    AssistantService.findMany = findMany;
+
+    const scope = { type: "campaigns", id: "camp-1" };
+    const { result } = renderHook(() => useAssistantContext(), {
+      wrapper: ({ children }) => <AssistantProvider scope={scope}>{children}</AssistantProvider>,
+    });
+
+    await waitFor(() => expect(findMany).toHaveBeenCalledWith({ boundType: "campaigns", boundId: "camp-1" }));
+    expect(result.current.scope).toEqual(scope);
+
+    act(() => {
+      result.current.setScope({ type: "proceedings", id: "p1" });
+    });
+
+    expect(findMany).not.toHaveBeenCalledWith({ boundType: "proceedings", boundId: "p1" });
+    expect(findMany).toHaveBeenLastCalledWith({ boundType: "campaigns", boundId: "camp-1" });
+  });
+
+  it("page heading: thread title as element and a new-thread button that resets the thread", async () => {
+    const replaceState = vi.spyOn(window.history, "replaceState").mockImplementation(() => {});
+    const existing = buildAssistantDehydrated({ id: "a-h", title: "A thread title longer than 25 chars" });
+    let ctx: ReturnType<typeof useAssistantContext> | undefined;
+    function Probe() {
+      ctx = useAssistantContext();
+      const { title } = useSharedContext();
+      return (
+        <div>
+          <span data-testid="element">{title.element}</span>
+          {title.functions}
+        </div>
+      );
+    }
+    render(
+      <AssistantProvider dehydratedAssistant={existing}>
+        <Probe />
+      </AssistantProvider>,
+    );
+    expect(screen.getByTestId("element")).toHaveTextContent("A thread title longer tha...");
+    fireEvent.click(screen.getByTestId("assistant-new-button"));
+    await waitFor(() => expect(ctx?.assistant).toBeUndefined());
+    expect(screen.getByTestId("element")).toBeEmptyDOMElement();
+    expect(replaceState).toHaveBeenCalledWith(null, "", "/assistants");
+  });
+
+  describe("assistant:created", () => {
+    function fakeSocket() {
+      const handlers: Record<string, (payload: any) => void> = {};
+      const socket = {
+        on: vi.fn((evt: string, h: any) => {
+          handlers[evt] = h;
+        }),
+        off: vi.fn((evt: string) => {
+          delete handlers[evt];
+        }),
+      };
+      vi.mocked(useSocketContext).mockReturnValue({ socket, isConnected: true } as any);
+      return { socket, handlers };
+    }
+
+    function createdEvent(id: string, title: string) {
+      return {
+        assistant: {
+          data: { type: "assistants", id, attributes: { title, messageCount: 0 } },
+          included: [],
+        },
+      };
+    }
+
+    it("names the thread, lists it and swaps the URL before the create request returns", async () => {
+      const replaceState = vi.spyOn(window.history, "replaceState").mockImplementation(() => {});
+      const { socket, handlers } = fakeSocket();
+      let resolveCreate!: (value: unknown) => void;
+      AssistantService.create = vi.fn().mockImplementation(() => new Promise((resolve) => (resolveCreate = resolve)));
+      AssistantMessageService.findByAssistant = vi.fn().mockResolvedValue([buildMessageStub({ role: "user" })]);
+
+      const { result } = renderHook(() => useAssistantContext(), {
+        wrapper: ({ children }) => <AssistantProvider>{children}</AssistantProvider>,
+      });
+      await waitFor(() => expect(result.current.threadsLoading).toBe(false));
+
+      let sendPromise: Promise<void>;
+      await act(async () => {
+        sendPromise = result.current.sendMessage("first question");
+        await Promise.resolve();
+      });
+      expect(socket.on).toHaveBeenCalledWith("assistant:created", expect.any(Function));
+
+      await act(async () => {
+        handlers["assistant:created"]({ assistant: { data: null } });
+        handlers["assistant:created"](createdEvent("a-new", "Named thread"));
+        handlers["assistant:created"](createdEvent("a-other", "Second event"));
+      });
+
+      expect(result.current.assistant?.id).toBe("a-new");
+      expect(result.current.assistant?.title).toBe("Named thread");
+      expect(result.current.threads.map((t) => t.id)).toEqual(["a-new"]);
+      expect(replaceState).toHaveBeenCalledWith(null, "", "/assistants/a-new");
+      expect(result.current.sending).toBe(true);
+      expect(result.current.messages.map((m) => m.content)).toEqual(["first question"]);
+
+      await act(async () => {
+        resolveCreate(buildAssistantStub({ id: "a-new", title: "Named thread" }));
+        await sendPromise!;
+      });
+
+      expect(result.current.threads.filter((t) => t.id === "a-new")).toHaveLength(1);
+      expect(result.current.threads).toHaveLength(1);
+      expect(result.current.assistant?.id).toBe("a-new");
+      expect(socket.off).toHaveBeenCalledWith("assistant:created", expect.any(Function));
+      replaceState.mockRestore();
+    });
+
+    it("does not touch the URL from the event when manageUrl is false", async () => {
+      const replaceState = vi.spyOn(window.history, "replaceState").mockImplementation(() => {});
+      const { handlers } = fakeSocket();
+      let resolveCreate!: (value: unknown) => void;
+      AssistantService.create = vi.fn().mockImplementation(() => new Promise((resolve) => (resolveCreate = resolve)));
+      AssistantMessageService.findByAssistant = vi.fn().mockResolvedValue([]);
+
+      const { result } = renderHook(() => useAssistantContext(), {
+        wrapper: ({ children }) => <AssistantProvider manageUrl={false}>{children}</AssistantProvider>,
+      });
+      await waitFor(() => expect(result.current.threadsLoading).toBe(false));
+
+      let sendPromise: Promise<void>;
+      await act(async () => {
+        sendPromise = result.current.sendMessage("hello");
+        await Promise.resolve();
+      });
+      await act(async () => {
+        handlers["assistant:created"](createdEvent("a-sheet", "Sheet thread"));
+      });
+
+      expect(result.current.assistant?.id).toBe("a-sheet");
+      expect(result.current.threads.map((t) => t.id)).toEqual(["a-sheet"]);
+      expect(replaceState).not.toHaveBeenCalled();
+
+      await act(async () => {
+        resolveCreate(buildAssistantStub({ id: "a-sheet", title: "Sheet thread" }));
+        await sendPromise!;
+      });
+      expect(replaceState).not.toHaveBeenCalled();
+      replaceState.mockRestore();
+    });
+
+    it("does not subscribe to assistant:created when appending to an existing thread", async () => {
+      const { socket } = fakeSocket();
+      AssistantService.appendMessage = vi.fn().mockResolvedValue([]);
+      const { result } = renderHook(() => useAssistantContext(), {
+        wrapper: ({ children }) => (
+          <AssistantProvider dehydratedAssistant={buildAssistantDehydrated({ id: "a-ex" })}>
+            {children}
+          </AssistantProvider>
+        ),
+      });
+      await act(async () => {
+        await result.current.sendMessage("follow-up");
+      });
+      expect(socket.on).not.toHaveBeenCalledWith("assistant:created", expect.any(Function));
+    });
   });
 });

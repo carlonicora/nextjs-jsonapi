@@ -243,7 +243,7 @@ describe("useDataListRetriever", () => {
       const retriever = vi.fn().mockResolvedValue(mockData);
 
       const { result } = renderHook(() =>
-        useDataListRetriever({
+        useDataListRetriever<(typeof mockData)[number]>({
           retriever,
           module: mockModule,
         }),

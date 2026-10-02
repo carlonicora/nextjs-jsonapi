@@ -1,5 +1,5 @@
 import { AbstractApiData, JsonApiHydratedDataInterface } from "../../../core";
-import { OAuthClientInput, OAuthClientInterface } from "../interfaces/oauth.interface";
+import { OAuthClientInput, OAuthClientInterface, OAuthConsentRequest } from "../interfaces/oauth.interface";
 
 /**
  * OAuth client data model
@@ -83,5 +83,34 @@ export class OAuthClient extends AbstractApiData implements OAuthClientInterface
     if (data.isActive !== undefined) response.data.attributes.isActive = data.isActive;
 
     return response;
+  }
+
+  /**
+   * Body for POST /oauth/authorize/approve.
+   * The authorize endpoints speak the RFC 6749 wire format (snake_case keys,
+   * no JSON:API envelope), so this dedicated method owns that shape and the
+   * service sends it with `overridesJsonApiCreation`.
+   */
+  createApproveAuthorizationJsonApi(params: OAuthConsentRequest) {
+    return {
+      client_id: params.clientId,
+      redirect_uri: params.redirectUri,
+      scope: params.scope,
+      state: params.state,
+      code_challenge: params.codeChallenge,
+      code_challenge_method: params.codeChallengeMethod,
+      company_id: params.companyId,
+    };
+  }
+
+  /**
+   * Body for POST /oauth/authorize/deny (RFC 6749 wire format, see above).
+   */
+  createDenyAuthorizationJsonApi(params: OAuthConsentRequest) {
+    return {
+      client_id: params.clientId,
+      redirect_uri: params.redirectUri,
+      state: params.state,
+    };
   }
 }

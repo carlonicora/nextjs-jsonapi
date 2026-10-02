@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Eye, Pencil, Image, Upload, Film, FolderPlus, User, Shield, LucideIcon } from "lucide-react";
 import { OAuthScopeInfo } from "../../interfaces/oauth.interface";
 import { MicroLabel } from "../../../../components/typography";
@@ -25,13 +26,15 @@ const SCOPE_ICONS: Record<string, LucideIcon> = {
  * List of requested OAuth scopes for consent display
  */
 export function OAuthScopeList({ scopes }: OAuthScopeListProps) {
+  const t = useTranslations();
+
   if (scopes.length === 0) {
     return null;
   }
 
   return (
     <div className="space-y-3">
-      <MicroLabel as="h3">This will allow the application to:</MicroLabel>
+      <MicroLabel as="h3">{t("oauth.consent.scopes_heading")}</MicroLabel>
       <ul className="space-y-3">
         {scopes.map((scope) => {
           const IconComponent = scope.icon ? SCOPE_ICONS[scope.icon] : Eye;

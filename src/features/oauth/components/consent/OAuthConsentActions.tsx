@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Button } from "../../../../shadcnui";
 
 export interface OAuthConsentActionsProps {
@@ -15,13 +16,15 @@ export interface OAuthConsentActionsProps {
  * Action buttons for OAuth consent screen
  */
 export function OAuthConsentActions({ onApprove, onDeny, isLoading = false }: OAuthConsentActionsProps) {
+  const t = useTranslations();
+
   return (
     <div className="flex flex-col sm:flex-row gap-3">
       <Button variant="outline" onClick={onDeny} disabled={isLoading} className="flex-1">
-        Deny
+        {t("oauth.consent.deny")}
       </Button>
       <Button onClick={onApprove} disabled={isLoading} className="flex-1">
-        {isLoading ? "Authorizing..." : "Authorize"}
+        {isLoading ? t("oauth.consent.authorizing") : t("oauth.consent.authorize")}
       </Button>
     </div>
   );

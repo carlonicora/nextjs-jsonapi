@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { OAuthConsentInfo, OAuthConsentRequest } from "../interfaces/oauth.interface";
 import { OAuthService } from "../data/oauth.service";
+import { useCurrentUserContextOptional } from "../../user/contexts/CurrentUserContext";
 
 export interface UseOAuthConsentReturn {
   /** Client and scope info for consent display */
@@ -17,6 +18,10 @@ export interface UseOAuthConsentReturn {
   deny: () => Promise<void>;
   /** Whether approve/deny is in progress */
   isSubmitting: boolean;
+  /** The studio (company) the authorization is granted for */
+  companyId: string | undefined;
+  /** Select the studio (company) the authorization is granted for */
+  setCompanyId: (id: string) => void;
 }
 
 /**
@@ -37,11 +42,35 @@ export interface UseOAuthConsentReturn {
  * // On button click: approve() or deny()
  * ```
  */
-export function useOAuthConsent(params: OAuthConsentRequest): UseOAuthConsentReturn {
+export function useOAuthConsent(
+  params: OAuthConsentRequest,
+  options?: {
+    /**
+     * The studio open in the host app's session. Apps that keep the signed-in
+     * user in their own context (not the package UserProvider) pass it here;
+     * it wins over the package context.
+     */
+    defaultCompanyId?: string;
+  },
+): UseOAuthConsentReturn {
   const [clientInfo, setClientInfo] = useState<OAuthConsentInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [companyId, setCompanyId] = useState<string | undefined>(undefined);
+  const contextCompanyId = useCurrentUserContextOptional()?.company?.id;
+  const currentCompanyId = options?.defaultCompanyId ?? contextCompanyId;
+
+  // Seed the studio choice once the user's companies arrive: the studio open in
+  // the web session when it is in the list, otherwise the first one.
+  useEffect(() => {
+    const companies = clientInfo?.companies ?? [];
+    if (companies.length === 0) return;
+    if (companyId && companies.some((company) => company.id === companyId)) return;
+
+    const current = currentCompanyId ? companies.find((company) => company.id === currentCompanyId) : undefined;
+    setCompanyId(current?.id ?? companies[0]?.id);
+  }, [clientInfo, currentCompanyId, companyId]);
 
   // Fetch client info on mount
   useEffect(() => {
@@ -83,7 +112,7 @@ export function useOAuthConsent(params: OAuthConsentRequest): UseOAuthConsentRet
     setError(null);
 
     try {
-      const result = await OAuthService.approveAuthorization(params);
+      const result = await OAuthService.approveAuthorization({ ...params, companyId });
 
       // Redirect to client with authorization code
       if (result.redirectUrl) {
@@ -95,7 +124,7 @@ export function useOAuthConsent(params: OAuthConsentRequest): UseOAuthConsentRet
       setIsSubmitting(false);
     }
     // Note: Don't set isSubmitting to false on success - we're redirecting
-  }, [params]);
+  }, [params, companyId]);
 
   const deny = useCallback(async (): Promise<void> => {
     setIsSubmitting(true);
@@ -123,5 +152,7 @@ export function useOAuthConsent(params: OAuthConsentRequest): UseOAuthConsentRet
     approve,
     deny,
     isSubmitting,
+    companyId,
+    setCompanyId,
   };
 }

@@ -29,4 +29,12 @@ describe("AssistantComposer", () => {
     const send = screen.getByRole("button", { name: /features\.assistant\.send/i });
     expect(send).toBeDisabled();
   });
+
+  it("renders the leading slot inside the input box, before the send button", () => {
+    render(<AssistantComposer onSend={vi.fn()} leading={<span data-testid="leading-slot" />} />);
+    const slot = screen.getByTestId("leading-slot");
+    const send = screen.getByRole("button", { name: /features\.assistant\.send/i });
+    expect(slot.compareDocumentPosition(send) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(slot.closest(".rounded-lg")).toBe(send.closest(".rounded-lg"));
+  });
 });

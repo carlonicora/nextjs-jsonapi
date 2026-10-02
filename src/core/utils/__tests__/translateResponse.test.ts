@@ -7,7 +7,9 @@ import { translateResponse } from "../translateResponse";
 
 class StubData implements Partial<ApiDataInterface> {
   id = "";
-  rehydrate(): void {}
+  rehydrate(): ApiDataInterface {
+    return this as unknown as ApiDataInterface;
+  }
 }
 
 const stubModule = {

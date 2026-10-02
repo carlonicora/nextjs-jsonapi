@@ -37,7 +37,8 @@ describe("Logout", () => {
     // We need to delete the original location first
     // @ts-expect-error - deleting window.location for mocking purposes
     delete window.location;
-    window.location = {
+    // The DOM lib types `window.location` as accessor-only; jsdom lets the test replace it.
+    (window as unknown as { location: Location }).location = {
       ...originalLocation,
       get href() {
         return windowLocationHref;
@@ -50,7 +51,7 @@ describe("Logout", () => {
 
   afterEach(() => {
     // Restore original location
-    window.location = originalLocation;
+    (window as unknown as { location: Location }).location = originalLocation;
   });
 
   describe("Scenario: Clears storage when storageKeys provided", () => {

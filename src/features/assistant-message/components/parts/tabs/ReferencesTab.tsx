@@ -1,12 +1,12 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import Link from "next/link";
 import type { ApiDataInterface } from "../../../../../core";
 import { ModuleRegistry } from "../../../../../core/registry/ModuleRegistry";
 import { usePageUrlGenerator } from "../../../../../hooks";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../shadcnui/ui/table";
 import { useEntityLabel } from "./useEntityLabel";
+import { Link } from "../../../../../shadcnui/custom/link";
 
 interface Props {
   references: ApiDataInterface[];
@@ -42,7 +42,7 @@ export function ReferencesTab({ references }: Props) {
           return (
             <TableRow key={`${ref.type}/${ref.id}`}>
               <TableCell>
-                <Link href={href} target="_blank" rel="noopener noreferrer" className="font-medium">
+                <Link href={href} target="_blank" rel="noopener noreferrer">
                   {ref.identifier}
                 </Link>
               </TableCell>

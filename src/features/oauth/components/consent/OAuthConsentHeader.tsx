@@ -1,6 +1,8 @@
 "use client";
 
 import { Shield } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { ContentTitle } from "../../../../components";
 import { OAuthClientInterface } from "../../interfaces/oauth.interface";
 
 export interface OAuthConsentHeaderProps {
@@ -8,15 +10,17 @@ export interface OAuthConsentHeaderProps {
   client: OAuthClientInterface;
   /** Optional logo URL override */
   logoUrl?: string;
-  /** Application name (e.g., "Only35") */
-  appName?: string;
+  /** Application name shown in the header */
+  appName: string;
 }
 
 /**
  * Header component for OAuth consent screen
  * Shows platform logo and requesting app information
  */
-export function OAuthConsentHeader({ client, logoUrl, appName = "Only35" }: OAuthConsentHeaderProps) {
+export function OAuthConsentHeader({ client, logoUrl, appName }: OAuthConsentHeaderProps) {
+  const t = useTranslations();
+
   return (
     <div className="text-center space-y-4">
       {/* Platform Logo */}
@@ -32,9 +36,9 @@ export function OAuthConsentHeader({ client, logoUrl, appName = "Only35" }: OAut
 
       {/* Authorization Request */}
       <div className="space-y-2">
-        <h1 className="text-primary text-3xl font-semibold">Authorize {client.name}</h1>
-        <p className="text-muted-foreground">
-          <span className="font-medium text-foreground">{client.name}</span> wants to access your {appName} account
+        <ContentTitle element={t("oauth.consent.title", { client: client.name })} className="mb-0 justify-center" />
+        <p className="text-muted-foreground text-sm">
+          {t("oauth.consent.wants_access", { client: client.name, appName })}
         </p>
       </div>
     </div>

@@ -89,13 +89,15 @@ export interface OAuthConsentRequest {
   codeChallenge?: string;
   /** PKCE method: 'S256' (recommended) or 'plain' */
   codeChallengeMethod?: string;
+  /** The studio (company) the issued tokens are bound to; sent as `company_id` on approve */
+  companyId?: string;
 }
 
 /**
  * Scope information for display in consent screen
  */
 export interface OAuthScopeInfo {
-  /** The scope identifier (e.g., 'photographs:read') */
+  /** The scope identifier (e.g., 'read', 'mcp') */
   scope: string;
   /** Human-readable scope name */
   name: string;
@@ -111,6 +113,8 @@ export interface OAuthScopeInfo {
 export interface OAuthConsentInfo {
   client: OAuthClientInterface;
   scopes: OAuthScopeInfo[];
+  /** The caller's companies, ordered by name; the user picks one when there is more than one */
+  companies?: Array<{ id: string; name: string }>;
 }
 
 /**
@@ -130,35 +134,17 @@ export const OAUTH_SCOPE_DISPLAY: Record<string, OAuthScopeInfo> = {
     description: "Write access to your data",
     icon: "pencil",
   },
-  "photographs:read": {
-    scope: "photographs:read",
-    name: "View Photographs",
-    description: "Access and download your photo library",
-    icon: "image",
-  },
-  "photographs:write": {
-    scope: "photographs:write",
-    name: "Upload Photographs",
-    description: "Add new photos to your rolls",
-    icon: "upload",
-  },
-  "rolls:read": {
-    scope: "rolls:read",
-    name: "View Rolls",
-    description: "See your film rolls and collections",
-    icon: "film",
-  },
-  "rolls:write": {
-    scope: "rolls:write",
-    name: "Manage Rolls",
-    description: "Create and modify film rolls",
-    icon: "folder-plus",
-  },
   profile: {
     scope: "profile",
     name: "View Profile",
     description: "Access your name and email",
     icon: "user",
+  },
+  mcp: {
+    scope: "mcp",
+    name: "MCP Server Access",
+    description: "Let an AI assistant read and act on your data through the MCP server",
+    icon: "shield",
   },
   admin: {
     scope: "admin",

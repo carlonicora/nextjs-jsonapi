@@ -55,4 +55,11 @@ describe("AssistantSidebar", () => {
     await userEvent.click(screen.getByRole("button", { name: /^T$/ }));
     expect(onSelect).toHaveBeenCalledWith("a1");
   });
+
+  it("without onNew renders no new button", () => {
+    const threads = [buildAssistantStub({ id: "a1", title: "T", updatedAt: new Date("2026-04-22T09:00:00Z") })];
+    render(<AssistantSidebar threads={threads} onSelect={vi.fn()} />);
+    expect(screen.queryByRole("button", { name: /features\.assistant\.new/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^T$/ })).toBeInTheDocument();
+  });
 });

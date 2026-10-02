@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Plus } from "lucide-react";
+import type { ReactNode } from "react";
 import { Button } from "../../../../shadcnui";
 import { MicroLabel } from "../../../../components/typography";
 import type { AssistantInterface } from "../../data/AssistantInterface";
@@ -11,7 +12,12 @@ interface Props {
   threads: AssistantInterface[];
   activeId?: string;
   onSelect: (id: string) => void;
-  onNew: () => void;
+  /**
+   * Starts a new thread. Omit it when the host renders the "new" action
+   * elsewhere (the `/assistants` page puts it in the page header), and the
+   * sidebar then shows only the thread list.
+   */
+  onNew?: () => void;
   /**
    * Label of the "start a new thread" button. Defaults to the assistant's own
    * copy; a surface that is not the assistant (the handbook chat) passes its
@@ -20,9 +26,19 @@ interface Props {
   newLabel?: string;
   /** Shown when there are no threads. Same rationale as `newLabel`. */
   emptyLabel?: string;
+  /** Optional badge rendered inside each thread button, after the title (e.g. the thread's scope). */
+  renderThreadBadge?: (thread: AssistantInterface) => ReactNode;
 }
 
-export function AssistantSidebar({ threads, activeId, onSelect, onNew, newLabel, emptyLabel }: Props) {
+export function AssistantSidebar({
+  threads,
+  activeId,
+  onSelect,
+  onNew,
+  newLabel,
+  emptyLabel,
+  renderThreadBadge,
+}: Props) {
   const t = useTranslations();
   const groups = groupThreadsByBucket(threads);
 
@@ -42,6 +58,7 @@ export function AssistantSidebar({ threads, activeId, onSelect, onNew, newLabel,
             }
           >
             {thread.title}
+            {renderThreadBadge?.(thread)}
           </button>
         ))}
       </div>
@@ -50,11 +67,13 @@ export function AssistantSidebar({ threads, activeId, onSelect, onNew, newLabel,
 
   return (
     <aside className="bg-muted/30 flex w-64 flex-col border-e">
-      <div className="border-b p-3">
-        <Button onClick={onNew} className="w-full" size="sm">
-          <Plus className="me-1 h-4 w-4" /> {newLabel ?? t("features.assistant.new")}
-        </Button>
-      </div>
+      {onNew && (
+        <div className="border-b p-3">
+          <Button onClick={onNew} className="w-full" size="sm">
+            <Plus className="me-1 h-4 w-4" /> {newLabel ?? t("features.assistant.new")}
+          </Button>
+        </div>
+      )}
       <div className="flex-1 overflow-y-auto p-2">
         {threads.length === 0 ? (
           <div className="text-muted-foreground mt-6 text-center text-xs">

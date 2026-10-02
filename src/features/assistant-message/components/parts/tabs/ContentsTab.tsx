@@ -1,13 +1,13 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import Link from "next/link";
 import type { ApiDataInterface } from "../../../../../core";
 import { ModuleRegistry } from "../../../../../core/registry/ModuleRegistry";
 import { usePageUrlGenerator } from "../../../../../hooks";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../shadcnui/ui/table";
 import type { ChunkInterface, ChunkRelationshipMeta } from "../../../../chunk/data/ChunkInterface";
 import { useEntityLabel } from "./useEntityLabel";
+import { Link } from "../../../../../shadcnui/custom/link";
 
 interface Props {
   citations: (ChunkInterface & ChunkRelationshipMeta)[];

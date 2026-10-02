@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { Sparkles } from "lucide-react";
 import { Label, Switch } from "../../../../shadcnui";
@@ -16,11 +16,13 @@ interface Props {
    */
   operatorMode?: boolean;
   onOperatorModeChange?: (value: boolean) => void;
+  /** Rendered inside the composer, bottom-left (e.g. a scope picker). */
+  composerLeading?: ReactNode;
 }
 
 const STARTER_KEYS = ["a", "b", "c", "d"] as const;
 
-export function AssistantEmptyState({ onSend, operatorMode = false, onOperatorModeChange }: Props) {
+export function AssistantEmptyState({ onSend, operatorMode = false, onOperatorModeChange, composerLeading }: Props) {
   const t = useTranslations();
   const [draft, setDraft] = useState("");
 
@@ -34,7 +36,7 @@ export function AssistantEmptyState({ onSend, operatorMode = false, onOperatorMo
           <SectionHeader>{t("features.assistant.empty_state.title")}</SectionHeader>
           <p className="text-muted-foreground mt-1 text-sm">{t("features.assistant.empty_state.subtitle")}</p>
         </div>
-        <AssistantComposer value={draft} onValueChange={setDraft} onSend={onSend} />
+        <AssistantComposer value={draft} onValueChange={setDraft} onSend={onSend} leading={composerLeading} />
         {onOperatorModeChange && (
           <div className="flex items-center justify-end gap-2">
             <Switch

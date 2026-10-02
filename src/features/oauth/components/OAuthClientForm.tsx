@@ -17,7 +17,12 @@ import {
 } from "../../../shadcnui";
 import { OAuthRedirectUriInput } from "./OAuthRedirectUriInput";
 import { OAuthScopeSelector } from "./OAuthScopeSelector";
-import { OAuthClientCreateRequest, OAuthClientInterface, DEFAULT_GRANT_TYPES } from "../interfaces/oauth.interface";
+import {
+  OAuthClientCreateRequest,
+  OAuthClientInterface,
+  OAuthScopeInfo,
+  DEFAULT_GRANT_TYPES,
+} from "../interfaces/oauth.interface";
 
 export interface OAuthClientFormProps {
   /** Existing client for edit mode (undefined = create mode) */
@@ -28,6 +33,10 @@ export interface OAuthClientFormProps {
   onCancel: () => void;
   /** Whether form is submitting */
   isLoading?: boolean;
+  /** Scopes the app offers in the selector (defaults to AVAILABLE_OAUTH_SCOPES) */
+  availableScopes?: OAuthScopeInfo[];
+  /** Scopes preselected in create mode (edit mode uses client.allowedScopes) */
+  defaultScopes?: string[];
 }
 
 interface FormState {
@@ -47,14 +56,21 @@ interface FormErrors {
 /**
  * Form for creating or editing an OAuth client
  */
-export function OAuthClientForm({ client, onSubmit, onCancel, isLoading = false }: OAuthClientFormProps) {
+export function OAuthClientForm({
+  client,
+  onSubmit,
+  onCancel,
+  isLoading = false,
+  availableScopes,
+  defaultScopes = [],
+}: OAuthClientFormProps) {
   const isEditMode = !!client;
 
   const [formState, setFormState] = useState<FormState>({
     name: client?.name || "",
     description: client?.description || "",
     redirectUris: client?.redirectUris?.length ? client.redirectUris : [""],
-    allowedScopes: client?.allowedScopes || [],
+    allowedScopes: client ? client.allowedScopes || [] : defaultScopes,
     isConfidential: client?.isConfidential ?? true,
   });
 
@@ -117,7 +133,7 @@ export function OAuthClientForm({ client, onSubmit, onCancel, isLoading = false 
               id="name"
               value={formState.name}
               onChange={(e) => setFormState((s) => ({ ...s, name: e.target.value }))}
-              placeholder="My Lightroom Plugin"
+              placeholder="My Application"
               disabled={isLoading}
               className={errors.name ? "border-destructive" : ""}
             />
@@ -149,6 +165,7 @@ export function OAuthClientForm({ client, onSubmit, onCancel, isLoading = false 
           <OAuthScopeSelector
             value={formState.allowedScopes}
             onChange={(scopes) => setFormState((s) => ({ ...s, allowedScopes: scopes }))}
+            availableScopes={availableScopes}
             error={errors.allowedScopes}
             disabled={isLoading}
           />
