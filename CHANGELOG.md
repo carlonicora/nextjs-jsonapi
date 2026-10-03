@@ -1,3 +1,9 @@
+## [3.24.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.24.1...v3.24.2) (2026-10-03)
+
+### 🐛 Bug Fixes
+
+* **request:** report an unreachable API as 503 instead of 500 ([f65e255](https://github.com/carlonicora/nextjs-jsonapi/commit/f65e25553512cd0050ba7df32ccb178d32fc6b86))
+
 ## [3.24.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.24.0...v3.24.1) (2026-10-03)
 
 ### 🐛 Bug Fixes
