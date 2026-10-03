@@ -3,12 +3,11 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Send } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useMemo } from "react";
+import { TableContent, UseTableStructureHook } from "../../../hooks";
 import { Badge, Button } from "../../../shadcnui";
+import { WaitlistFields } from "../data/waitlist.fields";
 import { WaitlistInterface, WaitlistStatus } from "../data/WaitlistInterface";
-
-interface UseWaitlistTableStructureProps {
-  onInvite: (entry: WaitlistInterface) => void;
-}
 
 /**
  * Parse questionnaire JSON string safely
@@ -22,10 +21,25 @@ function parseQuestionnaire(questionnaire: string | undefined): Record<string, a
   }
 }
 
-export function useWaitlistTableStructure({
-  onInvite,
-}: UseWaitlistTableStructureProps): ColumnDef<WaitlistInterface>[] {
+/**
+ * Columns for the administrative waitlist. The invite action needs the list's
+ * own handler, so WaitlistList passes it through ContentListTable's `context`
+ * as `onInvite`.
+ */
+export const useWaitlistTableStructure: UseTableStructureHook<WaitlistInterface, WaitlistFields> = (params) => {
   const t = useTranslations();
+  const onInvite: ((entry: WaitlistInterface) => void) | undefined = params.context?.onInvite;
+
+  const tableData = useMemo(() => {
+    return params.data.map((entry: WaitlistInterface) => {
+      const row: TableContent<WaitlistInterface> = { jsonApiData: entry };
+      row[WaitlistFields.waitlistId] = entry.id;
+      params.fields.forEach((field) => {
+        row[field] = (entry as any)[field as keyof WaitlistInterface];
+      });
+      return row;
+    });
+  }, [params.data, params.fields]);
 
   const getStatusBadge = (status: WaitlistStatus) => {
     const variants: Record<WaitlistStatus, { variant: "default" | "secondary" | "outline" | "destructive" }> = {
@@ -39,31 +53,44 @@ export function useWaitlistTableStructure({
     return <Badge variant={config.variant}>{t(`waitlist.admin.status.${status}`)}</Badge>;
   };
 
-  return [
-    {
+  const fieldColumnMap: Partial<Record<WaitlistFields, () => any>> = {
+    [WaitlistFields.email]: () => ({
+      id: "email",
       accessorKey: "email",
       header: t("waitlist.admin.columns.email"),
-      cell: ({ row }) => <span className="font-medium">{row.original.email}</span>,
-    },
-    {
+      cell: ({ row }: { row: TableContent<WaitlistInterface> }) => (
+        <span className="font-medium">{row.original.jsonApiData.email}</span>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    }),
+    [WaitlistFields.status]: () => ({
+      id: "status",
       accessorKey: "status",
       header: t("waitlist.admin.columns.status"),
-      cell: ({ row }) => getStatusBadge(row.original.status),
-    },
-    {
+      cell: ({ row }: { row: TableContent<WaitlistInterface> }) => getStatusBadge(row.original.jsonApiData.status),
+      enableSorting: false,
+      enableHiding: false,
+    }),
+    [WaitlistFields.createdAt]: () => ({
+      id: "createdAt",
       accessorKey: "createdAt",
       header: t("waitlist.admin.columns.submitted"),
-      cell: ({ row }) => {
-        if (!row.original.createdAt) return "-";
-        return new Date(row.original.createdAt).toLocaleDateString();
+      cell: ({ row }: { row: TableContent<WaitlistInterface> }) => {
+        const entry: WaitlistInterface = row.original.jsonApiData;
+        if (!entry.createdAt) return "-";
+        return new Date(entry.createdAt).toLocaleDateString();
       },
-    },
-    {
+      enableSorting: false,
+      enableHiding: false,
+    }),
+    [WaitlistFields.questionnaire]: () => ({
+      id: "questionnaire",
       accessorKey: "questionnaire",
       header: t("waitlist.admin.columns.questionnaire"),
-      cell: ({ row }) => {
+      cell: ({ row }: { row: TableContent<WaitlistInterface> }) => {
         // IMPORTANT: Parse JSON string from backend
-        const questionnaire = parseQuestionnaire(row.original.questionnaire);
+        const questionnaire = parseQuestionnaire(row.original.jsonApiData.questionnaire);
         if (!questionnaire || Object.keys(questionnaire).length === 0) {
           return <span className="text-muted-foreground">-</span>;
         }
@@ -84,16 +111,18 @@ export function useWaitlistTableStructure({
           </details>
         );
       },
-    },
-    {
+      enableSorting: false,
+      enableHiding: false,
+    }),
+    [WaitlistFields.actions]: () => ({
       id: "actions",
       header: t("waitlist.admin.columns.actions"),
-      cell: ({ row }) => {
-        const entry = row.original;
+      cell: ({ row }: { row: TableContent<WaitlistInterface> }) => {
+        const entry: WaitlistInterface = row.original.jsonApiData;
 
         if (entry.status === "confirmed") {
           return (
-            <Button size="sm" variant="outline" onClick={() => onInvite(entry)}>
+            <Button size="sm" variant="outline" onClick={() => onInvite?.(entry)}>
               <Send className="me-2 h-4 w-4" />
               {t("waitlist.admin.actions.invite")}
             </Button>
@@ -116,6 +145,16 @@ export function useWaitlistTableStructure({
           <span className="text-muted-foreground text-sm">{t("waitlist.admin.actions.awaiting_confirmation")}</span>
         );
       },
-    },
-  ];
-}
+      enableSorting: false,
+      enableHiding: false,
+    }),
+  };
+
+  const columns = useMemo(() => {
+    return params.fields.map((field) => fieldColumnMap[field]?.()).filter((col) => col !== undefined) as ColumnDef<
+      TableContent<WaitlistInterface>
+    >[];
+  }, [params.fields, fieldColumnMap, t]);
+
+  return useMemo(() => ({ data: tableData, columns: columns }), [tableData, columns]);
+};

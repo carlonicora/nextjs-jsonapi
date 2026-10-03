@@ -3,3 +3,4 @@ export * from "./Waitlist";
 export * from "./WaitlistService";
 export * from "./waitlist-stats.interface";
 export * from "./waitlist-stats";
+export * from "./waitlist.fields";

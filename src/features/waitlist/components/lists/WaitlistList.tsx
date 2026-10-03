@@ -1,68 +1,52 @@
 "use client";
 
-import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { RefreshCw, Users } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { errorToast } from "../../../../components";
-import { SectionHeader } from "../../../../components/typography";
-import {
-  Button,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../../../../shadcnui";
+import { useMemo, useState } from "react";
+import { ContentListTable, errorToast } from "../../../../components";
+import { Modules } from "../../../../core";
+import { DataListRetriever, useDataListRetriever } from "../../../../hooks";
+import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../shadcnui";
 import { showToast } from "../../../../utils/toast";
+import { WaitlistFields } from "../../data/waitlist.fields";
 import { WaitlistInterface } from "../../data/WaitlistInterface";
 import { WaitlistService } from "../../data/WaitlistService";
-import { useWaitlistTableStructure } from "../../hooks/useWaitlistTableStructure";
 
-export function WaitlistList() {
+type WaitlistListProps = {
+  /**
+   * Pass this whenever the list is the page's own content inside a
+   * `RoundPageContainer fullWidth`. Without it ContentListTable wraps itself in
+   * `rounded-md border`, drawing a second bordered card inside the page's
+   * rounded shell.
+   */
+  fullWidth?: boolean;
+};
+
+export function WaitlistList({ fullWidth }: WaitlistListProps = {}) {
   const t = useTranslations();
-  const [entries, setEntries] = useState<WaitlistInterface[]>([]);
-  const [total, setTotal] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
-  const loadEntries = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const result = await WaitlistService.findMany({
-        status: statusFilter === "all" ? undefined : statusFilter,
-        fetchAll: true,
-      });
-      setEntries(result);
-      setTotal(result.length);
-    } catch (error) {
-      errorToast({ error });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [statusFilter]);
-
-  useEffect(() => {
-    loadEntries();
-  }, [loadEntries]);
+  const data: DataListRetriever<WaitlistInterface> = useDataListRetriever({
+    retriever: (params) => WaitlistService.findMany(params),
+    retrieverParams: {},
+    module: Modules.Waitlist,
+  });
 
   const handleInvite = async (entry: WaitlistInterface) => {
     try {
       await WaitlistService.invite(entry.id);
       showToast(t("waitlist.admin.invite_sent", { email: entry.email }));
-      loadEntries();
+      void data.refresh();
     } catch (error) {
       errorToast({ error });
     }
   };
 
-  const columns = useWaitlistTableStructure({ onInvite: handleInvite });
+  const handleStatusChange = (value: string | null) => {
+    const status = value ?? "all";
+    setStatusFilter(status);
+    data.addAdditionalParameter("status", status === "all" ? null : status);
+  };
 
   const statusItems = useMemo(
     () => ({
@@ -75,83 +59,46 @@ export function WaitlistList() {
     [t],
   );
 
-  const table = useReactTable({
-    data: entries,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
+  const filters = (
+    <div className="flex items-center gap-4">
+      <Select items={statusItems} value={statusFilter} onValueChange={handleStatusChange}>
+        <SelectTrigger className="w-40">
+          <SelectValue placeholder={t("waitlist.admin.filter_placeholder")} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">{t("waitlist.admin.all_statuses")}</SelectItem>
+          <SelectItem value="pending">{t("waitlist.admin.status.pending")}</SelectItem>
+          <SelectItem value="confirmed">{t("waitlist.admin.status.confirmed")}</SelectItem>
+          <SelectItem value="invited">{t("waitlist.admin.status.invited")}</SelectItem>
+          <SelectItem value="registered">{t("waitlist.admin.status.registered")}</SelectItem>
+        </SelectContent>
+      </Select>
+
+      <Button variant="outline" size="icon" onClick={() => void data.refresh()} disabled={!data.isLoaded}>
+        <RefreshCw className={`h-4 w-4 ${!data.isLoaded ? "animate-spin" : ""}`} />
+      </Button>
+    </div>
+  );
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Users className="h-5 w-5" />
-          <SectionHeader level={2}>{t("waitlist.admin.title")}</SectionHeader>
-          <span className="text-muted-foreground">({t("waitlist.admin.entries_count", { count: total })})</span>
-        </div>
-
-        <div className="flex items-center gap-4">
-          {/* Status Filter */}
-          <Select items={statusItems} value={statusFilter} onValueChange={(value) => setStatusFilter(value ?? "all")}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder={t("waitlist.admin.filter_placeholder")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t("waitlist.admin.all_statuses")}</SelectItem>
-              <SelectItem value="pending">{t("waitlist.admin.status.pending")}</SelectItem>
-              <SelectItem value="confirmed">{t("waitlist.admin.status.confirmed")}</SelectItem>
-              <SelectItem value="invited">{t("waitlist.admin.status.invited")}</SelectItem>
-              <SelectItem value="registered">{t("waitlist.admin.status.registered")}</SelectItem>
-            </SelectContent>
-          </Select>
-
-          {/* Refresh Button */}
-          <Button variant="outline" size="icon" onClick={loadEntries} disabled={isLoading}>
-            <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-          </Button>
-        </div>
-      </div>
-
-      {/* Table */}
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  {t("waitlist.admin.loading")}
-                </TableCell>
-              </TableRow>
-            ) : entries.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  {t("waitlist.admin.empty")}
-                </TableCell>
-              </TableRow>
-            ) : (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                  ))}
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
-    </div>
+    <ContentListTable
+      data={data}
+      fields={[
+        WaitlistFields.email,
+        WaitlistFields.status,
+        WaitlistFields.createdAt,
+        WaitlistFields.questionnaire,
+        WaitlistFields.actions,
+      ]}
+      tableGeneratorType={Modules.Waitlist}
+      title={t("waitlist.admin.title")}
+      filters={filters}
+      /* The waitlist endpoint takes no search term, so rendering the box would
+         give the page a control that silently does nothing. */
+      allowSearch={false}
+      context={{ onInvite: handleInvite }}
+      fullWidth={fullWidth}
+      emptyState={t("waitlist.admin.empty")}
+    />
   );
 }

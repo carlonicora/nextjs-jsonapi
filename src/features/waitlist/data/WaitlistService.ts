@@ -42,7 +42,7 @@ export class WaitlistService extends AbstractService {
     search?: string;
     fetchAll?: boolean;
     next?: NextRef;
-    prev?: PreviousRef;
+    previous?: PreviousRef;
   }): Promise<WaitlistInterface[]> {
     const endpoint = new EndpointCreator({ endpoint: Modules.Waitlist });
 
@@ -55,7 +55,7 @@ export class WaitlistService extends AbstractService {
       method: HttpMethod.GET,
       endpoint: endpoint.generate(),
       next: params?.next,
-      previous: params?.prev,
+      previous: params?.previous,
     });
   }
 
