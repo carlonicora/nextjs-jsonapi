@@ -22,6 +22,11 @@ export class StripeCustomerService extends AbstractService {
       type: Modules.StripeCustomer,
       method: HttpMethod.GET,
       endpoint: endpoint.generate(),
+      // A 404 here means the company has no billing customer yet — an expected
+      // state that BillingDashboardContainer turns into a setup prompt. Without
+      // this, the global error handler swallows it and replaces the page with a
+      // 404 screen.
+      suppressGlobalError: true,
     });
   }
 
