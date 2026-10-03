@@ -1,3 +1,13 @@
+## [3.25.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.24.2...v3.25.0) (2026-10-03)
+
+### 🚀 Features
+
+* **analytics:** add the first-party analytics tracker, admin dashboard and server pages ([b6847d6](https://github.com/carlonicora/nextjs-jsonapi/commit/b6847d6a63d84e5169cbf3cd46984945a3aa00cc))
+
+### 📦 Code Refactoring
+
+* **waitlist:** render the admin list through ContentListTable and the data-list retriever ([ade8df3](https://github.com/carlonicora/nextjs-jsonapi/commit/ade8df3553d89e3d92ca1568f9f00075b25ea8ba))
+
 ## [3.24.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.24.1...v3.24.2) (2026-10-03)
 
 ### 🐛 Bug Fixes
