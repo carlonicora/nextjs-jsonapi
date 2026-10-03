@@ -88,8 +88,12 @@ export async function directFetch(params: DirectFetchParams): Promise<ApiData> {
       response.data = undefined;
     }
   } catch {
+    // fetch() only throws when the API could not be reached at all (server
+    // down, DNS, connection refused). Report it as 503 so consumers can tell
+    // "API unreachable" apart from a 500 the API actually returned.
     response.ok = false;
-    response.status = 500;
+    response.status = 503;
+    response.statusText = "Service Unavailable";
     response.data = undefined;
   }
 
