@@ -1,3 +1,10 @@
+## [3.24.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.24.0...v3.24.1) (2026-10-03)
+
+### 🐛 Bug Fixes
+
+* **billing:** handle missing customer in dashboard and export SubscriptionWizard ([798997b](https://github.com/carlonicora/nextjs-jsonapi/commit/798997bde88fb9fd4cbf861d974e71f5895e9b8b))
+* **notification:** keep background notification loads out of the global error handler ([f32136c](https://github.com/carlonicora/nextjs-jsonapi/commit/f32136c4d4bb36cbbb2f6798570654220e50f58c))
+
 ## [3.24.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.23.0...v3.24.0) (2026-10-02)
 
 ### 🚀 Features
