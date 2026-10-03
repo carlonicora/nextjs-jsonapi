@@ -73,6 +73,13 @@ export interface FoundationModuleDefinitions {
   TokenUsageReportSummary: ModuleWithPermissions;
   TokenUsageReportTimeline: ModuleWithPermissions;
   TokenUsageReportBreakdown: ModuleWithPermissions;
+  // First-party web analytics modules (tracker + administrative dashboard)
+  AnalyticsEvent: ModuleWithPermissions;
+  AnalyticsSummary: ModuleWithPermissions;
+  AnalyticsTimeline: ModuleWithPermissions;
+  AnalyticsBreakdown: ModuleWithPermissions;
+  AnalyticsSession: ModuleWithPermissions;
+  AnalyticsPageView: ModuleWithPermissions;
 }
 
 // App-specific modules - apps will augment this interface ONLY

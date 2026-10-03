@@ -34,6 +34,7 @@ const DECLARED_FOR_APP_RENDERED_SURFACES = new Set<string>([
   "administration.token_usage.description",
   "administration.users.description",
   "administration.ai_connections.description",
+  "analytics.admin.description",
   "handbook.chat.delete_confirm",
   "handbook.chat.rename_placeholder",
   "handbook.contents.title",

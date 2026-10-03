@@ -67,6 +67,16 @@
       "types": "./dist/features/tokenusage/index.d.ts",
       "import": "./dist/features/tokenusage/index.mjs",
       "require": "./dist/features/tokenusage/index.js"
+    },
+    "./analytics": {
+      "types": "./dist/features/analytics/index.d.ts",
+      "import": "./dist/features/analytics/index.mjs",
+      "require": "./dist/features/analytics/index.js"
+    },
+    "./analytics/server": {
+      "types": "./dist/features/analytics/server.d.ts",
+      "import": "./dist/features/analytics/server.mjs",
+      "require": "./dist/features/analytics/server.js"
     }
   },
   "scripts": {

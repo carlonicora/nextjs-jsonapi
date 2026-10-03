@@ -30,6 +30,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      // Self-reference used by the analytics server pages (see tsup.config.ts).
+      "@carlonicora/nextjs-jsonapi/analytics": path.resolve(__dirname, "./src/features/analytics/index.ts"),
       "@/components/ui": path.resolve(__dirname, "./src/shadcnui/ui"),
       "@/lib": path.resolve(__dirname, "./src/lib"),
       "@/hooks": path.resolve(__dirname, "./src/hooks"),

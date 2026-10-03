@@ -18,6 +18,8 @@ const clientEntries = [
   "dist/features/help/index.js",
   "dist/features/tokenusage/index.mjs",
   "dist/features/tokenusage/index.js",
+  "dist/features/analytics/index.mjs",
+  "dist/features/analytics/index.js",
 ];
 
 export default defineConfig({
@@ -33,6 +35,8 @@ export default defineConfig({
     "features/help/index": "src/features/help/index.ts",
     "features/help/server": "src/features/help/server-entry.ts",
     "features/tokenusage/index": "src/features/tokenusage/index.ts",
+    "features/analytics/index": "src/features/analytics/index.ts",
+    "features/analytics/server": "src/features/analytics/server-entry.ts",
   },
   format: ["cjs", "esm"],
   // Enable splitting to keep dynamic imports as separate chunks
@@ -64,6 +68,11 @@ export default defineConfig({
     "next",
     "next/headers",
     "next/cache",
+    // The analytics server pages import their client containers through this
+    // package's own client subpath. Keeping it external is what makes the built
+    // server entry reach them through the "use client" bundle instead of
+    // inlining client code into a server module.
+    "@carlonicora/nextjs-jsonapi/analytics",
     "next/dist/server/use-cache/cache-life",
     "next/dist/server/use-cache/cache-tag",
     "cookies-next",

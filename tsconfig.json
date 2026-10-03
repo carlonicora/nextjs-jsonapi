@@ -4,7 +4,8 @@
       "@/*": ["./src/*"],
       "@/lib/*": ["./src/lib/*"],
       "@/hooks/*": ["./src/hooks/*"],
-      "@/components/ui/*": ["./src/shadcnui/ui/*"]
+      "@/components/ui/*": ["./src/shadcnui/ui/*"],
+      "@carlonicora/nextjs-jsonapi/analytics": ["./src/features/analytics/index.ts"]
     },
     "target": "ES2022",
     "lib": ["ES2022", "dom", "dom.iterable"],

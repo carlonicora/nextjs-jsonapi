@@ -113,6 +113,10 @@ export * from "../features/tokenusage/tokenusage-admin.module";
 // rationale as the line above: a bootstrapper needs it, and it must not drag
 // the feature's recharts client bundle in.
 export * from "../features/tokenusage/tokenusage.modules";
+// The analytics module bundle. Same placement rationale as the tokenusage lines
+// above: a bootstrapper needs it, and it must not drag the feature's client
+// bundle in.
+export * from "../features/analytics/analytics.modules";
 // configureTokenUsage() is called from the app's bootstrap file, which is
 // evaluated on the server as well as the client. Reaching it through the
 // client-marked ./tokenusage barrel makes it a client function, and calling one
