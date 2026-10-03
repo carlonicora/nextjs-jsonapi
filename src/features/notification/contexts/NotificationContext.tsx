@@ -95,7 +95,10 @@ export const NotificationContextProvider = ({ children }: NotificationContextPro
       setError(null);
 
       try {
-        const fetchedNotifications = await NotificationService.findMany({});
+        // Background load: a failure must throw into the catch below. Routed
+        // through the global error handler, callApi resolves to undefined
+        // instead, which lands in state and crashes every consumer.
+        const fetchedNotifications = await NotificationService.findMany({ suppressGlobalError: true });
         setNotifications(fetchedNotifications);
         setLastLoaded(Date.now());
       } catch (error) {
@@ -146,7 +149,7 @@ export const NotificationContextProvider = ({ children }: NotificationContextPro
       };
 
       await NotificationService.markAsRead({ data: data });
-      const allNotifications = await NotificationService.findMany({});
+      const allNotifications = await NotificationService.findMany({ suppressGlobalError: true });
       setNotifications(allNotifications);
       setLastLoaded(Date.now());
     } catch (error) {

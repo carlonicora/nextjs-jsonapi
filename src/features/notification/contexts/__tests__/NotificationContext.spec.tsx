@@ -94,3 +94,35 @@ describe("NotificationContextProvider mount load", () => {
     expect(NotificationService.findMany).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("NotificationContextProvider failed load", () => {
+  beforeEach(() => {
+    userMock.currentUser = undefined;
+    vi.mocked(NotificationService.findMany).mockReset();
+  });
+
+  it("asks the service to throw instead of routing to the global error handler", async () => {
+    vi.mocked(NotificationService.findMany).mockResolvedValue([] as never);
+
+    const { result } = renderHook(() => useNotificationContext(), { wrapper });
+
+    await act(async () => {
+      await result.current.loadNotifications();
+    });
+
+    expect(NotificationService.findMany).toHaveBeenCalledWith({ suppressGlobalError: true });
+  });
+
+  it("keeps notifications an array and records the error when the API is unreachable", async () => {
+    vi.mocked(NotificationService.findMany).mockRejectedValue(new Error("500:"));
+
+    const { result } = renderHook(() => useNotificationContext(), { wrapper });
+
+    await act(async () => {
+      await result.current.loadNotifications();
+    });
+
+    expect(result.current.notifications).toEqual([]);
+    expect(result.current.error).toBe("500:");
+  });
+});

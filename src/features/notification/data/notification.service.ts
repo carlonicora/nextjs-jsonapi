@@ -2,7 +2,11 @@ import { AbstractService, EndpointCreator, HttpMethod, Modules, NextRef } from "
 import { NotificationInterface } from "./notification.interface";
 
 export class NotificationService extends AbstractService {
-  static async findMany(params: { isArchived?: boolean; next?: NextRef }): Promise<NotificationInterface[]> {
+  static async findMany(params: {
+    isArchived?: boolean;
+    next?: NextRef;
+    suppressGlobalError?: boolean;
+  }): Promise<NotificationInterface[]> {
     const endpoint = new EndpointCreator({ endpoint: Modules.Notification });
 
     if (params.isArchived) endpoint.addAdditionalParam("isArchived", "true");
@@ -12,6 +16,7 @@ export class NotificationService extends AbstractService {
       method: HttpMethod.GET,
       endpoint: endpoint.generate(),
       next: params.next,
+      suppressGlobalError: params.suppressGlobalError,
     });
   }
 
