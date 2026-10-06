@@ -1,3 +1,9 @@
+## [3.26.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.25.0...v3.26.0) (2026-10-06)
+
+### 🚀 Features
+
+* **mobile:** make the shared shell, lists and forms usable on phones ([f0cf4e5](https://github.com/carlonicora/nextjs-jsonapi/commit/f0cf4e5233c10b52ee9a4fa70e1a6ab73d8cd860))
+
 ## [3.25.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.24.2...v3.25.0) (2026-10-03)
 
 ### 🚀 Features
