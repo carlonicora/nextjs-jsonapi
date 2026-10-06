@@ -49,7 +49,9 @@ export function CitationsTab({ citations, sources }: Props) {
       <TableHeader>
         <TableRow>
           <TableHead>{t("features.assistant.message.sources.source")}</TableHead>
-          <TableHead className="w-28 text-center max-md:w-20">{t("features.assistant.message.sources.relevance")}</TableHead>
+          <TableHead className="w-28 text-center max-md:w-20">
+            {t("features.assistant.message.sources.relevance")}
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>

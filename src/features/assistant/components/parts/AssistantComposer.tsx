@@ -92,7 +92,9 @@ export function AssistantComposer({
           {sendButton}
         </div>
       )}
-      <div className="text-muted-foreground text-end text-xs max-md:hidden">{t("features.assistant.keyboard_hint")}</div>
+      <div className="text-muted-foreground text-end text-xs max-md:hidden">
+        {t("features.assistant.keyboard_hint")}
+      </div>
     </div>
   );
 }

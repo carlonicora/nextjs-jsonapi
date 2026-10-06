@@ -12,7 +12,9 @@ function isEmptyDocument(value: unknown): boolean {
 }
 
 function getPath(source: unknown, path: string): unknown {
-  return path.split(".").reduce<unknown>((acc, key) => (acc == null ? undefined : (acc as Record<string, unknown>)[key]), source);
+  return path
+    .split(".")
+    .reduce<unknown>((acc, key) => (acc == null ? undefined : (acc as Record<string, unknown>)[key]), source);
 }
 
 export function FormBlockNote({
@@ -116,7 +118,11 @@ export function FormBlockNote({
                 // paragraph as soon as it mounts. That is not a user edit: re-seed the
                 // field's default with it so an untouched form does not ask
                 // "Unsaved changes?" on close.
-                if (isEmpty && isEmptyDocument(getPath(form.formState.defaultValues, id)) && !form.getFieldState(id).isDirty) {
+                if (
+                  isEmpty &&
+                  isEmptyDocument(getPath(form.formState.defaultValues, id)) &&
+                  !form.getFieldState(id).isDirty
+                ) {
                   form.resetField(id, { defaultValue: content });
                 } else {
                   field.onChange(content);

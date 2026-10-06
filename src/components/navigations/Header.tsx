@@ -55,7 +55,9 @@ export function Header({
     >
       <div className="bg-sidebar flex h-12 w-full flex-row items-center justify-between ps-2 pe-4">
         {isMobile && logo && <div className="flex shrink-0 flex-row items-center pe-1">{logo}</div>}
-        {sidebar && !(isMobile && hideSidebarTriggerOnMobile) && <SidebarTrigger aria-label="Toggle sidebar" id="sidebar-trigger" />}
+        {sidebar && !(isMobile && hideSidebarTriggerOnMobile) && (
+          <SidebarTrigger aria-label="Toggle sidebar" id="sidebar-trigger" />
+        )}
         {leftContent}
         <div className="flex w-full flex-row items-center justify-start max-md:min-w-0">
           <BreadcrumbNavigation items={breadcrumbs} rootLabel={rootLabel ?? undefined} showRoot={!isRootHidden} />

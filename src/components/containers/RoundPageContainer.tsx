@@ -532,7 +532,10 @@ export function RoundPageContainer({
                       </Select>
                     </div>
                     <div
-                      className={cn(`min-w-0 grow`, activeFillHeight ? cn(`flex flex-col`, innerClip) : cn(innerScrollY, `p-4`))}
+                      className={cn(
+                        `min-w-0 grow`,
+                        activeFillHeight ? cn(`flex flex-col`, innerClip) : cn(innerScrollY, `p-4`),
+                      )}
                     >
                       {/* Centre and constrain rail content (like the non-rail
                           layout). Fill-height tabs are full-bleed — a canvas, a

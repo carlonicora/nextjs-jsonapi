@@ -19,7 +19,9 @@ export function PageContainer({ children, testId, className }: PageContainerProp
       <Header leftContent={headerLeftContent} logo={headerLogo} mobileChildren={headerMobileChildren}>
         {headerChildren}
       </Header>
-      <main className={cn(`flex w-full flex-1 flex-col gap-y-4 pt-4 ps-4 pe-0 max-md:pe-4`, className)}>{children}</main>
+      <main className={cn(`flex w-full flex-1 flex-col gap-y-4 pt-4 ps-4 pe-0 max-md:pe-4`, className)}>
+        {children}
+      </main>
     </div>
   );
 }

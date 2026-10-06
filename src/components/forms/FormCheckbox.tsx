@@ -16,10 +16,7 @@ export function FormCheckbox({ form, id, name, labelBefore, description, isRequi
   const simpleLabel = () => {
     return (
       // Phone: the label fills the row and is 40px tall, so the whole row toggles the box.
-      <FieldLabel
-        htmlFor={id}
-        className={`font-normal ${labelBefore ? "" : "ms-3"} max-md:min-h-10 max-md:flex-1`}
-      >
+      <FieldLabel htmlFor={id} className={`font-normal ${labelBefore ? "" : "ms-3"} max-md:min-h-10 max-md:flex-1`}>
         {name}
       </FieldLabel>
     );
