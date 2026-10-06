@@ -1,3 +1,9 @@
+## [3.27.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.27.0...v3.27.1) (2026-10-06)
+
+### 🐛 Bug Fixes
+
+* **dev:** keep tests out of the dev declaration watcher ([7132f63](https://github.com/carlonicora/nextjs-jsonapi/commit/7132f63eee22a9d79c633874549661cd13d27fbd))
+
 ## [3.27.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.26.1...v3.27.0) (2026-10-06)
 
 ### 🚀 Features
