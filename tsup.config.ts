@@ -58,7 +58,10 @@ export default defineConfig({
   // scoped to the tool that reintroduces it. tsup must be replaced before
   // TypeScript 7 regardless — 7 deleted the JavaScript compiler API its dts
   // build depends on.
-  dts: { resolve: true, compilerOptions: { ignoreDeprecations: "6.0" } },
+  // TSUP_NO_DTS is set only by the dev watcher (scripts/dev-watch.mjs), which
+  // emits per-file declarations with tsc instead: the bundled dts pass peaks near
+  // 7 GB on every save. The release build always bundles the types.
+  dts: process.env.TSUP_NO_DTS ? false : { resolve: true, compilerOptions: { ignoreDeprecations: "6.0" } },
   external: [
     "@tanstack/react-table",
     "@stripe/react-stripe-js",

@@ -14,8 +14,12 @@ export function useUrlRewriter() {
       childPage?: ModuleWithPermissions | string;
       childId?: string;
       additionalParameters?: { [key: string]: string | string[] | undefined };
+      /** "push" adds a browser history step (Back returns to the previous URL); default "replace". */
+      mode?: "replace" | "push";
     }): void => {
-      window.history.replaceState(
+      const write = params.mode === "push" ? window.history.pushState : window.history.replaceState;
+      write.call(
+        window.history,
         null,
         "",
         generateUrl({

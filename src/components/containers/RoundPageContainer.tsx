@@ -33,7 +33,7 @@ import { cn, useIsMobile } from "@/index";
 import { useOptionalSidebar } from "@/shadcnui";
 import { ModuleWithPermissions } from "@/permissions";
 import { useSearchParams } from "next/navigation";
-import { Fragment, ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const DETAILS_COOKIE_NAME = "round_page_details_state";
 const DETAILS_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -274,13 +274,19 @@ export function RoundPageContainer({
 
   const [activeTab, setActiveTab] = useState(initialValue);
 
+  // Previous ?section, so Back to the bare URL (the section param disappears)
+  // returns to the first tab instead of leaving the last one selected.
+  const previousSection = useRef(section);
   useEffect(() => {
     if (tabs && section) {
       const tab = tabs.find((i) => tabValue(i) === section);
       if (tab) {
         setActiveTab(section);
       }
+    } else if (tabs && !section && previousSection.current) {
+      setActiveTab(tabValue(tabs[0]));
     }
+    previousSection.current = section;
   }, [section, tabs]);
 
   const handleTabChange = useCallback(
@@ -291,7 +297,9 @@ export function RoundPageContainer({
       } else {
         // No backing entity (e.g. the settings hub): still reflect the active
         // section in the URL by rewriting ?section= against the current path.
-        rewriteUrl({ page: window.location.pathname, additionalParameters: { section: key } });
+        // Push, not replace: a hub's sections are separate places, so Back returns
+        // to the previous section.
+        rewriteUrl({ page: window.location.pathname, additionalParameters: { section: key }, mode: "push" });
       }
       onSectionChange?.(key);
     },
