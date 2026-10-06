@@ -1,3 +1,9 @@
+## [3.27.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.26.1...v3.27.0) (2026-10-06)
+
+### 🚀 Features
+
+* **mobile:** lighter dev watcher, one-line phone tables, section history ([1cd8337](https://github.com/carlonicora/nextjs-jsonapi/commit/1cd83371b0f56a5207cda7e872d67b0b14c785d1))
+
 ## [3.26.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.26.0...v3.26.1) (2026-10-06)
 
 ### 💎 Styles
