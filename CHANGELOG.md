@@ -1,3 +1,9 @@
+## [3.26.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.26.0...v3.26.1) (2026-10-06)
+
+### 💎 Styles
+
+* format mobile changes ([2fd977c](https://github.com/carlonicora/nextjs-jsonapi/commit/2fd977c33b1b816e71f6219835a57d91f827bfb2))
+
 ## [3.26.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.25.0...v3.26.0) (2026-10-06)
 
 ### 🚀 Features
