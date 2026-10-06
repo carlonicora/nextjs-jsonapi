@@ -10,6 +10,7 @@ import React, { ReactNode, memo, useMemo, useState } from "react";
 import { DataListRetriever, TableContent, useTableGenerator } from "../../hooks";
 import { ModuleWithPermissions } from "../../permissions";
 import { Button, Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "../../shadcnui";
+import { useIsMobile } from "../../utils/use-mobile";
 import { MicroLabel } from "../typography";
 import { ContentTableSearch } from "./ContentTableSearch";
 
@@ -110,6 +111,7 @@ function renderCell(cellDef: unknown, context: unknown): ReactNode {
 export const ContentListTable = memo(function ContentListTable(props: ContentListTableProps) {
   const { data, fields, checkedIds, toggleId, allowSearch, filters: _filters, fullWidth, onRowClick } = props;
   const t = useTranslations();
+  const isMobile = useIsMobile();
   const [expanded, setExpanded] = useState<ExpandedState>(
     props.defaultExpanded === true ? true : typeof props.defaultExpanded === "object" ? props.defaultExpanded : {},
   );
@@ -212,13 +214,60 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
   // 12px title is the mismatch the opt-in exists to avoid.
   const titleIsLarge = (props.titleSize ?? (fullWidth ? `lg` : `sm`)) === `lg`;
 
+  const titleLabel = (
+    <div
+      className={cn(
+        "text-muted-foreground flex items-center gap-x-2  font-light whitespace-nowrap",
+        titleIsLarge ? `text-lg` : `text-sm`,
+      )}
+    >
+      {props.titleActions}
+      {props.tableGeneratorType.icon && (
+        <props.tableGeneratorType.icon className={cn(`text-primary`, titleIsLarge ? `h-6 w-6` : `h-4 w-4`)} />
+      )}
+      {props.title}
+    </div>
+  );
+
+  const hasTitleControls = !!(props.functions || props.filters || allowSearch);
+  const titleControls = (
+    <>
+      {props.filters}
+      {props.functions}
+      {/* `allowSearch !== false`, not `allowSearch`: the search box has
+          always rendered here whenever `functions`/`filters` were set, and
+          most callers rely on that without passing the flag. Gating on the
+          flag alone (as the sibling ContentListGrid does) would silently
+          remove search from every such list. This only lets a caller whose
+          retriever ignores `search` — e.g. notifications, whose repository
+          has no search param and no fulltext index — opt out of a control
+          that would do nothing. */}
+      {allowSearch !== false && <ContentTableSearch data={data} />}
+    </>
+  );
+
   return (
     <div data-help="list.table" className="flex w-full flex-col">
       {/* <div className="overflow-clip rounded-md border"> */}
       <div className={cn(`overflow-clip`, fullWidth ? `` : `rounded-md border`)}>
+        {/* On a phone the title bar sits above the table instead of inside its
+            header: inside, it is as wide as the table, so on a table wider than
+            the screen "Create New", search and filters land off-screen. Above it,
+            it wraps within the card while the table scrolls sideways on its own. */}
+        {props.title && isMobile && (
+          <div
+            data-testid="content-list-table-title-bar"
+            className="bg-card text-primary flex flex-wrap items-center gap-2 border-b p-4 font-bold"
+          >
+            <div className="shrink-0">{titleLabel}</div>
+            {hasTitleControls && (
+              <div className="ms-auto flex flex-wrap items-center justify-end gap-2">{titleControls}</div>
+            )}
+          </div>
+        )}
         <Table>
           <TableHeader className="bg-muted font-semibold">
-            {props.title && (
+            {props.title && !isMobile && (
               <TableRow>
                 <TableHead
                   className="bg-card rounded-t-lg text-primary p-4 text-start font-bold"
@@ -226,37 +275,8 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                 >
                   <div className="flex w-full items-center justify-between gap-x-2">
                     {/* <div className="w-full">{fullWidth ? `` : props.title}</div> */}
-                    <div className="w-full">
-                      <div
-                        className={cn(
-                          "text-muted-foreground flex items-center gap-x-2  font-light whitespace-nowrap",
-                          titleIsLarge ? `text-lg` : `text-sm`,
-                        )}
-                      >
-                        {props.titleActions}
-                        {props.tableGeneratorType.icon && (
-                          <props.tableGeneratorType.icon
-                            className={cn(`text-primary`, titleIsLarge ? `h-6 w-6` : `h-4 w-4`)}
-                          />
-                        )}
-                        {props.title}
-                      </div>
-                    </div>
-                    {(props.functions || props.filters || allowSearch) && (
-                      <>
-                        {props.filters}
-                        {props.functions}
-                        {/* `allowSearch !== false`, not `allowSearch`: the search box has
-                            always rendered here whenever `functions`/`filters` were set, and
-                            most callers rely on that without passing the flag. Gating on the
-                            flag alone (as the sibling ContentListGrid does) would silently
-                            remove search from every such list. This only lets a caller whose
-                            retriever ignores `search` — e.g. notifications, whose repository
-                            has no search param and no fulltext index — opt out of a control
-                            that would do nothing. */}
-                        {allowSearch !== false && <ContentTableSearch data={data} />}
-                      </>
-                    )}
+                    <div className="w-full">{titleLabel}</div>
+                    {hasTitleControls && titleControls}
                   </div>
                 </TableHead>
               </TableRow>

@@ -165,7 +165,7 @@ export default function EntitySelector<T extends BaseEntity>({
             <Popover open={disabled ? false : open} onOpenChange={disabled ? undefined : setOpen} modal={true}>
               <PopoverTrigger className="w-full" disabled={disabled}>
                 <div
-                  className={`bg-input/20 dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring/30 focus-visible:ring-[2px] flex min-h-7 w-full items-center gap-2 rounded-md border px-2 py-0.5 text-sm md:text-xs/relaxed ${
+                  className={`bg-input/20 dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring/30 focus-visible:ring-[2px] flex min-h-7 max-md:min-h-10 w-full items-center gap-2 rounded-md border px-2 py-0.5 text-sm md:text-xs/relaxed ${
                     hasValue(effectiveValue) ? "" : "text-muted-foreground"
                   } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
                 >
@@ -191,7 +191,7 @@ export default function EntitySelector<T extends BaseEntity>({
               <PopoverContent align="start" className="w-(--anchor-width) pointer-events-auto">
                 <Command shouldFilter={false}>
                   <div className="relative mb-2 w-full">
-                    <SearchIcon className="text-muted-foreground absolute top-2.5 start-2.5 h-4 w-4" />
+                    <SearchIcon className="text-muted-foreground absolute top-2.5 max-md:top-3 start-2.5 h-4 w-4" />
                     <Input
                       placeholder={placeholder}
                       type="text"
@@ -200,10 +200,10 @@ export default function EntitySelector<T extends BaseEntity>({
                       value={searchTerm}
                     />
                     {isSearching ? (
-                      <RefreshCwIcon className="text-muted-foreground absolute top-2.5 end-2.5 h-4 w-4 animate-spin" />
+                      <RefreshCwIcon className="text-muted-foreground absolute top-2.5 max-md:top-3 end-2.5 h-4 w-4 animate-spin" />
                     ) : searchTermRef.current ? (
                       <XIcon
-                        className="absolute top-2.5 end-2.5 h-4 w-4 cursor-pointer"
+                        className="absolute top-2.5 max-md:top-3 end-2.5 h-4 w-4 cursor-pointer"
                         onClick={() => {
                           setSearchTerm("");
                           search("");

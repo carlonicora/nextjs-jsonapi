@@ -15,7 +15,11 @@ type FormCheckboxProps = {
 export function FormCheckbox({ form, id, name, labelBefore, description, isRequired }: FormCheckboxProps) {
   const simpleLabel = () => {
     return (
-      <FieldLabel htmlFor={id} className={`font-normal ${labelBefore ? "" : "ms-3"}`}>
+      // Phone: the label fills the row and is 40px tall, so the whole row toggles the box.
+      <FieldLabel
+        htmlFor={id}
+        className={`font-normal ${labelBefore ? "" : "ms-3"} max-md:min-h-10 max-md:flex-1`}
+      >
         {name}
       </FieldLabel>
     );
@@ -36,7 +40,7 @@ export function FormCheckbox({ form, id, name, labelBefore, description, isRequi
     <div className="flex w-full flex-col">
       <FormFieldWrapper form={form} name={id} orientation="horizontal">
         {(field) => (
-          <div className="flex gap-x-4">
+          <div className="flex gap-x-4 max-md:min-h-10 max-md:items-center">
             {labelBefore && label()}
             {labelBefore && isRequired && <span className="ms-1 text-destructive">*</span>}
             <Checkbox id={id} checked={field.value ?? false} onCheckedChange={field.onChange} />

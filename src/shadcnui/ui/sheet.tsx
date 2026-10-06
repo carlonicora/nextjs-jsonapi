@@ -75,7 +75,14 @@ function SheetContent({
         {showCloseButton && (
           <SheetPrimitive.Close
             data-slot="sheet-close"
-            render={<Button variant="ghost" className="absolute top-4 end-4" size="icon-sm" />}
+            render={
+              // Phone: a 40px tap target, moved by 8px so its centre stays where the 24px one sits.
+              <Button
+                variant="ghost"
+                className="absolute top-4 end-4 max-md:top-2 max-md:end-2 max-md:size-10"
+                size="icon-sm"
+              />
+            }
           >
             <XIcon />
             <span className="sr-only">Close</span>

@@ -11,6 +11,27 @@ import { useCallback, useEffect, useRef, useState } from "react";
 // editor that opened it.
 const openEditorStack: object[] = [];
 
+// Layers that open ABOVE an editor sheet and close on their own Escape: pickers
+// (popovers), selects, menus, nested dialogs, the discard confirmation, and the
+// rich-text editor's slash / mention menu. Our listener runs in the CAPTURE
+// phase on `document`, so it sees Escape before any of them — if it handled the
+// key it would stopPropagation() and close the whole sheet while the picker
+// stayed open underneath. While one of these is open, Escape is theirs.
+const INNER_LAYER_SELECTOR = [
+  "[data-slot=popover-content][data-open]",
+  "[data-slot=select-content][data-open]",
+  "[data-slot=combobox-content][data-open]",
+  "[data-slot=dropdown-menu-content][data-open]",
+  "[data-slot=context-menu-content][data-open]",
+  "[data-slot=dialog-content][data-open]",
+  "[data-slot=alert-dialog-content][data-open]",
+  ".bn-suggestion-menu",
+].join(",");
+
+export function hasOpenInnerLayer(doc: Document = document): boolean {
+  return doc.querySelector(INNER_LAYER_SELECTOR) !== null;
+}
+
 type UseEditorDialogOptions = {
   dialogOpen?: boolean;
   onDialogOpenChange?: (open: boolean) => void;
@@ -116,6 +137,7 @@ export function useEditorDialog(isFormDirty: () => boolean, options?: UseEditorD
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" && open) {
         if (openEditorStack[openEditorStack.length - 1] !== dialogId.current) return;
+        if (hasOpenInnerLayer()) return;
         event.preventDefault();
         event.stopPropagation();
         handleOpenChange(false);

@@ -225,7 +225,7 @@ export function EntityMultiSelector<T extends { id: string }>({
             <Popover open={disabled ? false : open} onOpenChange={disabled ? undefined : setOpen} modal>
               <PopoverTrigger className="w-full" disabled={disabled}>
                 <div
-                  className={`bg-input/20 dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring/30 focus-visible:ring-[2px] flex min-h-7 w-full items-center gap-2 rounded-md border px-2 text-sm md:text-xs/relaxed ${
+                  className={`bg-input/20 dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring/30 focus-visible:ring-[2px] flex min-h-7 max-md:min-h-10 w-full items-center gap-2 rounded-md border px-2 text-sm md:text-xs/relaxed ${
                     disabled ? "cursor-not-allowed opacity-50" : ""
                   }`}
                 >
@@ -249,7 +249,7 @@ export function EntityMultiSelector<T extends { id: string }>({
                     ref={searchInputRef}
                     placeholder={placeholder}
                     type="text"
-                    className="h-8 w-full pe-7 ps-7 text-xs"
+                    className="h-8 w-full pe-7 ps-7 text-xs max-md:text-base"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -263,7 +263,7 @@ export function EntityMultiSelector<T extends { id: string }>({
                     </button>
                   )}
                 </div>
-                <div className="max-h-52 overflow-y-auto p-1">
+                <div className="max-h-52 max-md:min-h-0 overflow-y-auto p-1">
                   {sortedOptions.length === 0 ? (
                     <div className="text-muted-foreground py-4 text-center text-xs">{emptyText}</div>
                   ) : (
@@ -321,7 +321,7 @@ export function EntityMultiSelector<T extends { id: string }>({
                     {!disabled && (
                       <button
                         type="button"
-                        className="text-muted-foreground hover:text-foreground rounded-sm p-0.5 transition-colors"
+                        className="text-muted-foreground hover:text-foreground rounded-sm p-0.5 max-md:p-2 transition-colors"
                         onClick={() => removeEntity(value.id)}
                       >
                         <XIcon className="size-3" />

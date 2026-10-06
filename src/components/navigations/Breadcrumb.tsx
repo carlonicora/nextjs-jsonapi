@@ -1,9 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Fragment, useState } from "react";
+import { Fragment, useState, type MouseEvent } from "react";
 import { ChevronDownIcon } from "lucide-react";
-import { useIsMobile } from "../../utils";
+import { cn, useIsMobile } from "../../utils";
 import { usePageUrlGenerator } from "../../hooks";
 import { BreadcrumbItemData } from "../../interfaces";
 import {
@@ -147,24 +147,53 @@ function BreadcrumbMobile({
     );
   }
 
+  // One entry means the menu could only offer the page already on screen, so
+  // the chevron promised a choice that does not exist: show plain text.
+  if (allItems.length <= 1) {
+    return (
+      <span className="text-foreground block min-w-0 truncate px-1.5 text-xs/relaxed font-normal">
+        {lastItem?.name}
+      </span>
+    );
+  }
+
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger className="text-foreground text-xs/relaxed font-normal hover:bg-accent flex items-center gap-1 rounded-md px-1.5 py-0.5 transition-colors outline-none">
-        {lastItem?.name}
-        <ChevronDownIcon className="text-muted-foreground size-3.5" />
+      {/* min-h-9: a 36px tap target, where the bare text row was ~20px. */}
+      <DropdownMenuTrigger className="text-foreground text-xs/relaxed font-normal hover:bg-accent flex min-h-9 min-w-0 items-center gap-1 rounded-md px-1.5 py-0.5 transition-colors outline-none">
+        <span className="truncate">{lastItem?.name}</span>
+        <ChevronDownIcon className="text-muted-foreground size-3.5 shrink-0" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
-        {allItems.map((item, index) => (
-          <DropdownMenuItem key={index}>
-            {item.href ? (
-              <Link href={item.href} onClick={item.onClick}>
-                {item.name}
-              </Link>
-            ) : (
-              <>{item.name}</>
-            )}
-          </DropdownMenuItem>
-        ))}
+        {allItems.map((item, index) =>
+          item.href ? (
+            // The item renders AS the link, so the whole row navigates — a Link
+            // nested inside the row only answered taps on its own text.
+            <DropdownMenuItem
+              key={index}
+              className="min-h-10"
+              render={(props) => (
+                <Link
+                  {...props}
+                  href={item.href!}
+                  className={cn(props.className, "text-foreground font-normal")}
+                  onClick={(event: MouseEvent<HTMLAnchorElement>) => {
+                    props.onClick?.(event);
+                    item.onClick?.();
+                  }}
+                >
+                  {props.children}
+                </Link>
+              )}
+            >
+              {item.name}
+            </DropdownMenuItem>
+          ) : (
+            <DropdownMenuItem key={index} className="min-h-10">
+              {item.name}
+            </DropdownMenuItem>
+          ),
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

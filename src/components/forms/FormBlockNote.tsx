@@ -7,6 +7,14 @@ import { BlockNoteEditorContainer } from "../editors/BlockNoteEditorContainer";
 import type { MentionNameResolver, MentionResolveFn } from "../editors/BlockNoteEditorMentionInlineContent";
 import { FormFieldWrapper } from "./FormFieldWrapper";
 
+function isEmptyDocument(value: unknown): boolean {
+  return value === undefined || value === null || value === "" || (Array.isArray(value) && value.length === 0);
+}
+
+function getPath(source: unknown, path: string): unknown {
+  return path.split(".").reduce<unknown>((acc, key) => (acc == null ? undefined : (acc as Record<string, unknown>)[key]), source);
+}
+
 export function FormBlockNote({
   form,
   id,
@@ -73,6 +81,10 @@ export function FormBlockNote({
       className={cn(
         "flex w-full flex-col",
         stretch && "min-h-0 flex-1 [&>[data-slot=field]]:min-h-0 [&>[data-slot=field]]:flex-1",
+        // Phone: the sheet is too short to share with the other fields, so the
+        // editor stops filling the leftover space (2px in a long form) and grows
+        // with its content instead; the sheet body does the scrolling.
+        stretch && "max-md:min-h-64 max-md:flex-none",
         className,
       )}
     >
@@ -100,7 +112,15 @@ export function FormBlockNote({
               initialContent={initialContentRef.current}
               onChange={(content, isEmpty) => {
                 lastEditorContentRef.current = content;
-                field.onChange(content);
+                // BlockNote normalises an empty document ([] / null) to one empty
+                // paragraph as soon as it mounts. That is not a user edit: re-seed the
+                // field's default with it so an untouched form does not ask
+                // "Unsaved changes?" on close.
+                if (isEmpty && isEmptyDocument(getPath(form.formState.defaultValues, id)) && !form.getFieldState(id).isDirty) {
+                  form.resetField(id, { defaultValue: content });
+                } else {
+                  field.onChange(content);
+                }
                 onEmptyChange?.(isEmpty);
               }}
               placeholder={placeholder}

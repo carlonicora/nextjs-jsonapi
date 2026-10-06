@@ -21,7 +21,7 @@ function Command({ className, ...props }: React.ComponentProps<typeof CommandPri
     <CommandPrimitive
       data-slot="command"
       className={cn(
-        "bg-popover text-popover-foreground rounded-xl p-1 flex size-full flex-col overflow-hidden",
+        "bg-popover text-popover-foreground rounded-xl p-1 flex size-full flex-col overflow-hidden max-md:min-h-0",
         "[[data-slot=dialog-content]_&]:bg-transparent [[data-slot=dialog-content]_&]:text-foreground",
         className,
       )}
@@ -75,11 +75,11 @@ function CommandDialog({
 function CommandInput({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.Input>) {
   return (
     <div data-slot="command-input-wrapper" className="p-1 pb-0">
-      <InputGroup className="bg-input/20 dark:bg-input/30 h-8!">
+      <InputGroup className="bg-input/20 dark:bg-input/30 h-8! max-md:h-10!">
         <CommandPrimitive.Input
           data-slot="command-input"
           className={cn(
-            "w-full text-xs/relaxed outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
+            "w-full text-xs/relaxed max-md:text-base outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
             className,
           )}
           {...props}
@@ -96,7 +96,7 @@ function CommandList({ className, ...props }: React.ComponentProps<typeof Comman
   return (
     <CommandPrimitive.List
       data-slot="command-list"
-      className={cn("no-scrollbar max-h-72 scroll-py-1 outline-none overflow-x-hidden overflow-y-auto", className)}
+      className={cn("no-scrollbar max-h-72 max-md:min-h-0 scroll-py-1 outline-none overflow-x-hidden overflow-y-auto", className)}
       {...props}
     />
   );

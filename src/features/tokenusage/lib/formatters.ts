@@ -50,7 +50,11 @@ export function createUsageFormatters(locale: string, currency: string): UsageFo
 
   const dayFormat = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", timeZone: "UTC" });
   const monthFormat = new Intl.DateTimeFormat(locale, { month: "short", year: "numeric", timeZone: "UTC" });
-  const compactFormat = new Intl.NumberFormat(locale, { notation: "compact", maximumFractionDigits: 1 });
+  // Axis ticks step by 1, 2, 2.5 or 5 times a power of ten, so a tick never needs
+  // more than three significant digits. A fixed one-decimal cap rounded a 0.05
+  // step into repeated labels (0.1, 0.1, 0.2, 0.2); significant digits keep every
+  // tick distinct at any scale (0.05, 0.15, 1.25K).
+  const compactFormat = new Intl.NumberFormat(locale, { notation: "compact", maximumSignificantDigits: 3 });
   const collator = new Intl.Collator(locale);
 
   return {

@@ -41,12 +41,15 @@ export function TokenUsageAdminFilterBar({ granularity, companyId, metric, compa
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <DateRangeSelector
-        onDateChange={(range) => {
-          if (!range?.from || !range?.to) return;
-          onChange({ from: range.from.toISOString(), to: range.to.toISOString() });
-        }}
-      />
+      {/* The date button is a fixed 300px; on a phone it takes the full row instead. */}
+      <div className="max-md:w-full max-md:[&_#date]:w-full">
+        <DateRangeSelector
+          onDateChange={(range) => {
+            if (!range?.from || !range?.to) return;
+            onChange({ from: range.from.toISOString(), to: range.to.toISOString() });
+          }}
+        />
+      </div>
 
       <Segmented
         ariaLabel={t("token_usage.admin.granularity.label")}

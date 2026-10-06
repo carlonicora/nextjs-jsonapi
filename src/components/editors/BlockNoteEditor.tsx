@@ -872,7 +872,12 @@ export default function BlockNoteEditor({
         // font-size: 16px }` explicitly; outside AI mode the form's text-sm
         // wins via cascade, but ForkYDocExtension re-evaluates the style
         // context on AI activation and the explicit 16px takes over.
-        "[&_.bn-default-styles]:!text-sm",
+        // Phone: an editable field types at 16px, or iPhone Safari zooms the
+        // page in on focus. The two ranges never overlap, so neither depends on
+        // CSS source order to win.
+        onChange
+          ? "md:[&_.bn-default-styles]:!text-sm max-md:[&_.bn-default-styles]:!text-base"
+          : "[&_.bn-default-styles]:!text-sm",
         className,
       )}
     >
@@ -898,6 +903,13 @@ export default function BlockNoteEditor({
           // — and the surrounding EditorSheet form — to scroll instead of
           // scrolling internally.
           onChange && stretch && "[&.bn-container]:min-h-0 [&.bn-container]:overflow-y-auto",
+          // Phone — these reach the floating menus because BlockNote puts this
+          // className on its portal root too. The formatting toolbar (~450px)
+          // scrolls sideways instead of losing alignment and link off-screen;
+          // the slash menu is capped to the screen and drops its keyboard
+          // shortcut badges, which mean nothing on a touch screen.
+          "max-md:[&_.bn-formatting-toolbar]:max-w-[calc(100vw-1rem)] max-md:[&_.bn-formatting-toolbar]:overflow-x-auto max-md:[&_.bn-formatting-toolbar>*]:shrink-0",
+          "max-md:[&_.bn-suggestion-menu]:max-w-[calc(100vw-1rem)] max-md:[&_.bn-suggestion-menu_[role=option]>[data-position=right]]:hidden",
           size === "sm" && "small",
         )}
       >

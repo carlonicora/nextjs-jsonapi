@@ -12,6 +12,12 @@ interface TokenStatusIndicatorProps {
   className?: string;
   size?: "sm" | "md" | "lg";
   showExtraPages?: boolean;
+  /**
+   * Render the indicator as a link to this URL instead of a hover tooltip.
+   * For touch surfaces (the mobile header), where a hover tooltip never opens:
+   * the link carries a 40px tap area and leads to the usage page.
+   */
+  href?: string;
 }
 
 /**
@@ -36,7 +42,12 @@ const asWholeCredits = (value: number): string => Math.trunc(value).toLocaleStri
  * - BatteryLow: 5-25% available
  * - Battery (empty): <5% available
  */
-export function TokenStatusIndicator({ className, size = "md", showExtraPages = true }: TokenStatusIndicatorProps) {
+export function TokenStatusIndicator({
+  className,
+  size = "md",
+  showExtraPages = true,
+  href,
+}: TokenStatusIndicatorProps) {
   const { company } = useCurrentUserContext();
   const t = useTranslations();
 
@@ -131,6 +142,35 @@ export function TokenStatusIndicator({ className, size = "md", showExtraPages = 
     </div>
   );
 
+  const badge = (
+    <>
+      {getBatteryIcon()}
+      <span className={cn(textSize, "text-muted-foreground font-medium leading-none")}>
+        {asWholeCredits(availableMonthlyCredits)}
+      </span>
+      {showExtraPages && availableExtraCredits > 0 && (
+        <span className="inline-flex items-center gap-0.5">
+          <PlusCircle className={cn(smallIconSize, "text-blue-500")} />
+          <span className={cn(textSize, "text-blue-500 font-medium leading-none")}>
+            {asWholeCredits(availableExtraCredits)}
+          </span>
+        </span>
+      )}
+    </>
+  );
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className={cn("inline-flex min-h-10 min-w-10 items-center justify-center gap-1.5 px-1", className)}
+        aria-label={t("billing.tokens.status", { defaultValue: "Page Status" })}
+      >
+        {badge}
+      </Link>
+    );
+  }
+
   return (
     <Tooltip>
       {/* The layout classes live on the trigger itself, which renders the
@@ -142,18 +182,7 @@ export function TokenStatusIndicator({ className, size = "md", showExtraPages = 
         className={cn("inline-flex items-center gap-1.5 cursor-default", className)}
         aria-label={t("billing.tokens.status", { defaultValue: "Page Status" })}
       >
-        {getBatteryIcon()}
-        <span className={cn(textSize, "text-muted-foreground font-medium leading-none")}>
-          {asWholeCredits(availableMonthlyCredits)}
-        </span>
-        {showExtraPages && availableExtraCredits > 0 && (
-          <span className="inline-flex items-center gap-0.5">
-            <PlusCircle className={cn(smallIconSize, "text-blue-500")} />
-            <span className={cn(textSize, "text-blue-500 font-medium leading-none")}>
-              {asWholeCredits(availableExtraCredits)}
-            </span>
-          </span>
-        )}
+        {badge}
       </TooltipTrigger>
       <TooltipContent side="top" className="max-w-xs">
         {tooltipContent}

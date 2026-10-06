@@ -7,6 +7,7 @@ import { ReactNode } from "react";
 import { AttributeElement } from "../../../../components";
 import { SectionHeader, MicroLabel } from "../../../../components/typography";
 import { FiscalDataDisplay } from "../../../../components/fiscal/FiscalDataDisplay";
+import { cn } from "../../../../utils";
 import { CompanyInterface } from "../../data";
 
 type CompanyContentProps = {
@@ -34,7 +35,8 @@ export function CompanyContent({ company, actions }: CompanyContentProps) {
   return (
     <div className="flex flex-col gap-y-8">
       {/* Title Row */}
-      <div className="flex w-full items-center justify-between">
+      {/* Without actions the row only repeats the name the page header shows; hide it on a phone. */}
+      <div className={cn("flex w-full items-center justify-between", !actions && "max-md:hidden")}>
         <SectionHeader level={2}>{company.name}</SectionHeader>
         {actions && <div className="flex items-center gap-x-2">{actions}</div>}
       </div>

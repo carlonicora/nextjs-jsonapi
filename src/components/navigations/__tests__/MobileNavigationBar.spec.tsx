@@ -109,6 +109,23 @@ describe("MobileNavigationBar", () => {
     expect(screen.getByTestId("avatar-stub")).toBeInTheDocument();
   });
 
+  it("renders a slot with neither href nor onClick as-is, without wrapping it in a link or button", () => {
+    renderBar([
+      {
+        key: "profile",
+        label: "Account",
+        render: (
+          <button type="button" data-testid="menu-trigger">
+            Account
+          </button>
+        ),
+      },
+    ]);
+    const trigger = screen.getByTestId("menu-trigger");
+    expect(trigger.parentElement?.closest("button, a")).toBeNull();
+    expect(screen.getAllByRole("button")).toHaveLength(1);
+  });
+
   // The load-bearing case: a bare startsWith would make href="/" match everything.
   it("marks only the exactly-matching slot active when one href is '/'", () => {
     pathnameRef.current = "/conversations";

@@ -38,10 +38,74 @@ export function RoundPageContainerTitle({
   const { title } = useSharedContext();
   const isMobile = useIsMobile();
 
+  // A Tooltip on the toggle stays stuck on screen after a tap, so a phone gets
+  // the bare button. The aria-label carries the same text the tooltip shows,
+  // since the icon alone does not name the control.
+  const detailsLabel = `${showDetails ? "Hide" : "Show"} ${typeof detailsTitle === "string" ? detailsTitle : "details"}`;
+  const detailsToggle = details ? (
+    isMobile ? (
+      <Button
+        data-help="page.details"
+        variant={showDetails ? `ghost` : `default`}
+        onClick={() => setShowDetails(!showDetails)}
+        aria-label={detailsLabel}
+        className="shrink-0"
+      >
+        {detailsIcon ?? <InfoIcon />}
+      </Button>
+    ) : (
+      <Tooltip>
+        {/* render prop, not a Button nested inside the trigger: the trigger
+            renders its own <button>, and a button inside a button is invalid. */}
+        <TooltipTrigger
+          render={
+            <Button
+              data-help="page.details"
+              variant={showDetails ? `ghost` : `default`}
+              onClick={() => setShowDetails(!showDetails)}
+              aria-label={detailsLabel}
+              className={cn(`cursor-pointer`)}
+            />
+          }
+        >
+          {detailsIcon ?? <InfoIcon />}
+        </TooltipTrigger>
+        <TooltipContent>
+          {showDetails ? "Hide" : "Show"} {detailsTitle ?? "details"}
+        </TooltipContent>
+      </Tooltip>
+    )
+  ) : null;
+
   return (
     <div className="flex w-full flex-col border-b">
-      <div className={cn(`flex w-full flex-row items-center gap-x-2 p-4 justify-between`, HEADER_ROW_MIN_H)}>
-        {!isMobile ? (
+      {isMobile ? (
+        // Phone: "type · name" on one truncated line with the details toggle
+        // beside it; the page controls drop to their own wrapping line below,
+        // so they can never push the page wider than the screen.
+        <div className={cn(`flex w-full flex-col gap-y-2 p-4`, HEADER_ROW_MIN_H)}>
+          <div className="flex w-full min-w-0 items-center justify-between gap-x-2">
+            <div className="text-muted-foreground flex min-w-0 items-center gap-x-2 text-base font-light">
+              {title.titleActions}
+              {module && module.icon ? <module.icon className="text-primary h-5 w-5 shrink-0" /> : title.icon}
+              <span className="truncate">
+                {title.type}
+                {title.element && (
+                  <>
+                    <span aria-hidden> · </span>
+                    <span className="text-primary font-semibold">{title.element}</span>
+                  </>
+                )}
+              </span>
+            </div>
+            {detailsToggle}
+          </div>
+          {title.functions && (
+            <div className="flex w-full min-w-0 flex-wrap items-center justify-end gap-2">{title.functions}</div>
+          )}
+        </div>
+      ) : (
+        <div className={cn(`flex w-full flex-row items-center gap-x-2 p-4 justify-between`, HEADER_ROW_MIN_H)}>
           <div className="flex w-full gap-x-4">
             <div className={"text-muted-foreground flex items-center gap-x-2 text-lg font-light whitespace-nowrap"}>
               {title.titleActions}
@@ -50,43 +114,19 @@ export function RoundPageContainerTitle({
             </div>
             <div className={cn("text-primary w-full text-xl font-semibold")}>{title.element}</div>
           </div>
-        ) : (
-          <div className="text-muted-foreground flex min-w-0 items-center gap-x-2 text-base font-light">
-            {title.titleActions}
-            {module && module.icon ? <module.icon className="text-primary h-5 w-5 shrink-0" /> : title.icon}
-            <span className="truncate">{title.type}</span>
-          </div>
-        )}
-        {(title.functions || details) && (
-          <div className="flex shrink-0 items-center gap-x-2">
-            {title.functions}
-            {details && (
-              <Tooltip>
-                <TooltipTrigger>
-                  <Button
-                    data-help="page.details"
-                    render={<div />}
-                    nativeButton={false}
-                    variant={showDetails ? `ghost` : `default`}
-                    onClick={() => setShowDetails(!showDetails)}
-                    className={cn(`cursor-pointer`)}
-                  >
-                    {detailsIcon ?? <InfoIcon />}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {showDetails ? "Hide" : "Show"} {detailsTitle ?? "details"}
-                </TooltipContent>
-              </Tooltip>
-            )}
-          </div>
-        )}
-      </div>
+          {(title.functions || details) && (
+            <div className="flex shrink-0 items-center gap-x-2">
+              {title.functions}
+              {detailsToggle}
+            </div>
+          )}
+        </div>
+      )}
       {title.actionBar && (
         <div
           data-testid="round-page-action-bar"
           data-help="page.action-bar"
-          className="flex w-full items-center gap-x-2 border-t px-4 py-2"
+          className="flex w-full items-center gap-x-2 border-t px-4 py-2 max-md:flex-wrap max-md:gap-y-2"
         >
           {/* The bar is the page's command row, so the commands inside it label
               themselves ("Edit", "Delete") instead of rendering the bare glyph

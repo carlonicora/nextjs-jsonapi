@@ -17,7 +17,15 @@ export function CompanyDetails() {
 
   return (
     <div className="flex w-full flex-col gap-y-2">
-      <ContentTitle module={Modules.Company} type={title.type} element={title.element} functions={title.functions} />
+      {/* On a phone the page header already shows the type, the name and the
+          commands, so this inner copy is hidden there. */}
+      <ContentTitle
+        module={Modules.Company}
+        type={title.type}
+        element={title.element}
+        functions={title.functions}
+        className="max-md:hidden"
+      />
       <TokenStatusIndicator size="md" />
       <CompanyContent company={company} />
     </div>

@@ -84,6 +84,18 @@ export function MobileNavigationBar({ className }: { className?: string } = {}) 
           </>
         );
 
+        // A slot with neither href nor onClick is self-contained: its `render`
+        // brings its own control (e.g. an avatar that opens a user menu), so it
+        // is not wrapped in a Link/button — that would nest one interactive
+        // element inside another.
+        if (!item.href && !item.onClick) {
+          return (
+            <div key={item.key} data-testid={`mobile-nav-${item.key}`} className={cn(slotClass, tone)}>
+              <SlotContent item={item} />
+            </div>
+          );
+        }
+
         return item.href ? (
           <Link
             key={item.key}

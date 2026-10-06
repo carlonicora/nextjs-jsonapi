@@ -28,5 +28,12 @@ function InnerAuthContainer() {
       </div>
     );
 
-  return <Card className="w-full max-w-md">{activeComponent}</Card>;
+  // Phone: 40px buttons and inputs on the auth forms (login, register, reset…)
+  // so they are comfortable to tap. Input-group buttons (show password) carry
+  // data-size and keep their own size. md+ is unchanged.
+  return (
+    <Card className="w-full max-w-md max-md:[&_[data-slot=button]:not([data-size])]:h-10 max-md:[&_[data-slot=input-group-control]]:h-full max-md:[&_[data-slot=input-group]]:h-10 max-md:[&_[data-slot=input]]:h-10">
+      {activeComponent}
+    </Card>
+  );
 }

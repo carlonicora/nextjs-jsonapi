@@ -169,6 +169,53 @@ describe("useEditorDialog", () => {
     });
   });
 
+  describe("escape key with an open picker / menu above the sheet", () => {
+    const pressEscape = () => {
+      const event = new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true });
+      act(() => {
+        document.dispatchEvent(event);
+      });
+      return event;
+    };
+
+    const mountLayer = (html: string) => {
+      const host = document.createElement("div");
+      host.innerHTML = html;
+      document.body.appendChild(host);
+      return () => host.remove();
+    };
+
+    it.each([
+      ['<div data-slot="popover-content" data-open></div>'],
+      ['<div data-slot="select-content" data-open></div>'],
+      ['<div data-slot="dropdown-menu-content" data-open></div>'],
+      ['<div data-slot="dialog-content" data-open></div>'],
+      ['<div class="bn-suggestion-menu"></div>'],
+    ])("leaves Escape to the open layer %s and keeps the sheet open", (html) => {
+      const { result } = renderHook(() => useEditorDialog(() => true));
+      act(() => result.current.setOpen(true));
+      const unmount = mountLayer(html);
+
+      const event = pressEscape();
+
+      expect(result.current.open).toBe(true);
+      expect(result.current.discardDialogProps.open).toBe(false);
+      expect(event.defaultPrevented).toBe(false);
+      unmount();
+    });
+
+    it("handles Escape again once the layer has closed", () => {
+      const { result } = renderHook(() => useEditorDialog(() => false));
+      act(() => result.current.setOpen(true));
+      const unmount = mountLayer('<div data-slot="popover-content" data-closed></div>');
+
+      pressEscape();
+
+      expect(result.current.open).toBe(false);
+      unmount();
+    });
+  });
+
   describe("escape key with nested editors", () => {
     const pressEscape = () =>
       act(() => {

@@ -9,6 +9,8 @@ import type { ApiDataInterface } from "../../../../../core";
 import type { ChunkInterface, ChunkRelationshipMeta } from "../../../../chunk/data/ChunkInterface";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../shadcnui/ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../../../../shadcnui/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../../../shadcnui/ui/popover";
+import { useIsMobile } from "../../../../../utils/use-mobile";
 import { cn } from "@/lib/utils";
 import { RelevanceMeter } from "../RelevanceMeter";
 import { useEntityLabel } from "./useEntityLabel";
@@ -26,6 +28,8 @@ interface Props {
 export function CitationsTab({ citations, sources }: Props) {
   const t = useTranslations();
   const entityLabel = useEntityLabel();
+  // A tooltip never opens on touch, so on a phone the reason is a tap popover.
+  const isMobile = useIsMobile();
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   if (citations.length === 0) return null;
 
@@ -45,7 +49,7 @@ export function CitationsTab({ citations, sources }: Props) {
       <TableHeader>
         <TableRow>
           <TableHead>{t("features.assistant.message.sources.source")}</TableHead>
-          <TableHead className="w-28 text-center">{t("features.assistant.message.sources.relevance")}</TableHead>
+          <TableHead className="w-28 text-center max-md:w-20">{t("features.assistant.message.sources.relevance")}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -76,9 +80,23 @@ export function CitationsTab({ citations, sources }: Props) {
                     aria-expanded={isOpen}
                     className="flex w-full cursor-pointer items-center justify-start gap-x-2"
                   >
-                    <ChevronDown className={cn("h-4 w-4 transition-transform", !isOpen && "-rotate-90")} />
-                    <span className="font-semibold">{sourceName}</span>
-                    {chunk.reason && (
+                    <ChevronDown
+                      className={cn("h-4 w-4 transition-transform max-md:shrink-0", !isOpen && "-rotate-90")}
+                    />
+                    <span className="font-semibold max-md:min-w-0 max-md:truncate">{sourceName}</span>
+                    {chunk.reason && isMobile && (
+                      <Popover>
+                        <PopoverTrigger
+                          aria-label={chunk.reason}
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-muted-foreground -m-2 inline-flex shrink-0 p-2"
+                        >
+                          <HelpCircle className="h-3.5 w-3.5" />
+                        </PopoverTrigger>
+                        <PopoverContent className="max-w-64 text-xs">{chunk.reason}</PopoverContent>
+                      </Popover>
+                    )}
+                    {chunk.reason && !isMobile && (
                       <Tooltip>
                         <TooltipTrigger className="text-muted-foreground inline-flex">
                           <HelpCircle className="h-3.5 w-3.5" />
@@ -89,7 +107,7 @@ export function CitationsTab({ citations, sources }: Props) {
                   </div>
                 </TableCell>
                 <TableCell className="text-center">
-                  <RelevanceMeter value={chunk.relevance ?? 0} />
+                  <RelevanceMeter value={chunk.relevance ?? 0} className="max-md:w-16" />
                 </TableCell>
               </TableRow>
               {isOpen && (

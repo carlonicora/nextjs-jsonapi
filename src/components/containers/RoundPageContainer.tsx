@@ -21,7 +21,13 @@ import { partitionTabs, Tab } from "@/components/containers";
 import { HEADER_ROW_MIN_H, RoundPageContainerTitle } from "@/components/containers/RoundPageContainerTitle";
 import { Header, MobileNavigationBar } from "@/components/navigations";
 import { MicroLabel } from "@/components/typography";
-import { useHeaderChildren, useHeaderLeftContent, useHeaderLogo, useHeaderMobileChildren } from "@/contexts";
+import {
+  useHeaderChildren,
+  useHeaderLeftContent,
+  useHeaderLogo,
+  useHeaderMobileChildren,
+  useMobileNavigationItems,
+} from "@/contexts";
 import { useUrlRewriter } from "@/hooks";
 import { cn, useIsMobile } from "@/index";
 import { useOptionalSidebar } from "@/shadcnui";
@@ -186,7 +192,15 @@ export function RoundPageContainer({
   const headerLogo = useHeaderLogo();
   const headerMobileChildren = useHeaderMobileChildren();
   const [showDetails, setShowDetailsState] = useState(defaultDetailsOpen);
+  // Phone-only open state for the details Sheet. It always starts closed and is
+  // never written to the cookie: on a phone the panel is a full-screen overlay,
+  // so a remembered "open" (set on desktop, where it is a side column) covered
+  // the page on every visit — the assistant's Conversations panel did exactly that.
+  const [showDetailsMobile, setShowDetailsMobile] = useState(false);
   const isMobile = useIsMobile();
+  // The bottom bar's "Menu" slot opens the same drawer as the header's sidebar
+  // toggle, so the header drops its toggle on a phone whenever the bar renders.
+  const hasMobileNavigation = useMobileNavigationItems().length > 0;
   // The desktop shell drops its start padding only where a sidebar sits against it. A page
   // without one (the customer portal) keeps the padding on both sides.
   const hasSidebar = useOptionalSidebar() !== null;
@@ -298,6 +312,21 @@ export function RoundPageContainer({
 
   const isReady = mounted;
 
+  // Phone, viewport-bound shell: the whole card becomes the single scroller, so
+  // the title row, command row, artwork and section picker scroll away with the
+  // content instead of staying pinned and leaving the content less than half the
+  // screen. That covers ordinary tabs AND document tabs (fill-height + constrained
+  // width: the entity's own editor, which then grows with its text). Only bare
+  // fill-height tabs (graph, map, recordings) and full-width pages (lists, canvas,
+  // run) keep the inner scroller, since they need a definite height. Desktop is
+  // untouched.
+  const activeDocumentTab = activeFillHeight && activeConstrainWidth;
+  const mobileFlow = isMobile && isFixed && (!activeFillHeight || activeDocumentTab) && !fullWidth;
+  const innerClip = mobileFlow ? `` : clip;
+  const innerScrollY = mobileFlow ? `` : scrollY;
+  // A single section needs no picker.
+  const showMobileSectionPicker = (tabs?.length ?? 0) > 1;
+
   if (!isReady) {
     return (
       <>
@@ -305,6 +334,7 @@ export function RoundPageContainer({
           leftContent={headerLeftContent}
           logo={headerLogo}
           mobileChildren={headerMobileChildren}
+          hideSidebarTriggerOnMobile={hasMobileNavigation}
           className="bg-sidebar border-0"
         >
           {headerChildren}
@@ -349,6 +379,7 @@ export function RoundPageContainer({
         leftContent={headerLeftContent}
         logo={headerLogo}
         mobileChildren={headerMobileChildren}
+        hideSidebarTriggerOnMobile={hasMobileNavigation}
         className="bg-sidebar border-0"
       >
         {headerChildren}
@@ -379,19 +410,21 @@ export function RoundPageContainer({
             the wrapper, leaving the bar no room and pushing it below the fold —
             it then appears only after scrolling to the very end of the page. */}
         <div className="bg-background flex min-h-0 w-full flex-1 rounded-lg border p-0">
-          <div className="flex w-full flex-col">
+          {/* pb-16 under mobileFlow: room for the floating Help button, which
+              otherwise sits over the last lines of the page. */}
+          <div className={cn("flex w-full flex-col", mobileFlow && "min-h-0 overflow-y-auto pb-16")}>
             {(!fullWidth || forceHeader) && (
               <RoundPageContainerTitle
                 module={module}
                 details={details}
                 detailsTitle={detailsTitle}
                 detailsIcon={detailsIcon}
-                showDetails={showDetails}
-                setShowDetails={setShowDetails}
+                showDetails={isMobile ? showDetailsMobile : showDetails}
+                setShowDetails={isMobile ? setShowDetailsMobile : setShowDetails}
                 fullWidth={fullWidth}
               />
             )}
-            <div className={cn(`flex w-full`, isFixed && `h-full`, clip)}>
+            <div className={cn(`flex w-full`, isFixed && !mobileFlow && `h-full`, innerClip)}>
               {layout === "rail" && tabs ? (
                 // Rail layout: the vertical-tab navigation is a flush-left
                 // sidebar of the card and the content fills the full remaining
@@ -409,7 +442,11 @@ export function RoundPageContainer({
                   // the shadcn root's default `data-[orientation=horizontal]:flex-col`
                   // to keep the rail and content side by side.
                   orientation="horizontal"
-                  className={cn(`flex min-w-0 grow data-[orientation=horizontal]:flex-row`, isFixed && `h-full`, clip)}
+                  className={cn(
+                    `flex min-w-0 grow data-[orientation=horizontal]:flex-row`,
+                    isFixed && !mobileFlow && `h-full`,
+                    innerClip,
+                  )}
                 >
                   {/* Flush-left section rail — md and up */}
                   <aside
@@ -454,14 +491,17 @@ export function RoundPageContainer({
                   </aside>
 
                   {/* Content — full width, fills the remaining space */}
-                  <div className={cn(`flex min-w-0 grow flex-col`, clip)}>
+                  <div className={cn(`flex min-w-0 grow flex-col`, innerClip)}>
                     {/* The rail is hidden below md, so its header would vanish with
                         it — render it above the section Select instead, capped to
                         the rail's width so a phone does not open on a full-bleed
                         image. */}
-                    {railHeader && <div className="mx-auto w-full max-w-48 px-2 pt-2 md:hidden">{railHeader}</div>}
-                    {/* Section Select — below md */}
-                    <div data-testid="round-page-rail-select" className="p-2 md:hidden">
+                    {railHeader && <div className="mx-auto w-full max-w-24 px-2 pt-2 md:hidden">{railHeader}</div>}
+                    {/* Section Select — below md, and only when there is a choice to make */}
+                    <div
+                      data-testid="round-page-rail-select"
+                      className={cn("p-2 md:hidden", !showMobileSectionPicker && "hidden")}
+                    >
                       <Select
                         items={tabItems}
                         value={activeTab}
@@ -492,7 +532,7 @@ export function RoundPageContainer({
                       </Select>
                     </div>
                     <div
-                      className={cn(`min-w-0 grow`, activeFillHeight ? cn(`flex flex-col`, clip) : cn(scrollY, `p-4`))}
+                      className={cn(`min-w-0 grow`, activeFillHeight ? cn(`flex flex-col`, innerClip) : cn(innerScrollY, `p-4`))}
                     >
                       {/* Centre and constrain rail content (like the non-rail
                           layout). Fill-height tabs are full-bleed — a canvas, a
@@ -524,7 +564,7 @@ export function RoundPageContainer({
                   className={cn(
                     `grow`,
                     isMobile ? `p-2` : `p-4`,
-                    activeFillHeight ? cn(`flex flex-col`, clip) : scrollY,
+                    activeFillHeight ? cn(`flex flex-col`, innerClip) : innerScrollY,
                     fullWidth && `p-0`,
                   )}
                 >
@@ -544,7 +584,7 @@ export function RoundPageContainer({
                           onValueChange={handleTabChange}
                         >
                           {isMobile ? (
-                            <div className="p-0">
+                            <div className={cn("p-0", !showMobileSectionPicker && "hidden")}>
                               <Select
                                 items={tabItems}
                                 value={activeTab}
@@ -579,7 +619,7 @@ export function RoundPageContainer({
                             className={cn(
                               `flex w-full `,
                               isMobile ? `` : `px-4`,
-                              activeFillHeight ? `flex-1 min-h-0` : scrollY,
+                              activeFillHeight ? `flex-1 min-h-0` : innerScrollY,
                             )}
                           >
                             {tabs.map((tab) => (
@@ -605,8 +645,12 @@ export function RoundPageContainer({
           </div>
           {details &&
             (isMobile ? (
-              <Sheet open={showDetails} onOpenChange={setShowDetails}>
-                <SheetContent side="end">
+              <Sheet open={showDetailsMobile} onOpenChange={setShowDetailsMobile}>
+                {/* Full width: the default 75% left a useless strip of page beside it. */}
+                <SheetContent
+                  side="end"
+                  className="data-[side=left]:w-full data-[side=right]:w-full data-[side=left]:sm:max-w-none data-[side=right]:sm:max-w-none"
+                >
                   <SheetHeader>
                     <SheetTitle>{detailsTitle ?? "Details"}</SheetTitle>
                   </SheetHeader>

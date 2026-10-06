@@ -48,7 +48,8 @@ export function AnalyticsBreakdownTable({ breakdowns }: Props) {
 
   return (
     <Tabs defaultValue={ANALYTICS_DIMENSIONS[0]}>
-      <TabsList>
+      {/* Six tabs are wider than a phone-width card: scroll them sideways there. */}
+      <TabsList className="max-md:w-full max-md:justify-start max-md:overflow-x-auto">
         {ANALYTICS_DIMENSIONS.map((dimension) => (
           <TabsTrigger key={dimension} value={dimension}>
             {labels[dimension]}

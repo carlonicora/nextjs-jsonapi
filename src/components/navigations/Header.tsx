@@ -15,9 +15,22 @@ type HeaderProps = {
   /** Rendered before everything else, on mobile only — where the sidebar (and its logo) is off-canvas. */
   logo?: React.ReactNode;
   className?: string;
+  /**
+   * Drop the sidebar toggle on mobile. Set by page shells that render the mobile
+   * bottom bar, whose "Menu" slot opens the same drawer — two controls for one
+   * drawer only cost header room on a phone. Desktop always keeps the toggle.
+   */
+  hideSidebarTriggerOnMobile?: boolean;
 };
 
-export function Header({ children, mobileChildren, leftContent, logo, className }: HeaderProps) {
+export function Header({
+  children,
+  mobileChildren,
+  leftContent,
+  logo,
+  className,
+  hideSidebarTriggerOnMobile,
+}: HeaderProps) {
   const { breadcrumbs } = useSharedContext();
   const rootLabel = useHeaderRootLabel();
   const isRootHidden = useIsBreadcrumbRootHidden();
@@ -42,9 +55,9 @@ export function Header({ children, mobileChildren, leftContent, logo, className 
     >
       <div className="bg-sidebar flex h-12 w-full flex-row items-center justify-between ps-2 pe-4">
         {isMobile && logo && <div className="flex shrink-0 flex-row items-center pe-1">{logo}</div>}
-        {sidebar && <SidebarTrigger aria-label="Toggle sidebar" id="sidebar-trigger" />}
+        {sidebar && !(isMobile && hideSidebarTriggerOnMobile) && <SidebarTrigger aria-label="Toggle sidebar" id="sidebar-trigger" />}
         {leftContent}
-        <div className="flex w-full flex-row items-center justify-start">
+        <div className="flex w-full flex-row items-center justify-start max-md:min-w-0">
           <BreadcrumbNavigation items={breadcrumbs} rootLabel={rootLabel ?? undefined} showRoot={!isRootHidden} />
         </div>
         {isMobile
