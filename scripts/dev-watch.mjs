@@ -13,7 +13,7 @@
 //
 // The release build (`pnpm build`) is untouched: it still emits bundled types.
 import { spawn } from "node:child_process";
-import { readdir, readFile, stat, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -111,11 +111,36 @@ function shutdown(code) {
 process.on("SIGINT", () => shutdown(0));
 process.on("SIGTERM", () => shutdown(0));
 
+// tsc reads its own config, which extends the package's and always leaves the
+// tests out: some packages' tsconfig.json still includes them, and the bundled
+// dts build never saw them (it starts from the entry points), so tsc would flood
+// the dev output with test-only type errors and emit declarations for them.
+const devTsconfig = path.join(root, "node_modules", ".cache", "dev-watch", "tsconfig.json");
+await mkdir(path.dirname(devTsconfig), { recursive: true });
+await writeFile(
+  devTsconfig,
+  JSON.stringify(
+    {
+      extends: "../../../tsconfig.json",
+      include: ["../../../src/**/*.ts", "../../../src/**/*.tsx"],
+      exclude: [
+        "../../../src/**/*.spec.ts",
+        "../../../src/**/*.spec.tsx",
+        "../../../src/**/*.test.ts",
+        "../../../src/**/*.test.tsx",
+        "../../../src/**/__tests__/**/*",
+      ],
+    },
+    null,
+    2,
+  ),
+);
+
 let rewriting = Promise.resolve();
 run(bin("tsup"), ["--watch"], { TSUP_NO_DTS: "1" });
 run(
   bin("tsc"),
-  ["-p", "tsconfig.json", "--watch", "--emitDeclarationOnly", "--preserveWatchOutput"],
+  ["-p", devTsconfig, "--watch", "--emitDeclarationOnly", "--preserveWatchOutput"],
   {},
   (line) => {
     if (line.includes("Watching for file changes")) {
