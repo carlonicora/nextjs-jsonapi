@@ -1,6 +1,6 @@
 "use client";
 
-import { AudioLinesIcon, BellIcon, LucideIcon } from "lucide-react";
+import { ArchiveIcon, AudioLinesIcon, BellIcon, LucideIcon } from "lucide-react";
 import { cn } from "../../../../utils";
 
 type IconTone = "muted" | "warning" | "destructive";
@@ -10,6 +10,8 @@ type IconTone = "muted" | "warning" | "destructive";
    not listed here fall back to the bell. */
 const notificationIcons: Record<string, { icon: LucideIcon; tone: IconTone }> = {
   transcript_ready: { icon: AudioLinesIcon, tone: "muted" },
+  data_export_ready: { icon: ArchiveIcon, tone: "muted" },
+  data_export_failed: { icon: ArchiveIcon, tone: "destructive" },
 };
 
 const toneClasses: Record<IconTone, string> = {
