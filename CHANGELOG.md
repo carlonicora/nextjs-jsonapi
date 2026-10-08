@@ -1,3 +1,9 @@
+## [3.27.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.27.2...v3.27.3) (2026-10-08)
+
+### 🐛 Bug Fixes
+
+* **DateCell:** format return statement for better readability ([83c0b0b](https://github.com/carlonicora/nextjs-jsonapi/commit/83c0b0b987afd39550bbfc8ad9c6eecc342094b1))
+
 ## [3.27.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.27.1...v3.27.2) (2026-10-08)
 
 ### 🐛 Bug Fixes
