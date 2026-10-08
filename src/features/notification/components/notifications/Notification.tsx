@@ -67,7 +67,7 @@ export function NotificationToast(
             })}
           </p>
           <div className="text-muted-foreground mt-1 w-full text-xs">
-            {new Date(notification.createdAt).toLocaleString()}
+            {formatDate(new Date(notification.createdAt), "dateTime")}
           </div>
         </div>
       </div>
