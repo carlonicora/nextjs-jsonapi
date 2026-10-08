@@ -1,3 +1,9 @@
+## [3.28.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.27.3...v3.28.0) (2026-10-08)
+
+### 🚀 Features
+
+* **notifications:** archive icon for data export notifications ([556b81b](https://github.com/carlonicora/nextjs-jsonapi/commit/556b81baec6e7c93002ac8962af7773ef09aa28d))
+
 ## [3.27.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.27.2...v3.27.3) (2026-10-08)
 
 ### 🐛 Bug Fixes
