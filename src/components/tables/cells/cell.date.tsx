@@ -3,7 +3,9 @@ import { useI18nLocale } from "../../../i18n";
 
 function DateCell({ date }: { date: Date }) {
   const locale = useI18nLocale();
-  return <span className="text-muted-foreground text-xs">{date.toLocaleDateString(locale, { dateStyle: "medium" })}</span>;
+  return (
+    <span className="text-muted-foreground text-xs">{date.toLocaleDateString(locale, { dateStyle: "medium" })}</span>
+  );
 }
 
 export const cellDate = (params: { name: string; title: string }): ColumnDef<any> => {
