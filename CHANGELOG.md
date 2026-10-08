@@ -1,3 +1,15 @@
+## [3.27.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.27.2...v3.27.3) (2026-10-08)
+
+### 🐛 Bug Fixes
+
+* **DateCell:** format return statement for better readability ([83c0b0b](https://github.com/carlonicora/nextjs-jsonapi/commit/83c0b0b987afd39550bbfc8ad9c6eecc342094b1))
+
+## [3.27.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.27.1...v3.27.2) (2026-10-08)
+
+### 🐛 Bug Fixes
+
+* **i18n:** format displayed dates with the configured locale ([47b8d7b](https://github.com/carlonicora/nextjs-jsonapi/commit/47b8d7ba50ae1c6f9242672fd856c296760471da))
+
 ## [3.27.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.27.0...v3.27.1) (2026-10-06)
 
 ### 🐛 Bug Fixes

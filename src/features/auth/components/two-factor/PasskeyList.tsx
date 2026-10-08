@@ -4,6 +4,7 @@ import { Edit, Key, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { errorToast } from "../../../../components/errors/errorToast";
+import { useI18nLocale } from "../../../../i18n";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,6 +34,7 @@ interface PasskeyListProps {
 
 export function PasskeyList({ passkeys, onRefresh }: PasskeyListProps) {
   const t = useTranslations();
+  const locale = useI18nLocale();
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [selectedPasskey, setSelectedPasskey] = useState<PasskeyInterface | null>(null);
   const [newName, setNewName] = useState("");
@@ -106,7 +108,7 @@ export function PasskeyList({ passkeys, onRefresh }: PasskeyListProps) {
                 <p className="text-sm text-muted-foreground">
                   {passkey.backedUp && "☁️ "}
                   {passkey.lastUsedAt
-                    ? `${t("auth.two_factor.last_used")}: ${new Date(passkey.lastUsedAt).toLocaleDateString()}`
+                    ? `${t("auth.two_factor.last_used")}: ${new Date(passkey.lastUsedAt).toLocaleDateString(locale)}`
                     : t("auth.two_factor.never_used")}
                 </p>
               </div>
