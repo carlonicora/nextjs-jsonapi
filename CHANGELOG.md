@@ -1,3 +1,13 @@
+## [3.28.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.28.0...v3.28.1) (2026-10-09)
+
+### 🐛 Bug Fixes
+
+* **testing:** declare JSON:API matchers on Vitest 5's Matchers ([198326f](https://github.com/carlonicora/nextjs-jsonapi/commit/198326fcc71996f8dba0c619558af36986bd1e44))
+
+### ♻️ Chores
+
+* **deps:** fleet dependency sweep 2026-10-09 ([1fbd914](https://github.com/carlonicora/nextjs-jsonapi/commit/1fbd914922ff72b45c35c83f4503cb7d2ca93ee6))
+
 ## [3.28.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.27.3...v3.28.0) (2026-10-08)
 
 ### 🚀 Features
