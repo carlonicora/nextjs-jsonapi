@@ -138,20 +138,15 @@ export const jsonApiMatchers = {
 };
 
 // Type declarations for the custom matchers
+// Vitest 5: Assertion<R, T> and AsymmetricMatchersContaining both extend
+// Matchers<R, T>, so the matchers are declared once here and return R.
 declare module "vitest" {
-  interface Assertion<T = any> {
-    toBeValidJsonApi(): T;
-    toHaveJsonApiType(expectedType: string): T;
-    toHaveJsonApiAttribute(attributeName: string, expectedValue?: any): T;
-    toHaveJsonApiRelationship(relationshipName: string): T;
-    toHaveJsonApiLength(expectedLength: number): T;
-  }
-  interface AsymmetricMatchersContaining {
-    toBeValidJsonApi(): any;
-    toHaveJsonApiType(expectedType: string): any;
-    toHaveJsonApiAttribute(attributeName: string, expectedValue?: any): any;
-    toHaveJsonApiRelationship(relationshipName: string): any;
-    toHaveJsonApiLength(expectedLength: number): any;
+  interface Matchers<R extends void | Promise<void> = void | Promise<void>, T = unknown> {
+    toBeValidJsonApi(): R;
+    toHaveJsonApiType(expectedType: string): R;
+    toHaveJsonApiAttribute(attributeName: string, expectedValue?: any): R;
+    toHaveJsonApiRelationship(relationshipName: string): R;
+    toHaveJsonApiLength(expectedLength: number): R;
   }
 }
 
