@@ -148,6 +148,7 @@ export default function HowToSelector({
                       <CommandItem
                         className="cursor-pointer hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent"
                         key={howTo.id}
+                        value={howTo.id}
                         onSelect={() => setHowTo(howTo)}
                       >
                         {howTo.name}

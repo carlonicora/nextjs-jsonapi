@@ -115,6 +115,7 @@ export function UserRoleAdd({ user, refresh }: UserRoleAddProps) {
               <CommandItem
                 className="cursor-pointer hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent"
                 key={role.id}
+                value={role.id}
                 onSelect={() => addUserToRole(role)}
                 onClick={() => addUserToRole(role)}
               >

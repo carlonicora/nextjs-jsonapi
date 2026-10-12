@@ -71,6 +71,7 @@ export const UserSearchPopover = ({ children, onSelect, align = "start", classNa
               users.map((user) => (
                 <CommandItem
                   key={user.id}
+                  value={user.id}
                   className="cursor-pointer hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent"
                   onSelect={() => handleSelectUser(user.id)}
                 >

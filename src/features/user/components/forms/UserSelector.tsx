@@ -154,6 +154,7 @@ export function UserSelector({ id, form, label, placeholder, onChange, isRequire
                       <CommandItem
                         className="cursor-pointer hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent"
                         key={user.id}
+                        value={user.id}
                         onSelect={() => setUser(user)}
                       >
                         <UserAvatar user={user} className={`me-2 h-4 w-4`} />

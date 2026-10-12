@@ -8,7 +8,7 @@ import { forwardRef, useEffect } from "react";
 
 import { cn } from "../../utils/cn";
 import { Badge } from "../ui/badge";
-import { Command, CommandGroup, CommandItem, CommandList } from "../ui/command";
+import { Command, CommandGroup, CommandItem, CommandList, commandFilterByKeywords } from "../ui/command";
 
 export interface Option {
   value: string;
@@ -139,6 +139,19 @@ function removePickedOption(groupOption: GroupOption, picked: Option[]) {
   }
   return cloneOption;
 }
+
+/**
+ * Every option row carries its own unique `value` (the option's `value`), and
+ * the "create" row a reserved one, so two options with the same label do not
+ * share cmdk's value and highlight/select together. The row's searchable text
+ * lives in `keywords`, and every filter below is given that text where it used
+ * to receive the value, so typing matches and ranks exactly as it did when the
+ * value was the label — and never matches an option's raw value.
+ */
+const CREATE_VALUE = "__multiple-selector:create__";
+
+/** The text a row is searched by: its keywords, or its value when it has none (the "-" placeholders). */
+const rowText = (value: string, keywords?: string[]) => (keywords && keywords.length > 0 ? keywords.join(" ") : value);
 
 function isOptionsExist(groupOption: GroupOption, targetOption: Option[]) {
   for (const [, value] of Object.entries(groupOption)) {
@@ -396,17 +409,22 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
 
       const Item = (
         <CommandItem
-          value={inputValue}
+          // cmdk only re-reads an item's keywords when its value changes, so the
+          // typed text is part of the reserved value to keep the keywords current.
+          value={`${CREATE_VALUE}${inputValue}`}
+          keywords={[inputValue]}
           className="cursor-pointer"
           onMouseDown={(e) => {
             e.preventDefault();
             e.stopPropagation();
           }}
-          onSelect={(value: string) => {
+          onSelect={() => {
             if (selected.length >= maxSelected) {
               onMaxSelected?.(selected.length);
               return;
             }
+            // cmdk used to hand back the row's value, which was the typed text trimmed.
+            const value = inputValue.trim();
             setInputValue("");
             const newOptions = [...selected, { value, label: value }];
             setSelected(newOptions);
@@ -445,16 +463,19 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
     const selectables = React.useMemo<GroupOption>(() => removePickedOption(options, selected), [options, selected]);
 
     const commandFilter = React.useCallback(() => {
-      if (commandProps?.filter) {
-        return commandProps.filter;
+      const customFilter = commandProps?.filter;
+      if (customFilter) {
+        // A caller's filter keeps receiving the row text as `value` (no keywords), as before.
+        return (value: string, search: string, keywords?: string[]) =>
+          customFilter(rowText(value, keywords), search, []);
       }
 
       if (creatable) {
-        return (value: string, search: string) => {
-          return value.toLowerCase().includes(search.toLowerCase()) ? 1 : -1;
+        return (value: string, search: string, keywords?: string[]) => {
+          return rowText(value, keywords).toLowerCase().includes(search.toLowerCase()) ? 1 : -1;
         };
       }
-      return undefined;
+      return commandFilterByKeywords;
     }, [creatable, commandProps?.filter]);
 
     // Determine which badges to display
@@ -613,7 +634,8 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
                             return (
                               <CommandItem
                                 key={option.value}
-                                value={option.label}
+                                value={option.value}
+                                keywords={[option.label]}
                                 disabled={option.disable}
                                 onMouseDown={(e) => {
                                   e.preventDefault();
@@ -688,7 +710,8 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
                           return (
                             <CommandItem
                               key={option.value}
-                              value={option.label}
+                              value={option.value}
+                              keywords={[option.label]}
                               disabled={option.disable}
                               onMouseDown={(e) => {
                                 e.preventDefault();

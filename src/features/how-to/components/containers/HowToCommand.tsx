@@ -189,7 +189,12 @@ export default function HowToCommand({ pathname, contextKeys, extraGroups, onSta
                 {relevantHowTos.length > 0 && (
                   <CommandGroup heading={t(`howto.command.relevant`)}>
                     {relevantHowTos.map((howTo: HowToInterface) => (
-                      <CommandItem key={howTo.id} onSelect={() => setSelectedHowTo(howTo)} className="cursor-pointer">
+                      <CommandItem
+                        key={howTo.id}
+                        value={howTo.id}
+                        onSelect={() => setSelectedHowTo(howTo)}
+                        className="cursor-pointer"
+                      >
                         <ArrowRight className="h-4 w-4 rtl:rotate-180" />
                         <span>{howTo.name}</span>
                       </CommandItem>
@@ -201,7 +206,12 @@ export default function HowToCommand({ pathname, contextKeys, extraGroups, onSta
                 {otherHowTos.length > 0 && (
                   <CommandGroup heading={searchTerm ? undefined : t(`howto.command.all`)}>
                     {otherHowTos.map((howTo: HowToInterface) => (
-                      <CommandItem key={howTo.id} onSelect={() => setSelectedHowTo(howTo)} className="cursor-pointer">
+                      <CommandItem
+                        key={howTo.id}
+                        value={howTo.id}
+                        onSelect={() => setSelectedHowTo(howTo)}
+                        className="cursor-pointer"
+                      >
                         <ArrowRight className="h-4 w-4 rtl:rotate-180" />
                         <span>{howTo.name}</span>
                       </CommandItem>

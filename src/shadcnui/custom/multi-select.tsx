@@ -14,6 +14,7 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
+  commandFilterByKeywords,
 } from "../ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Separator } from "../ui/separator";
@@ -38,6 +39,18 @@ const multiSelectVariants = cva(
     },
   },
 );
+
+/**
+ * Every row carries a unique `value` (an option's own value, or a reserved
+ * sentinel for the static rows) so that two options with the same label do not
+ * share cmdk's text-derived value and highlight/select together. The searchable
+ * text lives in `keywords`, and the filter scores the keywords alone: that keeps
+ * typing-to-search matching exactly what it matched when the value was the
+ * row's text, instead of also matching the option's raw value.
+ */
+const SELECT_ALL_VALUE = "__multi-select:select-all__";
+const CLEAR_VALUE = "__multi-select:clear__";
+const CLOSE_VALUE = "__multi-select:close__";
 
 /**
  * Props for MultiSelect component
@@ -365,7 +378,7 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
           style={{ minWidth: triggerWidth > 0 ? triggerWidth : undefined }}
           align="start"
         >
-          <Command>
+          <Command filter={commandFilterByKeywords}>
             <CommandInput
               autoFocus
               placeholder="Search..."
@@ -383,6 +396,8 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
                 {!hideSelectAll && (
                   <CommandItem
                     key="all"
+                    value={SELECT_ALL_VALUE}
+                    keywords={["(Select All)"]}
                     onSelect={toggleAll}
                     className="cursor-pointer hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent"
                   >
@@ -406,6 +421,8 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
                   return (
                     <CommandItem
                       key={option.value}
+                      value={option.value}
+                      keywords={[option.label]}
                       onSelect={() => toggleOption(option.value)}
                       className="cursor-pointer hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent"
                     >
@@ -430,13 +447,20 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
                 <div className="flex items-center justify-between">
                   {selectedValues.length > 0 && (
                     <>
-                      <CommandItem onSelect={handleClear} className="flex-1 cursor-pointer justify-center">
+                      <CommandItem
+                        value={CLEAR_VALUE}
+                        keywords={["Clear"]}
+                        onSelect={handleClear}
+                        className="flex-1 cursor-pointer justify-center"
+                      >
                         Clear
                       </CommandItem>
                       <Separator orientation="vertical" className="flex h-full min-h-6" />
                     </>
                   )}
                   <CommandItem
+                    value={CLOSE_VALUE}
+                    keywords={["Close"]}
                     onSelect={() => setIsPopoverOpen(false)}
                     className="max-w-full flex-1 cursor-pointer justify-center hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent"
                   >

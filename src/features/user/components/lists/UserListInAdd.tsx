@@ -28,6 +28,7 @@ export function UserListInAdd({ data, existingUsers, setSelectedUser, setLevelOp
                 <CommandItem
                   className="cursor-pointer hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent"
                   key={user.id}
+                  value={user.id}
                   onClick={(_e) => {
                     setSelectedUser(user);
                     setLevelOpen?.(true);

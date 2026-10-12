@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Command as CommandPrimitive } from "cmdk";
+import { Command as CommandPrimitive, defaultFilter } from "cmdk";
 
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -167,6 +167,17 @@ function CommandShortcut({ className, ...props }: React.ComponentProps<"span">) 
   );
 }
 
+/**
+ * A `filter` for a `<Command>` whose items carry a unique `value` (an id) and
+ * their searchable text in `keywords`. cmdk's default filter scores the value
+ * AND the keywords, so an id value would make its own characters searchable;
+ * this one scores the keywords alone, and falls back to the value only for an
+ * item that has no keywords. Usage: `<Command filter={commandFilterByKeywords}>`
+ * with `<CommandItem value={id} keywords={[label]}>`.
+ */
+const commandFilterByKeywords = (value: string, search: string, keywords?: string[]) =>
+  defaultFilter(keywords && keywords.length > 0 ? keywords.join(" ") : value, search);
+
 export {
   Command,
   CommandDialog,
@@ -177,4 +188,5 @@ export {
   CommandItem,
   CommandShortcut,
   CommandSeparator,
+  commandFilterByKeywords,
 };
