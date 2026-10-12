@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, afterAll, beforeAll, vi } from "vitest";
 import { renderHook } from "@testing-library/react";
 
 // Mutable mocks the individual tests below configure per case, mirroring the
@@ -22,11 +22,35 @@ vi.mock("../../../client/config", () => ({
 
 import { useSubscriptionStatus } from "./useSubscriptionStatus";
 
+const DAY_MS = 1000 * 60 * 60 * 24;
+
+// Every date case runs on a frozen clock in a zone with DST. The window math
+// used to follow the host's local calendar, so the result depended on the day
+// the suite ran and on the machine's timezone; pinning both makes it repeatable.
+const ORIGINAL_TZ = process.env.TZ;
+const FIXED_NOW = new Date("2026-06-15T12:00:00+02:00"); // no DST change within 14 days
+
+const daysAgo = (days: number, now: Date = FIXED_NOW) => new Date(now.getTime() - days * DAY_MS);
+
 describe("useSubscriptionStatus", () => {
+  beforeAll(() => {
+    process.env.TZ = "Europe/Rome";
+  });
+
+  afterAll(() => {
+    process.env.TZ = ORIGINAL_TZ;
+  });
+
   beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(FIXED_NOW);
     userMock.currentUser = null;
     userMock.company = null;
     configMock.stripeKey = "pk_test_123";
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it("reports loading while currentUser is still null", () => {
@@ -69,7 +93,7 @@ describe("useSubscriptionStatus", () => {
 
   it("is never blocked when the company has an active subscription", () => {
     userMock.currentUser = { roles: [] };
-    userMock.company = { isActiveSubscription: true, createdAt: new Date() };
+    userMock.company = { isActiveSubscription: true, createdAt: FIXED_NOW };
 
     const { result } = renderHook(() => useSubscriptionStatus());
 
@@ -79,8 +103,7 @@ describe("useSubscriptionStatus", () => {
 
   it("does NOT block an unsubscribed company that is still inside its trial window", () => {
     userMock.currentUser = { roles: [] };
-    const createdAt = new Date();
-    createdAt.setDate(createdAt.getDate() - 1); // 1 day old — squarely inside the 14-day trial
+    const createdAt = daysAgo(1); // 1 day old — squarely inside the 14-day trial
     userMock.company = { isActiveSubscription: false, createdAt };
 
     const { result } = renderHook(() => useSubscriptionStatus());
@@ -94,8 +117,7 @@ describe("useSubscriptionStatus", () => {
 
   it("blocks once the trial window has elapsed with no active subscription", () => {
     userMock.currentUser = { roles: [] };
-    const createdAt = new Date();
-    createdAt.setDate(createdAt.getDate() - 15); // past the 14-day trial
+    const createdAt = daysAgo(15); // past the 14-day trial
     userMock.company = { isActiveSubscription: false, createdAt };
 
     const { result } = renderHook(() => useSubscriptionStatus());
@@ -106,8 +128,7 @@ describe("useSubscriptionStatus", () => {
 
   it("keeps daysRemaining counting down from createdAt, unaffected by the isBlocked change (1 day old)", () => {
     userMock.currentUser = { roles: [] };
-    const createdAt = new Date();
-    createdAt.setDate(createdAt.getDate() - 1);
+    const createdAt = daysAgo(1);
     userMock.company = { isActiveSubscription: false, createdAt };
 
     const { result } = renderHook(() => useSubscriptionStatus());
@@ -118,13 +139,58 @@ describe("useSubscriptionStatus", () => {
 
   it("keeps isGracePeriod true once daysRemaining is inside GRACE_DAYS (12 days old)", () => {
     userMock.currentUser = { roles: [] };
-    const createdAt = new Date();
-    createdAt.setDate(createdAt.getDate() - 12);
+    const createdAt = daysAgo(12);
     userMock.company = { isActiveSubscription: false, createdAt };
 
     const { result } = renderHook(() => useSubscriptionStatus());
 
     expect(result.current.daysRemaining).toBe(2);
     expect(result.current.isGracePeriod).toBe(true);
+  });
+
+  // Regression: on 2026-10-12 in Europe/Rome the 1-day-old case reported 14.
+  // The trial end (2026-10-25) falls on the day CEST ends, so adding 14 local
+  // calendar days produced 14 days + 1 hour, and ceil(13.04) = 14.
+  it("reports 13 days for a 1-day-old company when the trial end crosses the autumn DST change", () => {
+    const now = new Date("2026-10-12T14:18:02+02:00");
+    vi.setSystemTime(now);
+    userMock.currentUser = { roles: [] };
+    const createdAt = daysAgo(1, now);
+    userMock.company = { isActiveSubscription: false, createdAt };
+
+    const { result } = renderHook(() => useSubscriptionStatus());
+
+    expect(result.current.daysRemaining).toBe(13);
+    expect(result.current.trialEndsAt?.getTime()).toBe(createdAt.getTime() + 14 * DAY_MS);
+    expect(result.current.status).toBe("trial");
+  });
+
+  it("reports 13 days for a 1-day-old company when the trial end crosses the spring DST change", () => {
+    const now = new Date("2027-03-20T12:00:00+01:00"); // trial ends after CET -> CEST on 2027-03-28
+    vi.setSystemTime(now);
+    userMock.currentUser = { roles: [] };
+    const createdAt = daysAgo(1, now);
+    userMock.company = { isActiveSubscription: false, createdAt };
+
+    const { result } = renderHook(() => useSubscriptionStatus());
+
+    expect(result.current.daysRemaining).toBe(13);
+    expect(result.current.trialEndsAt?.getTime()).toBe(createdAt.getTime() + 14 * DAY_MS);
+  });
+
+  it("blocks exactly 14 x 24h after createdAt, even when the window spans a DST change", () => {
+    const createdAt = new Date("2026-10-12T14:18:02+02:00");
+    userMock.currentUser = { roles: [] };
+    userMock.company = { isActiveSubscription: false, createdAt };
+
+    vi.setSystemTime(createdAt.getTime() + 14 * DAY_MS - 1);
+    const before = renderHook(() => useSubscriptionStatus());
+    expect(before.result.current.isBlocked).toBe(false);
+    expect(before.result.current.daysRemaining).toBe(1);
+
+    vi.setSystemTime(createdAt.getTime() + 14 * DAY_MS);
+    const after = renderHook(() => useSubscriptionStatus());
+    expect(after.result.current.isBlocked).toBe(true);
+    expect(after.result.current.status).toBe("expired");
   });
 });

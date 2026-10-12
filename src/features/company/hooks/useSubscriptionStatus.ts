@@ -15,6 +15,7 @@ export interface TrialSubscriptionStatus {
 
 const TRIAL_DAYS = 14;
 const GRACE_DAYS = 3;
+const DAY_MS = 1000 * 60 * 60 * 24;
 
 const isAdministrator = (currentUser: any): boolean => {
   if (!currentUser || !isRolesConfigured()) return false;
@@ -93,18 +94,17 @@ export function useSubscriptionStatus(): TrialSubscriptionStatus {
     // trialing/active, and that is not guaranteed — a real signup produced a
     // StripeSubscription stuck at status "incomplete", leaving the flag NULL and
     // a zero-day-old company blocked out of its own trial.
+    //
+    // The trial is a fixed duration (Stripe's trial_period_days is 14 x 24h),
+    // so add it in milliseconds. Adding calendar days with setDate() follows the
+    // viewer's local clock: across a DST change the window grows or shrinks by
+    // an hour, and dividing that by a fixed 24h day then shows one day too many.
     const createdAt = new Date(company.createdAt);
-    const trialEndsAt = new Date(createdAt);
-    trialEndsAt.setDate(trialEndsAt.getDate() + TRIAL_DAYS);
+    const trialEndsAt = new Date(createdAt.getTime() + TRIAL_DAYS * DAY_MS);
 
     const now = new Date();
-    // Count wall-clock days, not elapsed 24-hour blocks: trialEndsAt is built
-    // with setDate, so across a daylight-saving change the gap is a calendar
-    // day count plus or minus an hour, and ceil turned 13 days + 1h into 14.
-    // Correcting by the offset difference removes exactly that hour.
-    const dstShiftMs = (now.getTimezoneOffset() - trialEndsAt.getTimezoneOffset()) * 60 * 1000;
-    const msRemaining = trialEndsAt.getTime() - now.getTime() + dstShiftMs;
-    const daysRemaining = Math.ceil(msRemaining / (1000 * 60 * 60 * 24));
+    const msRemaining = trialEndsAt.getTime() - now.getTime();
+    const daysRemaining = Math.ceil(msRemaining / DAY_MS);
     const trialElapsed = daysRemaining <= 0;
 
     return {
