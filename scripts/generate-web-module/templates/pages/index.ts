@@ -6,3 +6,4 @@
 
 export { generateListPageTemplate } from "./list-page.template";
 export { generateDetailPageTemplate } from "./detail-page.template";
+export { generateLoadingTemplate } from "./loading.template";

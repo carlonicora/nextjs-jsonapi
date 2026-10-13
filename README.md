@@ -5,6 +5,7 @@ A comprehensive Next.js package providing JSON:API compliant client with unified
 ## Table of Contents
 
 - [Features](#features)
+- [What Changed in 4.0](#what-changed-in-40)
 - [Architecture](#architecture)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
@@ -33,19 +34,38 @@ A comprehensive Next.js package providing JSON:API compliant client with unified
 
 ## Architecture
 
-The library is organized into eight entry points:
+The library is organized into these entry points (the `exports` map in `package.json`):
 
 ```
 @carlonicora/nextjs-jsonapi
-├── (main)          # Unified API (auto-detects environment)
-├── /core           # Interfaces, factories, registries, and utilities
-├── /client         # React hooks and client-side utilities
-├── /server         # Server-side requests and caching
-├── /permissions    # Permission checking utilities
-├── /features       # Built-in feature modules (S3, etc.)
-├── /utils          # Utility functions (cn, useIsMobile, etc.)
-└── /shadcnui       # 44 shadcn/ui components
+├── (main)               # Unified API, configuration functions, and everything in /core
+├── /core                # Interfaces, factories, registries, permissions, feature modules, and utilities
+├── /server              # Server-side requests, ServerSession, and cache tag helpers
+├── /cached-get          # cachedServerGet: the token-free "use cache" GET (server only)
+├── /client              # React hooks and client-side utilities
+├── /components          # Library components and the 44 shadcn/ui components
+├── /contexts            # React providers (SessionProvider, ViewportProvider, SocketProvider, ...)
+├── /contexts/styles.css # Stylesheet for the contexts entry
+├── /testing             # Test utilities (mock providers, render helpers)
+├── /billing             # Stripe billing components (kept apart so Stripe.js is not loaded globally)
+├── /help                # Help feature, client components
+├── /help/server         # Help feature, server-safe constants and types
+├── /tokenusage          # Token-usage admin feature, client components
+├── /analytics           # Analytics feature, client components
+├── /analytics/server    # Analytics feature, server page components
+└── /next-config         # createNextConfig for next.config.js
 ```
+
+## What Changed in 4.0
+
+4.0 makes the library work under Next 16.4 Cache Components. The full recipe, with the breaking changes and the order of work, is in [docs/migrating-to-4.0.md](docs/migrating-to-4.0.md). In short:
+
+- **Cache Components**: `createNextConfig` turns on `cacheComponents` and `partialPrefetching`. The app frame renders in the static shell while the session streams in behind it.
+- **Session**: `ServerSession.read()` (`/server`) returns a `Promise<SessionSnapshot>` built from cookies and headers. Call it without awaiting and hand the promise to `SessionProvider` (`/contexts`); `useSession()` unwraps it, so its caller sits behind its own `<Suspense>`.
+- **Providers take `session`**: `ViewportProvider`, `SocketProvider` (`/contexts`) and `SidebarProvider` (`/components`) accept `session?: Promise<SessionSnapshot>`. The old props (`token`, `initialIsMobile`, `defaultOpen`) still work.
+- **`createNextConfig`** from `/next-config`: `cspRemove` is gone. Third parties in the CSP come from `services` (`"stripe" | "googleMaps" | "turnstile" | "discord" | "googleFonts"`); anything else goes in `csp`.
+- **Caching**: a module's `cache` value is a `cacheLife` profile name or a tag. A cached server GET goes through `cachedServerGet` (`/cached-get`), a `"use cache"` function that never sends the token. See [Cache Profiles](#cache-profiles).
+- **`configureI18n` requires `getLocale`**: pass next-intl's `getLocale` from `next-intl/server`; the library no longer imports next-intl itself.
 
 ## Installation
 
@@ -125,9 +145,9 @@ git submodule update --init --recursive
 
 | Package           | Version  | Required | Purpose                             |
 | ----------------- | -------- | -------- | ----------------------------------- |
-| `next`            | >=14.0.0 | Yes      | Next.js framework                   |
-| `react`           | >=18.0.0 | Yes      | React library                       |
-| `react-dom`       | >=18.0.0 | Yes      | React DOM                           |
+| `next`            | >=16.4.0 | Yes      | Next.js framework                   |
+| `react`           | >=19.3.0 | Yes      | React library                       |
+| `react-dom`       | >=19.3.0 | Yes      | React DOM                           |
 | `react-hook-form` | >=7.0.0  | Optional | Form handling (for form components) |
 
 ## Quick Start
@@ -154,7 +174,7 @@ Create a bootstrapper that registers all modules for both the ModuleRegistry (fo
 ```typescript
 // src/config/Bootstrapper.ts
 import { DataClassRegistry, FieldSelector, ModuleRegistry } from "@carlonicora/nextjs-jsonapi/core";
-import { ModuleWithPermissions } from "@carlonicora/nextjs-jsonapi/permissions";
+import { ModuleWithPermissions } from "@carlonicora/nextjs-jsonapi/core";
 import { S3Module } from "@carlonicora/nextjs-jsonapi/core";
 
 // Import your module definitions
@@ -368,23 +388,40 @@ import {
 Server-side request utilities:
 
 ```typescript
-import { serverRequest, getServerToken, getCacheProfile } from "@carlonicora/nextjs-jsonapi/server";
+import {
+  serverRequest,
+  getServerToken,
+  ServerSession, // read(), isLogged(), checkPermission(), ...
+  invalidateCacheTag,
+  invalidateCacheTags,
+  updateCacheTag,
+  CACHE_PROFILES,
+} from "@carlonicora/nextjs-jsonapi/server";
 ```
 
-### Permissions (`/permissions`)
+### Cached GET (`/cached-get`)
 
-Permission checking utilities:
+The token-free `"use cache"` GET. It resolves to the real function under the `react-server` condition only; every other bundle gets a stub that throws. `serverRequest` calls it for you (see [Cache Profiles](#cache-profiles)).
+
+```typescript
+import { cachedServerGet, statusFromDigest } from "@carlonicora/nextjs-jsonapi/cached-get";
+```
+
+### Permissions (in `/core`)
+
+Permission checking utilities are exported from `/core` (and the main entry):
 
 ```typescript
 import {
-  checkPermission,
+  checkPermissions,
+  Action,
   type PermissionCheck,
   type ModuleWithPermissions,
   type ModuleFactory,
-} from "@carlonicora/nextjs-jsonapi/permissions";
+} from "@carlonicora/nextjs-jsonapi/core";
 ```
 
-### Features (`/features`)
+### Feature Modules (in `/core`)
 
 Built-in feature modules that can be used directly in your application:
 
@@ -412,7 +449,7 @@ await fetch(s3Response.url, {
 });
 ```
 
-### Utils (`/utils`)
+### Utilities (in `/core`)
 
 Utility functions:
 
@@ -423,12 +460,12 @@ import {
   useComposedRefs, // Hook for composing refs
   useIsMobile, // Mobile detection hook
   type ClassValue, // Type for cn function
-} from "@carlonicora/nextjs-jsonapi/utils";
+} from "@carlonicora/nextjs-jsonapi/core";
 ```
 
-### shadcn/ui (`/shadcnui`)
+### Components (`/components`)
 
-All shadcn/ui components (requires `"use client"`):
+The library's own components plus all shadcn/ui components (requires `"use client"`):
 
 ```typescript
 import {
@@ -555,8 +592,23 @@ import {
   KanbanItem, // Drag-and-drop Kanban board
   Link, // next-intl compatible Link
   MultiSelect, // Multi-select dropdown
-} from "@carlonicora/nextjs-jsonapi/shadcnui";
+} from "@carlonicora/nextjs-jsonapi/components";
 ```
+
+### Other Entry Points
+
+| Entry point            | What it holds                                                                                   |
+| ---------------------- | ----------------------------------------------------------------------------------------------- |
+| `/contexts`            | React providers: `SessionProvider`/`useSession`, `ViewportProvider`, `SocketProvider`, and more |
+| `/contexts/styles.css` | Stylesheet shipped with the contexts entry                                                      |
+| `/testing`             | `MockJsonApiProvider`, `renderWithProviders`, `createMockApiData`, `createMockResponse`, ...     |
+| `/billing`             | Stripe billing components and contexts                                                          |
+| `/help`                | Help feature client components (`HelpProvider`, `HelpHeader`, ...)                              |
+| `/help/server`         | Server-safe `HELP_MODES` and help article types                                                 |
+| `/tokenusage`          | Token-usage admin feature client components                                                     |
+| `/analytics`           | Analytics feature client components (`AnalyticsTracker`, ...)                                   |
+| `/analytics/server`    | `AnalyticsAdminPage`, `AnalyticsJourneyPage` server components                                  |
+| `/next-config`         | `createNextConfig` for `next.config.js` (see [docs/migrating-to-4.0.md](docs/migrating-to-4.0.md)) |
 
 ## Unified API
 
@@ -689,54 +741,64 @@ const result = await mutate({
 For server components or API routes, use the server module directly:
 
 ```typescript
-import { serverRequest, getServerToken, getCacheProfile } from "@carlonicora/nextjs-jsonapi/server";
+import { serverRequest, getServerToken } from "@carlonicora/nextjs-jsonapi/server";
 
-export async function getArticle(id: string) {
-  const token = await getServerToken();
-
-  const data = await serverRequest({
+// Per-user data: no `cache`, so this is a plain uncached fetch that sends the token
+export async function getMyArticle(id: string) {
+  return serverRequest({
     method: "GET",
     url: `${process.env.NEXT_PUBLIC_API_URL}/articles/${id}`,
-    token,
-    cache: getCacheProfile("articles"), // Get cache settings
+    token: await getServerToken(),
     language: "en",
   });
+}
 
-  return data;
+// Shared data: a GET with `cache` goes through cachedServerGet and never sends the token
+export async function getPublicArticle(id: string) {
+  return serverRequest({
+    method: "GET",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/articles/${id}`,
+    cache: "articles", // a cacheLife profile name, or a tag
+    language: "en",
+  });
 }
 ```
 
 ### Cache Profiles
 
-The library supports Next.js 16+ caching via `cacheLife()` and `cacheTag()`:
+A module's `cache` value decides how a server-side GET is cached. Every GET with a `cache` value runs inside `cachedServerGet`, a `"use cache"` function:
+
+- a built-in `cacheLife` profile name (`"seconds"`, `"minutes"`, `"hours"`, `"days"`, `"weeks"`, `"max"`, `"default"`) → `cacheLife(profile)`;
+- any other value is a tag → `cacheTag(value)` + `cacheLife("max")`, so the entry lives until you invalidate the tag.
 
 ```typescript
 // In your module definition
-export const Modules = {
-  Article: {
-    type: "articles",
-    cache: "articles", // Profile name for caching
-    factory: (data: any) => data,
-  },
-};
+const ArticleModule = (factory: ModuleFactory) =>
+  factory({ name: "articles", model: Article, cache: "articles" }); // tag
 
-// The cache profile is automatically applied when using JsonApiGet
-// on the server side
+// JsonApiGet on the server applies it automatically, and does not read the token
+// cookie for a cached module
+
+// After a write, expire the tag
+await updateCacheTag("articles"); // Server Actions: the same request reads fresh data
+await invalidateCacheTag("articles"); // elsewhere: stale-while-revalidate
 ```
+
+The cached path is token-free: the arguments are the cache key, so the request goes out without `Authorization`. An endpoint that needs a token is per-user and its module must not set `cache`. A failed response is thrown, not stored; its status travels in `error.digest` as `HTTP_<status>` and `statusFromDigest` reads it back.
 
 ## Permissions
 
 Check user permissions for protected resources:
 
 ```typescript
-import { checkPermission } from "@carlonicora/nextjs-jsonapi/permissions";
+import { Action, checkPermissions, Modules } from "@carlonicora/nextjs-jsonapi/core";
 
 // Check if user has permission
-const canEdit = checkPermission({
+const canEdit = checkPermissions({
+  module: Modules.Article,
+  action: Action.Update,
   user: currentUser,
-  action: "edit",
-  resource: "articles",
-  resourceId: article.id,
+  data: article,
 });
 
 if (!canEdit) {
@@ -817,8 +879,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@carlonicora/nextjs-jsonapi/shadcnui";
-import { cn } from "@carlonicora/nextjs-jsonapi/utils";
+} from "@carlonicora/nextjs-jsonapi/components";
+import { cn } from "@carlonicora/nextjs-jsonapi/core";
 
 export function ArticleCard({ article, className }) {
   return (

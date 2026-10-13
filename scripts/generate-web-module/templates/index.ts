@@ -31,4 +31,4 @@ export { generateTableHookTemplate } from "./table-hook.template";
 export { generateModuleTemplate } from "./module.template";
 
 // Page templates
-export { generateListPageTemplate, generateDetailPageTemplate } from "./pages";
+export { generateListPageTemplate, generateDetailPageTemplate, generateLoadingTemplate } from "./pages";

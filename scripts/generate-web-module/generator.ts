@@ -19,6 +19,7 @@ import {
   generateListContainerTemplate,
   generateListPageTemplate,
   generateListTemplate,
+  generateLoadingTemplate,
   generateModelTemplate,
   generateModuleTemplate,
   generateMultiSelectorTemplate,
@@ -391,7 +392,8 @@ function generateAllFiles(data: FrontendTemplateData, schema: JsonModuleDefiniti
     type: "module",
   });
 
-  // Pages (2 files)
+  // Pages (2 files) + a loading.tsx next to each: both pages await data, and
+  // under Cache Components every data-fetching segment owns its own boundary.
   files.push({
     path: paths.listPage,
     content: generateListPageTemplate(data),
@@ -399,8 +401,20 @@ function generateAllFiles(data: FrontendTemplateData, schema: JsonModuleDefiniti
   });
 
   files.push({
+    path: paths.listLoading,
+    content: generateLoadingTemplate(),
+    type: "page",
+  });
+
+  files.push({
     path: paths.detailPage,
     content: generateDetailPageTemplate(data),
+    type: "page",
+  });
+
+  files.push({
+    path: paths.detailLoading,
+    content: generateLoadingTemplate(),
     type: "page",
   });
 

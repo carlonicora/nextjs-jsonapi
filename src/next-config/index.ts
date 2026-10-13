@@ -65,9 +65,9 @@ export function createNextConfig(options: NjaNextConfigOptions): NextConfig {
       serverActions: {
         bodySizeLimit: "5mb",
       },
-      // Required by `unauthorized()` (next/navigation), which ServerSession.checkPermission
-      // calls to deny access. Without this flag the function throws a plain Error instead of
-      // rendering the nearest unauthorized.tsx.
+      // Required by `unauthorized()` (next/navigation): without this flag it throws a plain
+      // Error instead of rendering the nearest unauthorized.tsx. The flag is for app code that
+      // calls it; ServerSession.checkPermission does not, it still does `redirect("/401")`.
       authInterrupts: options.authInterrupts ?? true,
       turbopackGc: true,
       // No turbopackLazyDynamicImports: in `next dev` it leaves this package's lazily

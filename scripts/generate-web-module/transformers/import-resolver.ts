@@ -184,7 +184,9 @@ export interface ModuleFilePaths {
   tableHook: string;
   module: string;
   listPage: string;
+  listLoading: string;
   detailPage: string;
+  detailLoading: string;
 }
 
 /**
@@ -232,7 +234,9 @@ export function buildFilePaths(
 
     // Pages
     listPage: `${pagePath}/page.tsx`,
+    listLoading: `${pagePath}/loading.tsx`,
     detailPage: `${pagePath}/[id]/page.tsx`,
+    detailLoading: `${pagePath}/[id]/loading.tsx`,
   };
 }
 
