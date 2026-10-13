@@ -98,7 +98,12 @@ export function useSubscriptionStatus(): TrialSubscriptionStatus {
     trialEndsAt.setDate(trialEndsAt.getDate() + TRIAL_DAYS);
 
     const now = new Date();
-    const msRemaining = trialEndsAt.getTime() - now.getTime();
+    // Count wall-clock days, not elapsed 24-hour blocks: trialEndsAt is built
+    // with setDate, so across a daylight-saving change the gap is a calendar
+    // day count plus or minus an hour, and ceil turned 13 days + 1h into 14.
+    // Correcting by the offset difference removes exactly that hour.
+    const dstShiftMs = (now.getTimezoneOffset() - trialEndsAt.getTimezoneOffset()) * 60 * 1000;
+    const msRemaining = trialEndsAt.getTime() - now.getTime() + dstShiftMs;
     const daysRemaining = Math.ceil(msRemaining / (1000 * 60 * 60 * 24));
     const trialElapsed = daysRemaining <= 0;
 
