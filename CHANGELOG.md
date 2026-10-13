@@ -1,3 +1,9 @@
+## [4.0.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.0.1...v4.0.2) (2026-10-13)
+
+### 🐛 Bug Fixes
+
+* **next-config:** drop turbopackLazyDynamicImports, it breaks client reads in next dev ([639ce08](https://github.com/carlonicora/nextjs-jsonapi/commit/639ce083b8c1e3b198889f367f497aa243690988))
+
 ## [4.0.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.0.0...v4.0.1) (2026-10-13)
 
 ### 📚 Documentation
