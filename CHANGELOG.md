@@ -1,3 +1,15 @@
+## [4.0.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.28.2...v4.0.0) (2026-10-13)
+
+### ⚠ BREAKING CHANGES
+
+* configureI18n requires getLocale; cspRemove is removed in
+favour of services; SocketProvider, ViewportProvider and SidebarProvider take
+a session promise from ServerSession.read().
+
+### 🚀 Features
+
+* session promise providers, per-service CSP and cache-components support ([4154702](https://github.com/carlonicora/nextjs-jsonapi/commit/4154702c3b2d9441bb6ddb921fbaae4b20831aba))
+
 ## [3.28.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.28.1...v3.28.2) (2026-10-13)
 
 ### 🐛 Bug Fixes
