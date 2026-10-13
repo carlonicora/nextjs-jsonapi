@@ -31,6 +31,23 @@ describe("translateResponse error extraction", () => {
     DataClassRegistry.registerObjectClass(stubModule, StubData as unknown as { new (): ApiDataInterface });
   });
 
+  it("reads `errors[0].detail` from a JSON:API error document first", async () => {
+    const response = await translateResponse({
+      classKey: stubModule,
+      apiResponse: errorResponse({
+        status: 403,
+        statusText: "",
+        data: {
+          errors: [{ status: "403", title: "Forbidden", detail: "Non hai accesso a questa pratica" }],
+          message: "ignored",
+        },
+      }),
+      language: "en",
+    });
+
+    expect(response.error).toBe("Non hai accesso a questa pratica");
+  });
+
   it("reads the `error` key used by API error bodies", async () => {
     const response = await translateResponse({
       classKey: stubModule,

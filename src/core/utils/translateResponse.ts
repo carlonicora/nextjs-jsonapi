@@ -73,10 +73,14 @@ export async function translateResponse<T extends ApiDataInterface>(params: {
   response.response = params.apiResponse.status;
 
   if (!params.apiResponse.ok) {
-    // `statusText` is empty over HTTP/2 (the reason phrase was removed from the protocol), so the
-    // body is the only reliable source of error text. APIs in this stack use either key.
+    // The nestjs-neo4jsonapi `HttpExceptionFilter` emits a JSON:API error document
+    // (`errors: [{ status, title, detail, ... }]`), so `detail` is read first, then the legacy
+    // `message`/`error` keys, then `statusText` (empty over HTTP/2).
     response.error =
-      params.apiResponse?.data?.message ?? params.apiResponse?.data?.error ?? params.apiResponse.statusText;
+      params.apiResponse?.data?.errors?.[0]?.detail ??
+      params.apiResponse?.data?.message ??
+      params.apiResponse?.data?.error ??
+      params.apiResponse.statusText;
     response.raw = params.apiResponse.data;
     return response;
   }
