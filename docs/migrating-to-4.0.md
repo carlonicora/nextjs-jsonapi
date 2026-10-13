@@ -132,6 +132,21 @@ Order of work that keeps the build green at each step:
    reports with the rules below. Never add `export const instant = false` to make it
    pass; a route that truly must block is listed with its reason.
 
+   The build must never call the API: Docker and CI build with no API reachable. A
+   static page (no params to wait for) that reads through the cached path is
+   prerendered, so the build makes that call, and a cached call that fails fails the
+   page's prerender ("Error occurred prerendering page") **even when the caller
+   catches the error**: `cachedServerGet` throws so Next does not store the result,
+   and Next fails the page on that throw. Move every API read on a static page (a
+   help landing, a sitemap route) into a component that awaits `connection()` behind
+   its own `<Suspense>`, or call `connection()` first in a route handler. The read is
+   still cached at run time. Check by building with the API stopped.
+
+   When a cached page fails with `HTTP_404` at run time, call the API endpoint.
+   "Cannot GET" means the route is not mounted, which is a server change (the
+   nestjs-neo4jsonapi public help routes are opt-in:
+   `bootstrap({ howTo: { publicRoutes: true } })`), not a web one.
+
 ### Rules the build and the dev validator enforce
 
 - `cookies()`, `headers()`, `params`, `searchParams` and uncached IO sit inside a
@@ -150,6 +165,7 @@ Order of work that keeps the build green at each step:
   defers to request time. A static page's metadata helper takes the path as an
   argument instead of reading the `x-full-url` header; a static component that needs
   request-time data (the footer's year) awaits `connection()` inside its own boundary.
+  The auth pages (login, logout, register) are static too: pass their path as well.
 - A layout rendered with `next/dynamic({ ssr: false })` renders nothing on the server,
   so every page under it is missing from the shell. Import it statically; a layout is
   loaded only on its own routes anyway.
@@ -229,6 +245,16 @@ Other groups:
   `SocketProvider` and `CurrentUserProvider` on the promise, behind a centred skeleton.
 - **A group whose provider reads the pathname** (persons): the read moves into a child
   behind its own boundary; the provider renders its children unconditionally.
+- **Groups without the shell that still read the user** (auth, a public help centre
+  whose header or "ask" box calls `useCurrentUserContext`): `CurrentUserProvider`
+  leaves the root layout for the shell, so these groups lose it. Each one wraps its
+  layout in `<Suspense fallback={<SessionFallback />}><CurrentUserProvider>`. The
+  provider reads the pathname, which suspends while `[code]`-style routes prerender,
+  hence the boundary.
+- **Root-level consumers of the user** (a PWA provider that registers the service
+  worker for logged-in users only): the part that reads the user moves into a
+  `null`-rendering component inside `AppShell`, and into any other group above that
+  needs it. The provider at the root keeps only what does not read the user.
 
 ---
 
@@ -254,7 +280,13 @@ find . -name page.tsx | sort | while read p; do d=$(dirname "$p"); [ -f "$d/load
 ```
 
 Fallbacks: `PageSkeleton` for app and admin pages; a blank `min-h-screen` div for
-auth, shared and portal groups that have no frame.
+auth, shared and portal groups that have no frame. Keep that div in one app component,
+`features/common/components/session/SessionFallback.tsx`
+(`<div className="bg-background min-h-screen" />`), and use it in those loading files
+and in the Suspense fallbacks of section 4.
+
+Replace every existing `loading.tsx` with the standard skeleton, including old ones
+that are `async` or start with `"use server"`.
 
 ---
 
@@ -280,6 +312,16 @@ layouts carried logged-out branches.
 The marketing landing moves out of the app group into `(marketing)/home/page.tsx`
 with static metadata. The marketing header picks its dark variant from the pathname
 inside its existing Suspense leaf; no second layout.
+
+`/home` exists because `/` cannot be prerendered: the app group's `/` page reads the
+session to show the logged-in home. The rewrite sends logged-out visitors to a page
+that reads nothing, so it is served from the static shell, and the URL stays `/`.
+
+Once the proxy is the gate, a group layout that only checked the session is a
+pass-through (`return props.children`). Delete it.
+
+Tests that read `proxy.ts` as text and slice it by constant or function names break
+when the proxy is rewritten. Update their markers to the new names.
 
 ---
 
@@ -324,6 +366,10 @@ the code contains arrows. The inspector also surfaces runtime and console errors
 the route, which is how pre-existing crashes show up during this work; fix or report
 them separately.
 
+A 404 page reads as clean. Use ids the logged-in user can actually open (a player
+cannot see an item the GM has not shared), and check the page title next to each
+verdict.
+
 **Browser, logged in:** cold load shows the frame skeleton, then the sidebar, then
 the page; phone width is mobile from the first paint; a page the user cannot read
 renders `unauthorized`; an editor save shows fresh data; back out of an editor sheet
@@ -336,6 +382,15 @@ dead refresh token lands on login with both cookies cleared.
 **Production:** `next build && next start` with `--prod` dependencies, `/` served
 from the prerender (`x-nextjs-prerender: 1`), an app route sends its shell first and
 streams the rest.
+
+Run the browser part of this check on an `E2E_BUILD=true` build. A plain production
+build sends `upgrade-insecure-requests` and HSTS, so on a local `http://` host the
+browser rewrites every request to `https://` and the app does not load. The E2E build
+also writes to `.next-e2e`, so it does not overwrite the `.next` a running dev server
+uses. Check the real production headers with `curl -sI` against a plain build.
+
+If the app pins the library version anywhere besides the submodule (a production
+versions file that a lint-time drift check compares), bump that pin to 4.x too.
 
 ---
 
@@ -353,3 +408,15 @@ streams the rest.
 - Two failing cached calls in one render never close the response. A page that makes
   two cached reads runs them in sequence and skips the second when the first fails.
 - An `unauthorized()` inside a streamed boundary returns 200. Accepted.
+- The marketing header's empty placeholder kept the row's height but not its width.
+  In a `justify-between` header the centred nav jumped when the buttons arrived (75 px
+  logged out, 28 px logged in). Give the buttons and the placeholder one slot with a
+  fixed `min-width` as wide as the widest button set, aligned to the end.
+- A hand-built `/${locale}/...` link breaks client navigation when
+  `localePrefix` is `"as-needed"`: the proxy redirects `/en/x` to `/x`, and the
+  client cannot read the page data across the redirect ("Cannot write to a CLOSED
+  writable stream" in the console). Link without the default locale, or through
+  `generateUrl` / the navigation `Link`. Canonical URLs and sitemaps drop it too.
+- A route handler renders no layout, so nothing loads `env.ts` for it. One that reads
+  through a module (a help sitemap calling the cached how-to GET) throws "Class not
+  registered for key" until it imports `@/config/env` itself.
