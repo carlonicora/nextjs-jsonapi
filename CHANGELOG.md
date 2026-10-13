@@ -1,3 +1,9 @@
+## [3.28.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.28.1...v3.28.2) (2026-10-13)
+
+### 🐛 Bug Fixes
+
+* **subscription:** count trial days by calendar across DST ([d127d07](https://github.com/carlonicora/nextjs-jsonapi/commit/d127d071f49a5e49fe36395a3ac990c73e1ea5cb))
+
 ## [3.28.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.28.0...v3.28.1) (2026-10-09)
 
 ### 🐛 Bug Fixes
