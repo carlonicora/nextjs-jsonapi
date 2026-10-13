@@ -1,3 +1,9 @@
+## [4.0.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.0.0...v4.0.1) (2026-10-13)
+
+### 📚 Documentation
+
+* update CLAUDE.md with new features and package structure; add migration guide for version 4.0.0 ([bb40c1a](https://github.com/carlonicora/nextjs-jsonapi/commit/bb40c1abdf7a3d942e560113b1fa2c72c0669464))
+
 ## [4.0.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v3.28.2...v4.0.0) (2026-10-13)
 
 ### ⚠ BREAKING CHANGES
