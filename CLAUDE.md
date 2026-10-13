@@ -33,10 +33,24 @@ src/
 |-------------|----------|
 | `main` | configureJsonApi, configureI18n |
 | `core` | Types, interfaces, AbstractApiData |
-| `server` | Server-side data fetching utilities |
+| `server` | Server-side data fetching utilities, `ServerSession.read()` |
+| `cached-get` | `cachedServerGet`: the token-free `"use cache"` GET for shared data (`react-server` condition) |
 | `client` | Client hooks, configuration |
-| `components` | UI components (tables, forms, dialogs) |
+| `components` | UI components (tables, forms, dialogs), `useSidebarControls` |
+| `contexts` | Providers; `SessionProvider` / `useSession` and the session-promise props of `SocketProvider`, `ViewportProvider`, `SidebarProvider` |
+| `next-config` | `createNextConfig`: the shared Next config (Cache Components, CSP by `services`, security headers, Turbopack settings) |
 | `testing` | MockJsonApiProvider, renderWithProviders, createMockApiData |
+
+## Consumer requirement — Cache Components (4.0.0)
+
+Every consuming app runs Next 16.4 with `cacheComponents` on, through
+`createNextConfig`. The app-side shape this package expects (the session shell,
+one `loading.tsx` per data-fetching segment, the proxy as the login gate, the
+`configureI18n`/`instrumentation` split) and the verification method are in
+[docs/migrating-to-4.0.md](docs/migrating-to-4.0.md). Read it before changing a
+provider, `ServerSession`, the request path or `next-config`: those pieces exist
+so a layout can render its children before the session resolves, and a change
+that awaits or suspends on that path drops every page from the static shell.
 
 ## Key Patterns
 
@@ -49,9 +63,17 @@ configureJsonApi({
   modules: [PhotographModule, RollModule],
 });
 
+// 4.0.0: getLocale (from next-intl/server) is required. Keep this call in the
+// app's env.ts, never in the file instrumentation.ts loads: getLocale reaches the
+// app's i18n/request.ts and next/root-params, which instrumentation may not load.
 configureI18n({
-  locales: ["en", "it"],
-  defaultLocale: "en",
+  useRouter,
+  useTranslations,
+  useLocale,
+  useDateFnsLocale,
+  Link,
+  usePathname,
+  getLocale,
 });
 ```
 
