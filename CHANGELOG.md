@@ -1,3 +1,9 @@
+## [4.0.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.0.3...v4.0.4) (2026-10-13)
+
+### 📚 Documentation
+
+* **migrating-to-4.0:** add what the wyrdli migration hit ([bcce355](https://github.com/carlonicora/nextjs-jsonapi/commit/bcce355a162eee4fd0243f34c122844149d9d129))
+
 ## [4.0.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.0.2...v4.0.3) (2026-10-13)
 
 ### 🐛 Bug Fixes
