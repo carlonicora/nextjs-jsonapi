@@ -1,3 +1,9 @@
+## [4.0.5](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.0.4...v4.0.5) (2026-10-13)
+
+### 🐛 Bug Fixes
+
+* **translateResponse:** read the error detail from JSON:API error documents ([76ac05b](https://github.com/carlonicora/nextjs-jsonapi/commit/76ac05bd89c1c02e967e930d97a71e91af4e8aae))
+
 ## [4.0.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.0.3...v4.0.4) (2026-10-13)
 
 ### 📚 Documentation
