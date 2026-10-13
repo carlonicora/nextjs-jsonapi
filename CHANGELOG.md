@@ -1,3 +1,9 @@
+## [4.0.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.0.2...v4.0.3) (2026-10-13)
+
+### 🐛 Bug Fixes
+
+* require Next 16.4 and React 19.3, emit loading.tsx from the generator ([06b8d7c](https://github.com/carlonicora/nextjs-jsonapi/commit/06b8d7c43c008b6a2d8b8a7e5437b2208ccd16c8))
+
 ## [4.0.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.0.1...v4.0.2) (2026-10-13)
 
 ### 🐛 Bug Fixes
