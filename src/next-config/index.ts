@@ -70,7 +70,10 @@ export function createNextConfig(options: NjaNextConfigOptions): NextConfig {
       // rendering the nearest unauthorized.tsx.
       authInterrupts: options.authInterrupts ?? true,
       turbopackGc: true,
-      turbopackLazyDynamicImports: true,
+      // No turbopackLazyDynamicImports: in `next dev` it leaves this package's lazily
+      // imported request module unactivated ("Lazily compiled dynamic import of ...
+      // JsonApiRequest ... was not activated"), so every client-side read returns
+      // nothing. Seen with the package installed from npm; production builds are unaffected.
       ...(reactCompiler ? { turbopackRustReactCompiler: true } : {}),
     },
     allowedDevOrigins: options.devOrigins,

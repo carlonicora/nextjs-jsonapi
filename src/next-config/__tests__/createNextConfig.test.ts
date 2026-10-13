@@ -124,11 +124,12 @@ describe("createNextConfig: behaviour", () => {
       expect.objectContaining({
         authInterrupts: true,
         turbopackGc: true,
-        turbopackLazyDynamicImports: true,
         serverActions: { bodySizeLimit: "5mb" },
       }),
     );
     expect(config.experimental).not.toHaveProperty("useCache");
+    // Breaks client-side reads of this package in `next dev` (unactivated lazy import).
+    expect(config.experimental).not.toHaveProperty("turbopackLazyDynamicImports");
   });
 
   it("derives pageExtensions, serverExternalPackages and images from the options and env", () => {

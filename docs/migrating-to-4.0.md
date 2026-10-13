@@ -68,7 +68,7 @@ goes into `csp`. Decide the list with the browser console open: a wrong list sho
 up as CSP violations on first load.
 
 The helper sets `cacheComponents: true`, `partialPrefetching: true`,
-`experimental.turbopackGc`, `turbopackLazyDynamicImports`, `authInterrupts`, the
+`experimental.turbopackGc`, `authInterrupts`, the
 `yjs` alias, the E2E guards (`E2E_BUILD` → `distDir: .next-e2e`) and the security
 headers. Plugin wrapping (`next-intl/plugin`, `@next/mdx`, serwist) stays in the app:
 the helper must not require anything that is a devDependency of the app, because
