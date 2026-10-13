@@ -37,6 +37,11 @@ export default defineConfig({
     "features/tokenusage/index": "src/features/tokenusage/index.ts",
     "features/analytics/index": "src/features/analytics/index.ts",
     "features/analytics/server": "src/features/analytics/server-entry.ts",
+    // The "use cache" GET and its stub, resolved by condition through "./cached-get".
+    "server/cachedGet": "src/server/cachedGet.ts",
+    "server/cachedGet.stub": "src/server/cachedGet.stub.ts",
+    // Loaded by each app's next.config.js through `require`; Node built-ins only.
+    "next-config/index": "src/next-config/index.ts",
   },
   format: ["cjs", "esm"],
   // Enable splitting to keep dynamic imports as separate chunks
@@ -76,8 +81,9 @@ export default defineConfig({
     // server entry reach them through the "use client" bundle instead of
     // inlining client code into a server module.
     "@carlonicora/nextjs-jsonapi/analytics",
-    "next/dist/server/use-cache/cache-life",
-    "next/dist/server/use-cache/cache-tag",
+    // serverRequest imports the cached GET through this package's own export so the
+    // `react-server` condition can swap in a stub for client bundles (package.json).
+    "@carlonicora/nextjs-jsonapi/cached-get",
     "cookies-next",
     "next-intl",
     "next-intl/server",

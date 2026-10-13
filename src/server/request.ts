@@ -1,6 +1,10 @@
 // Server-only utilities (NOT server actions - these cannot be called from client components)
 
 import { ApiData } from "../core/interfaces/ApiData";
+// Through the package's own export, not "./cachedGet": the `react-server` condition gives
+// server code the real `"use cache"` function and every other bundle a stub. A relative
+// import would put `"use cache"` into the client bundles that reach this module.
+import { cachedServerGet, statusFromDigest } from "@carlonicora/nextjs-jsonapi/cached-get";
 
 export interface ServerRequestParams {
   method: string;
@@ -14,22 +18,37 @@ export interface ServerRequestParams {
   additionalHeaders?: Record<string, string>;
 }
 
-// Map cache configuration names to revalidation times in seconds
-const cacheLifeToSeconds: Record<string, number> = {
-  seconds: 1,
-  minutes: 60,
-  hours: 3600,
-  days: 86400,
-  weeks: 604800,
-  max: 31536000, // 1 year
-  default: 60,
-};
-
 /**
- * Server-side request with Next.js caching support.
- * Uses fetch's native caching options for Next.js compatibility.
+ * Server-side request.
+ *
+ * - A GET with a `cache` value goes through `cachedServerGet`, a token-free `"use cache"`
+ *   function. The token is never sent on that path.
+ * - Everything else (uncached GET, POST, PUT, PATCH, DELETE) is a plain uncached `fetch`
+ *   that sends the token.
  */
 export async function serverRequest(params: ServerRequestParams): Promise<ApiData> {
+  if (params.method === "GET" && params.cache) {
+    try {
+      return await cachedServerGet({
+        url: params.url,
+        cache: params.cache,
+        language: params.language,
+        companyId: params.companyId,
+        additionalHeaders: params.additionalHeaders,
+      });
+    } catch (error) {
+      // The cached function throws on failure so Next does not store it. Convert it back
+      // here, outside the cache scope. In production only `digest` survives the boundary.
+      const status = statusFromDigest(error) ?? 503;
+      return {
+        data: undefined,
+        ok: false,
+        status,
+        statusText: status === 503 ? "Service Unavailable" : "",
+      };
+    }
+  }
+
   const response: ApiData = {
     data: undefined,
     ok: false,
@@ -75,27 +94,9 @@ export async function serverRequest(params: ServerRequestParams): Promise<ApiDat
     additionalHeaders["Content-Type"] = "application/json";
   }
 
-  // Build Next.js fetch caching options
-  const nextOptions: { revalidate?: number; tags?: string[] } = {};
-
-  if (params.cache) {
-    // Check if it's a predefined cache life name
-    if (params.cache in cacheLifeToSeconds) {
-      nextOptions.revalidate = cacheLifeToSeconds[params.cache];
-    } else {
-      // Treat as a cache tag
-      nextOptions.tags = [params.cache];
-      nextOptions.revalidate = 60; // Default revalidation time for tagged caches
-    }
-  } else {
-    // Default to short caching
-    nextOptions.revalidate = 0;
-  }
-
-  const options: RequestInit & { next?: { revalidate?: number; tags?: string[] } } = {
+  const options: RequestInit = {
     method: params.method,
     headers: { Accept: "application/json", ...additionalHeaders },
-    next: nextOptions,
   };
 
   if (requestBody !== undefined) {

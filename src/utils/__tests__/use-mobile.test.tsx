@@ -1,9 +1,11 @@
+import { Suspense } from "react";
 import { render, screen, act } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useIsMobile, VIEWPORT_COOKIE_NAME } from "../use-mobile";
+import { getViewportContext, useIsMobile, VIEWPORT_COOKIE_NAME } from "../use-mobile";
 // The provider lives in `contexts/` (not `utils/`) because the server layouts
 // render it directly and only `dist/contexts/*` gets tsup's "use client" banner.
 import { ViewportProvider } from "../../contexts/ViewportContext";
+import type { SessionSnapshot } from "../../server/ServerSession";
 
 function Probe() {
   const isMobile = useIsMobile();
@@ -132,6 +134,105 @@ describe("useIsMobile without a provider (legacy fallback)", () => {
   it("reports desktop for a wide viewport", () => {
     setWidth(1280);
     render(<Probe />);
+    expect(screen.getByTestId("probe").textContent).toBe("desktop");
+  });
+});
+
+describe("ViewportProvider with a session promise", () => {
+  function deferred<T>() {
+    let resolve!: (value: T) => void;
+    const promise = new Promise<T>((r) => {
+      resolve = r;
+    });
+    return { promise, resolve };
+  }
+
+  const snapshot = (isMobile: boolean): SessionSnapshot => ({
+    isLogged: true,
+    isAdministrator: false,
+    token: "t",
+    sidebarOpen: true,
+    isMobile,
+  });
+
+  it("ViewportProvider with a session renders children before the promise resolves", () => {
+    const pending = deferred<SessionSnapshot>();
+    render(
+      <ViewportProvider session={pending.promise}>
+        <span>child</span>
+      </ViewportProvider>,
+    );
+    expect(screen.getByText("child")).toBeInTheDocument();
+  });
+
+  it("useIsMobile suspends on a promise-based provider and then returns the seeded value", async () => {
+    // In jsdom the provider's mount-time measurement replaces the promise with a
+    // boolean straight after the first commit, so the fallback is recorded rather
+    // than asserted in the final DOM. The width agrees with the seed.
+    setWidth(500);
+    const fallbacks: string[] = [];
+    function Waiting() {
+      fallbacks.push("waiting");
+      return <span>waiting</span>;
+    }
+    const pending = deferred<SessionSnapshot>();
+    await act(async () => {
+      render(
+        <ViewportProvider session={pending.promise}>
+          <Suspense fallback={<Waiting />}>
+            <Probe />
+          </Suspense>
+        </ViewportProvider>,
+      );
+    });
+    expect(fallbacks[0]).toBe("waiting");
+
+    await act(async () => {
+      pending.resolve(snapshot(true));
+      await pending.promise;
+    });
+
+    expect(screen.getByTestId("probe").textContent).toBe("mobile");
+  });
+
+  it("useIsMobile reads the resolved value of a promise in the context, not a measurement", async () => {
+    // No ViewportProvider, so nothing measures: what the reader shows is the seed.
+    setWidth(1280);
+    const ViewportContext = getViewportContext();
+    const pending = deferred<boolean>();
+    await act(async () => {
+      render(
+        <ViewportContext.Provider value={pending.promise}>
+          <Suspense fallback="waiting">
+            <Probe />
+          </Suspense>
+        </ViewportContext.Provider>,
+      );
+    });
+    expect(screen.getByText("waiting")).toBeInTheDocument();
+
+    await act(async () => {
+      pending.resolve(true);
+      await pending.promise;
+    });
+
+    expect(screen.getByTestId("probe").textContent).toBe("mobile");
+  });
+
+  it("ViewportProvider with initialIsMobile is unchanged", () => {
+    setWidth(1280);
+    const seen: string[] = [];
+    function Recorder() {
+      const isMobile = useIsMobile();
+      seen.push(isMobile ? "mobile" : "desktop");
+      return <span data-testid="probe">{isMobile ? "mobile" : "desktop"}</span>;
+    }
+    render(
+      <ViewportProvider initialIsMobile={false}>
+        <Recorder />
+      </ViewportProvider>,
+    );
+    expect(seen[0]).toBe("desktop");
     expect(screen.getByTestId("probe").textContent).toBe("desktop");
   });
 });

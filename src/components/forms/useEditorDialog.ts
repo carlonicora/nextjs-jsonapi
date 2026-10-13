@@ -62,11 +62,75 @@ export function useEditorDialog(isFormDirty: () => boolean, options?: UseEditorD
   // each other every render → "Maximum update depth exceeded".
   const syncingFromProp = useRef(false);
 
+  // Mirrors `open` on every render. The reset effect below has an empty
+  // dependency list, so its cleanup closes over the FIRST render's `open`; it
+  // must read the current value from here instead.
+  const openRef = useRef(open);
+  openRef.current = open;
+  const showDiscardRef = useRef(showDiscardConfirm);
+  showDiscardRef.current = showDiscardConfirm;
+
+  // Set by the reset cleanup when the route was hidden with the sheet (or its
+  // discard confirmation) open; consumed by the reset effect on reveal.
+  const hiddenWhileOpen = useRef(false);
+  // Latch armed on reveal: the parent's `dialogOpen` is still the stale `true`
+  // it held when the route was hidden, and must not re-open the sheet. Cleared
+  // by the first `dialogOpen === false`.
+  const ignoreTrueFromParent = useRef(false);
+
+  // Reset when <Activity> hides the route (Next 16.4 keeps routes mounted across
+  // back/forward). After back/forward an editor sheet must be closed with its
+  // form reset, exactly as before 16.4. Measured in React 19.3:
+  //  1. Hiding runs every effect cleanup and revealing re-runs every effect with
+  //     mount semantics, while `useState` survives. A setState in the cleanup is
+  //     applied while hidden, so the sheet is already closed on reveal and
+  //     EditorSheet's close branch resets the form.
+  //  2. An empty-dependency cleanup reads the first render's `open`, hence
+  //     `openRef`.
+  //  3. Effects run in declaration order. This effect is declared BEFORE the
+  //     dialogOpen sync effect, so the latch is armed before the sync effect sees
+  //     the parent's stale `true`; declared after, the sheet re-opens.
+  //  4. It never calls `onDialogOpenChange`. The notify effect re-runs on reveal
+  //     with `open === false` and tells the parent once; calling it here too
+  //     would tell the parent twice.
+  // Strict Mode's fake unmount on first mount finds `openRef` still false, so
+  // the latch is never armed then and a controlled or forceShow sheet still
+  // opens on mount.
+  // A real unmount also runs the cleanup; the setStates on an unmounted
+  // component are no-ops.
+  useEffect(() => {
+    if (hiddenWhileOpen.current) {
+      hiddenWhileOpen.current = false;
+      ignoreTrueFromParent.current = true;
+    }
+    return () => {
+      const wasOpen = openRef.current || showDiscardRef.current;
+      hiddenWhileOpen.current = wasOpen;
+      // Only when something is open: on Strict Mode's fake unmount the
+      // forceShow effect's setOpen(true) is still pending (`openRef` is false),
+      // and an unconditional setOpen(false) here would cancel it for good — the
+      // forceShow guard below does not open again for an unchanged prop.
+      if (wasOpen) {
+        setOpen(false);
+        setShowDiscardConfirm(false);
+      }
+    };
+  }, []);
+
   // Sync open state from external dialogOpen prop.
   // `open` is intentionally NOT a dependency: this effect must run only when the
   // prop changes. Adding `open` would re-fire on internal closes and immediately
   // re-open the dialog (dialogOpen still true while open just went false).
+  // After an <Activity> reveal it also re-runs with mount semantics while the
+  // parent's `dialogOpen` is still the stale `true`: the `ignoreTrueFromParent`
+  // latch drops that `true` until the parent reports `false` (the notify effect
+  // tells it). A latch, not a one-shot flag: under Strict Mode the reveal runs
+  // this effect twice, and a one-shot flag let the second pass re-open the sheet.
   useEffect(() => {
+    if (ignoreTrueFromParent.current) {
+      if (options?.dialogOpen === true) return;
+      if (options?.dialogOpen === false) ignoreTrueFromParent.current = false;
+    }
     if (options?.dialogOpen !== undefined && options.dialogOpen !== open) {
       syncingFromProp.current = true;
       setOpen(options.dialogOpen);
@@ -94,9 +158,12 @@ export function useEditorDialog(isFormDirty: () => boolean, options?: UseEditorD
     onDialogOpenChangeRef.current?.(open);
   }, [open]);
 
-  // Force show
+  // Force show — only on a change to `true`. The effect re-runs on an
+  // <Activity> reveal with the prop unchanged; opening then would undo the reset.
+  const lastForceShow = useRef<boolean | undefined>(undefined);
   useEffect(() => {
-    if (options?.forceShow) setOpen(true);
+    if (options?.forceShow && lastForceShow.current !== true) setOpen(true);
+    lastForceShow.current = options?.forceShow;
   }, [options?.forceShow]);
 
   // Call onClose when dialog closes

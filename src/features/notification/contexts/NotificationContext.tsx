@@ -63,8 +63,11 @@ export const NotificationContextProvider = ({ children }: NotificationContextPro
   // Access current user for initial load check
   const { currentUser } = useCurrentUserContext();
 
-  // Calculate shouldRefresh (5 minute cache)
-  const shouldRefresh = Date.now() - lastLoaded > 5 * 60 * 1000;
+  // Calculate shouldRefresh (5 minute cache). Never loaded short-circuits before
+  // Date.now(): under Cache Components a clock read during render marks the
+  // enclosing boundary dynamic, which kept a layout's whole app frame out of the
+  // prerendered shell. Same result: Date.now() - 0 always exceeds 5 minutes.
+  const shouldRefresh = lastLoaded === 0 || Date.now() - lastLoaded > 5 * 60 * 1000;
 
   const addNotification = useCallback((notification: NotificationInterface) => {
     setNotifications((prev) => {

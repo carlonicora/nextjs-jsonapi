@@ -15,7 +15,11 @@ type Props = {
   deniedRedirect?: string;
 };
 
-/** Server page for one session's journey: role gate, then the client container. */
+/**
+ * Server page for one session's journey: role gate, then the client container.
+ *
+ * Reads the session: render inside a `<Suspense>` boundary (Cache Components).
+ */
 export async function AnalyticsJourneyPage({ adminRoleId, sessionId, pageUrl, deniedRedirect = "/" }: Props) {
   if (!(await ServerSession.hasRole(adminRoleId))) {
     redirect(deniedRedirect);

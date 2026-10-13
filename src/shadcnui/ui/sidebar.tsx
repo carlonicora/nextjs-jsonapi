@@ -16,6 +16,8 @@ import { resolvePhysicalSide } from "@/lib/direction";
 import { cn } from "@/lib/utils";
 import { PanelLeftIcon } from "lucide-react";
 import { useDir } from "../../contexts/DirectionContext";
+import type { SessionSnapshot } from "../../server/ServerSession";
+import { mapThenable } from "../../utils/map-thenable";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -34,42 +36,136 @@ type SidebarContextProps = {
   toggleSidebar: () => void;
 };
 
-const SidebarContext = React.createContext<SidebarContextProps | null>(null);
+/**
+ * Internal context value. With a `session`, `isMobile` is a promise that
+ * `useSidebar()` unwraps with `use()`, so only the consumer that reads it
+ * suspends; the provider itself never does.
+ */
+type SidebarContextValue = Omit<SidebarContextProps, "isMobile"> & {
+  isMobile: boolean | Promise<boolean>;
+};
 
-function useSidebar() {
+const SidebarContext = React.createContext<SidebarContextValue | null>(null);
+
+function unwrapSidebarContext(context: SidebarContextValue): SidebarContextProps {
+  const { isMobile } = context;
+  return { ...context, isMobile: isMobile instanceof Promise ? React.use(isMobile) : isMobile };
+}
+
+function useSidebar(): SidebarContextProps {
   const context = React.useContext(SidebarContext);
   if (!context) {
     throw new Error("useSidebar must be used within a SidebarProvider.");
   }
 
-  return context;
+  return unwrapSidebarContext(context);
+}
+
+/**
+ * Everything `useSidebar` returns except `isMobile`, without suspending. For
+ * components on the path from a layout to its children (a navigation wrapper
+ * that only needs `toggleSidebar`), which must never suspend: with a `session`,
+ * reading `isMobile` through `useSidebar` suspends until the session resolves.
+ */
+function useSidebarControls(): Omit<SidebarContextProps, "isMobile"> {
+  const context = React.useContext(SidebarContext);
+  if (!context) {
+    throw new Error("useSidebarControls must be used within a SidebarProvider.");
+  }
+
+  const { isMobile: _isMobile, ...controls } = context;
+  return controls;
 }
 
 /** Like `useSidebar`, but returns null outside a `SidebarProvider` instead of throwing. */
 function useOptionalSidebar(): SidebarContextProps | null {
-  return React.useContext(SidebarContext);
+  const context = React.useContext(SidebarContext);
+  return context ? unwrapSidebarContext(context) : null;
 }
 
-function SidebarProvider({
+type SidebarProviderProps = React.ComponentProps<"div"> & {
+  defaultOpen?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  session?: Promise<SessionSnapshot>;
+};
+
+function SidebarProvider({ session, ...props }: SidebarProviderProps) {
+  // With a session the viewport comes from the session snapshot, so
+  // useIsMobile() is never called; without one the behaviour is unchanged.
+  if (session) return <SidebarProviderCore {...props} session={session} />;
+  return <ViewportSidebarProvider {...props} />;
+}
+
+function ViewportSidebarProvider(props: Omit<SidebarProviderProps, "session">) {
+  const isMobile = useIsMobile();
+  return <SidebarProviderCore {...props} viewportIsMobile={isMobile} />;
+}
+
+function SidebarProviderCore({
   defaultOpen = true,
   open: openProp,
   onOpenChange: setOpenProp,
+  session,
+  viewportIsMobile = false,
   className,
   style,
   children,
   ...props
-}: React.ComponentProps<"div"> & {
-  defaultOpen?: boolean;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-}) {
-  const isMobile = useIsMobile();
+}: SidebarProviderProps & { viewportIsMobile?: boolean }) {
+  const sessionIsMobile = React.useMemo(
+    () => (session ? mapThenable(session, (s) => s.isMobile) : undefined),
+    [session],
+  );
+  const isMobile: boolean | Promise<boolean> = sessionIsMobile ?? viewportIsMobile;
+
+  // Synchronous reads (toggle, keyboard shortcut) cannot suspend: they use the
+  // last resolved value, false until the session resolves.
+  const isMobileRef = React.useRef<boolean>(viewportIsMobile);
+  React.useEffect(() => {
+    if (!sessionIsMobile) {
+      isMobileRef.current = viewportIsMobile;
+      return;
+    }
+    let cancelled = false;
+    sessionIsMobile
+      .then((value) => {
+        if (!cancelled) isMobileRef.current = value;
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [sessionIsMobile, viewportIsMobile]);
+
   const [openMobile, setOpenMobile] = React.useState(false);
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
   const [_open, _setOpen] = React.useState(defaultOpen);
   const open = openProp ?? _open;
+
+  // The session's sidebar_state is applied once, when it resolves, and only
+  // when the open state is not controlled from outside.
+  const sessionOpenApplied = React.useRef(false);
+  React.useEffect(() => {
+    if (!session || openProp !== undefined || sessionOpenApplied.current) return;
+    let cancelled = false;
+    // Callback form: a server-passed promise's then() returns undefined, so it
+    // cannot be chained (see utils/map-thenable).
+    session.then(
+      (s) => {
+        if (cancelled || sessionOpenApplied.current) return;
+        sessionOpenApplied.current = true;
+        _setOpen(s.sidebarOpen);
+      },
+      () => {},
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [session, openProp]);
+
   const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
       const openState = typeof value === "function" ? value(open) : value;
@@ -87,8 +183,9 @@ function SidebarProvider({
 
   // Helper to toggle the sidebar.
   const toggleSidebar = React.useCallback(() => {
-    return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open);
-  }, [isMobile, setOpen, setOpenMobile]);
+    const mobile = sessionIsMobile ? isMobileRef.current : viewportIsMobile;
+    return mobile ? setOpenMobile((open) => !open) : setOpen((open) => !open);
+  }, [sessionIsMobile, viewportIsMobile, setOpen, setOpenMobile]);
 
   // Adds a keyboard shortcut to toggle the sidebar.
   React.useEffect(() => {
@@ -107,7 +204,7 @@ function SidebarProvider({
   // This makes it easier to style the sidebar with Tailwind classes.
   const state = open ? "expanded" : "collapsed";
 
-  const contextValue = React.useMemo<SidebarContextProps>(
+  const contextValue = React.useMemo<SidebarContextValue>(
     () => ({
       state,
       open,
@@ -586,10 +683,15 @@ function SidebarMenuSkeleton({
 }: React.ComponentProps<"div"> & {
   showIcon?: boolean;
 }) {
-  // Random width between 50 to 90%.
-  const [width] = React.useState(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`;
-  });
+  // Varied width between 50 and 90%, derived from useId rather than Math.random():
+  // the id is identical on the server and the client, so the width hydrates
+  // without a mismatch, and Cache Components accepts it inside a prerendered shell.
+  const id = React.useId();
+  const width = React.useMemo(() => {
+    let hash = 0;
+    for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) | 0;
+    return `${(Math.abs(hash) % 40) + 50}%`;
+  }, [id]);
 
   return (
     <div
@@ -695,4 +797,5 @@ export {
   SidebarTrigger,
   useOptionalSidebar,
   useSidebar,
+  useSidebarControls,
 };

@@ -5,6 +5,7 @@ export {
   useI18nLocale,
   useI18nDateFnsLocale,
   getI18nLink,
+  getI18nServerLocale,
 } from "./config";
 
 export type {
@@ -13,6 +14,7 @@ export type {
   UseRouterHook,
   UseTranslationsHook,
   UseLocaleHook,
+  GetLocaleFunction,
   UseDateFnsLocaleHook,
   LinkComponent,
 } from "./config";

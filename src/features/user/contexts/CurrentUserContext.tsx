@@ -3,7 +3,6 @@
 import { getCookie } from "cookies-next";
 import { useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import { usePathname } from "next/navigation";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useSocketContext } from "../../../contexts/SocketContext";
 import { Modules, rehydrate } from "../../../core";
@@ -43,11 +42,12 @@ const userAtom = atomWithStorage(CURRENT_USER_STORAGE_KEY, null);
 const CurrentUserContext = createContext<CurrentUserContextType | undefined>(undefined);
 
 export const CurrentUserProvider = ({ children }: { children: React.ReactNode }) => {
-  const path = usePathname();
-
   const [dehydratedUser, setDehydratedUser] = useAtom(userAtom);
 
-  const matchUrlToModule = (_params?: { path: string }): ModuleWithPermissions | undefined => {
+  const matchUrlToModule = (params?: { path: string }): ModuleWithPermissions | undefined => {
+    const path = params?.path?.toLowerCase();
+    if (!path) return undefined;
+
     const moduleKeys = Object.getOwnPropertyNames(Modules).filter(
       (key) => key !== "prototype" && key !== "_factory" && key !== "length" && key !== "name",
     );
@@ -59,7 +59,9 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
 
       const selectedModule = descriptor.get.call(Modules);
 
-      return path.toLowerCase().startsWith(selectedModule.pageUrl?.toLowerCase());
+      if (!selectedModule?.pageUrl) return false;
+
+      return path.startsWith(selectedModule.pageUrl.toLowerCase());
     });
 
     if (!matchedModuleKey) return undefined;

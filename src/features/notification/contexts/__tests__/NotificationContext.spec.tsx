@@ -126,3 +126,25 @@ describe("NotificationContextProvider failed load", () => {
     expect(result.current.error).toBe("500:");
   });
 });
+
+describe("NotificationContextProvider first render", () => {
+  beforeAll(() => {
+    configureI18n({
+      useRouter: () => stubRouter,
+      useTranslations: () => (key: string) => key,
+      usePathname: () => "/",
+      Link: (({ children }: { children: React.ReactNode }) => children) as any,
+    });
+  });
+
+  // Under Cache Components a clock read during render marks the enclosing
+  // boundary dynamic, which kept a layout's whole app frame out of the shell.
+  it("does not read the clock before anything has loaded, and still wants a refresh", () => {
+    userMock.currentUser = undefined;
+    const now = vi.spyOn(Date, "now");
+    const { result } = renderHook(() => useNotificationContext(), { wrapper });
+    expect(now).not.toHaveBeenCalled();
+    expect(result.current.shouldRefresh).toBe(true);
+    now.mockRestore();
+  });
+});

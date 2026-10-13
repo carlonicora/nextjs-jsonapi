@@ -18,7 +18,11 @@ type Props = {
   deniedRedirect?: string;
 };
 
-/** Server page for the administrative analytics dashboard: role gate, then the client container. */
+/**
+ * Server page for the administrative analytics dashboard: role gate, then the client container.
+ *
+ * Reads the session: render inside a `<Suspense>` boundary (Cache Components).
+ */
 export async function AnalyticsAdminPage({ adminRoleId, pageUrl, sessionPageUrl, deniedRedirect = "/" }: Props) {
   if (!(await ServerSession.hasRole(adminRoleId))) {
     redirect(deniedRedirect);

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
+import { Activity } from "react";
 import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -255,6 +256,29 @@ describe("EditorSheet", () => {
       render(<TestEditor dialogOpen={true} disabled={true} />);
       const submitButton = screen.getByTestId("modal-button-create");
       expect(submitButton).toBeDisabled();
+    });
+  });
+
+  describe("Activity hide and reveal (back/forward)", () => {
+    it("uncontrolled sheet is closed and the form reset after Activity reveal", async () => {
+      const page = (mode: "visible" | "hidden") => (
+        <Activity mode={mode}>
+          <TestEditor />
+        </Activity>
+      );
+      const r = render(page("visible"));
+
+      await userEvent.click(screen.getByText("ui.buttons.create"));
+      await userEvent.type(screen.getByTestId("name-input"), "Left behind");
+      expect(screen.getByTestId("name-input")).toHaveValue("Left behind");
+
+      act(() => r.rerender(page("hidden")));
+      act(() => r.rerender(page("visible")));
+
+      expect(screen.queryByTestId("name-input")).toBeNull();
+
+      await userEvent.click(screen.getByText("ui.buttons.create"));
+      expect(screen.getByTestId("name-input")).toHaveValue("");
     });
   });
 });

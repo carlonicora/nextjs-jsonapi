@@ -34,7 +34,6 @@ interface UseSocketReturn {
 export function useSocket({ token }: UseSocketOptions): UseSocketReturn {
   const _errorCount = useRef(0);
   const shouldConnect = useRef(true);
-  const _hookInstanceId = useRef(Math.random().toString(36).substring(2, 11));
 
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState<boolean>(false);

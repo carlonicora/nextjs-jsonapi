@@ -35,13 +35,19 @@ export const VIEWPORT_COOKIE_NAME = "viewport_mobile";
 const VIEWPORT_CONTEXT_KEY = Symbol.for("nextjs-jsonapi:viewportContext");
 
 const globalStore = globalThis as unknown as {
-  [VIEWPORT_CONTEXT_KEY]?: React.Context<boolean | undefined>;
+  [VIEWPORT_CONTEXT_KEY]?: React.Context<ViewportContextValue>;
 };
 
+/**
+ * A boolean once measured or seeded synchronously; a promise while a
+ * session-seeded provider waits for the request's snapshot.
+ */
+export type ViewportContextValue = boolean | Promise<boolean> | undefined;
+
 /** Returns the process-wide viewport context, creating it on first use. */
-export function getViewportContext(): React.Context<boolean | undefined> {
+export function getViewportContext(): React.Context<ViewportContextValue> {
   if (globalStore[VIEWPORT_CONTEXT_KEY] === undefined) {
-    globalStore[VIEWPORT_CONTEXT_KEY] = React.createContext<boolean | undefined>(undefined);
+    globalStore[VIEWPORT_CONTEXT_KEY] = React.createContext<ViewportContextValue>(undefined);
   }
   return globalStore[VIEWPORT_CONTEXT_KEY]!;
 }
@@ -65,7 +71,10 @@ export function subscribeViewport(onChange: () => void): () => void {
 }
 
 export function useIsMobile(): boolean {
-  const seeded = React.useContext(getViewportContext());
+  const provided = React.useContext(getViewportContext());
+  // `React.use` through the namespace import, for the same reason as
+  // `createContext` above. Suspends the caller until a session seed settles.
+  const seeded = provided instanceof Promise ? React.use(provided) : provided;
   const [legacy, setLegacy] = React.useState<boolean>(false);
 
   React.useEffect(() => {

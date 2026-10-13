@@ -1,6 +1,7 @@
 import { ApiRequestDataTypeInterface } from "../interfaces/ApiRequestDataTypeInterface";
 import { ApiResponseInterface } from "../interfaces/ApiResponseInterface";
 import { setLastApiResponse } from "./lastApiResponse";
+import { getI18nServerLocale } from "../../i18n/config";
 
 export enum HttpMethod {
   GET = "GET",
@@ -158,8 +159,7 @@ export abstract class AbstractService {
     // Get language based on environment
     let language = "en";
     if (typeof window === "undefined") {
-      const { getLocale } = await import("next-intl/server");
-      language = (await getLocale()) ?? "en";
+      language = await getI18nServerLocale();
     } else {
       // Client-side: extract locale from URL pathname
       language = this.getClientLocale();
@@ -279,8 +279,7 @@ export abstract class AbstractService {
     // Get language based on environment
     let language = "en";
     if (typeof window === "undefined") {
-      const { getLocale } = await import("next-intl/server");
-      language = (await getLocale()) ?? "en";
+      language = await getI18nServerLocale();
     } else {
       // Client-side: extract locale from URL pathname
       language = this.getClientLocale();
@@ -378,8 +377,7 @@ export abstract class AbstractService {
     let language = "en";
 
     if (typeof window === "undefined") {
-      const { getLocale } = await import("next-intl/server");
-      language = (await getLocale()) ?? "en";
+      language = await getI18nServerLocale();
     } else {
       // Client-side: extract locale from URL pathname
       language = this.getClientLocale();

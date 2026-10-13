@@ -5,8 +5,17 @@ vi.mock("cookies-next", () => ({
   getCookie: vi.fn(() => undefined),
 }));
 
+// vitest.setup.ts mocks next/navigation globally; override usePathname so it
+// throws: the provider must not depend on the current pathname at all
+// (hasPermissionToPath checks the path it is given).
 vi.mock("next/navigation", () => ({
-  usePathname: () => "/",
+  usePathname: () => {
+    throw new Error("CurrentUserProvider must not call usePathname");
+  },
+}));
+
+const permissionsMock = vi.hoisted(() => ({
+  checkPermissions: vi.fn((_params: { module: { name: string } }) => true),
 }));
 
 const socketMock = vi.hoisted(() => {
@@ -49,8 +58,18 @@ vi.mock("../../../../core", () => {
       return this._availableExtraCredits ?? 0;
     }
   }
+  const Modules: Record<string, unknown> = { User: { name: "users" } };
+  // The real Modules registry exposes each module through a getter.
+  Object.defineProperty(Modules, "Roll", {
+    get: () => ({ name: "rolls", pageUrl: "/rolls" }),
+    enumerable: true,
+  });
+  Object.defineProperty(Modules, "Person", {
+    get: () => ({ name: "persons", pageUrl: "/persons" }),
+    enumerable: true,
+  });
   return {
-    Modules: { User: { name: "users" } },
+    Modules,
     rehydrate: (_module: unknown, data: any) => ({
       ...data,
       company: data.company ? Object.assign(new FakeCompany(), data.company) : null,
@@ -60,7 +79,7 @@ vi.mock("../../../../core", () => {
 
 vi.mock("../../../../permissions", () => ({
   Action: { Read: "read", Write: "write", Create: "create", Update: "update", Delete: "delete" },
-  checkPermissions: () => true,
+  checkPermissions: permissionsMock.checkPermissions,
 }));
 
 vi.mock("../../../../roles", () => ({
@@ -320,5 +339,46 @@ describe("CurrentUserProvider token updates", () => {
     });
 
     expect(UserService.findFullUser).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("CurrentUserProvider path permissions", () => {
+  let ctx: ReturnType<typeof useCurrentUserContext> | undefined;
+  function Capture() {
+    ctx = useCurrentUserContext();
+    return null;
+  }
+
+  beforeEach(() => {
+    localStorage.clear();
+    vi.clearAllMocks();
+    ctx = undefined;
+    permissionsMock.checkPermissions.mockImplementation(() => true);
+  });
+
+  it("hasPermissionToPath checks the module of the given path, not the current page", async () => {
+    localStorage.setItem("user", JSON.stringify({ id: "user-1", roles: [], company: null, modules: [] }));
+    permissionsMock.checkPermissions.mockImplementation(({ module }) => module.name === "rolls");
+
+    render(
+      <CurrentUserProvider>
+        <Capture />
+      </CurrentUserProvider>,
+    );
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    expect(ctx!.hasPermissionToPath("/persons")).toBe(false);
+    expect(ctx!.hasPermissionToPath("/rolls")).toBe(true);
+  });
+
+  it("matchUrlToModule returns undefined without a path", () => {
+    render(
+      <CurrentUserProvider>
+        <Capture />
+      </CurrentUserProvider>,
+    );
+
+    expect(ctx!.matchUrlToModule()).toBeUndefined();
+    expect(ctx!.matchUrlToModule({ path: "/rolls/123" })).toEqual({ name: "rolls", pageUrl: "/rolls" });
   });
 });

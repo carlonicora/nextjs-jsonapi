@@ -141,6 +141,7 @@ export const jsonApiMatchers = {
 // Vitest 5: Assertion<R, T> and AsymmetricMatchersContaining both extend
 // Matchers<R, T>, so the matchers are declared once here and return R.
 declare module "vitest" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- T must match vitest's Matchers<R, T> for declaration merging (TS2428)
   interface Matchers<R extends void | Promise<void> = void | Promise<void>, T = unknown> {
     toBeValidJsonApi(): R;
     toHaveJsonApiType(expectedType: string): R;

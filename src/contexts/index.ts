@@ -15,6 +15,7 @@ export * from "./HeaderChildrenContext";
 export * from "./HeaderLeftContentContext";
 export * from "./HeaderLogoContext";
 export * from "./MobileNavigationContext";
+export * from "./SessionContext";
 export * from "./SharedContext";
 export * from "./SocketContext";
 export * from "./ViewportContext";

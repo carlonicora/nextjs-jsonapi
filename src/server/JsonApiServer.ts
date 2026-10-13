@@ -83,7 +83,9 @@ export async function ServerJsonApiGet(params: {
   language: string;
 }): Promise<ApiResponseInterface> {
   runServerBootstrapper();
-  const token = await getServerToken();
+  // A cached GET never sends the token, so it must not read the cookie either:
+  // the read would make a public page dynamic.
+  const token = params.classKey.cache ? undefined : await getServerToken();
 
   const apiResponse = await serverRequest({
     method: "GET",

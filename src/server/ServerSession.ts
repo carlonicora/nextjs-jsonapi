@@ -1,9 +1,37 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { userAgent } from "next/server";
 import { ungzip } from "pako";
 import { Action, checkPermissionsFromServer, ModuleWithPermissions } from "../permissions";
+import { getRoleId } from "../roles/config";
+import { VIEWPORT_COOKIE_NAME } from "../utils/use-mobile";
+
+export interface SessionSnapshot {
+  isLogged: boolean;
+  isAdministrator: boolean;
+  token?: string;
+  sidebarOpen: boolean;
+  isMobile: boolean;
+}
 
 export class ServerSession {
+  static async read(): Promise<SessionSnapshot> {
+    const cookieStore = await cookies();
+    const headerStore = await headers();
+
+    const token = cookieStore.get("token")?.value || undefined;
+    const roles = cookieStore.get("roles")?.value;
+    const viewportCookie = cookieStore.get(VIEWPORT_COOKIE_NAME)?.value;
+
+    return {
+      isLogged: !!token,
+      isAdministrator: !!roles && roles.includes(getRoleId().Administrator),
+      token,
+      sidebarOpen: cookieStore.get("sidebar_state")?.value !== "false",
+      isMobile: viewportCookie ? viewportCookie === "1" : userAgent({ headers: headerStore }).device.type === "mobile",
+    };
+  }
+
   static async isLogged() {
     const cookieStore = await cookies();
     const token = cookieStore.get("token");

@@ -13,6 +13,7 @@ export interface I18nRouter {
 export type UseRouterHook = () => I18nRouter;
 export type UseTranslationsHook = (namespace?: string) => (key: string, values?: Record<string, any>) => string;
 export type UseLocaleHook = () => string;
+export type GetLocaleFunction = () => Promise<string>;
 
 export type UseDateFnsLocaleHook = () => any; // date-fns Locale type
 export type LinkComponent = ComponentType<{ href: string; children: React.ReactNode; [key: string]: any }>;
@@ -24,6 +25,14 @@ export interface I18nConfig {
   useDateFnsLocale?: UseDateFnsLocaleHook;
   Link: LinkComponent;
   usePathname: () => string;
+  /**
+   * Server-side locale for API requests (pass next-intl's `getLocale` from `next-intl/server`).
+   *
+   * The library never imports next-intl itself: instrumentation loads the library, and
+   * next-intl's `getLocale` pulls in the app's `i18n/request.ts`, which reads
+   * `next/root-params` — a module only allowed inside the app directory.
+   */
+  getLocale: GetLocaleFunction;
 }
 
 // Private storage
@@ -63,6 +72,14 @@ export function useI18nLocale(): string {
   }
   // Fallback to English (safe for server/client)
   return "en";
+}
+
+/** The server-side locale from the app's `getLocale`. Throws when `configureI18n` has not run. */
+export async function getI18nServerLocale(): Promise<string> {
+  if (!_config?.getLocale) {
+    throw new Error("i18n not configured. Call configureI18n() with getLocale at app startup.");
+  }
+  return _config.getLocale();
 }
 
 export function useI18nDateFnsLocale(): any {

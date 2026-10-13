@@ -1,6 +1,79 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, act } from "@testing-library/react";
+import { renderHook, act, render } from "@testing-library/react";
+import { Activity, StrictMode, createElement, useState } from "react";
 import { useEditorDialog } from "../useEditorDialog";
+
+type ActivityMode = "visible" | "hidden";
+type HookApi = ReturnType<typeof useEditorDialog>;
+
+/**
+ * Mounts a sheet driven by `useEditorDialog` inside a React `<Activity>`, the
+ * way Next 16.4 keeps a route mounted but hidden across back/forward. The page
+ * component sits inside the Activity, so its own state (the parent's
+ * `dialogOpen`) survives the hide exactly as a route's state does.
+ */
+function renderInActivity(opts: {
+  controlled?: boolean;
+  initialParentOpen?: boolean;
+  forceShow?: boolean;
+  strict?: boolean;
+  isFormDirty?: () => boolean;
+  onClose?: () => void;
+}) {
+  const renders: boolean[] = [];
+  const parentSpy = vi.fn();
+  let api!: HookApi;
+  let parentOpen: boolean | undefined;
+  let setParentOpen!: (open: boolean) => void;
+
+  function Sheet(props: { dialogOpen?: boolean; onDialogOpenChange?: (open: boolean) => void }) {
+    api = useEditorDialog(opts.isFormDirty ?? (() => false), {
+      ...props,
+      forceShow: opts.forceShow,
+      onClose: opts.onClose,
+    });
+    renders.push(api.open);
+    return null;
+  }
+
+  function Page() {
+    const [open, setOpen] = useState(opts.initialParentOpen ?? false);
+    parentOpen = open;
+    setParentOpen = setOpen;
+    if (!opts.controlled) return createElement(Sheet);
+    return createElement(Sheet, {
+      dialogOpen: open,
+      onDialogOpenChange: (next: boolean) => {
+        parentSpy(next);
+        setOpen(next);
+      },
+    });
+  }
+
+  function App({ mode }: { mode: ActivityMode }) {
+    return createElement(Activity, { mode }, createElement(Page));
+  }
+
+  // StrictMode only double-invokes effects when it wraps the ROOT element.
+  const root = (mode: ActivityMode) =>
+    opts.strict ? createElement(StrictMode, null, createElement(App, { mode })) : createElement(App, { mode });
+
+  const r = render(root("visible"));
+
+  return {
+    renders,
+    parentSpy,
+    get api() {
+      return api;
+    },
+    get parentOpen() {
+      return parentOpen;
+    },
+    openFromParent: () => act(() => setParentOpen(true)),
+    hide: () => act(() => r.rerender(root("hidden"))),
+    reveal: () => act(() => r.rerender(root("visible"))),
+  };
+}
 
 describe("useEditorDialog", () => {
   beforeEach(() => {
@@ -279,6 +352,96 @@ describe("useEditorDialog", () => {
       expect(inner.result.current.discardDialogProps.open).toBe(true);
       expect(inner.result.current.open).toBe(true);
       expect(outer.result.current.open).toBe(true);
+    });
+  });
+
+  describe("Activity hide and reveal (back/forward)", () => {
+    it("controlled sheet does not reopen after Activity reveal", () => {
+      const t = renderInActivity({ controlled: true, initialParentOpen: true });
+      expect(t.api.open).toBe(true);
+      t.parentSpy.mockClear();
+
+      t.hide();
+      const revealedAt = t.renders.length;
+      t.reveal();
+
+      expect(t.parentSpy.mock.calls).toEqual([[false]]);
+      expect(t.parentOpen).toBe(false);
+      expect(t.api.open).toBe(false);
+      expect(t.renders.slice(revealedAt)).not.toContain(true);
+    });
+
+    it("sheet opened after mount is closed after Activity reveal", () => {
+      const t = renderInActivity({});
+      expect(t.api.open).toBe(false);
+      act(() => t.api.setOpen(true));
+      expect(t.api.open).toBe(true);
+
+      t.hide();
+      t.reveal();
+
+      expect(t.api.open).toBe(false);
+    });
+
+    it("forceShow sheet stays closed after Activity reveal", () => {
+      const t = renderInActivity({ forceShow: true });
+      expect(t.api.open).toBe(true);
+
+      t.hide();
+      t.reveal();
+
+      expect(t.api.open).toBe(false);
+    });
+
+    it("stays closed under StrictMode reveal", () => {
+      const t = renderInActivity({ controlled: true, strict: true });
+      t.openFromParent();
+      expect(t.api.open).toBe(true);
+
+      t.hide();
+      const revealedAt = t.renders.length;
+      t.reveal();
+
+      // Strict Mode doubles the notify effect too, so parent calls are not counted.
+      expect(t.renders.slice(revealedAt)).not.toContain(true);
+      expect(t.api.open).toBe(false);
+      expect(t.parentOpen).toBe(false);
+    });
+
+    it("controlled sheet still opens on first mount under StrictMode", () => {
+      const t = renderInActivity({ controlled: true, initialParentOpen: true, strict: true });
+      expect(t.api.open).toBe(true);
+      expect(t.parentOpen).toBe(true);
+    });
+
+    it("discard confirmation is closed after Activity reveal", () => {
+      const t = renderInActivity({ isFormDirty: () => true });
+      act(() => t.api.setOpen(true));
+      act(() => t.api.handleOpenChange(false));
+      expect(t.api.discardDialogProps.open).toBe(true);
+
+      t.hide();
+      t.reveal();
+
+      expect(t.api.discardDialogProps.open).toBe(false);
+      expect(t.api.open).toBe(false);
+    });
+
+    it("onClose is called once per hide and reveal", () => {
+      const onClose = vi.fn();
+      const t = renderInActivity({ onClose });
+      act(() => t.api.setOpen(true));
+      onClose.mockClear();
+
+      t.hide();
+      t.reveal();
+
+      expect(onClose).toHaveBeenCalledTimes(1);
+    });
+
+    it("forceShow sheet still opens on first mount under StrictMode", () => {
+      const t = renderInActivity({ forceShow: true, strict: true });
+      expect(t.api.open).toBe(true);
     });
   });
 });
