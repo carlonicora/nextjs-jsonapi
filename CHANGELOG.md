@@ -1,3 +1,9 @@
+## [4.0.7](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.0.6...v4.0.7) (2026-10-14)
+
+### 🐛 Bug Fixes
+
+* **navigations:** render RecentPagesNavigator only after mount ([a9c480e](https://github.com/carlonicora/nextjs-jsonapi/commit/a9c480e6bd00f75c0fe83050656ea8e5307f8473))
+
 ## [4.0.6](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.0.5...v4.0.6) (2026-10-14)
 
 ### 🐛 Bug Fixes
