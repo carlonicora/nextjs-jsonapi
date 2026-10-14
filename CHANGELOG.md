@@ -1,3 +1,10 @@
+## [4.0.8](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.0.7...v4.0.8) (2026-10-14)
+
+### 🐛 Bug Fixes
+
+* **company:** count trial days in fixed 24h steps ([e4ad9e4](https://github.com/carlonicora/nextjs-jsonapi/commit/e4ad9e437a844d3e0e8863fefde2f9937d744e42))
+* **components:** give every cmdk item a unique value ([f5f88ee](https://github.com/carlonicora/nextjs-jsonapi/commit/f5f88ee534122969d4e748be7941776d65dafaaf))
+
 ## [4.0.7](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.0.6...v4.0.7) (2026-10-14)
 
 ### 🐛 Bug Fixes
