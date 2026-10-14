@@ -1,3 +1,9 @@
+## [4.0.6](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.0.5...v4.0.6) (2026-10-14)
+
+### 🐛 Bug Fixes
+
+* **sidebar:** follow the live viewport when given a session ([4093b85](https://github.com/carlonicora/nextjs-jsonapi/commit/4093b85433c05cb6248a11c12a043a4f4e70f8aa))
+
 ## [4.0.5](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.0.4...v4.0.5) (2026-10-13)
 
 ### 🐛 Bug Fixes
