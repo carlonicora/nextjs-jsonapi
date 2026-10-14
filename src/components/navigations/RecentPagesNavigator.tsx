@@ -4,6 +4,7 @@ import { useAtomValue } from "jotai";
 import { HistoryIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { recentPagesAtom } from "../../atoms";
 import {
   DropdownMenu,
@@ -36,6 +37,15 @@ export function RecentPagesNavigator() {
   const t = useTranslations();
   const { isMobile } = useSidebar();
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
+
+  // The list lives in localStorage, which the server cannot read, so the server
+  // renders nothing. Under Cache Components the sidebar hydrates in its own
+  // boundary, after usePageTracker has already loaded the stored list into the
+  // atom; rendering it before mount would not match the server HTML.
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // The page the user is standing on is not somewhere to navigate back to, so
   // it is hidden while they are there. Filtering happens here rather than in
@@ -50,7 +60,7 @@ export function RecentPagesNavigator() {
 
   const pages = recentPages.filter((page) => !isCurrentPage(page.url));
 
-  if (pages.length === 0) return null;
+  if (!mounted || pages.length === 0) return null;
 
   return (
     <SidebarMenuItem>

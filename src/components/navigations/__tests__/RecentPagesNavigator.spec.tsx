@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createStore, Provider } from "jotai";
+import { renderToString } from "react-dom/server";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { recentPagesAtom, type RecentPage } from "../../../atoms";
 import { configureI18n } from "../../../i18n";
@@ -78,6 +79,24 @@ function renderNavigator({
 }
 
 describe("RecentPagesNavigator", () => {
+  it("renders nothing before mount even when pages are stored, so the server HTML matches", () => {
+    // Regression: under Cache Components the sidebar hydrates after usePageTracker
+    // has loaded localStorage into the atom; rendering the row on the first pass
+    // put an <li> the server never sent and failed hydration.
+    const store = createStore();
+    store.set(recentPagesAtom, PAGES);
+    const html = renderToString(
+      <Provider store={store}>
+        <SidebarProvider open>
+          <SidebarMenu>
+            <RecentPagesNavigator />
+          </SidebarMenu>
+        </SidebarProvider>
+      </Provider>,
+    );
+    expect(html).not.toContain("sidebar-recent-pages");
+  });
+
   it("renders nothing when no pages have been recorded", () => {
     renderNavigator({ pages: [] });
     expect(screen.queryByTestId("sidebar-recent-pages")).toBeNull();
