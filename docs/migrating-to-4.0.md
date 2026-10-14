@@ -85,6 +85,13 @@ With the E2E guard, add `.next-e2e/` to the app's `.gitignore` and
 The point of the promise is section 4: the providers never await it, so the layout can
 render its children before the session resolves.
 
+With a `session`, `SidebarProvider` takes `isMobile` from the enclosing
+`ViewportProvider`: it starts from the session snapshot, then follows every client
+measurement, live resizes included. Render `SidebarProvider` inside `ViewportProvider`,
+as in section 4. Without one, the sidebar keeps the session snapshot for the life of
+the page, so a stale `viewport_mobile` cookie leaves it in the wrong mode until the
+next full load.
+
 Side effect to know about: `CurrentUserProvider` no longer calls `usePathname()`, and
 `matchUrlToModule({ path })` now honours its `path` argument. `hasPermissionToPath(url)`
 therefore checks the module of the **item**, not of the page the user is on. Sidebar
@@ -99,7 +106,7 @@ the changes for the test user in the hand-back.
 |---|---|---|
 | `ServerSession.read(): Promise<SessionSnapshot>` | `/server` | `{ isLogged, isAdministrator, token?, sidebarOpen, isMobile }` from cookies and headers. Call it, never await it, in the shell component. |
 | `SessionProvider({ session })`, `useSession()` | `/contexts` | Stores the promise. `useSession()` calls `use()`, so the **caller** suspends and must sit behind its own `<Suspense>`. |
-| `useSidebarControls()` | `/components` | `useSidebar()` minus `isMobile`. Use it in anything on the path between the layout and `{children}` (mobile navigation, toggles): `useSidebar().isMobile` suspends on the session. |
+| `useSidebarControls()` | `/components` | `useSidebar()` minus `isMobile`. Use it in anything on the path between the layout and `{children}` (mobile navigation, toggles): `useSidebar().isMobile` suspends on the session. `useSidebar().isMobile` is live: after the first measurement it follows `ViewportProvider`. |
 | `useIsMobile()` | `/core` | Unwraps a promise-based `ViewportProvider` with `use()`, so the caller suspends until the session settles. The library's own consumers (`Sidebar`, `RoundPageContainer`, tables, breadcrumbs) suspend behind their own boundary; page content lands in the page's `loading.tsx`. App code that calls it needs its own `<Suspense>`, as with `useSession()`. |
 | `mapThenable(thenable, fn)` | internal (`src/utils/map-thenable.ts`) | A promise passed from a server to a client component arrives as React's wire chunk: its `then()` returns `undefined`, so `.then().catch()` chains and `Promise.resolve()` do nothing. Every library provider derives from the session through it. App code that derives from the session promise in a client component needs the same `new Promise` adoption. |
 | `cachedServerGet(params)` | `/cached-get` | Token-free `"use cache"` GET for shared data (`react-server` condition; a stub for the client and plain node). A module `cache` value that is a `cacheLife` profile name sets the life; any other value is a tag. Errors are not stored and only `error.digest` (`HTTP_<status>`) survives to production; read it with `statusFromDigest`. |

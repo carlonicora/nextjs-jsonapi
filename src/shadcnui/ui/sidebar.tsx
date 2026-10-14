@@ -18,6 +18,7 @@ import { PanelLeftIcon } from "lucide-react";
 import { useDir } from "../../contexts/DirectionContext";
 import type { SessionSnapshot } from "../../server/ServerSession";
 import { mapThenable } from "../../utils/map-thenable";
+import { getViewportContext } from "../../utils/use-mobile";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -91,8 +92,9 @@ type SidebarProviderProps = React.ComponentProps<"div"> & {
 };
 
 function SidebarProvider({ session, ...props }: SidebarProviderProps) {
-  // With a session the viewport comes from the session snapshot, so
-  // useIsMobile() is never called; without one the behaviour is unchanged.
+  // With a session useIsMobile() is never called: it would suspend the
+  // provider. The core reads the ViewportProvider's context without unwrapping
+  // it; without a session the behaviour is unchanged.
   if (session) return <SidebarProviderCore {...props} session={session} />;
   return <ViewportSidebarProvider {...props} />;
 }
@@ -113,22 +115,28 @@ function SidebarProviderCore({
   children,
   ...props
 }: SidebarProviderProps & { viewportIsMobile?: boolean }) {
+  // With a session, the live value is the ViewportProvider's: its
+  // session-seeded promise first (same snapshot, so SSR and first paint match),
+  // then every measurement. Read raw, never unwrapped here, so the provider does
+  // not suspend. Outside a ViewportProvider, fall back to the session snapshot.
+  const viewport = React.useContext(getViewportContext());
+  const hasViewport = viewport !== undefined;
   const sessionIsMobile = React.useMemo(
-    () => (session ? mapThenable(session, (s) => s.isMobile) : undefined),
-    [session],
+    () => (session && !hasViewport ? mapThenable(session, (s) => s.isMobile) : undefined),
+    [session, hasViewport],
   );
-  const isMobile: boolean | Promise<boolean> = sessionIsMobile ?? viewportIsMobile;
+  const isMobile: boolean | Promise<boolean> = session ? (viewport ?? sessionIsMobile!) : viewportIsMobile;
 
   // Synchronous reads (toggle, keyboard shortcut) cannot suspend: they use the
-  // last resolved value, false until the session resolves.
-  const isMobileRef = React.useRef<boolean>(viewportIsMobile);
+  // last resolved value, false until the first one arrives.
+  const isMobileRef = React.useRef<boolean>(typeof isMobile === "boolean" ? isMobile : false);
   React.useEffect(() => {
-    if (!sessionIsMobile) {
-      isMobileRef.current = viewportIsMobile;
+    if (!(isMobile instanceof Promise)) {
+      isMobileRef.current = isMobile;
       return;
     }
     let cancelled = false;
-    sessionIsMobile
+    isMobile
       .then((value) => {
         if (!cancelled) isMobileRef.current = value;
       })
@@ -136,7 +144,7 @@ function SidebarProviderCore({
     return () => {
       cancelled = true;
     };
-  }, [sessionIsMobile, viewportIsMobile]);
+  }, [isMobile]);
 
   const [openMobile, setOpenMobile] = React.useState(false);
 
@@ -183,9 +191,9 @@ function SidebarProviderCore({
 
   // Helper to toggle the sidebar.
   const toggleSidebar = React.useCallback(() => {
-    const mobile = sessionIsMobile ? isMobileRef.current : viewportIsMobile;
+    const mobile = typeof isMobile === "boolean" ? isMobile : isMobileRef.current;
     return mobile ? setOpenMobile((open) => !open) : setOpen((open) => !open);
-  }, [sessionIsMobile, viewportIsMobile, setOpen, setOpenMobile]);
+  }, [isMobile, setOpen, setOpenMobile]);
 
   // Adds a keyboard shortcut to toggle the sidebar.
   React.useEffect(() => {
