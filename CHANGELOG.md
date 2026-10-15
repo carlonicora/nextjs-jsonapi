@@ -1,3 +1,9 @@
+## [4.1.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.0.8...v4.1.0) (2026-10-15)
+
+### 🚀 Features
+
+* **next-config:** allow images and frames from the api and corpus origins ([eebe493](https://github.com/carlonicora/nextjs-jsonapi/commit/eebe493127a10e260d1c940146a121ba2d91b7db))
+
 ## [4.0.8](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.0.7...v4.0.8) (2026-10-14)
 
 ### 🐛 Bug Fixes
