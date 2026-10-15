@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Suspense } from "react";
 import { render, screen, act } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -217,6 +218,116 @@ describe("ViewportProvider with a session promise", () => {
     });
 
     expect(screen.getByTestId("probe").textContent).toBe("mobile");
+  });
+
+  it("calls use() on every render when a pending seed is replaced by a boolean while the reader is suspended", async () => {
+    // The sequence behind the "conditional-use-of-use" console error seen on
+    // /deliveries/<id> and on (admin) not-found pages:
+    // 1. a reader mounts while ViewportProvider's value is still the session
+    //    promise, so useIsMobile() calls use() and suspends;
+    // 2. the provider's mount-time measurement replaces the promise with a
+    //    boolean (setIsMobile) before the session settles;
+    // 3. the reader retries with a plain boolean. Skipping use() on that render
+    //    makes React log "This library called use() to suspend in a previous
+    //    render but did not call use() when it finished".
+    // The provider's state swap is driven by hand here so that step 2 lands
+    // after the suspended mount, as it does when hydration wins the race.
+    const ViewportContext = getViewportContext();
+    let swap!: (value: boolean | Promise<boolean>) => void;
+    function SwappingProvider({ children }: { children: React.ReactNode }) {
+      const [value, setValue] = React.useState<boolean | Promise<boolean>>(() => deferred<boolean>().promise);
+      swap = setValue;
+      return <ViewportContext.Provider value={value}>{children}</ViewportContext.Provider>;
+    }
+
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      await act(async () => {
+        render(
+          <SwappingProvider>
+            <Suspense fallback="waiting">
+              <Probe />
+            </Suspense>
+          </SwappingProvider>,
+        );
+      });
+      expect(screen.queryByText("waiting")).not.toBeNull();
+
+      await act(async () => {
+        swap(true);
+      });
+
+      expect(screen.getByTestId("probe").textContent).toBe("mobile");
+      expect(errorSpy).not.toHaveBeenCalled();
+    } finally {
+      errorSpy.mockRestore();
+    }
+  });
+
+  it("lets the provider's measurement win over a session seed that settles later, without console errors", async () => {
+    setWidth(500);
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      const pending = deferred<SessionSnapshot>();
+      await act(async () => {
+        render(
+          <ViewportProvider session={pending.promise}>
+            <Suspense fallback="waiting">
+              <Probe />
+            </Suspense>
+          </ViewportProvider>,
+        );
+      });
+      expect(screen.getByTestId("probe").textContent).toBe("mobile");
+
+      await act(async () => {
+        pending.resolve(snapshot(false));
+        await pending.promise;
+      });
+
+      expect(screen.getByTestId("probe").textContent).toBe("mobile");
+      expect(errorSpy).not.toHaveBeenCalled();
+    } finally {
+      errorSpy.mockRestore();
+    }
+  });
+
+  it("keeps calling use() when the context value goes from a boolean to a promise", async () => {
+    // The reverse switch: a reader mounted on a boolean still suspends on, and
+    // then reads, a promise that replaces it.
+    setWidth(1280);
+    const ViewportContext = getViewportContext();
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      const pending = deferred<boolean>();
+      const { rerender } = render(
+        <ViewportContext.Provider value={false}>
+          <Suspense fallback="waiting">
+            <Probe />
+          </Suspense>
+        </ViewportContext.Provider>,
+      );
+      expect(screen.getByTestId("probe").textContent).toBe("desktop");
+
+      await act(async () => {
+        rerender(
+          <ViewportContext.Provider value={pending.promise}>
+            <Suspense fallback="waiting">
+              <Probe />
+            </Suspense>
+          </ViewportContext.Provider>,
+        );
+      });
+      await act(async () => {
+        pending.resolve(true);
+        await pending.promise;
+      });
+
+      expect(screen.getByTestId("probe").textContent).toBe("mobile");
+      expect(errorSpy).not.toHaveBeenCalled();
+    } finally {
+      errorSpy.mockRestore();
+    }
   });
 
   it("ViewportProvider with initialIsMobile is unchanged", () => {

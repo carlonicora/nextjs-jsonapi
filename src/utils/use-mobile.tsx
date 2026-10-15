@@ -70,11 +70,40 @@ export function subscribeViewport(onChange: () => void): () => void {
   return () => mql.removeEventListener("change", onChange);
 }
 
+type SettledThenable<T> = Promise<T> & { status: "fulfilled"; value: T };
+
+/**
+ * A promise React reads synchronously: `use()` sees `status: "fulfilled"` and
+ * returns `value` without suspending. Created lazily, one per value, so the
+ * identity is stable across renders.
+ */
+const settledViewportValues = new Map<boolean | undefined, SettledThenable<boolean | undefined>>();
+
+function settled(value: boolean | undefined): SettledThenable<boolean | undefined> {
+  let thenable = settledViewportValues.get(value);
+  if (thenable === undefined) {
+    thenable = Object.assign(Promise.resolve(value), { status: "fulfilled" as const, value });
+    settledViewportValues.set(value, thenable);
+  }
+  return thenable;
+}
+
+function isThenable(value: ViewportContextValue): value is Promise<boolean> {
+  return typeof value === "object" && value !== null && typeof (value as PromiseLike<boolean>).then === "function";
+}
+
 export function useIsMobile(): boolean {
   const provided = React.useContext(getViewportContext());
   // `React.use` through the namespace import, for the same reason as
   // `createContext` above. Suspends the caller until a session seed settles.
-  const seeded = provided instanceof Promise ? React.use(provided) : provided;
+  //
+  // `use` is called on EVERY render, never only when the value is a promise. A
+  // session-seeded ViewportProvider exposes a promise first and a boolean once
+  // its mount-time measurement lands, which can happen while a reader is
+  // suspended on the promise. Skipping `use` on the retry makes React report
+  // https://react.dev/warnings/conditional-use-of-use. A plain value is wrapped
+  // in an already-settled thenable, which `use` returns without suspending.
+  const seeded = React.use<boolean | undefined>(isThenable(provided) ? provided : settled(provided));
   const [legacy, setLegacy] = React.useState<boolean>(false);
 
   React.useEffect(() => {
