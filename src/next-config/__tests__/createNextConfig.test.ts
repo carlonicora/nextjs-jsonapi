@@ -9,12 +9,12 @@ const FIXED_ENV = vi.hoisted(() => {
     NEXT_PUBLIC_API_URL: "https://api.test",
     NEXT_PUBLIC_ADDRESS: "https://app.test",
     IMAGE_SOURCES: "https://img.test",
+    NEXT_PUBLIC_CORPUS_URL: "https://corpus.test",
     APP_URL: "https://app.test",
   };
   for (const key of [
     "NEXT_PUBLIC_VAPID_PUBLIC_KEY",
     "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY",
-    "NEXT_PUBLIC_CORPUS_URL",
     "NEXT_PUBLIC_GTM_ID",
     "E2E_BUILD",
   ])
@@ -139,7 +139,11 @@ describe("createNextConfig: behaviour", () => {
     expect(plain.allowedDevOrigins).toEqual(["example.test"]);
     expect(plain.images).toEqual({
       minimumCacheTTL: 60,
-      remotePatterns: [{ protocol: "https", hostname: "img.test" }],
+      remotePatterns: [
+        { protocol: "https", hostname: "img.test" },
+        { protocol: "https", hostname: "api.test" },
+        { protocol: "https", hostname: "corpus.test" },
+      ],
       dangerouslyAllowLocalIP: true,
     });
 
@@ -164,6 +168,16 @@ describe("createNextConfig: behaviour", () => {
     expect(productionHeaders["Strict-Transport-Security"]).toBe("max-age=31536000; includeSubDomains");
     expect(productionHeaders["Content-Security-Policy"]).toHaveProperty("upgrade-insecure-requests");
     expect(production.distDir).toBeUndefined();
+  });
+
+  it("lets the optimizer fetch from the api and corpus origins, skipping unset and duplicate ones", () => {
+    vi.stubEnv("NEXT_PUBLIC_CORPUS_URL", undefined);
+    vi.stubEnv("IMAGE_SOURCES", "https://img.test,https://api.test");
+    const config = createNextConfig(base) as { images: { remotePatterns: unknown[] } };
+    expect(config.images.remotePatterns).toEqual([
+      { protocol: "https", hostname: "img.test" },
+      { protocol: "https", hostname: "api.test" },
+    ]);
   });
 
   it("reactCompiler option sets both reactCompiler and turbopackRustReactCompiler", () => {
@@ -197,7 +211,7 @@ describe("buildCsp", () => {
     expect(csp["script-src"]).toEqual(["'self'", "'unsafe-eval'", "'unsafe-inline'"]);
     expect(csp["style-src"]).toEqual(["'self'", "'unsafe-inline'"]);
     expect(csp["font-src"]).toEqual(["'self'"]);
-    expect(csp["frame-src"]).toEqual(["'self'"]);
+    expect(csp["frame-src"]).toEqual(["'self'", "https://api.test", "https://corpus.test"]);
     expect(csp["worker-src"]).toEqual(["'self'", "blob:"]);
     expect(buildCsp({}, env)).not.toMatch(/stripe|google|cloudflare|discord/);
   });
@@ -246,6 +260,8 @@ describe("buildCsp", () => {
     const csp = parseCsp(buildCsp({ services: ["stripe"], csp: { "frame-src": ["https://docs.google.com/"] } }, env));
     expect(csp["frame-src"]).toEqual([
       "'self'",
+      "https://api.test",
+      "https://corpus.test",
       "https://docs.google.com/",
       "https://hooks.stripe.com",
       "https://js.stripe.com",
@@ -258,6 +274,32 @@ describe("buildCsp", () => {
       expect.arrayContaining(["https://api.test", "wss://api.test", "https://app.test", "https://img.test"]),
     );
     expect(csp["img-src"]).toContain("https://img.test");
+  });
+
+  it("allows images and frames from the api and corpus origins", () => {
+    const csp = parseCsp(buildCsp({}, env));
+    for (const directive of ["img-src", "frame-src"]) {
+      expect(csp[directive]).toEqual(expect.arrayContaining(["https://api.test", "https://corpus.test"]));
+    }
+  });
+
+  it("lists the api and corpus origins once, and nothing for an unset corpus", () => {
+    const value = buildCsp({}, {
+      NODE_ENV: "production",
+      NEXT_PUBLIC_API_URL: "https://api.test/",
+      IMAGE_SOURCES: "https://api.test",
+    } as unknown as NodeJS.ProcessEnv);
+    for (const directive of ["img-src", "frame-src"]) {
+      const sources = value
+        .split(";")
+        .map((part) => part.trim().split(/\s+/))
+        .find(([name]) => name === directive)!
+        .slice(1);
+      expect(sources.filter((source) => source === "https://api.test")).toHaveLength(1);
+      expect(sources.join(" ")).not.toContain("corpus");
+      expect(sources).not.toContain("");
+    }
+    expect(value).not.toMatch(/\s{2,}/);
   });
 
   it("drops empty sources when env values are missing", () => {

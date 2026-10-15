@@ -7,7 +7,7 @@ import { ReactNode } from "react";
 import { AttributeElement } from "../../../../components";
 import { SectionHeader, MicroLabel } from "../../../../components/typography";
 import { FiscalDataDisplay } from "../../../../components/fiscal/FiscalDataDisplay";
-import { cn } from "../../../../utils";
+import { cn, isRemoteImageSrc } from "../../../../utils";
 import { CompanyInterface } from "../../data";
 
 type CompanyContentProps = {
@@ -44,7 +44,14 @@ export function CompanyContent({ company, actions }: CompanyContentProps) {
       {/* Hero Section */}
       <div className="flex items-start gap-x-6">
         {company.logo && (
-          <Image src={company.logo} alt={company.name} width={150} height={150} className="rounded-md" />
+          <Image
+            src={company.logo}
+            alt={company.name}
+            width={150}
+            height={150}
+            className="rounded-md"
+            unoptimized={isRemoteImageSrc(company.logo)}
+          />
         )}
         <div className="flex flex-col gap-y-2">
           {company.legal_address && (

@@ -6,10 +6,10 @@
 // runtime: never next-intl, @next/mdx, serwist or any devDependency. `next` is
 // imported for its types only.
 import type { NextConfig } from "next";
-import { buildCsp, type CspDirective, type CspService } from "./csp";
+import { buildCsp, listAppOrigins, type CspDirective, type CspService } from "./csp";
 import { buildSecurityHeaders } from "./headers";
 
-export { buildCsp };
+export { buildCsp, listAppOrigins };
 export type { CspDirective, CspService };
 
 export interface NjaNextConfigOptions {
@@ -32,17 +32,24 @@ export interface NjaNextConfigOptions {
 
 type RemotePattern = { protocol: "http" | "https"; hostname: string; port?: string };
 
+// IMAGE_SOURCES, then the api and corpus origins (they serve every stored object
+// link), without duplicates.
 function parseImageSources(env: NodeJS.ProcessEnv): RemotePattern[] {
-  return env.IMAGE_SOURCES
-    ? env.IMAGE_SOURCES.split(",").map((url) => {
-        const { hostname, protocol, port } = new URL(url.trim());
-        return {
-          protocol: protocol.replace(":", "") as RemotePattern["protocol"],
-          hostname,
-          port: port || undefined,
-        };
-      })
-    : [];
+  const imageSources = env.IMAGE_SOURCES ? env.IMAGE_SOURCES.split(",").map((url) => url.trim()) : [];
+  const patterns: RemotePattern[] = [];
+  for (const url of [...imageSources, ...listAppOrigins(env)]) {
+    const { hostname, protocol, port } = new URL(url);
+    const pattern: RemotePattern = {
+      protocol: protocol.replace(":", "") as RemotePattern["protocol"],
+      hostname,
+      port: port || undefined,
+    };
+    const seen = patterns.some(
+      (p) => p.protocol === pattern.protocol && p.hostname === pattern.hostname && p.port === pattern.port,
+    );
+    if (!seen) patterns.push(pattern);
+  }
+  return patterns;
 }
 
 export function createNextConfig(options: NjaNextConfigOptions): NextConfig {

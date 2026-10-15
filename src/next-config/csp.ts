@@ -52,12 +52,33 @@ function listImageSources(env: NodeJS.ProcessEnv): string[] {
   return env.IMAGE_SOURCES ? env.IMAGE_SOURCES.split(",").map((s) => s.trim()) : [];
 }
 
+/**
+ * Origins of the app's own servers, the API and the corpus, from
+ * `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_CORPUS_URL`. They serve every stored
+ * object link, so images and frames must be allowed from them. Unset or invalid
+ * URLs are skipped; the result has no duplicates.
+ */
+export function listAppOrigins(env: NodeJS.ProcessEnv): string[] {
+  const origins: string[] = [];
+  for (const url of [env.NEXT_PUBLIC_API_URL, env.NEXT_PUBLIC_CORPUS_URL]) {
+    if (!url) continue;
+    try {
+      const { origin } = new URL(url.trim());
+      if (origin !== "null" && !origins.includes(origin)) origins.push(origin);
+    } catch {
+      // Not a URL: nothing to allow.
+    }
+  }
+  return origins;
+}
+
 // Build CSP directives
 // Note: 'unsafe-inline' and 'unsafe-eval' needed for Next.js dev mode and some runtime features
 // In production, consider using nonces for stricter CSP
 export function buildCsp(options: CspOptions, env: NodeJS.ProcessEnv): string {
   const apiUrl = env.NEXT_PUBLIC_API_URL || "";
   const imageSources = listImageSources(env);
+  const appOrigins = listAppOrigins(env);
   const services = options.services ?? [];
 
   // Each fetch directive: what Next itself needs, then the named services, then
@@ -67,8 +88,8 @@ export function buildCsp(options: CspOptions, env: NodeJS.ProcessEnv): string {
     "script-src": { base: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], fromEnv: [] },
     // Styles: self and unsafe-inline for styled-components/emotion
     "style-src": { base: ["'self'", "'unsafe-inline'"], fromEnv: [] },
-    // Images: self, data URIs, blobs, and configured image sources
-    "img-src": { base: ["'self'", "data:", "blob:"], fromEnv: imageSources },
+    // Images: self, data URIs, blobs, configured image sources, and the api/corpus origins
+    "img-src": { base: ["'self'", "data:", "blob:"], fromEnv: [...imageSources, ...appOrigins] },
     // Fonts: self
     "font-src": { base: ["'self'"], fromEnv: [] },
     // Connect: self, API (http + ws for socket.io), and storage (for uploads)
@@ -82,8 +103,8 @@ export function buildCsp(options: CspOptions, env: NodeJS.ProcessEnv): string {
         ...imageSources,
       ],
     },
-    // Frames: self
-    "frame-src": { base: ["'self'"], fromEnv: [] },
+    // Frames: self, and the api/corpus origins (inline previews of stored objects)
+    "frame-src": { base: ["'self'"], fromEnv: appOrigins },
     // Worker sources: self and blob (for Web Workers with dynamic imports)
     "worker-src": { base: ["'self'", "blob:"], fromEnv: [] },
   };

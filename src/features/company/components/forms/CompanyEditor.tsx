@@ -26,6 +26,7 @@ import { Modules } from "../../../../core";
 import { useI18nRouter } from "../../../../i18n";
 import { getRoleId } from "../../../../roles";
 import { ScrollArea } from "../../../../shadcnui";
+import { isRemoteImageSrc } from "../../../../utils";
 import { FeatureInterface } from "../../../feature";
 import { FeatureService } from "../../../feature/data/feature.service";
 import { S3Interface } from "../../../s3";
@@ -232,6 +233,7 @@ function CompanyEditorInternal({
                       alt="Company Logo"
                       width={200}
                       height={200}
+                      unoptimized={isRemoteImageSrc(file ? undefined : company?.logo)}
                     />
                   ) : (
                     <>
