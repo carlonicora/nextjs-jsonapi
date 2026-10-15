@@ -1,3 +1,9 @@
+## [4.1.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.1.0...v4.1.1) (2026-10-15)
+
+### 🐛 Bug Fixes
+
+* **useIsMobile:** call use() on every render ([80c49cf](https://github.com/carlonicora/nextjs-jsonapi/commit/80c49cf2f94d3bd5f0316ece10528dc7553eae10))
+
 ## [4.1.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.0.8...v4.1.0) (2026-10-15)
 
 ### 🚀 Features
