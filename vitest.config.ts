@@ -19,7 +19,8 @@ export default defineConfig({
     hookTimeout: 30000,
     include: ["src/**/*.{test,spec}.{ts,tsx}", "scripts/**/*.{test,spec}.{ts,tsx}"],
     silent: true,
-    reporters: ["default"],
+    // default output unchanged; the slow-test list is appended (report only).
+    reporters: ["default", "./vitest.slow-tests.reporter.ts"],
     onConsoleLog: () => false,
     coverage: {
       provider: "v8",
