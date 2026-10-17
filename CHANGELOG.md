@@ -1,3 +1,9 @@
+## [4.2.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.1.2...v4.2.0) (2026-10-17)
+
+### 🚀 Features
+
+* **i18n:** translatable UI text, active-locale formatting and user language ([d2f81b6](https://github.com/carlonicora/nextjs-jsonapi/commit/d2f81b691042798a0bd14070b7d8d25b4ba74dc2))
+
 ## [4.1.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.1.1...v4.1.2) (2026-10-17)
 
 ### 🚨 Tests
