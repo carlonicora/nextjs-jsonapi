@@ -3,12 +3,14 @@
  * Consuming apps must define each entry in their messages/<locale>.json.
  */
 export const HELP_I18N_KEYS = [
+  "help.title",
   "help.modes.tutorial",
   "help.modes.how-to",
   "help.modes.reference",
   "help.modes.explanation",
   "help.sideNav.filterPlaceholder",
   "help.sideNav.noMatches",
+  "help.sideNav.label",
   "help.toc.title",
   "help.article.lastUpdated",
   "help.article.previous",

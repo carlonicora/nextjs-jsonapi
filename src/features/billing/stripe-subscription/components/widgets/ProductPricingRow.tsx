@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
 import { StripeProductInterface } from "../../../stripe-product";
 import { SectionHeader } from "../../../../../components/typography";
@@ -22,6 +23,7 @@ export function ProductPricingRow({
   loadingPriceId,
   onSelectPrice,
 }: ProductPricingRowProps) {
+  const t = useTranslations();
   if (prices.length === 0) {
     return null;
   }
@@ -35,7 +37,7 @@ export function ProductPricingRow({
       <div
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
         role="radiogroup"
-        aria-label={`Pricing options for ${product.name}`}
+        aria-label={t("billing.ui.pricing.options_aria", { name: product.name })}
       >
         {prices
           .sort((a, b) => (a.unitAmount ?? 0) - (b.unitAmount ?? 0))

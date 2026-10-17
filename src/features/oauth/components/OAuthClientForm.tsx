@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState, useCallback } from "react";
 import {
   Button,
@@ -64,6 +65,7 @@ export function OAuthClientForm({
   availableScopes,
   defaultScopes = [],
 }: OAuthClientFormProps) {
+  const t = useTranslations();
   const isEditMode = !!client;
 
   const [formState, setFormState] = useState<FormState>({
@@ -80,21 +82,21 @@ export function OAuthClientForm({
     const newErrors: FormErrors = {};
 
     if (!formState.name.trim()) {
-      newErrors.name = "Application name is required";
+      newErrors.name = t("oauth.ui.form.errors.name_required");
     }
 
     const validUris = formState.redirectUris.filter((uri) => uri.trim());
     if (validUris.length === 0) {
-      newErrors.redirectUris = "At least one redirect URI is required";
+      newErrors.redirectUris = t("oauth.ui.form.errors.redirect_uri_required");
     }
 
     if (formState.allowedScopes.length === 0) {
-      newErrors.allowedScopes = "At least one scope must be selected";
+      newErrors.allowedScopes = t("oauth.ui.form.errors.scope_required");
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }, [formState]);
+  }, [formState, t]);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -120,20 +122,20 @@ export function OAuthClientForm({
     <Card>
       <form onSubmit={handleSubmit}>
         <CardHeader>
-          <CardTitle>{isEditMode ? "Edit Application" : "Create OAuth Application"}</CardTitle>
+          <CardTitle>{isEditMode ? t("oauth.ui.form.edit_title") : t("oauth.settings.create_title")}</CardTitle>
           <CardDescription>
-            {isEditMode ? "Update your OAuth application settings." : "Register a new application to access the API."}
+            {isEditMode ? t("oauth.ui.form.edit_description") : t("oauth.ui.form.create_description")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Name */}
           <div className="space-y-2">
-            <Label htmlFor="name">Application Name *</Label>
+            <Label htmlFor="name">{t("oauth.ui.form.name")} *</Label>
             <Input
               id="name"
               value={formState.name}
               onChange={(e) => setFormState((s) => ({ ...s, name: e.target.value }))}
-              placeholder="My Application"
+              placeholder={t("oauth.ui.form.name_placeholder")}
               disabled={isLoading}
               className={errors.name ? "border-destructive" : ""}
             />
@@ -142,12 +144,12 @@ export function OAuthClientForm({
 
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t("oauth.ui.form.description")}</Label>
             <Textarea
               id="description"
               value={formState.description}
               onChange={(e) => setFormState((s) => ({ ...s, description: e.target.value }))}
-              placeholder="A brief description of your application"
+              placeholder={t("oauth.ui.form.description_placeholder")}
               disabled={isLoading}
               rows={3}
             />
@@ -172,7 +174,7 @@ export function OAuthClientForm({
 
           {/* Client Type */}
           <div className="space-y-3">
-            <Label>Client Type</Label>
+            <Label>{t("oauth.ui.form.client_type")}</Label>
             <RadioGroup
               value={formState.isConfidential ? "confidential" : "public"}
               onValueChange={(v) => setFormState((s) => ({ ...s, isConfidential: v === "confidential" }))}
@@ -182,36 +184,34 @@ export function OAuthClientForm({
                 <RadioGroupItem value="confidential" id="confidential" className="mt-1" />
                 <div>
                   <Label htmlFor="confidential" className="cursor-pointer">
-                    Confidential
+                    {t("oauth.ui.card.confidential")}
                   </Label>
-                  <p className="text-sm text-muted-foreground">
-                    Server-side application that can securely store the client secret.
-                  </p>
+                  <p className="text-sm text-muted-foreground">{t("oauth.ui.form.confidential_help")}</p>
                 </div>
               </div>
               <div className="flex items-start space-x-3 p-3 rounded-md border">
                 <RadioGroupItem value="public" id="public" className="mt-1" />
                 <div>
                   <Label htmlFor="public" className="cursor-pointer">
-                    Public
+                    {t("oauth.ui.card.public")}
                   </Label>
-                  <p className="text-sm text-muted-foreground">
-                    Mobile or desktop application. Requires PKCE for authorization.
-                  </p>
+                  <p className="text-sm text-muted-foreground">{t("oauth.ui.form.public_help")}</p>
                 </div>
               </div>
             </RadioGroup>
-            {isEditMode && (
-              <p className="text-sm text-muted-foreground">Client type cannot be changed after creation.</p>
-            )}
+            {isEditMode && <p className="text-sm text-muted-foreground">{t("oauth.ui.form.client_type_locked")}</p>}
           </div>
         </CardContent>
         <CardFooter className="flex justify-end gap-3">
           <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
-            Cancel
+            {t("ui.buttons.cancel")}
           </Button>
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Saving..." : isEditMode ? "Save Changes" : "Create Application"}
+            {isLoading
+              ? t("oauth.ui.form.saving")
+              : isEditMode
+                ? t("oauth.ui.form.save_changes")
+                : t("oauth.ui.list.create")}
           </Button>
         </CardFooter>
       </form>

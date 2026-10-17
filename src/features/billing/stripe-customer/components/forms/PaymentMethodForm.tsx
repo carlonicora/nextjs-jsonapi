@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { useEffect, useState } from "react";
 import { Alert, AlertDescription, Button, Checkbox, Label } from "../../../../../shadcnui";
@@ -12,6 +13,7 @@ type PaymentMethodFormProps = {
 };
 
 export function PaymentMethodForm({ onSuccess, onCancel, isLoading = false }: PaymentMethodFormProps) {
+  const t = useTranslations();
   const stripe = useStripe();
   const elements = useElements();
 
@@ -30,7 +32,7 @@ export function PaymentMethodForm({ onSuccess, onCancel, isLoading = false }: Pa
         setSetupIntent(intent);
       } catch (err) {
         console.error("[PaymentMethodForm] Failed to create setup intent:", err);
-        setError("Failed to initialize payment form. Please try again.");
+        setError(t("billing.ui.payment_form.errors.init"));
       } finally {
         setLoading(false);
       }
@@ -67,7 +69,7 @@ export function PaymentMethodForm({ onSuccess, onCancel, isLoading = false }: Pa
 
       if (stripeError) {
         console.error("[PaymentMethodForm] Stripe error:", stripeError);
-        setError(stripeError.message || "Failed to add payment method. Please check your card details.");
+        setError(stripeError.message || t("billing.ui.payment_form.errors.add"));
         setIsSubmitting(false);
         return;
       }
@@ -85,7 +87,7 @@ export function PaymentMethodForm({ onSuccess, onCancel, isLoading = false }: Pa
       onSuccess();
     } catch (err: any) {
       console.error("[PaymentMethodForm] Error:", err);
-      setError(err.message || "An unexpected error occurred. Please try again.");
+      setError(err.message || t("billing.ui.payment_form.errors.unexpected"));
     } finally {
       setIsSubmitting(false);
     }
@@ -94,7 +96,7 @@ export function PaymentMethodForm({ onSuccess, onCancel, isLoading = false }: Pa
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <p className="text-muted-foreground">Loading payment form...</p>
+        <p className="text-muted-foreground">{t("billing.ui.payment_form.loading")}</p>
       </div>
     );
   }
@@ -133,7 +135,7 @@ export function PaymentMethodForm({ onSuccess, onCancel, isLoading = false }: Pa
       <div className="flex items-center gap-x-2">
         <Checkbox id="setAsDefault" checked={setAsDefault} onCheckedChange={(checked) => setSetAsDefault(!!checked)} />
         <Label htmlFor="setAsDefault" className="cursor-pointer font-normal">
-          Set as default payment method
+          {t("billing.ui.payment_form.set_default")}
         </Label>
       </div>
 
@@ -147,10 +149,10 @@ export function PaymentMethodForm({ onSuccess, onCancel, isLoading = false }: Pa
       {/* Action Buttons */}
       <div className="flex justify-end gap-x-2">
         <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting || isLoading}>
-          Cancel
+          {t("ui.buttons.cancel")}
         </Button>
         <Button type="submit" disabled={!stripe || isSubmitting || isLoading}>
-          {isSubmitting ? "Processing..." : "Add Card"}
+          {isSubmitting ? t("billing.ui.wizard.review.processing") : t("billing.ui.cards.payment_method.add_card")}
         </Button>
       </div>
     </form>

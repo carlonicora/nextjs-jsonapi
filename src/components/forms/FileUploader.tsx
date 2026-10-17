@@ -201,7 +201,7 @@ export const FileUploader = forwardRef<HTMLDivElement, FileUploaderProps & React
         if (onFilesRejected) {
           const overflowRejections: FileRejection[] = overflow.map((file) => ({
             file: file as FileWithPath,
-            errors: [{ code: ErrorCode.TooManyFiles, message: `Too many files. Only ${maxFiles} allowed.` }],
+            errors: [{ code: ErrorCode.TooManyFiles, message: t("common.errors.file_too_many", { max: maxFiles }) }],
           }));
           const allRejections = [...rejectedFiles, ...overflowRejections];
           if (allRejections.length > 0) onFilesRejected(allRejections);
@@ -290,9 +290,10 @@ export const FileUploaderContent = forwardRef<HTMLDivElement, React.HTMLAttribut
   ({ children, className, ...props }, ref) => {
     const { orientation } = useFileUpload();
     const containerRef = useRef<HTMLDivElement>(null);
+    const t = useTranslations();
 
     return (
-      <div className={cn("w-full px-1")} ref={containerRef} aria-description="content file holder">
+      <div className={cn("w-full px-1")} ref={containerRef} aria-description={t("ui.labels.file_holder")}>
         <div
           {...props}
           ref={ref}

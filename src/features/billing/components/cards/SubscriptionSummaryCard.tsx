@@ -1,8 +1,10 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { ChevronRight, CreditCard } from "lucide-react";
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Skeleton } from "../../../../shadcnui";
 import { StripeSubscriptionInterface, SubscriptionStatus } from "../../stripe-subscription";
+import { formatDate, useBillingFormatOptions } from "../utils";
 
 type SubscriptionSummaryCardProps = {
   subscriptions: StripeSubscriptionInterface[];
@@ -10,6 +12,9 @@ type SubscriptionSummaryCardProps = {
   error?: string;
   onManageClick: () => void;
 };
+
+/** Statuses with a `billing.ui.subscription_status.*` label; anything else Stripe adds is shown raw. */
+const SUBSCRIPTION_STATUSES: string[] = Object.values(SubscriptionStatus);
 
 function getStatusBadgeVariant(status: SubscriptionStatus): "default" | "secondary" | "destructive" | "outline" {
   switch (status) {
@@ -26,22 +31,14 @@ function getStatusBadgeVariant(status: SubscriptionStatus): "default" | "seconda
   }
 }
 
-function formatDate(date: Date): string {
-  return new Date(date).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
-
-function formatPlanName(subscription: StripeSubscriptionInterface): string {
+function formatPlanName(subscription: StripeSubscriptionInterface, fallback: string): string {
   const productName = subscription.price?.product?.name || "";
   const nickname = subscription.price?.nickname || "";
 
   if (productName && nickname) {
     return `${productName} - ${nickname}`;
   }
-  return productName || nickname || "Subscription";
+  return productName || nickname || fallback;
 }
 
 export function SubscriptionSummaryCard({
@@ -50,11 +47,13 @@ export function SubscriptionSummaryCard({
   error,
   onManageClick,
 }: SubscriptionSummaryCardProps) {
+  const t = useTranslations();
+  const fmt = useBillingFormatOptions();
   if (loading) {
     return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle>Subscriptions</CardTitle>
+          <CardTitle>{t("billing.ui.subscriptions.title")}</CardTitle>
           <CreditCard className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -70,7 +69,7 @@ export function SubscriptionSummaryCard({
     return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle>Subscriptions</CardTitle>
+          <CardTitle>{t("billing.ui.subscriptions.title")}</CardTitle>
           <CreditCard className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -88,14 +87,14 @@ export function SubscriptionSummaryCard({
   return (
     <Card className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={onManageClick}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle>Subscriptions</CardTitle>
+        <CardTitle>{t("billing.ui.subscriptions.title")}</CardTitle>
         <CreditCard className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
         {subscriptions.length === 0 ? (
           <div className="space-y-2">
-            <p className="text-xl font-bold text-muted-foreground">No active plan</p>
-            <p className="text-xs text-muted-foreground">Subscribe to get started</p>
+            <p className="text-xl font-bold text-muted-foreground">{t("billing.ui.cards.subscriptions.empty_title")}</p>
+            <p className="text-xs text-muted-foreground">{t("billing.ui.cards.subscriptions.empty_description")}</p>
             <Button
               variant="outline"
               size="sm"
@@ -105,14 +104,16 @@ export function SubscriptionSummaryCard({
                 onManageClick();
               }}
             >
-              View Plans
+              {t("billing.ui.cards.subscriptions.view_plans")}
               <ChevronRight className="h-4 w-4 ms-1 rtl:rotate-180" />
             </Button>
           </div>
         ) : primarySubscription ? (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <p className="text-xl font-bold">{formatPlanName(primarySubscription)}</p>
+              <p className="text-xl font-bold">
+                {formatPlanName(primarySubscription, t("billing.ui.cards.subscriptions.fallback_name"))}
+              </p>
               <Badge
                 variant={
                   primarySubscription.cancelAtPeriodEnd
@@ -120,18 +121,30 @@ export function SubscriptionSummaryCard({
                     : getStatusBadgeVariant(primarySubscription.status)
                 }
               >
-                {primarySubscription.cancelAtPeriodEnd ? "Canceling" : primarySubscription.status}
+                {primarySubscription.cancelAtPeriodEnd
+                  ? t("billing.ui.cards.subscriptions.canceling")
+                  : SUBSCRIPTION_STATUSES.includes(primarySubscription.status)
+                    ? t(`billing.ui.subscription_status.${primarySubscription.status}`)
+                    : primarySubscription.status}
               </Badge>
             </div>
             <p className="text-xs text-muted-foreground">
               {!primarySubscription.price?.isTrial
-                ? `Ends on ${formatDate(primarySubscription.currentPeriodEnd)}`
+                ? t("billing.ui.cards.subscriptions.ends_on", {
+                    date: formatDate(primarySubscription.currentPeriodEnd, fmt),
+                  })
                 : primarySubscription.cancelAtPeriodEnd
-                  ? `Cancels on ${formatDate(primarySubscription.currentPeriodEnd)}`
-                  : `Renews on ${formatDate(primarySubscription.currentPeriodEnd)}`}
+                  ? t("billing.ui.cards.subscriptions.cancels_on", {
+                      date: formatDate(primarySubscription.currentPeriodEnd, fmt),
+                    })
+                  : t("billing.ui.cards.subscriptions.renews_on", {
+                      date: formatDate(primarySubscription.currentPeriodEnd, fmt),
+                    })}
             </p>
             {activeSubscriptions.length > 1 && (
-              <p className="text-xs text-muted-foreground">+{activeSubscriptions.length - 1} more subscription(s)</p>
+              <p className="text-xs text-muted-foreground">
+                {t("billing.ui.cards.subscriptions.more", { count: activeSubscriptions.length - 1 })}
+              </p>
             )}
           </div>
         ) : null}

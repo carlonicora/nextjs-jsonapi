@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useDir } from "../../contexts/DirectionContext";
+import { useUiText } from "./use-ui-text";
 
 type CarouselApi = UseEmblaCarouselType[1];
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>;
@@ -162,9 +163,14 @@ function CarouselPrevious({
   className,
   variant = "outline",
   size = "icon-sm",
+  label,
   ...props
-}: React.ComponentProps<typeof Button>) {
+}: React.ComponentProps<typeof Button> & {
+  /** Screen-reader name. Defaults to `ui.labels.previous_slide`, else "Previous slide". */
+  label?: string;
+}) {
   const { orientation, scrollPrev, canScrollPrev } = useCarousel();
+  const uiText = useUiText();
 
   return (
     <Button
@@ -184,7 +190,7 @@ function CarouselPrevious({
       {...props}
     >
       <ChevronLeftIcon className={orientation === "horizontal" ? "rtl:rotate-180" : undefined} />
-      <span className="sr-only">Previous slide</span>
+      <span className="sr-only">{label ?? uiText("ui.labels.previous_slide", "Previous slide")}</span>
     </Button>
   );
 }
@@ -193,9 +199,14 @@ function CarouselNext({
   className,
   variant = "outline",
   size = "icon-sm",
+  label,
   ...props
-}: React.ComponentProps<typeof Button>) {
+}: React.ComponentProps<typeof Button> & {
+  /** Screen-reader name. Defaults to `ui.labels.next_slide`, else "Next slide". */
+  label?: string;
+}) {
   const { orientation, scrollNext, canScrollNext } = useCarousel();
+  const uiText = useUiText();
 
   return (
     <Button
@@ -215,7 +226,7 @@ function CarouselNext({
       {...props}
     >
       <ChevronRightIcon className={orientation === "horizontal" ? "rtl:rotate-180" : undefined} />
-      <span className="sr-only">Next slide</span>
+      <span className="sr-only">{label ?? uiText("ui.labels.next_slide", "Next slide")}</span>
     </Button>
   );
 }

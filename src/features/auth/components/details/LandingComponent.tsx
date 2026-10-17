@@ -55,7 +55,7 @@ export function LandingComponent() {
         {isDiscordAuthEnabled() && (
           <Link href={`${getPublicApiUrl()}auth/discord`} className="flex w-full justify-end">
             <Button className="w-full" variant={`outline`} data-testid="page-login-button-initial-login">
-              Login with Discord
+              {t(`auth.buttons.login_with_discord`)}
             </Button>
           </Link>
         )}

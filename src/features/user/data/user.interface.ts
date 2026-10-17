@@ -17,6 +17,7 @@ export type UserInput = {
   avatar?: string;
   phone?: string;
   rate?: number;
+  language?: string;
 };
 
 export interface UserInterface extends ApiDataInterface {
@@ -28,6 +29,7 @@ export interface UserInterface extends ApiDataInterface {
   get avatarUrl(): string | undefined;
   get phone(): string | undefined;
   get rate(): number | undefined;
+  get language(): string | undefined;
 
   get isActivated(): boolean;
   get isDeleted(): boolean;

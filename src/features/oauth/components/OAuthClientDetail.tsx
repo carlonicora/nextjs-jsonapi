@@ -1,7 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState, useCallback } from "react";
-import { format } from "date-fns";
 import { Copy, Check, RefreshCw, Pencil, Trash2, ExternalLink } from "lucide-react";
 import {
   Badge,
@@ -23,7 +23,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../../../shadcnui";
-import { OAuthClientInterface, OAUTH_SCOPE_DISPLAY } from "../interfaces/oauth.interface";
+import { useI18nLocale } from "../../../i18n";
+import { useOAuthScopeText } from "../hooks/useOAuthScopeText";
+import { OAuthClientInterface } from "../interfaces/oauth.interface";
 
 export interface OAuthClientDetailProps {
   /** The OAuth client to display */
@@ -48,6 +50,9 @@ export function OAuthClientDetail({
   onDelete,
   onRegenerateSecret,
 }: OAuthClientDetailProps) {
+  const t = useTranslations();
+  const locale = useI18nLocale();
+  const scopeText = useOAuthScopeText();
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
@@ -86,7 +91,9 @@ export function OAuthClientDetail({
     }
   }, [onRegenerateSecret]);
 
-  const createdDate = client.createdAt ? format(new Date(client.createdAt), "MMMM d, yyyy") : "Unknown";
+  const createdDate = client.createdAt
+    ? new Date(client.createdAt).toLocaleDateString(locale, { dateStyle: "long" })
+    : t("oauth.ui.card.unknown");
 
   return (
     <>
@@ -99,23 +106,25 @@ export function OAuthClientDetail({
             </div>
             <div className="flex items-center gap-2">
               <Badge variant={client.isActive ? "default" : "secondary"}>
-                {client.isActive ? "Active" : "Inactive"}
+                {client.isActive ? t("oauth.ui.card.active") : t("oauth.ui.card.inactive")}
               </Badge>
-              <Badge variant="outline">{client.isConfidential ? "Confidential" : "Public"}</Badge>
+              <Badge variant="outline">
+                {client.isConfidential ? t("oauth.ui.card.confidential") : t("oauth.ui.card.public")}
+              </Badge>
             </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Client ID */}
           <div className="space-y-2">
-            <Label>Client ID</Label>
+            <Label>{t("oauth.ui.detail.client_id")}</Label>
             <div className="flex gap-2">
               <Input value={client.clientId} readOnly className="tabular-nums" />
               <Button
                 variant="outline"
                 size="icon"
                 onClick={() => copyToClipboard(client.clientId, "clientId")}
-                title="Copy Client ID"
+                title={t("oauth.ui.detail.copy_client_id")}
               >
                 {copiedField === "clientId" ? <Check className="text-success h-4 w-4" /> : <Copy className="h-4 w-4" />}
               </Button>
@@ -124,7 +133,7 @@ export function OAuthClientDetail({
 
           {/* Client Secret */}
           <div className="space-y-2">
-            <Label>Client Secret</Label>
+            <Label>{t("oauth.ui.detail.client_secret")}</Label>
             <div className="flex gap-2">
               <Input value="••••••••••••••••••••••••••••••••" readOnly className="tabular-nums" />
               {onRegenerateSecret && (
@@ -132,23 +141,21 @@ export function OAuthClientDetail({
                   variant="outline"
                   size="icon"
                   onClick={() => setShowRegenerateConfirm(true)}
-                  title="Regenerate Secret"
+                  title={t("oauth.ui.detail.regenerate_secret")}
                   disabled={isLoading}
                 >
                   <RefreshCw className="h-4 w-4" />
                 </Button>
               )}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Regenerating will invalidate the current secret and all existing tokens.
-            </p>
+            <p className="text-xs text-muted-foreground">{t("oauth.ui.detail.regenerate_help")}</p>
           </div>
 
           <Separator />
 
           {/* Redirect URIs */}
           <div className="space-y-2">
-            <Label>Redirect URIs</Label>
+            <Label>{t("oauth.ui.redirect_uris.label")}</Label>
             <ul className="space-y-1">
               {client.redirectUris.map((uri, index) => (
                 <li key={index} className="flex items-center gap-2 text-sm tabular-nums">
@@ -161,11 +168,11 @@ export function OAuthClientDetail({
 
           {/* Scopes */}
           <div className="space-y-2">
-            <Label>Allowed Scopes</Label>
+            <Label>{t("oauth.ui.scope_selector.label")}</Label>
             <div className="flex flex-wrap gap-2">
               {client.allowedScopes.map((scope) => (
                 <Badge key={scope} variant="secondary">
-                  {OAUTH_SCOPE_DISPLAY[scope]?.name || scope}
+                  {scopeText(scope).name}
                 </Badge>
               ))}
             </div>
@@ -173,7 +180,7 @@ export function OAuthClientDetail({
 
           {/* Grant Types */}
           <div className="space-y-2">
-            <Label>Grant Types</Label>
+            <Label>{t("oauth.ui.detail.grant_types")}</Label>
             <div className="flex flex-wrap gap-2">
               {client.allowedGrantTypes.map((grant) => (
                 <Badge key={grant} variant="outline">
@@ -187,7 +194,7 @@ export function OAuthClientDetail({
 
           {/* Metadata */}
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-            <span>Created: {createdDate}</span>
+            <span>{t("oauth.ui.detail.created", { date: createdDate })}</span>
           </div>
 
           {/* Actions */}
@@ -195,13 +202,13 @@ export function OAuthClientDetail({
             {onEdit && (
               <Button variant="outline" onClick={onEdit} disabled={isLoading}>
                 <Pencil className="h-4 w-4 me-2" />
-                Edit
+                {t("ui.buttons.edit")}
               </Button>
             )}
             {onDelete && (
               <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)} disabled={isLoading}>
                 <Trash2 className="h-4 w-4 me-2" />
-                Delete
+                {t("ui.buttons.delete")}
               </Button>
             )}
           </div>
@@ -212,19 +219,19 @@ export function OAuthClientDetail({
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete OAuth Application?</AlertDialogTitle>
+            <AlertDialogTitle>{t("oauth.settings.delete_title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete "{client.name}" and revoke all access tokens. This action cannot be undone.
+              {t("oauth.settings.delete_description", { name: client.name })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>{t("ui.buttons.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isDeleting ? "Deleting..." : "Delete"}
+              {isDeleting ? t("oauth.ui.detail.deleting") : t("ui.buttons.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -234,16 +241,13 @@ export function OAuthClientDetail({
       <AlertDialog open={showRegenerateConfirm} onOpenChange={setShowRegenerateConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Regenerate Client Secret?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will generate a new client secret and invalidate the old one. All existing tokens will be revoked.
-              You will need to update your application with the new secret.
-            </AlertDialogDescription>
+            <AlertDialogTitle>{t("oauth.ui.detail.regenerate_title")}</AlertDialogTitle>
+            <AlertDialogDescription>{t("oauth.ui.detail.regenerate_description")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isRegenerating}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isRegenerating}>{t("ui.buttons.cancel")}</AlertDialogCancel>
             <AlertDialogAction onClick={handleRegenerateSecret} disabled={isRegenerating}>
-              {isRegenerating ? "Regenerating..." : "Regenerate"}
+              {isRegenerating ? t("oauth.ui.detail.regenerating") : t("oauth.ui.detail.regenerate")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

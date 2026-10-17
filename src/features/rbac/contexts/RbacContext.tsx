@@ -138,14 +138,14 @@ export const RbacProvider = ({
     setSaving(true);
     try {
       await RbacService.saveMatrix({ matrix, roleNames, moduleNames, outputPath });
-      showToast(`Saved to ${outputPath}`);
+      showToast(t("rbac.saved_to", { path: outputPath }));
     } catch (err) {
       console.error("Failed to save RBAC matrix:", err);
       showError(err instanceof Error ? err.message : String(err));
     } finally {
       setSaving(false);
     }
-  }, [matrix, roleNames, moduleNames, outputPath]);
+  }, [matrix, roleNames, moduleNames, outputPath, t]);
 
   const breadcrumb = (): BreadcrumbItemData[] => {
     const response: BreadcrumbItemData[] = [];
@@ -168,7 +168,7 @@ export const RbacProvider = ({
     functions.push(
       <Button key="rbacSave" size="sm" onClick={handleSave} disabled={!canSave} className="gap-1">
         {saving ? <Loader2Icon className="h-3.5 w-3.5 animate-spin" /> : <DownloadIcon className="h-3.5 w-3.5" />}
-        Save to permissions.ts
+        {t("rbac.save_to_file")}
       </Button>,
     );
     if (functions.length > 0) response.functions = functions;

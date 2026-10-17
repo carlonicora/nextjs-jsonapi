@@ -1,6 +1,8 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { formatDistanceToNow } from "date-fns";
+import { useI18nDateFnsLocale } from "../../../i18n";
 import { Key, MoreVertical, Pencil, Trash2 } from "lucide-react";
 import {
   Badge,
@@ -32,13 +34,15 @@ export interface OAuthClientCardProps {
  * Card component for displaying an OAuth client in a list
  */
 export function OAuthClientCard({ client, onClick, onEdit, onDelete }: OAuthClientCardProps) {
+  const t = useTranslations();
+  const dateFnsLocale = useI18nDateFnsLocale();
   // Truncate client ID for display
   const truncatedId =
     client.clientId.length > 12 ? `${client.clientId.slice(0, 8)}...${client.clientId.slice(-4)}` : client.clientId;
 
   const createdAgo = client.createdAt
-    ? formatDistanceToNow(new Date(client.createdAt), { addSuffix: true })
-    : "Unknown";
+    ? formatDistanceToNow(new Date(client.createdAt), { addSuffix: true, locale: dateFnsLocale })
+    : t("oauth.ui.card.unknown");
 
   return (
     <Card
@@ -52,7 +56,9 @@ export function OAuthClientCard({ client, onClick, onEdit, onDelete }: OAuthClie
             <CardTitle className="text-lg">{client.name}</CardTitle>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant={client.isActive ? "default" : "secondary"}>{client.isActive ? "Active" : "Inactive"}</Badge>
+            <Badge variant={client.isActive ? "default" : "secondary"}>
+              {client.isActive ? t("oauth.ui.card.active") : t("oauth.ui.card.inactive")}
+            </Badge>
             {(onEdit || onDelete) && (
               <DropdownMenu>
                 <DropdownMenuTrigger onClick={(e) => e.stopPropagation()}>
@@ -69,7 +75,7 @@ export function OAuthClientCard({ client, onClick, onEdit, onDelete }: OAuthClie
                       }}
                     >
                       <Pencil className="h-4 w-4 me-2" />
-                      Edit
+                      {t("ui.buttons.edit")}
                     </DropdownMenuItem>
                   )}
                   {onDelete && (
@@ -81,7 +87,7 @@ export function OAuthClientCard({ client, onClick, onEdit, onDelete }: OAuthClie
                       className="text-destructive"
                     >
                       <Trash2 className="h-4 w-4 me-2" />
-                      Delete
+                      {t("ui.buttons.delete")}
                     </DropdownMenuItem>
                   )}
                 </DropdownMenuContent>
@@ -94,8 +100,8 @@ export function OAuthClientCard({ client, onClick, onEdit, onDelete }: OAuthClie
       <CardContent>
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
           <span className="tabular-nums">{truncatedId}</span>
-          <span>Created {createdAgo}</span>
-          <span>{client.isConfidential ? "Confidential" : "Public"}</span>
+          <span>{t("oauth.ui.card.created", { ago: createdAgo })}</span>
+          <span>{client.isConfidential ? t("oauth.ui.card.confidential") : t("oauth.ui.card.public")}</span>
         </div>
       </CardContent>
     </Card>

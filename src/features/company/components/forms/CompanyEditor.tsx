@@ -182,7 +182,7 @@ function CompanyEditorInternal({
         }
 
         if (fiscalRef.current && !fiscalRef.current.validate()) {
-          throw new Error("Fiscal data validation failed");
+          throw new Error(t("company.fiscal_data_invalid"));
         }
 
         const payload: CompanyInput = {
@@ -230,7 +230,7 @@ function CompanyEditorInternal({
                   {file || company?.logo ? (
                     <Image
                       src={file ? URL.createObjectURL(file) : company?.logo || ""}
-                      alt="Company Logo"
+                      alt={t("company.logo_alt")}
                       width={200}
                       height={200}
                       unoptimized={isRemoteImageSrc(file ? undefined : company?.logo)}

@@ -1,6 +1,7 @@
 "use client";
 
 import { FileIcon, FileImageIcon, FileSpreadsheetIcon, FileTextIcon, UploadIcon, XIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { DropzoneOptions } from "react-dropzone";
@@ -70,6 +71,7 @@ export default function MultiFileUploader({ files, setFiles, multiple = false, c
 }
 
 const FilePreviewItem = ({ file, onRemoveClick }: { file: File; onRemoveClick: () => void }) => {
+  const t = useTranslations();
   const [objectUrl, setObjectUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -106,7 +108,7 @@ const FilePreviewItem = ({ file, onRemoveClick }: { file: File; onRemoveClick: (
       <button
         onClick={onRemoveClick}
         className="absolute top-1.5 end-1.5 z-20 rounded-full bg-black/60 p-1 text-white opacity-0 transition-all duration-200 ease-in-out group-hover:opacity-100 hover:bg-red-600 focus:outline-none"
-        aria-label="Remove file"
+        aria-label={t("ui.labels.remove_file")}
       >
         <XIcon className="h-3.5 w-3.5" />
       </button>

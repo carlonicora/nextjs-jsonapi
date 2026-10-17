@@ -49,7 +49,7 @@ export function ForgotPassword() {
       await AuthService.initialiseForgotPassword(payload);
       setShowConfirmation(true);
     } catch (e) {
-      errorToast({ error: e });
+      errorToast({ title: t("common.errors.error"), error: e });
     }
   };
 

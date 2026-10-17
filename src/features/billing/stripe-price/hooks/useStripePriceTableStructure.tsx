@@ -7,7 +7,7 @@ import { useMemo } from "react";
 import { Modules } from "../../../../core";
 import { registerTableGenerator, TableContent, usePageUrlGenerator, UseTableStructureHook } from "../../../../hooks";
 import { Badge, Button, Link } from "../../../../shadcnui";
-import { formatCurrency, formatInterval } from "../../components/utils/currency";
+import { formatCurrency, formatInterval, useBillingFormatOptions } from "../../components/utils";
 import { StripePriceFields } from "../data/stripe-price.fields";
 import { StripePriceInterface } from "../data/stripe-price.interface";
 
@@ -31,6 +31,7 @@ export const useStripePriceTableStructure: UseTableStructureHook<StripePriceInte
   params,
 ) => {
   const t = useTranslations();
+  const fmt = useBillingFormatOptions();
   const generateUrl = usePageUrlGenerator();
 
   const onClone = params.context?.onClone as StripePriceRowActions["onClone"];
@@ -56,7 +57,7 @@ export const useStripePriceTableStructure: UseTableStructureHook<StripePriceInte
         const price: StripePriceInterface = row.original.jsonApiData;
         return (
           <Link href={generateUrl({ page: Modules.StripePrice, id: price.id })}>
-            {price.nickname ?? formatCurrency(price.unitAmount, price.currency)}
+            {price.nickname ?? formatCurrency(price.unitAmount, price.currency, fmt)}
           </Link>
         );
       },
@@ -72,7 +73,7 @@ export const useStripePriceTableStructure: UseTableStructureHook<StripePriceInte
         // Typography role 15 (numeric): tabular-nums, end-aligned. NEVER font-mono.
         return (
           <span className="block text-xs tabular-nums text-end">
-            {formatCurrency(price.unitAmount, price.currency)}
+            {formatCurrency(price.unitAmount, price.currency, fmt)}
           </span>
         );
       },
@@ -86,7 +87,7 @@ export const useStripePriceTableStructure: UseTableStructureHook<StripePriceInte
       cell: ({ row }: { row: TableContent<StripePriceInterface> }) => {
         const price: StripePriceInterface = row.original.jsonApiData;
         // Typography role 8 (UI chrome): single-line, plain text-xs.
-        return <span className="text-xs">{formatInterval(price)}</span>;
+        return <span className="text-xs">{formatInterval(price, fmt)}</span>;
       },
       enableSorting: false,
       enableHiding: false,
@@ -175,7 +176,7 @@ export const useStripePriceTableStructure: UseTableStructureHook<StripePriceInte
     return params.fields.map((field) => fieldColumnMap[field]?.()).filter((col) => col !== undefined) as ColumnDef<
       TableContent<StripePriceInterface>
     >[];
-  }, [params.fields, fieldColumnMap, t, generateUrl, onClone, onExport]);
+  }, [params.fields, fieldColumnMap, t, fmt, generateUrl, onClone, onExport]);
 
   return useMemo(() => ({ data: tableData, columns: columns }), [tableData, columns]);
 };

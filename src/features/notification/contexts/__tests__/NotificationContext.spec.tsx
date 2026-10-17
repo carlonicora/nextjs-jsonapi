@@ -125,6 +125,19 @@ describe("NotificationContextProvider failed load", () => {
     expect(result.current.notifications).toEqual([]);
     expect(result.current.error).toBe("500:");
   });
+
+  it("words a failure without a message through the translator, not an English literal", async () => {
+    vi.mocked(NotificationService.findMany).mockRejectedValue("offline");
+
+    const { result } = renderHook(() => useNotificationContext(), { wrapper });
+
+    await act(async () => {
+      await result.current.loadNotifications();
+    });
+
+    // The suite's next-intl mock returns the key itself.
+    expect(result.current.error).toBe("notification.ui.errors.load");
+  });
 });
 
 describe("NotificationContextProvider first render", () => {

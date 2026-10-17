@@ -1,7 +1,8 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useAtomValue, useSetAtom } from "jotai";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   oauthClientByIdAtom,
   removeOAuthClientAtom,
@@ -49,6 +50,11 @@ export function useOAuthClient(clientId: string): UseOAuthClientReturn {
   const updateClientInStore = useSetAtom(updateOAuthClientAtom);
   const removeClientFromStore = useSetAtom(removeOAuthClientAtom);
   const setNewClientSecret = useSetAtom(setNewClientSecretAtom);
+  const t = useTranslations();
+  // A ref, not a dependency: the translator must not re-create the callbacks below
+  // (they drive effects that refetch), it only words the fallback errors.
+  const tRef = useRef(t);
+  tRef.current = t;
 
   // Local state for fetched client (if not in store)
   const [fetchedClient, setFetchedClient] = useState<OAuthClientInterface | null>(null);
@@ -68,7 +74,7 @@ export function useOAuthClient(clientId: string): UseOAuthClientReturn {
       setFetchedClient(fetched);
     } catch (err) {
       console.error("[useOAuthClient] Failed to fetch client:", err);
-      setError(err instanceof Error ? err : new Error("Failed to fetch OAuth client"));
+      setError(err instanceof Error ? err : new Error(tRef.current("oauth.ui.errors.fetch_client")));
     } finally {
       setIsLoading(false);
     }
@@ -94,7 +100,7 @@ export function useOAuthClient(clientId: string): UseOAuthClientReturn {
         setFetchedClient(updated);
       } catch (err) {
         console.error("[useOAuthClient] Failed to update client:", err);
-        const error = err instanceof Error ? err : new Error("Failed to update OAuth client");
+        const error = err instanceof Error ? err : new Error(tRef.current("oauth.ui.errors.update_client"));
         setError(error);
         throw error;
       } finally {
@@ -115,7 +121,7 @@ export function useOAuthClient(clientId: string): UseOAuthClientReturn {
       removeClientFromStore(clientId);
     } catch (err) {
       console.error("[useOAuthClient] Failed to delete client:", err);
-      const error = err instanceof Error ? err : new Error("Failed to delete OAuth client");
+      const error = err instanceof Error ? err : new Error(tRef.current("oauth.ui.errors.delete_client"));
       setError(error);
       throw error;
     } finally {
@@ -141,7 +147,7 @@ export function useOAuthClient(clientId: string): UseOAuthClientReturn {
       return result.clientSecret;
     } catch (err) {
       console.error("[useOAuthClient] Failed to regenerate secret:", err);
-      const error = err instanceof Error ? err : new Error("Failed to regenerate client secret");
+      const error = err instanceof Error ? err : new Error(tRef.current("oauth.ui.errors.regenerate_secret"));
       setError(error);
       throw error;
     } finally {

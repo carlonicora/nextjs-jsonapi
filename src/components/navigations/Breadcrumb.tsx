@@ -34,6 +34,7 @@ function BreadcrumbDesktop({
   rootLabel: string;
   showRoot: boolean;
 }) {
+  const t = useTranslations();
   const [open, setOpen] = useState<boolean>(false);
 
   return (
@@ -62,8 +63,8 @@ function BreadcrumbDesktop({
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <DropdownMenu open={open} onOpenChange={setOpen}>
-                <DropdownMenuTrigger className="flex items-center gap-1" aria-label="Toggle menu">
-                  <BreadcrumbEllipsis className="h-4 w-4" />
+                <DropdownMenuTrigger className="flex items-center gap-1" aria-label={t("ui.labels.toggle_menu")}>
+                  <BreadcrumbEllipsis className="h-4 w-4" label={t("ui.labels.more")} />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
                   {items.slice(1, -ITEMS_TO_DISPLAY + 2).map((item, index) => (

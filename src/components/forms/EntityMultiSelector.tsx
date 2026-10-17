@@ -2,6 +2,7 @@
 
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useWatch } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { CheckIcon, ChevronDownIcon, SearchIcon, XIcon } from "lucide-react";
 import { Badge } from "../../shadcnui/ui/badge";
 import { Input } from "../../shadcnui/ui/input";
@@ -43,8 +44,8 @@ export function EntityMultiSelector<T extends { id: string }>({
   id,
   form,
   label,
-  placeholder = "Search...",
-  emptyText = "No results found.",
+  placeholder: placeholderProp,
+  emptyText: emptyTextProp,
   isRequired = false,
   retriever,
   retrieverParams = {},
@@ -59,6 +60,9 @@ export function EntityMultiSelector<T extends { id: string }>({
   description,
   disabled = false,
 }: EntityMultiSelectorProps<T>) {
+  const t = useTranslations();
+  const placeholder = placeholderProp ?? t("ui.search.placeholder_global");
+  const emptyText = emptyTextProp ?? t("ui.search.no_results_found");
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [options, setOptions] = useState<OptionData<T>[]>([]);

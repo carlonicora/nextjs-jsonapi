@@ -2,6 +2,25 @@ import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ApprovalActionCard } from "../ApprovalActionCard";
 
+/**
+ * A message catalogue the test fills in. Keys it does not hold behave like a
+ * host app without them: `t()` hands back the key path and `t.has()` is false,
+ * so the card must fall back to the humanised attribute name.
+ */
+const messages = vi.hoisted(() => ({}) as Record<string, string>);
+
+vi.mock("next-intl", () => {
+  const t = (key: string) => messages[key] ?? key;
+  (t as unknown as { has: (key: string) => boolean }).has = (key: string) => key in messages;
+  return {
+    useTranslations: () => t,
+    useLocale: () => "en",
+    useNow: () => new Date(),
+    useTimeZone: () => "UTC",
+    useFormatter: () => ({ dateTime: vi.fn(), number: vi.fn(), relativeTime: vi.fn() }),
+  };
+});
+
 const findOne = vi.fn();
 const approve = vi.fn();
 const deny = vi.fn();
@@ -45,6 +64,7 @@ function makeAction(overrides: Record<string, unknown> = {}) {
 
 describe("ApprovalActionCard", () => {
   beforeEach(() => {
+    for (const key of Object.keys(messages)) delete messages[key];
     findOne.mockReset();
     approve.mockReset();
     deny.mockReset();
@@ -252,6 +272,67 @@ describe("ApprovalActionCard", () => {
     // relationships from toolArgs carry ids only — no row, and no id on screen
     expect(screen.queryByText("Related")).not.toBeInTheDocument();
     expect(screen.queryByText(UUID_LIKE)).toBeNull();
+  });
+
+  it("labels fields with the entity editor's own message keys when the app defines them", async () => {
+    Object.assign(messages, {
+      "features.npc.fields.name.label": "Nome",
+      "features.npc.fields.tldr.label": "Riassunto",
+      "entities.npcs": "PNG",
+    });
+    findOne.mockResolvedValue(makeAction());
+
+    render(<ApprovalActionCard actionId="act-1" />);
+
+    expect(await screen.findByText("Nome")).toBeInTheDocument();
+    expect(screen.getByText("Riassunto")).toBeInTheDocument();
+    // `related` has no editor key and no generic key: humanised, as before
+    expect(screen.getByText("Related")).toBeInTheDocument();
+    expect(screen.queryByText("Name")).toBeNull();
+    expect(screen.queryByText("Tldr")).toBeNull();
+  });
+
+  it("falls back to the generic ui.fields key, and finds editor keys for irregular plurals", async () => {
+    Object.assign(messages, {
+      "ui.fields.related": "Collegati",
+      "features.knife.fields.name.label": "Nome del gancio",
+    });
+    findOne.mockResolvedValue(
+      makeAction({
+        proposal: JSON.stringify({
+          type: "knives",
+          attributes: { name: "The sister left behind", publicDescription: "Visible" },
+          relationships: { related: [{ id: "r1", type: "npcs", label: "Zoe" }] },
+        }),
+      }),
+    );
+
+    render(<ApprovalActionCard actionId="act-1" />);
+
+    expect(await screen.findByText("Nome del gancio")).toBeInTheDocument();
+    expect(screen.getByText("Collegati")).toBeInTheDocument();
+    // no key anywhere: the humanised attribute name, unchanged
+    expect(screen.getByText("Public Description")).toBeInTheDocument();
+  });
+
+  it("translates the relationship name on a link proposal", async () => {
+    Object.assign(messages, { "features.clue.fields.containedInScene.label": "Contenuto nella scena" });
+    findOne.mockResolvedValue(
+      makeAction({
+        toolName: "link_entities",
+        proposal: JSON.stringify({
+          type: "clues",
+          target: { id: "c1", type: "clues", label: "Bloody knife" },
+          relationship: "containedInScene",
+          targets: [{ id: "s1", type: "scenes", label: "The docks" }],
+        }),
+      }),
+    );
+
+    render(<ApprovalActionCard actionId="act-1" />);
+
+    expect(await screen.findByText("Contenuto nella scena")).toBeInTheDocument();
+    expect(screen.getByText("The docks")).toBeInTheDocument();
   });
 
   it("still renders the summary and the buttons when neither payload parses", async () => {

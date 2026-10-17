@@ -18,6 +18,7 @@ import {
 } from "../ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Separator } from "../ui/separator";
+import { useUiText } from "../ui/use-ui-text";
 
 /**
  * Variants for the multi-select component to handle different styles.
@@ -91,9 +92,24 @@ interface MultiSelectProps
 
   /**
    * Placeholder text to be displayed when no values are selected.
-   * Optional, defaults to "Select options".
+   * Optional, defaults to `ui.labels.select_options`, else "Select options".
    */
   placeholder?: string;
+
+  /** Placeholder of the search input. Defaults to `ui.search.placeholder_global`, else "Search...". */
+  searchPlaceholder?: string;
+
+  /** Text of the select-all row. Defaults to `ui.labels.select_all`, else "(Select All)". */
+  selectAllLabel?: string;
+
+  /** Text of the clear row. Defaults to `ui.buttons.clear`, else "Clear". */
+  clearLabel?: string;
+
+  /** Text of the close row. Defaults to `ui.labels.close`, else "Close". */
+  closeLabel?: string;
+
+  /** Text of the overflow badge. Defaults to `ui.labels.more_count`, else "+ {count} more". */
+  formatMoreLabel?: (count: number) => string;
 
   /**
    * Animation duration in seconds for the visual effects (e.g., bouncing badges).
@@ -134,13 +150,13 @@ interface MultiSelectProps
 
   /**
    * Text to display when loading.
-   * Optional, defaults to "Searching...".
+   * Optional, defaults to `ui.labels.searching`, else "Searching...".
    */
   loadingText?: string;
 
   /**
    * Text to display when no results are found.
-   * Optional, defaults to "No results found.".
+   * Optional, defaults to `ui.search.no_results_found`, else "No results found.".
    */
   emptyText?: string;
 
@@ -166,21 +182,38 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
       variant,
       defaultValue = [],
       value,
-      placeholder = "Select options",
+      placeholder: placeholderProp,
       animation = 0,
       maxCount = 3,
       modalPopover = false,
       className,
       onSearchChange,
       loading = false,
-      loadingText = "Searching...",
-      emptyText = "No results found.",
+      loadingText: loadingTextProp,
+      emptyText: emptyTextProp,
+      searchPlaceholder: searchPlaceholderProp,
+      selectAllLabel: selectAllLabelProp,
+      clearLabel: clearLabelProp,
+      closeLabel: closeLabelProp,
+      formatMoreLabel,
       hideSelectAll = false,
       isOptionSelected,
       ...props
     },
     _ref,
   ) => {
+    // Chrome text: an explicit prop wins, else the app's translation, else English.
+    const uiText = useUiText();
+    const placeholder = placeholderProp ?? uiText("ui.labels.select_options", "Select options");
+    const loadingText = loadingTextProp ?? uiText("ui.labels.searching", "Searching...");
+    const emptyText = emptyTextProp ?? uiText("ui.search.no_results_found", "No results found.");
+    const searchPlaceholder = searchPlaceholderProp ?? uiText("ui.search.placeholder_global", "Search...");
+    const selectAllLabel = selectAllLabelProp ?? uiText("ui.labels.select_all", "(Select All)");
+    const clearLabel = clearLabelProp ?? uiText("ui.buttons.clear", "Clear");
+    const closeLabel = closeLabelProp ?? uiText("ui.labels.close", "Close");
+    const moreLabel = (count: number) =>
+      formatMoreLabel ? formatMoreLabel(count) : uiText("ui.labels.more_count", "+ {count} more", { count });
+
     // Using internal state only if value prop is not provided (uncontrolled mode)
     const [internalSelectedValues, setInternalSelectedValues] = React.useState<string[]>(defaultValue);
 
@@ -331,7 +364,7 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
                     )}
                     style={{ animationDuration: `${animation}s` }}
                   >
-                    {`+ ${selectedValues.length - maxCount} more`}
+                    {moreLabel(selectedValues.length - maxCount)}
                     <XCircle
                       data-remove-button
                       className="ms-2 h-4 w-4 cursor-pointer"
@@ -381,7 +414,7 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
           <Command filter={commandFilterByKeywords}>
             <CommandInput
               autoFocus
-              placeholder="Search..."
+              placeholder={searchPlaceholder}
               onKeyDown={handleInputKeyDown}
               onValueChange={onSearchChange}
             />
@@ -397,7 +430,7 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
                   <CommandItem
                     key="all"
                     value={SELECT_ALL_VALUE}
-                    keywords={["(Select All)"]}
+                    keywords={[selectAllLabel]}
                     onSelect={toggleAll}
                     className="cursor-pointer hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent"
                   >
@@ -411,7 +444,7 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
                     >
                       <CheckIcon className="h-4 w-4" />
                     </div>
-                    <span>(Select All)</span>
+                    <span>{selectAllLabel}</span>
                   </CommandItem>
                 )}
                 {options.map((option) => {
@@ -449,22 +482,22 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
                     <>
                       <CommandItem
                         value={CLEAR_VALUE}
-                        keywords={["Clear"]}
+                        keywords={[clearLabel]}
                         onSelect={handleClear}
                         className="flex-1 cursor-pointer justify-center"
                       >
-                        Clear
+                        {clearLabel}
                       </CommandItem>
                       <Separator orientation="vertical" className="flex h-full min-h-6" />
                     </>
                   )}
                   <CommandItem
                     value={CLOSE_VALUE}
-                    keywords={["Close"]}
+                    keywords={[closeLabel]}
                     onSelect={() => setIsPopoverOpen(false)}
                     className="max-w-full flex-1 cursor-pointer justify-center hover:bg-muted data-selected:hover:bg-muted bg-transparent data-selected:bg-transparent"
                   >
-                    Close
+                    {closeLabel}
                   </CommandItem>
                 </div>
               </CommandGroup>

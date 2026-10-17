@@ -50,11 +50,11 @@ function withShared(node: React.ReactNode) {
 describe("Header", () => {
   it("renders the sidebar toggle inside a SidebarProvider", () => {
     render(withShared(<SidebarProvider>{<Header />}</SidebarProvider>));
-    expect(screen.queryByRole("button", { name: "Toggle sidebar" })).not.toBeNull();
+    expect(screen.queryByRole("button", { name: "ui.labels.toggle_sidebar" })).not.toBeNull();
   });
 
   it("renders without a SidebarProvider and shows no sidebar toggle", () => {
     expect(() => render(withShared(<Header />))).not.toThrow();
-    expect(screen.queryByRole("button", { name: "Toggle sidebar" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "ui.labels.toggle_sidebar" })).toBeNull();
   });
 });

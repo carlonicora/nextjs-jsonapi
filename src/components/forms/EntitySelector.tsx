@@ -2,6 +2,7 @@
 
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { CircleX, Plus, RefreshCwIcon, SearchIcon, XIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Command, CommandItem, CommandList } from "../../shadcnui/ui/command";
 import { Input } from "../../shadcnui/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "../../shadcnui/ui/popover";
@@ -46,7 +47,7 @@ export default function EntitySelector<T extends BaseEntity>({
   ready = true,
   getLabel = (entity: T) => (entity as any).name,
   label,
-  placeholder = "Search...",
+  placeholder: placeholderProp,
   emptyText,
   isRequired = false,
   disabled = false,
@@ -62,6 +63,8 @@ export default function EntitySelector<T extends BaseEntity>({
   autoSelectSingle = false,
   useFormWatch: shouldUseFormWatch = false,
 }: EntitySelectorProps<T>) {
+  const t = useTranslations();
+  const placeholder = placeholderProp ?? t("ui.search.placeholder_global");
   const [open, setOpen] = useState<boolean>(false);
   const searchTermRef = useRef<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");

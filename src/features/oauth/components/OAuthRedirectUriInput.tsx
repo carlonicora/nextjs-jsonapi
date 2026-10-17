@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useCallback } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Button, Input, Label } from "../../../shadcnui";
@@ -67,8 +68,10 @@ export function OAuthRedirectUriInput({
   onChange,
   error,
   disabled = false,
-  label = "Redirect URIs",
+  label: labelProp,
 }: OAuthRedirectUriInputProps) {
+  const t = useTranslations();
+  const label = labelProp ?? t("oauth.ui.redirect_uris.label");
   const handleAdd = useCallback(() => {
     onChange([...value, ""]);
   }, [value, onChange]);
@@ -94,10 +97,7 @@ export function OAuthRedirectUriInput({
   return (
     <div className="space-y-2">
       <Label>{label} *</Label>
-      <p className="text-sm text-muted-foreground">
-        Enter the URIs where users will be redirected after authorization. Use https:// for production, or custom
-        schemes for mobile apps.
-      </p>
+      <p className="text-sm text-muted-foreground">{t("oauth.ui.redirect_uris.help")}</p>
 
       <div className="space-y-2">
         {value.map((uri, index) => {
@@ -109,15 +109,11 @@ export function OAuthRedirectUriInput({
                 <Input
                   value={uri}
                   onChange={(e) => handleChange(index, e.target.value)}
-                  placeholder="https://example.com/callback or myapp://oauth"
+                  placeholder={t("oauth.ui.redirect_uris.placeholder")}
                   disabled={disabled}
                   className={!isValid ? "border-destructive" : ""}
                 />
-                {!isValid && (
-                  <p className="text-xs text-destructive mt-1">
-                    Must be https://, http://localhost, or a custom scheme (app://)
-                  </p>
-                )}
+                {!isValid && <p className="text-xs text-destructive mt-1">{t("oauth.ui.redirect_uris.invalid")}</p>}
               </div>
               <Button
                 type="button"
@@ -125,7 +121,7 @@ export function OAuthRedirectUriInput({
                 size="icon"
                 onClick={() => handleRemove(index)}
                 disabled={disabled || value.length === 1}
-                title="Remove URI"
+                title={t("oauth.ui.redirect_uris.remove")}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -136,7 +132,7 @@ export function OAuthRedirectUriInput({
 
       <Button type="button" variant="outline" size="sm" onClick={handleAdd} disabled={disabled} className="mt-2">
         <Plus className="h-4 w-4 me-2" />
-        Add Redirect URI
+        {t("oauth.ui.redirect_uris.add")}
       </Button>
 
       {error && <p className="text-destructive text-xs/relaxed">{error}</p>}

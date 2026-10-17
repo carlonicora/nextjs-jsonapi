@@ -106,8 +106,8 @@ export function ResetPassword() {
         ) : (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <FormPassword form={form} id="password" name={"Password"} />
-              <FormPassword form={form} id="passwordRetype" name={"Retype Password"} />
+              <FormPassword form={form} id="password" name={t(`user.fields.password.label`)} />
+              <FormPassword form={form} id="passwordRetype" name={t(`auth.fields.retype_password.retype_label`)} />
               <Button className="mt-4 w-full" type={"submit"}>
                 {t(`auth.buttons.reset_password`)}
               </Button>

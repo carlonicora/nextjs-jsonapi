@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { useMobileNavigationItems, type MobileNavigationItem } from "../../contexts/MobileNavigationContext";
 import { Link } from "../../shadcnui";
@@ -50,6 +51,7 @@ function SlotContent({ item }: { item: MobileNavigationItem }) {
  * the end of the page.
  */
 export function MobileNavigationBar({ className }: { className?: string } = {}) {
+  const t = useTranslations();
   const items = useMobileNavigationItems();
   const isMobile = useIsMobile();
   const pathname = usePathname();
@@ -68,7 +70,7 @@ export function MobileNavigationBar({ className }: { className?: string } = {}) 
   // bar when held by the shell instead.
   return (
     <nav
-      aria-label="Primary"
+      aria-label={t("ui.labels.primary_navigation")}
       data-testid="mobile-navigation-bar"
       data-help="shell.mobile-nav"
       className={cn("bg-sidebar flex w-full shrink-0 flex-row items-stretch rounded-lg border", className)}

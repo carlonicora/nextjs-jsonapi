@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Eye, Pencil, Image, Upload, Film, FolderPlus, User, Shield, LucideIcon } from "lucide-react";
+import { useOAuthScopeText } from "../../hooks/useOAuthScopeText";
 import { OAuthScopeInfo } from "../../interfaces/oauth.interface";
 import { MicroLabel } from "../../../../components/typography";
 
@@ -27,6 +28,7 @@ const SCOPE_ICONS: Record<string, LucideIcon> = {
  */
 export function OAuthScopeList({ scopes }: OAuthScopeListProps) {
   const t = useTranslations();
+  const scopeText = useOAuthScopeText();
 
   if (scopes.length === 0) {
     return null;
@@ -47,8 +49,8 @@ export function OAuthScopeList({ scopes }: OAuthScopeListProps) {
                 </div>
               </div>
               <div className="flex-1">
-                <p className="font-medium">{scope.name}</p>
-                <p className="text-sm text-muted-foreground">{scope.description}</p>
+                <p className="font-medium">{scopeText(scope).name}</p>
+                <p className="text-sm text-muted-foreground">{scopeText(scope).description}</p>
               </div>
             </li>
           );

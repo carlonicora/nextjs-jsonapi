@@ -24,7 +24,7 @@ export function HelpArticleBody(props: {
   return (
     <article className="prose dark:prose-invert max-w-none">
       <nav className="text-muted-foreground mb-2 text-xs">
-        <Link href={generateUrl({ page: "/help" })}>Help</Link>
+        <Link href={generateUrl({ page: "/help" })}>{t("help.title")}</Link>
         {" · "}
         <Link href={generateUrl({ page: `/help/${howToType}` })}>{t(`help.modes.${howToType}`)}</Link>
       </nav>

@@ -38,7 +38,7 @@ export function PasskeyButton({ pendingToken, onSuccess, onError, disabled = fal
 
       onSuccess(auth);
     } catch (error) {
-      onError(error instanceof Error ? error : new Error("Passkey authentication failed"));
+      onError(error instanceof Error ? error : new Error(t("auth.two_factor.passkey_failed")));
     } finally {
       setIsLoading(false);
     }

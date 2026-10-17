@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "../../../../../shadcnui";
 import { StripeProductInterface, StripeProductService } from "../../../stripe-product";
@@ -30,6 +31,7 @@ export function WizardStepPlanSelection({
   onNext,
   isProcessing,
 }: WizardStepPlanSelectionProps) {
+  const t = useTranslations();
   const [products, setProducts] = useState<StripeProductInterface[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -100,7 +102,7 @@ export function WizardStepPlanSelection({
       {/* Action Buttons */}
       <div className="flex justify-end pt-4 border-t">
         <Button onClick={onNext} disabled={!selectedPrice || isProcessing}>
-          {isProcessing ? "Loading..." : "Next: Review"}
+          {isProcessing ? t("common.loading") : t("billing.ui.wizard.next_review")}
         </Button>
       </div>
     </div>

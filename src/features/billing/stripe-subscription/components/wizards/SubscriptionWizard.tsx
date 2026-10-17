@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../../../../../shadcnui";
 import { StripeSubscriptionInterface } from "../../data";
@@ -24,6 +25,7 @@ export function SubscriptionWizard({
   hasActiveRecurringSubscription,
   subscription,
 }: SubscriptionWizardProps) {
+  const t = useTranslations();
   const handleClose = useCallback(() => onOpenChange(false), [onOpenChange]);
 
   const { state, actions } = useSubscriptionWizard({
@@ -57,16 +59,16 @@ export function SubscriptionWizard({
   const isChangePlanMode = !!subscription;
 
   const dialogTitle = subscription
-    ? "Change Subscription Plan"
+    ? t("billing.ui.wizard.change_title")
     : isPurchasingAddons
-      ? "Purchase Add-ons"
-      : "Subscribe to a Plan";
+      ? t("billing.ui.subscriptions.purchase_addons")
+      : t("billing.ui.subscriptions.subscribe");
 
   const dialogDescription = subscription
-    ? "Select a new plan for your subscription"
+    ? t("billing.ui.wizard.change_description")
     : isPurchasingAddons
-      ? "Select one-time products to purchase"
-      : "Choose a subscription plan to get started";
+      ? t("billing.ui.wizard.addons_description")
+      : t("billing.ui.wizard.subscribe_description");
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

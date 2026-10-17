@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { MoreVertical } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
@@ -37,6 +38,7 @@ const brandIcons: Record<string, string> = {
 };
 
 export function PaymentMethodCard({ paymentMethod, onUpdate }: PaymentMethodCardProps) {
+  const t = useTranslations();
   const [loading, setLoading] = useState<boolean>(false);
   const [customer, setCustomer] = useState<StripeCustomerInterface | null>(null);
   const [showRemoveDialog, setShowRemoveDialog] = useState<boolean>(false);
@@ -92,7 +94,7 @@ export function PaymentMethodCard({ paymentMethod, onUpdate }: PaymentMethodCard
         {/* Default Badge */}
         {isDefault && (
           <Badge variant="softGreen" className="absolute end-2 top-2">
-            Default
+            {t("billing.ui.payment_methods.default")}
           </Badge>
         )}
 
@@ -117,7 +119,7 @@ export function PaymentMethodCard({ paymentMethod, onUpdate }: PaymentMethodCard
             <DropdownMenuContent align="end">
               {!isDefault && (
                 <DropdownMenuItem onClick={handleSetDefault} disabled={loading}>
-                  Set as Default
+                  {t("billing.ui.payment_methods.set_default")}
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem
@@ -125,7 +127,7 @@ export function PaymentMethodCard({ paymentMethod, onUpdate }: PaymentMethodCard
                 disabled={loading}
                 className="text-destructive"
               >
-                Remove
+                {t("ui.buttons.remove")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -135,7 +137,7 @@ export function PaymentMethodCard({ paymentMethod, onUpdate }: PaymentMethodCard
           <div className="flex flex-col gap-y-1">
             <p className="text-lg font-semibold">•••• {last4}</p>
             <p className="text-sm text-muted-foreground">
-              Expires {String(expMonth).padStart(2, "0")}/{expYear}
+              {t("billing.ui.payment_method.expires", { date: `${String(expMonth).padStart(2, "0")}/${expYear}` })}
             </p>
           </div>
         </CardContent>
@@ -145,16 +147,16 @@ export function PaymentMethodCard({ paymentMethod, onUpdate }: PaymentMethodCard
       <AlertDialog open={showRemoveDialog} onOpenChange={setShowRemoveDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Remove Payment Method</AlertDialogTitle>
+            <AlertDialogTitle>{t("billing.ui.payment_methods.remove_title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to remove this payment method? This action cannot be undone.
-              {isDefault && " This is your default payment method."}
+              {t("billing.ui.payment_methods.remove_description")}
+              {isDefault && ` ${t("billing.ui.payment_methods.remove_default_warning")}`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={loading}>{t("ui.buttons.cancel")}</AlertDialogCancel>
             <AlertDialogAction onClick={handleRemove} disabled={loading} className="bg-red-600 hover:bg-red-700">
-              {loading ? "Removing..." : "Remove"}
+              {loading ? t("billing.ui.payment_methods.removing") : t("ui.buttons.remove")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

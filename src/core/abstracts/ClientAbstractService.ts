@@ -10,6 +10,7 @@ import {
   ClientJsonApiDelete,
 } from "../../client/JsonApiClient";
 import { setLastApiResponse } from "./lastApiResponse";
+import { getI18nSupportedLocales } from "../../i18n/config";
 // Duplicated to avoid importing from AbstractService which pulls in server code
 // These are exported so client services can import them from here instead of core
 export enum ClientHttpMethod {
@@ -72,8 +73,8 @@ export abstract class ClientAbstractService {
     const pathSegments = window.location.pathname.split("/").filter(Boolean);
     const urlLocale = pathSegments[0];
 
-    // Validate against supported locales (currently only "en")
-    const supportedLocales = ["en"];
+    // Validate against the app's supported locales (default ["en"])
+    const supportedLocales = getI18nSupportedLocales();
     if (urlLocale && supportedLocales.includes(urlLocale)) {
       return urlLocale;
     }

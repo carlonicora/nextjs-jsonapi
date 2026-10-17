@@ -5,11 +5,12 @@ import { DetailField, SectionHeader } from "../../../../../components";
 import { Modules } from "../../../../../core";
 import { usePageUrlGenerator } from "../../../../../hooks";
 import { Badge, Link } from "../../../../../shadcnui";
-import { formatCurrency, formatInterval } from "../../../components/utils/currency";
+import { formatCurrency, formatInterval, useBillingFormatOptions } from "../../../components/utils";
 import { usePriceContext } from "../../../contexts/PriceContext";
 
 export function PriceDetails() {
   const t = useTranslations();
+  const fmt = useBillingFormatOptions();
   const generateUrl = usePageUrlGenerator();
   const { price } = usePriceContext();
 
@@ -49,14 +50,14 @@ export function PriceDetails() {
           />
           <DetailField
             label={t("billing.admin.prices.fields.amount")}
-            value={<span className="tabular-nums">{formatCurrency(price.unitAmount, price.currency)}</span>}
+            value={<span className="tabular-nums">{formatCurrency(price.unitAmount, price.currency, fmt)}</span>}
           />
           <DetailField label={t("billing.admin.prices.fields.currency")} value={price.currency.toUpperCase()} />
           <DetailField
             label={t("billing.admin.prices.fields.type")}
             value={isRecurring ? t("billing.admin.prices.type.recurring") : t("billing.admin.prices.type.oneTime")}
           />
-          <DetailField label={t("billing.admin.prices.fields.billing")} value={formatInterval(price)} />
+          <DetailField label={t("billing.admin.prices.fields.billing")} value={formatInterval(price, fmt)} />
           {isRecurring && (
             <DetailField
               label={t("billing.admin.prices.fields.intervalCount")}

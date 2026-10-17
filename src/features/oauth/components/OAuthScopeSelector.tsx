@@ -1,7 +1,9 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useCallback } from "react";
 import { Checkbox, Label } from "../../../shadcnui";
+import { useOAuthScopeText } from "../hooks/useOAuthScopeText";
 import { AVAILABLE_OAUTH_SCOPES, OAuthScopeInfo } from "../interfaces/oauth.interface";
 
 export interface OAuthScopeSelectorProps {
@@ -39,8 +41,11 @@ export function OAuthScopeSelector({
   availableScopes = AVAILABLE_OAUTH_SCOPES,
   disabled = false,
   error,
-  label = "Allowed Scopes",
+  label: labelProp,
 }: OAuthScopeSelectorProps) {
+  const t = useTranslations();
+  const scopeText = useOAuthScopeText();
+  const label = labelProp ?? t("oauth.ui.scope_selector.label");
   const handleToggle = useCallback(
     (scope: string, checked: boolean) => {
       if (checked) {
@@ -56,7 +61,7 @@ export function OAuthScopeSelector({
   const groupedScopes = availableScopes.reduce(
     (acc, scope) => {
       const [category] = scope.scope.split(":");
-      const groupName = category === scope.scope ? "General" : category;
+      const groupName = category === scope.scope ? t("oauth.ui.scope_selector.general") : category;
 
       if (!acc[groupName]) {
         acc[groupName] = [];
@@ -71,7 +76,7 @@ export function OAuthScopeSelector({
     <div className="space-y-4">
       <div>
         <Label>{label} *</Label>
-        <p className="text-sm text-muted-foreground">Select the permissions your application needs.</p>
+        <p className="text-sm text-muted-foreground">{t("oauth.ui.scope_selector.help")}</p>
       </div>
 
       <div className="space-y-4">
@@ -98,10 +103,14 @@ export function OAuthScopeSelector({
                     />
                     <div className="flex-1">
                       <Label htmlFor={`scope-${scopeInfo.scope}`} className="cursor-pointer">
-                        {scopeInfo.name}
-                        {isAdmin && <span className="ms-2 text-xs text-destructive">(Dangerous)</span>}
+                        {scopeText(scopeInfo).name}
+                        {isAdmin && (
+                          <span className="ms-2 text-xs text-destructive">
+                            {t("oauth.ui.scope_selector.dangerous")}
+                          </span>
+                        )}
                       </Label>
-                      <p className="text-xs text-muted-foreground">{scopeInfo.description}</p>
+                      <p className="text-xs text-muted-foreground">{scopeText(scopeInfo).description}</p>
                     </div>
                   </div>
                 );

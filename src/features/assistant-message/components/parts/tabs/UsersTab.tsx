@@ -101,7 +101,8 @@ export function UsersTab({ users, citations, sources }: Props) {
             return null;
           }
           const href = generate({ page: module, id: user.id });
-          const name = (user as any).name ?? (user as any).fullName ?? user.identifier ?? "User";
+          const name =
+            (user as any).name ?? (user as any).fullName ?? user.identifier ?? t("entities.users", { count: 1 });
           const avatarUrl = (user as any).avatar as string | undefined;
           const showCounts = citationCount > 0 || contentCount > 0;
           return (

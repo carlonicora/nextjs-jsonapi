@@ -38,7 +38,7 @@ export function WaitlistList({ fullWidth }: WaitlistListProps = {}) {
       showToast(t("waitlist.admin.invite_sent", { email: entry.email }));
       void data.refresh();
     } catch (error) {
-      errorToast({ error });
+      errorToast({ title: t("common.errors.error"), error });
     }
   };
 

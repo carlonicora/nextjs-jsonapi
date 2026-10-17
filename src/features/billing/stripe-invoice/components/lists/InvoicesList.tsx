@@ -1,8 +1,9 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../shadcnui";
-import { formatCurrency, formatDate } from "../../../components/utils";
+import { formatCurrency, formatDate, useBillingFormatOptions } from "../../../components/utils";
 import { StripeInvoiceInterface } from "../../data/stripe-invoice.interface";
 import { InvoiceDetails } from "../details/InvoiceDetails";
 import { InvoiceStatusBadge } from "../widgets/InvoiceStatusBadge";
@@ -13,6 +14,8 @@ type InvoicesListProps = {
 };
 
 export function InvoicesList({ invoices, onInvoicesChange }: InvoicesListProps) {
+  const t = useTranslations();
+  const fmt = useBillingFormatOptions();
   const [selectedInvoice, setSelectedInvoice] = useState<StripeInvoiceInterface | null>(null);
 
   const handleRowClick = (invoice: StripeInvoiceInterface) => {
@@ -33,19 +36,19 @@ export function InvoicesList({ invoices, onInvoicesChange }: InvoicesListProps) 
         <Table>
           <TableHeader className="bg-muted">
             <TableRow>
-              <TableHead>Invoice #</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-end">Amount</TableHead>
-              <TableHead>Period</TableHead>
+              <TableHead>{t("billing.ui.columns.invoice_number")}</TableHead>
+              <TableHead>{t("billing.ui.columns.date")}</TableHead>
+              <TableHead>{t("billing.ui.columns.status")}</TableHead>
+              <TableHead className="text-end">{t("billing.ui.columns.amount")}</TableHead>
+              <TableHead>{t("billing.ui.columns.period")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {invoices.map((invoice) => {
               const invoiceNumber = getInvoiceNumber(invoice);
-              const date = formatDate(invoice.periodStart);
-              const amount = formatCurrency(invoice.total, invoice.currency);
-              const period = `${formatDate(invoice.periodStart)} - ${formatDate(invoice.periodEnd)}`;
+              const date = formatDate(invoice.periodStart, fmt);
+              const amount = formatCurrency(invoice.total, invoice.currency, fmt);
+              const period = `${formatDate(invoice.periodStart, fmt)} - ${formatDate(invoice.periodEnd, fmt)}`;
 
               return (
                 <TableRow

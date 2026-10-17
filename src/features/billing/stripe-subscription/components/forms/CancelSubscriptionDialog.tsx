@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -14,7 +15,7 @@ import {
   DialogTitle,
   Form,
 } from "../../../../../shadcnui";
-import { formatDate } from "../../../components/utils";
+import { formatDate, useBillingFormatOptions } from "../../../components/utils";
 import { StripeSubscriptionInterface, StripeSubscriptionService } from "../../data";
 
 type CancelSubscriptionDialogProps = {
@@ -34,6 +35,8 @@ export function CancelSubscriptionDialog({
   onOpenChange,
   onSuccess,
 }: CancelSubscriptionDialogProps) {
+  const t = useTranslations();
+  const fmt = useBillingFormatOptions();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -61,38 +64,38 @@ export function CancelSubscriptionDialog({
     }
   };
 
-  const periodEndDate = formatDate(subscription.currentPeriodEnd);
+  const periodEndDate = formatDate(subscription.currentPeriodEnd, fmt);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Cancel Subscription</DialogTitle>
-          <DialogDescription>
-            Are you sure you want to cancel this subscription? This action cannot be undone.
-          </DialogDescription>
+          <DialogTitle>{t("billing.ui.subscription.cancel.title")}</DialogTitle>
+          <DialogDescription>{t("billing.ui.subscription.cancel.description")}</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-y-4">
             <div className="bg-primary/10 border-primary/30 text-foreground rounded-lg border p-3 text-sm">
-              Your subscription will remain active until {periodEndDate}. You can continue using the service until then.
+              {t("billing.ui.subscription.cancel.remains_active", { date: periodEndDate })}
             </div>
 
             <FormTextarea
               form={form}
               id="reason"
-              name="Reason (Optional)"
-              placeholder="Let us know why you're canceling..."
+              name={t("billing.ui.subscription.cancel.reason")}
+              placeholder={t("billing.ui.subscription.cancel.reason_placeholder")}
               className="min-h-24"
             />
 
             <div className="flex gap-x-2 justify-end pt-2">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
-                Keep Subscription
+                {t("billing.ui.subscription.cancel.keep")}
               </Button>
               <Button type="submit" variant="destructive" disabled={isSubmitting}>
-                {isSubmitting ? "Canceling..." : "Confirm Cancellation"}
+                {isSubmitting
+                  ? t("billing.ui.subscription.cancel.canceling")
+                  : t("billing.ui.subscription.cancel.confirm")}
               </Button>
             </div>
           </form>

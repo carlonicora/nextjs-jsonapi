@@ -8,6 +8,7 @@ import { resolvePhysicalSide, type LogicalSide } from "@/lib/direction";
 import { Button } from "@/components/ui/button";
 import { XIcon } from "lucide-react";
 import { useDir } from "../../contexts/DirectionContext";
+import { useUiText } from "./use-ui-text";
 
 function Sheet({ ...props }: SheetPrimitive.Root.Props) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />;
@@ -44,12 +45,16 @@ function SheetContent({
   // Logical default: identical to "right" in LTR, mirrors to the left in RTL.
   side = "end",
   showCloseButton = true,
+  closeLabel,
   ...props
 }: SheetPrimitive.Popup.Props & {
   side?: LogicalSide;
   showCloseButton?: boolean;
+  /** Screen-reader name of the close button. Defaults to `ui.labels.close`, else "Close". */
+  closeLabel?: string;
 }) {
   const dir = useDir();
+  const uiText = useUiText();
   const physicalSide = resolvePhysicalSide(side, dir);
 
   return (
@@ -85,7 +90,7 @@ function SheetContent({
             }
           >
             <XIcon />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">{closeLabel ?? uiText("ui.labels.close", "Close")}</span>
           </SheetPrimitive.Close>
         )}
       </SheetPrimitive.Popup>

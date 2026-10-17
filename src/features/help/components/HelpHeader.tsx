@@ -12,7 +12,7 @@ export function HelpHeader() {
   const { currentUser } = useCurrentUserContext();
   const { brand } = useHelp();
   const logo = brand?.logo;
-  const label = brand?.label ?? "Help";
+  const label = brand?.label ?? t("help.title");
   const appHref = brand?.appHref ?? "/";
 
   return (

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Plus, Key } from "lucide-react";
 import { Button, Skeleton } from "../../../shadcnui";
 import { SectionHeader } from "../../../components/typography";
@@ -38,9 +39,12 @@ export function OAuthClientList({
   onCreateClick,
   onEditClick,
   onDeleteClick,
-  emptyStateMessage = "No OAuth applications yet. Create one to get started.",
-  title = "OAuth Applications",
+  emptyStateMessage: emptyStateMessageProp,
+  title: titleProp,
 }: OAuthClientListProps) {
+  const t = useTranslations();
+  const emptyStateMessage = emptyStateMessageProp ?? t("oauth.ui.list.empty_message");
+  const title = titleProp ?? t("oauth.ui.list.title");
   // Loading state
   if (isLoading && clients.length === 0) {
     return (
@@ -81,18 +85,18 @@ export function OAuthClientList({
           {onCreateClick && (
             <Button onClick={onCreateClick}>
               <Plus className="h-4 w-4 me-2" />
-              New App
+              {t("oauth.ui.list.new_app")}
             </Button>
           )}
         </div>
         <div className="rounded-lg border border-dashed p-12 text-center">
           <Key className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-          <h3 className="text-lg font-medium mb-2">No OAuth Applications</h3>
+          <h3 className="text-lg font-medium mb-2">{t("oauth.ui.list.empty_title")}</h3>
           <p className="text-muted-foreground mb-4">{emptyStateMessage}</p>
           {onCreateClick && (
             <Button onClick={onCreateClick}>
               <Plus className="h-4 w-4 me-2" />
-              Create Application
+              {t("oauth.ui.list.create")}
             </Button>
           )}
         </div>
@@ -108,7 +112,7 @@ export function OAuthClientList({
         {onCreateClick && (
           <Button onClick={onCreateClick}>
             <Plus className="h-4 w-4 me-2" />
-            New App
+            {t("oauth.ui.list.new_app")}
           </Button>
         )}
       </div>

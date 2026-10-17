@@ -14,6 +14,7 @@ export class User extends AbstractApiData implements UserInterface, SearchResult
   private _avatarUrl?: string;
   private _phone?: string;
   private _rate?: number;
+  private _language?: string;
 
   private _isActivated?: boolean;
   private _isDeleted?: boolean;
@@ -62,6 +63,10 @@ export class User extends AbstractApiData implements UserInterface, SearchResult
     return this._rate;
   }
 
+  get language(): string | undefined {
+    return this._language;
+  }
+
   get relevance(): number | undefined {
     return this._relevance;
   }
@@ -103,6 +108,7 @@ export class User extends AbstractApiData implements UserInterface, SearchResult
     this._bio = data.jsonApi.attributes.bio;
     this._phone = data.jsonApi.attributes.phone;
     this._rate = data.jsonApi.attributes.rate;
+    this._language = data.jsonApi.attributes.language;
 
     this._avatar = data.jsonApi.attributes.avatar;
     this._avatarUrl = data.jsonApi.attributes.avatarUrl;
@@ -143,6 +149,7 @@ export class User extends AbstractApiData implements UserInterface, SearchResult
     if (data.adminCreated) response.data.attributes.adminCreated = true;
     if (data.avatar !== undefined) response.data.attributes.avatar = data.avatar;
     if (data.rate !== undefined) response.data.attributes.rate = data.rate;
+    if (data.language !== undefined) response.data.attributes.language = data.language;
 
     if (data.roleIds) {
       response.data.relationships.roles = {

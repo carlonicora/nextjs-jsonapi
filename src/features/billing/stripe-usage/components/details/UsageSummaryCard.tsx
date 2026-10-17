@@ -1,7 +1,9 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Activity } from "lucide-react";
 import { Card, CardContent, CardHeader } from "../../../../../shadcnui";
+import { type BillingFormatOptions, formatFixed, useBillingFormatOptions } from "../../../components/utils";
 import { MeterInterface, MeterSummaryInterface } from "../../data/stripe-usage.interface";
 
 type UsageSummaryCardProps = {
@@ -22,20 +24,22 @@ function getProgressColor(percentage: number | null): string {
 /**
  * Format a Unix timestamp to readable date
  */
-function formatDate(date: Date | undefined): string {
-  if (!date) return "N/A";
+function formatDate(date: Date | undefined, { locale, t }: Required<BillingFormatOptions>): string {
+  if (!date) return t("billing.ui.not_available");
 
   try {
-    return new Intl.DateTimeFormat("en-US", {
+    return new Intl.DateTimeFormat(locale, {
       month: "short",
       day: "numeric",
     }).format(new Date(date));
   } catch (_error) {
-    return "Invalid Date";
+    return t("billing.ui.invalid_date");
   }
 }
 
 export function UsageSummaryCard({ meter, summary }: UsageSummaryCardProps) {
+  const t = useTranslations();
+  const fmt = useBillingFormatOptions();
   const currentUsage = summary?.aggregatedValue ?? 0;
   const limit = (meter as any).limit; // Meters may have optional limit field
   const percentage = limit && limit > 0 ? (currentUsage / limit) * 100 : null;
@@ -60,8 +64,12 @@ export function UsageSummaryCard({ meter, summary }: UsageSummaryCardProps) {
       <CardContent className="flex flex-col gap-y-4">
         {/* Current Usage */}
         <div>
-          <p className="text-3xl font-bold">{currentUsage.toLocaleString()}</p>
-          {hasLimit && <p className="text-muted-foreground text-sm">of {limit.toLocaleString()} used</p>}
+          <p className="text-3xl font-bold">{currentUsage.toLocaleString(fmt.locale)}</p>
+          {hasLimit && (
+            <p className="text-muted-foreground text-sm">
+              {t("billing.ui.usage.of_limit_used", { limit: limit.toLocaleString(fmt.locale) })}
+            </p>
+          )}
         </div>
 
         {/* Progress Bar */}
@@ -70,17 +78,24 @@ export function UsageSummaryCard({ meter, summary }: UsageSummaryCardProps) {
             <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
               <div className={`h-full transition-all ${progressColor}`} style={{ width: `${progressWidth}%` }} />
             </div>
-            <p className="text-muted-foreground text-sm">{percentage?.toFixed(1)}% used</p>
+            <p className="text-muted-foreground text-sm">
+              {t("billing.ui.usage.percent_used", {
+                value: percentage !== null ? formatFixed(percentage, fmt.locale, 1) : "",
+              })}
+            </p>
           </div>
         ) : (
-          <p className="text-muted-foreground text-sm">No limit set</p>
+          <p className="text-muted-foreground text-sm">{t("billing.ui.usage.no_limit")}</p>
         )}
 
         {/* Period Information */}
         {summary && summary.start && summary.end && (
           <div className="border-t pt-3">
             <p className="text-muted-foreground text-xs">
-              Period: {formatDate(summary.start)} - {formatDate(summary.end)}
+              {t("billing.ui.usage.period", {
+                start: formatDate(summary.start, fmt),
+                end: formatDate(summary.end, fmt),
+              })}
             </p>
           </div>
         )}

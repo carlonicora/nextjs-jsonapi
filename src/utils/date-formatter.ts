@@ -18,6 +18,14 @@ export const formatLocalDate = (d: Date): string => {
   return `${year}-${month}-${day}`;
 };
 
+/**
+ * The locale `formatDate` should use for an app locale. English keeps "en-GB",
+ * the formatter's historical default, so English output never changes; any
+ * other app locale ("it") is used as is.
+ */
+export const dateFormatLocale = (appLocale?: string): string =>
+  !appLocale || appLocale.split("-")[0] === "en" ? "en-GB" : appLocale;
+
 export const formatDate = (eventDate: Date, formatOption: FormatOption, locale: string = "en-GB"): string => {
   const formatPart = (date: Date, options: Intl.DateTimeFormatOptions): string =>
     new Intl.DateTimeFormat(locale, options).format(date);
@@ -35,6 +43,14 @@ export const formatDate = (eventDate: Date, formatOption: FormatOption, locale: 
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
+
+    if (locale.split("-")[0] !== "en") {
+      const relative = new Intl.RelativeTimeFormat(locale, { numeric: "always" });
+      if (days > 0) return relative.format(-days, "day");
+      if (hours > 0) return relative.format(-hours, "hour");
+      if (minutes > 0) return relative.format(-minutes, "minute");
+      return relative.format(-seconds, "second");
+    }
 
     if (days > 0) return `${days} days ago`;
     if (hours > 0) return `${hours} hours ago`;

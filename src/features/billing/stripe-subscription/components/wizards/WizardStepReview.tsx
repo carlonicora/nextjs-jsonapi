@@ -1,9 +1,10 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, Badge, Button } from "../../../../../shadcnui";
 import { SectionHeader } from "../../../../../components/typography";
-import { formatCurrency } from "../../../components/utils/currency";
+import { formatCurrency, useBillingFormatOptions } from "../../../components/utils";
 import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
 import { ProrationPreviewInterface } from "../../../stripe-invoice/data/stripe-invoice.interface";
 import { PromotionCodeValidationResult } from "../../../stripe-promotion-code";
@@ -47,18 +48,20 @@ export function WizardStepReview({
   onRemovePromoCode,
   isTrialUpgrade,
 }: WizardStepReviewProps) {
+  const t = useTranslations();
+  const fmt = useBillingFormatOptions();
   if (!selectedPrice) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">No plan selected. Please go back and select a plan.</div>
-    );
+    return <div className="text-center py-8 text-muted-foreground">{t("billing.ui.wizard.review.no_plan")}</div>;
   }
 
   const isChangingPlan = subscription && subscription.price?.id !== selectedPrice.id;
 
   const formatInterval = (price: StripePriceInterface) => {
-    if (price.priceType === "one_time") return "one-time";
+    if (price.priceType === "one_time") return t("billing.ui.wizard.review.interval_one_time");
     const interval = price.recurring?.interval || "month";
-    return interval === "year" ? "yearly" : "monthly";
+    return interval === "year"
+      ? t("billing.ui.wizard.review.interval_yearly")
+      : t("billing.ui.wizard.review.interval_monthly");
   };
 
   // Calculate discounted price if promotion code is applied
@@ -105,11 +108,13 @@ export function WizardStepReview({
     if (!promotionCode?.valid) return null;
 
     if (promotionCode.discountType === "percent_off" && promotionCode.discountValue) {
-      return `${promotionCode.discountValue}% off`;
+      return t("billing.ui.wizard.review.percent_off", { value: promotionCode.discountValue });
     }
 
     if (promotionCode.discountType === "amount_off" && promotionCode.discountValue) {
-      return `${formatCurrency(promotionCode.discountValue, promotionCode.currency || selectedPrice.currency)} off`;
+      return t("billing.ui.wizard.review.amount_off", {
+        amount: formatCurrency(promotionCode.discountValue, promotionCode.currency || selectedPrice.currency, fmt),
+      });
     }
 
     return null;
@@ -121,7 +126,7 @@ export function WizardStepReview({
     <div className="space-y-6">
       {/* Selected Plan Summary */}
       <div className="bg-muted/50 rounded-lg p-4 space-y-3">
-        <SectionHeader>Selected Plan</SectionHeader>
+        <SectionHeader>{t("billing.ui.wizard.review.selected_plan")}</SectionHeader>
         <div className="flex justify-between items-center">
           <div>
             <p className="font-medium">{selectedPrice.product?.name}</p>
@@ -131,16 +136,16 @@ export function WizardStepReview({
             {discountedPrice !== null ? (
               <>
                 <p className="text-sm text-muted-foreground line-through">
-                  {formatCurrency(selectedPrice.unitAmount || 0, selectedPrice.currency)}
+                  {formatCurrency(selectedPrice.unitAmount || 0, selectedPrice.currency, fmt)}
                 </p>
                 <p className="text-success text-lg font-semibold">
-                  {formatCurrency(discountedPrice, selectedPrice.currency)}
+                  {formatCurrency(discountedPrice, selectedPrice.currency, fmt)}
                 </p>
                 {discountDescription && <Badge variant="softGreen">{discountDescription}</Badge>}
               </>
             ) : (
               <p className="font-semibold text-lg">
-                {formatCurrency(selectedPrice.unitAmount || 0, selectedPrice.currency)}
+                {formatCurrency(selectedPrice.unitAmount || 0, selectedPrice.currency, fmt)}
               </p>
             )}
             <p className="text-sm text-muted-foreground">{formatInterval(selectedPrice)}</p>
@@ -154,29 +159,31 @@ export function WizardStepReview({
           className={`${isTrialUpgrade ? "bg-warning/15 border-warning/30" : "bg-primary/10 border-primary/30"} space-y-2 rounded-lg border p-4`}
         >
           <h4 className={`font-medium ${isTrialUpgrade ? "text-warning" : "text-primary"}`}>
-            {isTrialUpgrade ? "Trial Upgrade" : "Proration Summary"}
+            {isTrialUpgrade
+              ? t("billing.ui.wizard.review.trial_upgrade")
+              : t("billing.ui.wizard.review.proration_summary")}
           </h4>
           <p className={`text-sm ${isTrialUpgrade ? "text-warning" : "text-foreground"}`}>
             {isTrialUpgrade
-              ? "Your trial will end immediately and you will be charged the full price."
-              : "Your next charge will be adjusted to account for the plan change."}
+              ? t("billing.ui.wizard.review.trial_upgrade_description")
+              : t("billing.ui.wizard.review.proration_description")}
           </p>
           <div className="flex justify-between text-sm">
             <span className={`${isTrialUpgrade ? "text-warning" : "text-muted-foreground"}`}>
-              {isTrialUpgrade ? "Amount to charge now:" : "Amount due now:"}
+              {isTrialUpgrade ? t("billing.ui.wizard.review.charge_now") : t("billing.ui.wizard.review.due_now")}
             </span>
             <span className={`font-medium ${isTrialUpgrade ? "text-warning" : "text-foreground"}`}>
               {discountedImmediateCharge !== null ? (
                 <>
                   <span className="line-through text-muted-foreground me-2">
-                    {formatCurrency(prorationPreview.immediateCharge, prorationPreview.currency)}
+                    {formatCurrency(prorationPreview.immediateCharge, prorationPreview.currency, fmt)}
                   </span>
                   <span className="text-success">
-                    {formatCurrency(discountedImmediateCharge, prorationPreview.currency)}
+                    {formatCurrency(discountedImmediateCharge, prorationPreview.currency, fmt)}
                   </span>
                 </>
               ) : (
-                formatCurrency(prorationPreview.immediateCharge, prorationPreview.currency)
+                formatCurrency(prorationPreview.immediateCharge, prorationPreview.currency, fmt)
               )}
             </span>
           </div>
@@ -185,7 +192,7 @@ export function WizardStepReview({
 
       {/* Promotion Code */}
       <div className="border rounded-lg p-4 space-y-3">
-        <h4 className="font-medium">Promotion Code</h4>
+        <h4 className="font-medium">{t("billing.ui.wizard.review.promotion_code")}</h4>
         <PromoCodeInput
           appliedCode={promotionCode}
           isValidating={isValidatingPromoCode}
@@ -200,14 +207,16 @@ export function WizardStepReview({
       <div className="border rounded-lg p-4">
         <div className="flex justify-between items-center">
           <div>
-            <h4 className="font-medium">Payment Method</h4>
+            <h4 className="font-medium">{t("billing.ui.payment_method.title")}</h4>
             <p className="text-sm text-muted-foreground">
-              {hasPaymentMethod ? "A payment method is on file" : "No payment method on file"}
+              {hasPaymentMethod
+                ? t("billing.ui.wizard.review.payment_on_file")
+                : t("billing.ui.wizard.review.no_payment_on_file")}
             </p>
           </div>
           {!hasPaymentMethod && (
             <Button variant="outline" onClick={onAddPaymentMethod}>
-              Add Payment Method
+              {t("billing.ui.payment_methods.add")}
             </Button>
           )}
         </div>
@@ -224,16 +233,16 @@ export function WizardStepReview({
       {/* Action Buttons */}
       <div className="flex justify-between pt-4 border-t">
         <Button variant="outline" onClick={onBack} disabled={isProcessing}>
-          Back
+          {t("billing.ui.wizard.back")}
         </Button>
         <Button onClick={hasPaymentMethod ? onConfirm : onAddPaymentMethod} disabled={isProcessing}>
           {isProcessing
-            ? "Processing..."
+            ? t("billing.ui.wizard.review.processing")
             : hasPaymentMethod
               ? isChangingPlan
-                ? "Confirm Plan Change"
-                : "Subscribe Now"
-              : "Add Payment Method"}
+                ? t("billing.ui.wizard.review.confirm_change")
+                : t("billing.ui.wizard.review.subscribe_now")
+              : t("billing.ui.payment_methods.add")}
         </Button>
       </div>
     </div>

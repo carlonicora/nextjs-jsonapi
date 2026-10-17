@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Wallet, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, Button, Skeleton } from "../../../../shadcnui";
 import { PaymentMethodInterface } from "../../stripe-customer";
@@ -32,11 +33,12 @@ export function PaymentMethodSummaryCard({
   error,
   onManageClick,
 }: PaymentMethodSummaryCardProps) {
+  const t = useTranslations();
   if (loading) {
     return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle>Payment Method</CardTitle>
+          <CardTitle>{t("billing.ui.payment_method.title")}</CardTitle>
           <Wallet className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -51,7 +53,7 @@ export function PaymentMethodSummaryCard({
     return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle>Payment Method</CardTitle>
+          <CardTitle>{t("billing.ui.payment_method.title")}</CardTitle>
           <Wallet className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -67,14 +69,16 @@ export function PaymentMethodSummaryCard({
   return (
     <Card className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={onManageClick}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle>Payment Method</CardTitle>
+        <CardTitle>{t("billing.ui.payment_method.title")}</CardTitle>
         <Wallet className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
         {paymentMethods.length === 0 ? (
           <div className="space-y-2">
-            <p className="text-xl font-bold text-muted-foreground">No payment method</p>
-            <p className="text-xs text-muted-foreground">Add a card to enable subscriptions</p>
+            <p className="text-xl font-bold text-muted-foreground">
+              {t("billing.ui.cards.payment_method.empty_title")}
+            </p>
+            <p className="text-xs text-muted-foreground">{t("billing.ui.cards.payment_method.empty_description")}</p>
             <Button
               variant="outline"
               size="sm"
@@ -84,7 +88,7 @@ export function PaymentMethodSummaryCard({
                 onManageClick();
               }}
             >
-              Add Card
+              {t("billing.ui.cards.payment_method.add_card")}
               <ChevronRight className="h-4 w-4 ms-1 rtl:rotate-180" />
             </Button>
           </div>
@@ -94,17 +98,23 @@ export function PaymentMethodSummaryCard({
               {getCardBrandIcon(defaultMethod.card.brand)} ****{defaultMethod.card.last4}
             </p>
             <p className="text-sm text-muted-foreground">
-              Expires {String(defaultMethod.card.expMonth).padStart(2, "0")}/{defaultMethod.card.expYear}
+              {t("billing.ui.payment_method.expires", {
+                date: `${String(defaultMethod.card.expMonth).padStart(2, "0")}/${defaultMethod.card.expYear}`,
+              })}
             </p>
             {paymentMethods.length > 1 && (
-              <p className="text-xs text-muted-foreground">+{paymentMethods.length - 1} more card(s)</p>
+              <p className="text-xs text-muted-foreground">
+                {t("billing.ui.cards.payment_method.more_cards", { count: paymentMethods.length - 1 })}
+              </p>
             )}
           </div>
         ) : (
           <div className="space-y-2">
-            <p className="text-xl font-bold">{defaultMethod?.type || "Payment Method"}</p>
+            <p className="text-xl font-bold">{defaultMethod?.type || t("billing.ui.payment_method.title")}</p>
             {paymentMethods.length > 1 && (
-              <p className="text-xs text-muted-foreground">+{paymentMethods.length - 1} more method(s)</p>
+              <p className="text-xs text-muted-foreground">
+                {t("billing.ui.cards.payment_method.more_methods", { count: paymentMethods.length - 1 })}
+              </p>
             )}
           </div>
         )}

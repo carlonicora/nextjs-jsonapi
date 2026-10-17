@@ -6,6 +6,7 @@ import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { XIcon } from "lucide-react";
+import { useUiText } from "./use-ui-text";
 
 function Dialog({ ...props }: DialogPrimitive.Root.Props) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />;
@@ -40,10 +41,14 @@ function DialogContent({
   className,
   children,
   showCloseButton = true,
+  closeLabel,
   ...props
 }: DialogPrimitive.Popup.Props & {
   showCloseButton?: boolean;
+  /** Screen-reader name of the close button. Defaults to `ui.labels.close`, else "Close". */
+  closeLabel?: string;
 }) {
+  const uiText = useUiText();
   return (
     <DialogPortal>
       <DialogOverlay />
@@ -65,7 +70,7 @@ function DialogContent({
             render={<Button variant="ghost" className="absolute top-2 end-2" size="icon-sm" />}
           >
             <XIcon />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">{closeLabel ?? uiText("ui.labels.close", "Close")}</span>
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Popup>
@@ -80,11 +85,15 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
 function DialogFooter({
   className,
   showCloseButton = false,
+  closeLabel,
   children,
   ...props
 }: React.ComponentProps<"div"> & {
   showCloseButton?: boolean;
+  /** Text of the footer close button. Defaults to `ui.labels.close`, else "Close". */
+  closeLabel?: string;
 }) {
+  const uiText = useUiText();
   return (
     <div
       data-slot="dialog-footer"
@@ -92,7 +101,11 @@ function DialogFooter({
       {...props}
     >
       {children}
-      {showCloseButton && <DialogPrimitive.Close render={<Button variant="outline" />}>Close</DialogPrimitive.Close>}
+      {showCloseButton && (
+        <DialogPrimitive.Close render={<Button variant="outline" />}>
+          {closeLabel ?? uiText("ui.labels.close", "Close")}
+        </DialogPrimitive.Close>
+      )}
     </div>
   );
 }

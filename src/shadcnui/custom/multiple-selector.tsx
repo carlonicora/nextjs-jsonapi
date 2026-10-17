@@ -9,6 +9,7 @@ import { forwardRef, useEffect } from "react";
 import { cn } from "../../utils/cn";
 import { Badge } from "../ui/badge";
 import { Command, CommandGroup, CommandItem, CommandList, commandFilterByKeywords } from "../ui/command";
+import { useUiText } from "../ui/use-ui-text";
 
 export interface Option {
   value: string;
@@ -58,6 +59,10 @@ export interface MultipleSelectorProps {
   onMaxSelected?: (maxLimit: number) => void;
   /** Hide the placeholder when there are options selected. */
   hidePlaceholderWhenSelected?: boolean;
+  /** Text of the creatable row. Defaults to `ui.labels.create_option`, else `Create "{value}"`. */
+  formatCreateLabel?: (value: string) => string;
+  /** Text of the overflow badge. Defaults to `ui.labels.more_count`, else "+{count} more". */
+  formatMoreLabel?: (count: number) => string;
   disabled?: boolean;
   /** Group the options base on provided key. */
   groupBy?: string;
@@ -204,6 +209,8 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
       maxSelected = Number.MAX_SAFE_INTEGER,
       onMaxSelected,
       hidePlaceholderWhenSelected,
+      formatCreateLabel,
+      formatMoreLabel,
       disabled,
       groupBy,
       className,
@@ -220,6 +227,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
     }: MultipleSelectorProps,
     ref: React.Ref<MultipleSelectorRef>,
   ) => {
+    const uiText = useUiText();
     const inputRef = React.useRef<HTMLInputElement>(null);
     const containerRef = React.useRef<HTMLDivElement>(null);
     const [open, setOpen] = React.useState(false);
@@ -431,7 +439,9 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
             onChange?.(newOptions);
           }}
         >
-          {`Create "${inputValue}"`}
+          {formatCreateLabel
+            ? formatCreateLabel(inputValue)
+            : uiText("ui.labels.create_option", 'Create "{value}"', { value: inputValue })}
         </CommandItem>
       );
 
@@ -547,7 +557,9 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
             })}
             {hiddenCount > 0 && (
               <Badge className={cn("bg-transparent text-foreground hover:bg-transparent", badgeClassName)}>
-                {`+${hiddenCount} more`}
+                {formatMoreLabel
+                  ? formatMoreLabel(hiddenCount)
+                  : uiText("ui.labels.more_count", "+{count} more", { count: hiddenCount })}
               </Badge>
             )}
             <CommandPrimitive.Input

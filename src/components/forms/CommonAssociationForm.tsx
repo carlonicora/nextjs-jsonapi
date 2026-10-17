@@ -34,7 +34,7 @@ export function CommonAssociationTrigger({
   if (hasDestination)
     return (
       <div className="hover:text-accent cursor-pointer" onClick={onTrigger}>
-        Join
+        {t(`common.association.join`)}
       </div>
     );
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 interface Props {
   /** 0-1 (decimal) or 0-100 (percent). Auto-detected. */
   value: number;
@@ -7,6 +9,7 @@ interface Props {
 }
 
 export function RelevanceMeter({ value, className = "" }: Props) {
+  const t = useTranslations();
   const pct = Math.max(0, Math.min(100, value <= 1 ? value * 100 : value));
   const label = `${Math.round(pct)}%`;
   return (
@@ -15,7 +18,7 @@ export function RelevanceMeter({ value, className = "" }: Props) {
       aria-valuenow={Math.round(pct)}
       aria-valuemin={0}
       aria-valuemax={100}
-      aria-label={`Relevance ${label}`}
+      aria-label={`${t("common.relevance")} ${label}`}
       className={`bg-muted relative mx-auto flex h-5 w-20 items-center justify-center overflow-hidden rounded border ${className}`}
     >
       <div className="bg-accent absolute top-0 start-0 h-full" style={{ width: `${pct}%` }} />

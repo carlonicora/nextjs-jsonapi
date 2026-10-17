@@ -243,6 +243,15 @@ export class UserService extends AbstractService {
     });
   }
 
+  static async patchLanguage(params: { id: string; language: string }): Promise<UserInterface> {
+    return this.callApi({
+      type: Modules.User,
+      method: HttpMethod.PATCH,
+      endpoint: new EndpointCreator({ endpoint: Modules.User, id: params.id, childEndpoint: "language" }).generate(),
+      input: params,
+    });
+  }
+
   static async patchRate(params: UserInput): Promise<UserInterface> {
     return this.callApi({
       type: Modules.User,

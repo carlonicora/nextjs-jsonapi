@@ -6,7 +6,8 @@ import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { registerTableGenerator, TableContent, usePageUrlGenerator, UseTableStructureHook } from "../../../hooks";
 import { Button, Tooltip, TooltipContent, TooltipTrigger } from "../../../shadcnui";
-import { formatDate } from "../../../utils";
+import { useI18nLocale } from "../../../i18n";
+import { dateFormatLocale, formatDate } from "../../../utils";
 import { generateNotificationData } from "../components/notifications/Notification";
 import { useNotificationContext } from "../contexts/NotificationContext";
 import { NotificationIcon } from "../components/notifications/NotificationIcon";
@@ -32,6 +33,7 @@ export const useNotificationTableStructure: UseTableStructureHook<NotificationIn
   params,
 ) => {
   const t = useTranslations();
+  const dateLocale = dateFormatLocale(useI18nLocale());
   const generateUrl = usePageUrlGenerator();
   const { loadNotifications } = useNotificationContext();
 
@@ -123,7 +125,7 @@ export const useNotificationTableStructure: UseTableStructureHook<NotificationIn
            shows how long ago it arrived. The two must match. */
         return (
           <span className="text-muted-foreground text-xs">
-            {formatDate(new Date(notification.createdAt), "default")}
+            {formatDate(new Date(notification.createdAt), "default", dateLocale)}
           </span>
         );
       },

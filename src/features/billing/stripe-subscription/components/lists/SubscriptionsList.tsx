@@ -1,8 +1,9 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../shadcnui";
-import { formatCurrency, formatDate } from "../../../components/utils";
+import { formatCurrency, formatDate, useBillingFormatOptions } from "../../../components/utils";
 import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
 import { StripeSubscriptionInterface, SubscriptionStatus } from "../../data";
 import { SubscriptionDetails } from "../details/SubscriptionDetails";
@@ -12,8 +13,8 @@ import { SubscriptionStatusBadge } from "../widgets/SubscriptionStatusBadge";
  * Formats the plan name from price data.
  * Format: "Product Name - Nickname (Interval)" e.g., "Only 35 - Pro (Monthly)"
  */
-function formatPlanName(price: StripePriceInterface | undefined): string {
-  if (!price) return "N/A";
+function formatPlanName(price: StripePriceInterface | undefined, t: ReturnType<typeof useTranslations>): string {
+  if (!price) return t("billing.ui.not_available");
 
   const productName = price.product?.name || "";
   const nickname = price.nickname || "";
@@ -22,10 +23,10 @@ function formatPlanName(price: StripePriceInterface | undefined): string {
   let interval = "";
   if (price.recurring?.interval) {
     const intervalMap: Record<string, string> = {
-      day: "Daily",
-      week: "Weekly",
-      month: "Monthly",
-      year: "Yearly",
+      day: t("billing.admin.prices.interval.day"),
+      week: t("billing.admin.prices.interval.week"),
+      month: t("billing.admin.prices.interval.month"),
+      year: t("billing.admin.prices.interval.year"),
     };
     interval = intervalMap[price.recurring.interval] || price.recurring.interval;
   }
@@ -35,7 +36,7 @@ function formatPlanName(price: StripePriceInterface | undefined): string {
   const planLabel = parts.join(" - ");
 
   // Add interval in parentheses if available
-  return interval ? `${planLabel} (${interval})` : planLabel || "N/A";
+  return interval ? `${planLabel} (${interval})` : planLabel || t("billing.ui.not_available");
 }
 
 type SubscriptionsListProps = {
@@ -45,6 +46,8 @@ type SubscriptionsListProps = {
 };
 
 export function SubscriptionsList({ subscriptions, onSubscriptionsChange, onChangePlan }: SubscriptionsListProps) {
+  const t = useTranslations();
+  const fmt = useBillingFormatOptions();
   const [selectedSub, setSelectedSub] = useState<StripeSubscriptionInterface | null>(null);
 
   const handleRowClick = (subscription: StripeSubscriptionInterface) => {
@@ -57,18 +60,18 @@ export function SubscriptionsList({ subscriptions, onSubscriptionsChange, onChan
         <Table>
           <TableHeader className="bg-muted">
             <TableRow>
-              <TableHead>Status</TableHead>
-              <TableHead>Plan</TableHead>
-              <TableHead>Period</TableHead>
-              <TableHead className="text-end">Amount</TableHead>
-              <TableHead className="text-end">Actions</TableHead>
+              <TableHead>{t("billing.ui.columns.status")}</TableHead>
+              <TableHead>{t("billing.ui.columns.plan")}</TableHead>
+              <TableHead>{t("billing.ui.columns.period")}</TableHead>
+              <TableHead className="text-end">{t("billing.ui.columns.amount")}</TableHead>
+              <TableHead className="text-end">{t("billing.ui.columns.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {subscriptions.map((subscription) => {
               const price = subscription.price;
-              const amount = price?.unitAmount ? formatCurrency(price.unitAmount, price.currency) : "0";
-              const period = `${formatDate(subscription.currentPeriodStart)} - ${formatDate(subscription.currentPeriodEnd)}`;
+              const amount = price?.unitAmount ? formatCurrency(price.unitAmount, price.currency, fmt) : "0";
+              const period = `${formatDate(subscription.currentPeriodStart, fmt)} - ${formatDate(subscription.currentPeriodEnd, fmt)}`;
 
               return (
                 <TableRow
@@ -82,7 +85,7 @@ export function SubscriptionsList({ subscriptions, onSubscriptionsChange, onChan
                       cancelAtPeriodEnd={subscription.cancelAtPeriodEnd}
                     />
                   </TableCell>
-                  <TableCell className="font-medium">{formatPlanName(price)}</TableCell>
+                  <TableCell className="font-medium">{formatPlanName(price, t)}</TableCell>
                   <TableCell className="text-muted-foreground text-sm">{period}</TableCell>
                   <TableCell className="text-end font-medium">{amount}</TableCell>
                   <TableCell className="text-end">
@@ -97,7 +100,7 @@ export function SubscriptionsList({ subscriptions, onSubscriptionsChange, onChan
                             onChangePlan(subscription);
                           }}
                         >
-                          Upgrade
+                          {t("billing.ui.subscription.upgrade")}
                         </Button>
                       )}
                   </TableCell>

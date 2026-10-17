@@ -1,7 +1,9 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useCallback, useMemo, useReducer, useRef } from "react";
 import { v4 } from "uuid";
+import { useI18nLocale } from "../../../../i18n";
 import { StripeCustomerService } from "../../stripe-customer/data/stripe-customer.service";
 import { ProrationPreviewInterface } from "../../stripe-invoice/data/stripe-invoice.interface";
 import { StripePriceInterface } from "../../stripe-price/data/stripe-price.interface";
@@ -93,6 +95,8 @@ export type UseSubscriptionWizardOptions = {
 };
 
 export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseSubscriptionWizardOptions) {
+  const t = useTranslations();
+  const locale = useI18nLocale();
   const [state, dispatch] = useReducer(wizardReducer, {
     ...initialState,
     selectedPrice: subscription?.price || null,
@@ -146,7 +150,7 @@ export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseS
           dispatch({ type: "SET_STEP", step: "payment-method" });
           dispatch({
             type: "SET_ERROR",
-            error: "A payment method is required to upgrade from your trial.",
+            error: t("billing.ui.wizard.errors.payment_method_required"),
           });
           return;
         }
@@ -164,11 +168,11 @@ export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseS
       dispatch({ type: "SET_STEP", step: "review" });
     } catch (error: any) {
       console.error("[useSubscriptionWizard] Error preparing review:", error);
-      dispatch({ type: "SET_ERROR", error: error?.message || "Failed to prepare review" });
+      dispatch({ type: "SET_ERROR", error: error?.message || t("billing.ui.wizard.errors.prepare_review") });
     } finally {
       dispatch({ type: "SET_PROCESSING", isProcessing: false });
     }
-  }, [state.selectedPrice, state.hasPaymentMethod, subscription, checkPaymentMethod]);
+  }, [state.selectedPrice, state.hasPaymentMethod, subscription, checkPaymentMethod, t]);
 
   const confirmSubscription = useCallback(async () => {
     if (!state.selectedPrice) return;
@@ -202,7 +206,7 @@ export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseS
       if (error?.status === 409 || error?.response?.status === 409) {
         dispatch({
           type: "SET_ERROR",
-          error: "You already have an active subscription. Please change your existing plan instead.",
+          error: t("billing.ui.wizard.errors.already_subscribed"),
         });
         return;
       }
@@ -214,11 +218,11 @@ export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseS
         return;
       }
 
-      dispatch({ type: "SET_ERROR", error: error?.message || "Failed to process subscription" });
+      dispatch({ type: "SET_ERROR", error: error?.message || t("billing.ui.wizard.errors.process_subscription") });
     } finally {
       dispatch({ type: "SET_PROCESSING", isProcessing: false });
     }
-  }, [state.selectedPrice, state.promotionCode, subscription]);
+  }, [state.selectedPrice, state.promotionCode, subscription, t]);
 
   const handlePaymentMethodSuccess = useCallback(async () => {
     dispatch({ type: "SET_HAS_PAYMENT_METHOD", hasMethod: true });
@@ -239,21 +243,28 @@ export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseS
         const result = await StripePromotionCodeService.validatePromotionCode({
           code,
           stripePriceId: state.selectedPrice?.id,
+          language: locale,
         });
 
         if (result.valid) {
           dispatch({ type: "SET_PROMOTION_CODE", code: result });
         } else {
-          dispatch({ type: "SET_PROMO_CODE_ERROR", error: result.errorMessage || "Invalid promotion code" });
+          dispatch({
+            type: "SET_PROMO_CODE_ERROR",
+            error: result.errorMessage || t("billing.ui.wizard.errors.invalid_promo_code"),
+          });
         }
       } catch (error: any) {
         console.error("[useSubscriptionWizard] Promo code validation error:", error);
-        dispatch({ type: "SET_PROMO_CODE_ERROR", error: error?.message || "Failed to validate promotion code" });
+        dispatch({
+          type: "SET_PROMO_CODE_ERROR",
+          error: error?.message || t("billing.ui.wizard.errors.validate_promo_code"),
+        });
       } finally {
         dispatch({ type: "SET_VALIDATING_PROMO_CODE", isValidating: false });
       }
     },
-    [state.selectedPrice?.id],
+    [state.selectedPrice?.id, t, locale],
   );
 
   const clearPromoCode = useCallback(() => {

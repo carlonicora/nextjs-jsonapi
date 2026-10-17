@@ -1,9 +1,10 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Check } from "lucide-react";
 import { KeyboardEvent } from "react";
 import { Badge, Button, Card, CardContent, CardFooter, CardHeader } from "../../../../../shadcnui";
-import { formatCurrency, formatInterval } from "../../../components/utils";
+import { formatCurrency, formatInterval, useBillingFormatOptions } from "../../../components/utils";
 import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
 import { cn } from "../../../../../utils/cn";
 
@@ -24,10 +25,12 @@ export function PricingCard({
   isLoading = false,
   onSelect,
 }: PricingCardProps) {
-  const description = price.description || price.nickname || "Standard";
+  const t = useTranslations();
+  const fmt = useBillingFormatOptions();
+  const description = price.description || price.nickname || t("billing.ui.pricing.standard");
   const features = price.features || [];
-  const formattedPrice = formatCurrency(price.unitAmount, price.currency);
-  const interval = formatInterval(price);
+  const formattedPrice = formatCurrency(price.unitAmount, price.currency, fmt);
+  const interval = formatInterval(price, fmt);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if ((e.key === "Enter" || e.key === " ") && !isDisabled && !isCurrentPlan) {
@@ -46,7 +49,7 @@ export function PricingCard({
     <Card
       role="radio"
       aria-checked={isSelected}
-      aria-label={`${description} plan at ${formattedPrice} ${interval}`}
+      aria-label={t("billing.ui.pricing.card_aria", { description, price: formattedPrice, interval })}
       tabIndex={isDisabled ? -1 : 0}
       onKeyDown={handleKeyDown}
       onClick={handleClick}
@@ -62,7 +65,7 @@ export function PricingCard({
     >
       {isCurrentPlan && (
         <Badge variant="secondary" className="absolute top-2 end-2">
-          Current
+          {t("billing.ui.pricing.current")}
         </Badge>
       )}
 
@@ -94,7 +97,13 @@ export function PricingCard({
           className="w-full"
           disabled={isDisabled || isCurrentPlan || isLoading}
         >
-          {isLoading ? "Processing..." : isCurrentPlan ? "Current Plan" : isSelected ? "Selected" : "Select Plan"}
+          {isLoading
+            ? t("billing.ui.wizard.review.processing")
+            : isCurrentPlan
+              ? t("billing.ui.pricing.current_plan")
+              : isSelected
+                ? t("billing.ui.pricing.selected")
+                : t("billing.ui.wizard.steps.select_plan")}
         </Button>
       </CardFooter>
     </Card>

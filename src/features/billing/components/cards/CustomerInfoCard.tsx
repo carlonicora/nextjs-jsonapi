@@ -1,8 +1,10 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { ExternalLink, User } from "lucide-react";
 import { useState } from "react";
 import { Button, Card, CardContent, CardHeader, CardTitle, Skeleton } from "../../../../shadcnui";
+import { useI18nLocale } from "../../../../i18n";
 import { StripeCustomerInterface, StripeCustomerService } from "../../stripe-customer";
 
 type CustomerInfoCardProps = {
@@ -11,18 +13,19 @@ type CustomerInfoCardProps = {
   error?: string;
 };
 
-function formatBalance(balance: number | undefined, currency: string | undefined): string {
-  if (balance === undefined || balance === 0) return "$0.00";
+function formatBalance(balance: number | undefined, currency: string | undefined, locale: string): string {
   const currencyCode = currency?.toUpperCase() || "USD";
   // Balance in Stripe is negative when customer has credit
-  const displayBalance = -balance;
-  return new Intl.NumberFormat(undefined, {
+  const displayBalance = balance ? -balance : 0;
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: currencyCode,
   }).format(displayBalance / 100);
 }
 
 export function CustomerInfoCard({ customer, loading, error }: CustomerInfoCardProps) {
+  const t = useTranslations();
+  const locale = useI18nLocale();
   const [portalLoading, setPortalLoading] = useState(false);
 
   const handlePortalClick = async (e: React.MouseEvent) => {
@@ -42,7 +45,7 @@ export function CustomerInfoCard({ customer, loading, error }: CustomerInfoCardP
     return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle>Billing Account</CardTitle>
+          <CardTitle>{t("billing.ui.cards.customer.title")}</CardTitle>
           <User className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -58,7 +61,7 @@ export function CustomerInfoCard({ customer, loading, error }: CustomerInfoCardP
     return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle>Billing Account</CardTitle>
+          <CardTitle>{t("billing.ui.cards.customer.title")}</CardTitle>
           <User className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -72,12 +75,12 @@ export function CustomerInfoCard({ customer, loading, error }: CustomerInfoCardP
     return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle>Billing Account</CardTitle>
+          <CardTitle>{t("billing.ui.cards.customer.title")}</CardTitle>
           <User className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <p className="text-xl font-bold text-muted-foreground">Not set up</p>
-          <p className="text-xs text-muted-foreground">Billing account will be created when you subscribe</p>
+          <p className="text-xl font-bold text-muted-foreground">{t("billing.ui.cards.customer.not_set_up")}</p>
+          <p className="text-xs text-muted-foreground">{t("billing.ui.cards.customer.not_set_up_description")}</p>
         </CardContent>
       </Card>
     );
@@ -86,7 +89,7 @@ export function CustomerInfoCard({ customer, loading, error }: CustomerInfoCardP
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle>Billing Account</CardTitle>
+        <CardTitle>{t("billing.ui.cards.customer.title")}</CardTitle>
         <User className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
@@ -95,14 +98,14 @@ export function CustomerInfoCard({ customer, loading, error }: CustomerInfoCardP
           {customer.email && <p className="text-sm text-muted-foreground">{customer.email}</p>}
           {customer.balance !== undefined && customer.balance !== 0 && (
             <p className="text-sm">
-              <span className="text-muted-foreground">Credit Balance: </span>
+              <span className="text-muted-foreground">{t("billing.ui.cards.customer.credit_balance")} </span>
               <span className={customer.balance < 0 ? "text-success" : "text-destructive"}>
-                {formatBalance(customer.balance, customer.currency)}
+                {formatBalance(customer.balance, customer.currency, locale)}
               </span>
             </p>
           )}
           <Button variant="outline" size="sm" className="mt-2" onClick={handlePortalClick} disabled={portalLoading}>
-            {portalLoading ? "Loading..." : "Manage in Stripe Portal"}
+            {portalLoading ? t("common.loading") : t("billing.ui.cards.customer.manage_portal")}
             <ExternalLink className="h-4 w-4 ms-1" />
           </Button>
         </div>

@@ -1,9 +1,12 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../shadcnui";
 
 export function ErrorDetails({ title, message, code }: { title?: string; message: string; code: number }) {
+  const t = useTranslations();
+
   if (code === 403)
     return (
       <div className="w-xl max-w-xl">
@@ -12,10 +15,10 @@ export function ErrorDetails({ title, message, code }: { title?: string; message
             <CardTitle className="text-foreground flex flex-col items-center gap-y-4 pb-10 text-4xl">
               <Image src="/logo.webp" alt="Logo" width={100} height={100} priority />
               {/* <div>{code}</div> */}
-              <div>Unauthorised</div>
+              <div>{t("common.errors.unauthorised")}</div>
             </CardTitle>
             <CardDescription className="text-center text-lg">
-              We are sorry, but you are not allowed to access this content.
+              {t("common.errors.unauthorised_description")}
             </CardDescription>
           </CardHeader>
           <CardContent></CardContent>

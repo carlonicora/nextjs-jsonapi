@@ -1,8 +1,9 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Check, Loader2 } from "lucide-react";
 import { Button } from "../../../../../shadcnui";
-import { formatCurrency, formatInterval } from "../../../components/utils";
+import { formatCurrency, formatInterval, useBillingFormatOptions } from "../../../components/utils";
 import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
 
 type SubscriptionConfirmationProps = {
@@ -13,13 +14,15 @@ type SubscriptionConfirmationProps = {
 };
 
 export function SubscriptionConfirmation({ price, isLoading, onConfirm, onCancel }: SubscriptionConfirmationProps) {
-  const productName = price.product?.name || price.nickname || "Selected Plan";
+  const t = useTranslations();
+  const fmt = useBillingFormatOptions();
+  const productName = price.product?.name || price.nickname || t("billing.ui.wizard.review.selected_plan");
   const productDescription = price.product?.description || price.description;
   const features = price.features || [];
 
   return (
     <div className="bg-accent/10 border border-accent/30 rounded-lg p-4">
-      <h4 className="font-semibold mb-3">Confirm Your Subscription</h4>
+      <h4 className="font-semibold mb-3">{t("billing.ui.confirmation.title")}</h4>
 
       <div className="space-y-3">
         {/* Plan name and description */}
@@ -30,8 +33,8 @@ export function SubscriptionConfirmation({ price, isLoading, onConfirm, onCancel
 
         {/* Price */}
         <div className="text-lg font-semibold">
-          {formatCurrency(price.unitAmount, price.currency)}
-          <span className="text-sm font-normal text-muted-foreground">{formatInterval(price)}</span>
+          {formatCurrency(price.unitAmount, price.currency, fmt)}
+          <span className="text-sm font-normal text-muted-foreground">{formatInterval(price, fmt)}</span>
         </div>
 
         {/* Features */}
@@ -49,16 +52,16 @@ export function SubscriptionConfirmation({ price, isLoading, onConfirm, onCancel
         {/* Action buttons */}
         <div className="flex justify-end gap-3 pt-2 border-t border-accent/30">
           <Button variant="outline" onClick={onCancel} disabled={isLoading}>
-            Cancel
+            {t("ui.buttons.cancel")}
           </Button>
           <Button onClick={onConfirm} disabled={isLoading}>
             {isLoading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin me-2" />
-                Processing...
+                {t("billing.ui.wizard.review.processing")}
               </>
             ) : (
-              "Subscribe"
+              t("billing.ui.confirmation.subscribe")
             )}
           </Button>
         </div>

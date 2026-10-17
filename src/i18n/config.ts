@@ -33,6 +33,11 @@ export interface I18nConfig {
    * `next/root-params` — a module only allowed inside the app directory.
    */
   getLocale: GetLocaleFunction;
+  /**
+   * Locales the app supports. The first entry is the fallback.
+   * Defaults to `["en"]` when omitted.
+   */
+  supportedLocales?: string[];
 }
 
 // Private storage
@@ -88,4 +93,12 @@ export function useI18nDateFnsLocale(): any {
   }
   // Fallback to undefined (Calendar will use default)
   return undefined;
+}
+
+/** The app's supported locales. Defaults to `["en"]` when not configured. */
+export function getI18nSupportedLocales(): string[] {
+  if (_config?.supportedLocales && _config.supportedLocales.length > 0) {
+    return _config.supportedLocales;
+  }
+  return ["en"];
 }

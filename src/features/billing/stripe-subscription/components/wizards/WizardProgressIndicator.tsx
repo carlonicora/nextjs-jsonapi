@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Check } from "lucide-react";
 import { WizardStep } from "../../hooks/useSubscriptionWizard";
 
@@ -7,10 +8,11 @@ type WizardProgressIndicatorProps = {
   currentStep: WizardStep;
 };
 
+// `label` is a message key, translated at render time.
 const STEPS: { key: WizardStep; label: string }[] = [
-  { key: "plan-selection", label: "Select Plan" },
-  { key: "review", label: "Review" },
-  { key: "payment-method", label: "Payment" },
+  { key: "plan-selection", label: "billing.ui.wizard.steps.select_plan" },
+  { key: "review", label: "billing.ui.wizard.steps.review" },
+  { key: "payment-method", label: "billing.ui.wizard.steps.payment" },
 ];
 
 function getStepIndex(step: WizardStep): number {
@@ -18,6 +20,7 @@ function getStepIndex(step: WizardStep): number {
 }
 
 export function WizardProgressIndicator({ currentStep }: WizardProgressIndicatorProps) {
+  const t = useTranslations();
   const currentIndex = getStepIndex(currentStep);
 
   return (
@@ -43,7 +46,7 @@ export function WizardProgressIndicator({ currentStep }: WizardProgressIndicator
 
             {/* Step Label */}
             <span className={`text-sm ${isCurrent ? "font-medium text-foreground" : "text-muted-foreground"}`}>
-              {step.label}
+              {t(step.label)}
             </span>
 
             {/* Connector */}

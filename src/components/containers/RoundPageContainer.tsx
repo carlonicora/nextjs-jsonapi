@@ -32,6 +32,7 @@ import { useUrlRewriter } from "@/hooks";
 import { cn, useIsMobile } from "@/index";
 import { useOptionalSidebar } from "@/shadcnui";
 import { ModuleWithPermissions } from "@/permissions";
+import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { Fragment, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -187,6 +188,7 @@ export function RoundPageContainer({
   detailsIcon,
   scroll = "fixed",
 }: RoundPageContainerProps) {
+  const t = useTranslations();
   const headerChildren = useHeaderChildren();
   const headerLeftContent = useHeaderLeftContent();
   const headerLogo = useHeaderLogo();
@@ -663,7 +665,7 @@ export function RoundPageContainer({
                   className="data-[side=left]:w-full data-[side=right]:w-full data-[side=left]:sm:max-w-none data-[side=right]:sm:max-w-none"
                 >
                   <SheetHeader>
-                    <SheetTitle>{detailsTitle ?? "Details"}</SheetTitle>
+                    <SheetTitle>{detailsTitle ?? t("ui.labels.details")}</SheetTitle>
                   </SheetHeader>
                   <div className="overflow-y-auto p-6 pt-0">{details}</div>
                 </SheetContent>

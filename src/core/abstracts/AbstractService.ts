@@ -1,7 +1,7 @@
 import { ApiRequestDataTypeInterface } from "../interfaces/ApiRequestDataTypeInterface";
 import { ApiResponseInterface } from "../interfaces/ApiResponseInterface";
 import { setLastApiResponse } from "./lastApiResponse";
-import { getI18nServerLocale } from "../../i18n/config";
+import { getI18nServerLocale, getI18nSupportedLocales } from "../../i18n/config";
 
 export enum HttpMethod {
   GET = "GET",
@@ -68,8 +68,8 @@ export abstract class AbstractService {
     const pathSegments = window.location.pathname.split("/").filter(Boolean);
     const urlLocale = pathSegments[0];
 
-    // Validate against supported locales (currently only "en")
-    const supportedLocales = ["en"];
+    // Validate against the app's supported locales (default ["en"])
+    const supportedLocales = getI18nSupportedLocales();
     if (urlLocale && supportedLocales.includes(urlLocale)) {
       return urlLocale;
     }

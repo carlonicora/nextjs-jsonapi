@@ -1,7 +1,7 @@
 "use client";
 
 import { BlockNoteSchema, defaultInlineContentSpecs, filterSuggestionItems, PartialBlock } from "@blocknote/core";
-import { en as coreEn } from "@blocknote/core/locales";
+import * as coreLocales from "@blocknote/core/locales";
 import {
   createReactInlineContentSpec,
   DefaultReactSuggestionItem,
@@ -23,7 +23,7 @@ import {
   PromptSuggestionMenu,
   useAIDictionary,
 } from "@blocknote/xl-ai";
-import { en as aiEn } from "@blocknote/xl-ai/locales";
+import * as aiLocales from "@blocknote/xl-ai/locales";
 import "@blocknote/xl-ai/style.css";
 import { DefaultChatTransport } from "ai";
 import { CheckIcon, LanguagesIcon, SparklesIcon, TypeIcon, WandSparklesIcon, XIcon } from "lucide-react";
@@ -137,6 +137,7 @@ function isDocumentEmpty(blocks: any[]): boolean {
 const createDiffActionsInlineContentSpec = (
   handleAcceptChange: (diffId: string) => void,
   handleRejectChange: (diffId: string) => void,
+  labels: { accept: string; reject: string },
 ) => {
   return createReactInlineContentSpec(
     {
@@ -155,7 +156,7 @@ const createDiffActionsInlineContentSpec = (
         return (
           <span className="diff-actions-container mx-2 inline-flex items-center gap-1 align-middle">
             <Button
-              title="Accept change"
+              title={labels.accept}
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -165,7 +166,7 @@ const createDiffActionsInlineContentSpec = (
               <CheckIcon className="text-success h-3 w-3" />
             </Button>
             <Button
-              title="Reject change"
+              title={labels.reject}
               className="mx-2 p-0"
               onClick={(e) => {
                 e.preventDefault();
@@ -204,6 +205,7 @@ const createDiffActionsInlineContentSpec = (
  * with its own canonical prompt. NO prompt text lives in this file.
  */
 function NarrAIMenu({ actions }: { actions?: BlockNoteAiGenerateAction[] }) {
+  const t = useTranslations();
   const editor = useBlockNoteEditor();
   const ai = useExtension(AIExtension);
   const dict = useAIDictionary();
@@ -269,7 +271,7 @@ function NarrAIMenu({ actions }: { actions?: BlockNoteAiGenerateAction[] }) {
     // selection) because they operate on the whole document — they ignore any
     // active selection. Listed first so the first one is the
     // default-highlighted item.
-    const generateItems = generateActionItems(actions, invokeGenerate);
+    const generateItems = generateActionItems(actions, invokeGenerate, t);
 
     if (hasSelection) {
       // Selection-edit items + the always-available whole-document items.
@@ -280,7 +282,7 @@ function NarrAIMenu({ actions }: { actions?: BlockNoteAiGenerateAction[] }) {
         ...generateItems,
         {
           key: "improve_writing",
-          title: "Improve Writing",
+          title: t("ui.editor.ai.improve_writing"),
           aliases: ["improve", "rewrite", "polish"],
           icon: <SparklesIcon size={18} />,
           size: "small" as const,
@@ -295,7 +297,7 @@ function NarrAIMenu({ actions }: { actions?: BlockNoteAiGenerateAction[] }) {
         },
         {
           key: "fix_spelling",
-          title: "Fix Spelling",
+          title: t("ui.editor.ai.fix_spelling"),
           aliases: ["spelling", "grammar", "typo"],
           icon: <TypeIcon size={18} />,
           size: "small" as const,
@@ -310,7 +312,7 @@ function NarrAIMenu({ actions }: { actions?: BlockNoteAiGenerateAction[] }) {
         },
         {
           key: "translate",
-          title: "Translate…",
+          title: t("ui.editor.ai.translate"),
           aliases: ["translate", "language"],
           icon: <LanguagesIcon size={18} />,
           size: "small" as const,
@@ -322,12 +324,12 @@ function NarrAIMenu({ actions }: { actions?: BlockNoteAiGenerateAction[] }) {
           onItemClick: () => {
             expandSelectionToBlocks();
             pendingTypeRef.current = "translate";
-            setPrompt("Translate to ");
+            setPrompt(t("ui.editor.ai.translate_prefill"));
           },
         },
         {
           key: "simplify",
-          title: "Simplify",
+          title: t("ui.editor.ai.simplify"),
           aliases: ["simplify", "easier", "plain"],
           icon: <WandSparklesIcon size={18} />,
           size: "small" as const,
@@ -347,7 +349,7 @@ function NarrAIMenu({ actions }: { actions?: BlockNoteAiGenerateAction[] }) {
     // Free-form typing still works — once the user types, items hide and
     // Enter submits with no type (backend defaults to fill-template).
     return generateItems;
-  }, [editor, status, prompt, ai, expandSelectionToBlocks, actions]);
+  }, [editor, status, prompt, ai, expandSelectionToBlocks, actions, t]);
 
   const handleSubmit = useCallback(
     async (userPrompt: string) => {
@@ -466,8 +468,12 @@ export default function BlockNoteEditor({
   }, []);
 
   const DiffActionsInlineContent = useMemo(
-    () => createDiffActionsInlineContentSpec(handleAcceptChange, handleRejectChange),
-    [handleAcceptChange, handleRejectChange],
+    () =>
+      createDiffActionsInlineContentSpec(handleAcceptChange, handleRejectChange, {
+        accept: t("ui.editor.accept_change"),
+        reject: t("ui.editor.reject_change"),
+      }),
+    [handleAcceptChange, handleRejectChange, t],
   );
 
   const mentionSpec = useMemo(
@@ -657,6 +663,12 @@ export default function BlockNoteEditor({
     return undefined;
   }, [processedContent]);
 
+  // BlockNote's own UI text (slash menu, toolbar, AI menu) in the active
+  // language; English when BlockNote has no dictionary for it.
+  const language = locale.split("-")[0];
+  const coreDictionary = (coreLocales as Record<string, typeof coreLocales.en>)[language] ?? coreLocales.en;
+  const aiDictionary = (aiLocales as Record<string, typeof aiLocales.en>)[language] ?? aiLocales.en;
+
   const editor = useCreateBlockNote(
     useMemo(
       () => ({
@@ -667,9 +679,13 @@ export default function BlockNoteEditor({
         initialContent: validatedInitialContent,
         uploadFile: uploadImage,
         extensions: aiExtension ? [aiExtension] : undefined,
-        dictionary: aiExtension ? { ...coreEn, ai: aiEn } : undefined,
+        dictionary: aiExtension
+          ? { ...coreDictionary, ai: aiDictionary }
+          : coreDictionary === coreLocales.en
+            ? undefined
+            : coreDictionary,
       }),
-      [placeholder, t, schema, validatedInitialContent, uploadImage, aiExtension],
+      [placeholder, t, schema, validatedInitialContent, uploadImage, aiExtension, coreDictionary, aiDictionary],
     ),
   );
 

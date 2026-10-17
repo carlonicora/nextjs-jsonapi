@@ -1,5 +1,17 @@
 import { ColumnDef } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 import { Checkbox } from "../../../shadcnui";
+
+function SelectRowCheckbox({
+  checked,
+  onCheckedChange,
+}: {
+  checked: boolean;
+  onCheckedChange: (value: boolean) => void;
+}) {
+  const t = useTranslations();
+  return <Checkbox checked={checked} onCheckedChange={onCheckedChange} aria-label={t("ui.labels.select_row")} />;
+}
 
 export const cellId = (params: {
   name: string;
@@ -12,13 +24,12 @@ export const cellId = (params: {
     header: "",
     cell: ({ row }) =>
       params.toggleId ? (
-        <Checkbox
+        <SelectRowCheckbox
           checked={params.checkedIds?.includes(row.getValue(params.name)) || false}
           onCheckedChange={(value) => {
             row.toggleSelected(!!value);
             params.toggleId?.(row.getValue(params.name));
           }}
-          aria-label="Select row"
         />
       ) : null,
     enableSorting: false,

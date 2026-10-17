@@ -16,6 +16,7 @@ import { resolvePhysicalSide } from "@/lib/direction";
 import { cn } from "@/lib/utils";
 import { PanelLeftIcon } from "lucide-react";
 import { useDir } from "../../contexts/DirectionContext";
+import { useUiText } from "./use-ui-text";
 import type { SessionSnapshot } from "../../server/ServerSession";
 import { mapThenable } from "../../utils/map-thenable";
 import { getViewportContext } from "../../utils/use-mobile";
@@ -262,6 +263,7 @@ function Sidebar({
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
   const dir = useDir();
+  const uiText = useUiText();
   // Logical "start"/"end" is resolved once, here. Everything downstream
   // (data-side, the positioning ternaries, the mobile SheetContent) consumes
   // the resolved PHYSICAL side, so "left"/"right" callers are unchanged.
@@ -295,8 +297,10 @@ function Sidebar({
           side={side}
         >
           <SheetHeader className="sr-only">
-            <SheetTitle>Sidebar</SheetTitle>
-            <SheetDescription>Displays the mobile sidebar.</SheetDescription>
+            <SheetTitle>{uiText("ui.labels.sidebar", "Sidebar")}</SheetTitle>
+            <SheetDescription>
+              {uiText("ui.labels.sidebar_description", "Displays the mobile sidebar.")}
+            </SheetDescription>
           </SheetHeader>
           <div className="flex h-full w-full flex-col">{children}</div>
         </SheetContent>
@@ -352,8 +356,21 @@ function Sidebar({
   );
 }
 
-function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<typeof Button>) {
+function SidebarTrigger({
+  className,
+  onClick,
+  label,
+  ...props
+}: React.ComponentProps<typeof Button> & {
+  /**
+   * Accessible name of the toggle. Falls back to an explicit `aria-label`, then
+   * `ui.labels.toggle_sidebar`, then "Toggle Sidebar".
+   */
+  label?: string;
+}) {
   const { toggleSidebar } = useSidebar();
+  const uiText = useUiText();
+  const text = label ?? props["aria-label"] ?? uiText("ui.labels.toggle_sidebar", "Toggle Sidebar");
 
   return (
     <Button
@@ -369,22 +386,31 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
       {...props}
     >
       <PanelLeftIcon className="rtl:rotate-180" />
-      <span className="sr-only">Toggle Sidebar</span>
+      <span className="sr-only">{text}</span>
     </Button>
   );
 }
 
-function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
+function SidebarRail({
+  className,
+  label,
+  ...props
+}: React.ComponentProps<"button"> & {
+  /** Accessible name and tooltip of the rail. Defaults to `ui.labels.toggle_sidebar`, else "Toggle Sidebar". */
+  label?: string;
+}) {
   const { toggleSidebar } = useSidebar();
+  const uiText = useUiText();
+  const text = label ?? uiText("ui.labels.toggle_sidebar", "Toggle Sidebar");
 
   return (
     <button
       data-sidebar="rail"
       data-slot="sidebar-rail"
-      aria-label="Toggle Sidebar"
+      aria-label={text}
       tabIndex={-1}
       onClick={toggleSidebar}
-      title="Toggle Sidebar"
+      title={text}
       className={cn(
         // rtl-ok: the whole rail block is keyed to the resolved physical side
         "hover:after:bg-sidebar-border absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] sm:flex", // rtl-ok: keyed to resolved physical side

@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import React, { createContext, ReactElement, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { SharedProvider } from "../../../contexts";
 import { Modules } from "../../../core";
-import { useI18nRouter } from "../../../i18n";
+import { useI18nLocale, useI18nRouter } from "../../../i18n";
 import { BreadcrumbItemData } from "../../../interfaces";
 import { NotificationMenuItem, NotificationToast } from "../components/notifications/Notification";
 import { getRoleId, isRolesConfigured } from "../../../roles";
@@ -47,6 +47,11 @@ type NotificationContextProviderProps = {
 
 export const NotificationContextProvider = ({ children }: NotificationContextProviderProps) => {
   const t = useTranslations();
+  const locale = useI18nLocale();
+  // A ref, not a dependency: the translator only words the fallback errors and must
+  // not re-create loadNotifications, whose identity drives the initial-load effect.
+  const tRef = useRef(t);
+  tRef.current = t;
   const router = useI18nRouter();
 
   const [notifications, setNotifications] = useState<NotificationInterface[]>([]);
@@ -105,7 +110,7 @@ export const NotificationContextProvider = ({ children }: NotificationContextPro
         setNotifications(fetchedNotifications);
         setLastLoaded(Date.now());
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Failed to load notifications";
+        const errorMessage = error instanceof Error ? error.message : tRef.current("notification.ui.errors.load");
         setError(errorMessage);
       } finally {
         setIsLoading(false);
@@ -156,7 +161,7 @@ export const NotificationContextProvider = ({ children }: NotificationContextPro
       setNotifications(allNotifications);
       setLastLoaded(Date.now());
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to mark notifications as read";
+      const errorMessage = error instanceof Error ? error.message : tRef.current("notification.ui.errors.mark_read");
       setError(errorMessage);
       throw error;
     } finally {
@@ -176,7 +181,7 @@ export const NotificationContextProvider = ({ children }: NotificationContextPro
       onClick: () => void;
     };
   } => {
-    return NotificationToast(notification, t, generateUrl, router);
+    return NotificationToast(notification, t, generateUrl, router, locale);
   };
 
   const generateNotification = (notification: NotificationInterface, closePopover: () => void) => {

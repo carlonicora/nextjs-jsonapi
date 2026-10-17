@@ -4,7 +4,8 @@ import { useTranslations } from "next-intl";
 import { ReactElement, useEffect, useState } from "react";
 import { usePageUrlGenerator } from "../../../../hooks";
 import { Link } from "../../../../shadcnui";
-import { formatDate } from "../../../../utils";
+import { useI18nLocale } from "../../../../i18n";
+import { dateFormatLocale, formatDate } from "../../../../utils";
 import { UserInterface } from "../../../user";
 import { UserAvatar } from "../../../user/components";
 import { NotificationInterface } from "../../data";
@@ -36,6 +37,7 @@ export function NotificationToast(
   t: any,
   generateUrl: any,
   reouter: any,
+  locale?: string,
 ): {
   title: string;
   description: string | ReactElement<any>;
@@ -67,7 +69,7 @@ export function NotificationToast(
             })}
           </p>
           <div className="text-muted-foreground mt-1 w-full text-xs">
-            {formatDate(new Date(notification.createdAt), "dateTime")}
+            {formatDate(new Date(notification.createdAt), "dateTime", dateFormatLocale(locale))}
           </div>
         </div>
       </div>
@@ -87,6 +89,7 @@ export function NotificationMenuItem({ notification, closePopover }: TaskComment
   const generateUrl = usePageUrlGenerator();
   const [isRead, setIsRead] = useState<boolean>(false);
   const t = useTranslations();
+  const dateLocale = dateFormatLocale(useI18nLocale());
 
   useEffect(() => {
     setIsRead(notification.isRead);
@@ -112,7 +115,7 @@ export function NotificationMenuItem({ notification, closePopover }: TaskComment
           })}
         </p>
         <div className="text-muted-foreground mt-0.5 text-xs">
-          {formatDate(new Date(notification.createdAt), "default")}
+          {formatDate(new Date(notification.createdAt), "default", dateLocale)}
         </div>
       </div>
       {!isRead && <span className="bg-primary mt-1.5 size-2 shrink-0 rounded-full" aria-hidden />}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { RoundPageContainer } from "../../../../components/containers/RoundPageContainer";
@@ -10,6 +11,7 @@ import { NotificationsList } from "../lists/NotificationsList";
 import { Modules } from "../../../../core";
 
 function NotificationsListContainerContent() {
+  const t = useTranslations();
   const searchParams = useSearchParams();
   const { error } = useNotificationContext();
 
@@ -20,8 +22,8 @@ function NotificationsListContainerContent() {
     return (
       <div className="flex items-center justify-center p-8 text-center">
         <div className="text-destructive text-xs/relaxed">
-          <p>Error loading notifications: {error}</p>
-          <p className="text-muted-foreground mt-2">Please try refreshing the page.</p>
+          <p>{t("notification.ui.list.error_loading", { error })}</p>
+          <p className="text-muted-foreground mt-2">{t("notification.ui.list.refresh_hint")}</p>
         </div>
       </div>
     );

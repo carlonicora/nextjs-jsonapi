@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Skeleton } from "../../../../../shadcnui";
 import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
 import { StripeProductInterface } from "../../../stripe-product";
@@ -52,12 +53,13 @@ export function ProductPricingList({
   hideRecurringPrices = false,
   hideOneTimePrices = false,
 }: ProductPricingListProps) {
+  const t = useTranslations();
   if (loading) {
     return <ProductPricingListSkeleton />;
   }
 
   if (products.length === 0) {
-    return <div className="text-center py-8 text-muted-foreground">No plans available</div>;
+    return <div className="text-center py-8 text-muted-foreground">{t("billing.ui.pricing.no_plans")}</div>;
   }
 
   const sortedProducts = [...products].sort((a, b) => {

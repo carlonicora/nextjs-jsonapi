@@ -1,8 +1,14 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../../../../../shadcnui";
-import { formatCurrency, formatDate } from "../../../components/utils";
+import {
+  type BillingFormatOptions,
+  formatCurrency,
+  formatDate,
+  useBillingFormatOptions,
+} from "../../../components/utils";
 import { StripeCustomerService } from "../../../stripe-customer";
 import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
 import { StripeSubscriptionInterface, StripeSubscriptionService, SubscriptionStatus } from "../../data";
@@ -13,8 +19,8 @@ import { SubscriptionStatusBadge } from "../widgets/SubscriptionStatusBadge";
  * Formats the plan name from price data.
  * Format: "Product Name - Nickname (Interval)" e.g., "Only 35 - Pro (Monthly)"
  */
-function formatPlanName(price: StripePriceInterface | undefined): string {
-  if (!price) return "N/A";
+function formatPlanName(price: StripePriceInterface | undefined, t: ReturnType<typeof useTranslations>): string {
+  if (!price) return t("billing.ui.not_available");
 
   const productName = price.product?.name || "";
   const nickname = price.nickname || "";
@@ -23,10 +29,10 @@ function formatPlanName(price: StripePriceInterface | undefined): string {
   let interval = "";
   if (price.recurring?.interval) {
     const intervalMap: Record<string, string> = {
-      day: "Daily",
-      week: "Weekly",
-      month: "Monthly",
-      year: "Yearly",
+      day: t("billing.admin.prices.interval.day"),
+      week: t("billing.admin.prices.interval.week"),
+      month: t("billing.admin.prices.interval.month"),
+      year: t("billing.admin.prices.interval.year"),
     };
     interval = intervalMap[price.recurring.interval] || price.recurring.interval;
   }
@@ -36,15 +42,19 @@ function formatPlanName(price: StripePriceInterface | undefined): string {
   const planLabel = parts.join(" - ");
 
   // Add interval in parentheses if available
-  return interval ? `${planLabel} (${interval})` : planLabel || "N/A";
+  return interval ? `${planLabel} (${interval})` : planLabel || t("billing.ui.not_available");
 }
 
 /**
  * Formats the billing amount from price data.
  */
-function formatBillingAmount(price: StripePriceInterface | undefined): string {
-  if (!price?.unitAmount) return "N/A";
-  return formatCurrency(price.unitAmount, price.currency);
+function formatBillingAmount(
+  price: StripePriceInterface | undefined,
+  notAvailable: string,
+  fmt: BillingFormatOptions,
+): string {
+  if (!price?.unitAmount) return notAvailable;
+  return formatCurrency(price.unitAmount, price.currency, fmt);
 }
 
 type SubscriptionDetailsProps = {
@@ -62,6 +72,8 @@ export function SubscriptionDetails({
   onSubscriptionChange,
   onChangePlan,
 }: SubscriptionDetailsProps) {
+  const t = useTranslations();
+  const fmt = useBillingFormatOptions();
   const [showCancel, setShowCancel] = useState<boolean>(false);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
@@ -110,14 +122,14 @@ export function SubscriptionDetails({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Subscription Details</DialogTitle>
-            <DialogDescription>View and manage your subscription</DialogDescription>
+            <DialogTitle>{t("billing.ui.subscription.details_title")}</DialogTitle>
+            <DialogDescription>{t("billing.ui.subscription.details_description")}</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6">
             {/* Status */}
             <div className="flex items-center gap-x-3">
-              <span className="text-muted-foreground text-xs">Status:</span>
+              <span className="text-muted-foreground text-xs">{t("billing.ui.labels.status")}</span>
               <SubscriptionStatusBadge
                 status={subscription.status}
                 cancelAtPeriodEnd={subscription.cancelAtPeriodEnd}
@@ -127,21 +139,23 @@ export function SubscriptionDetails({
             {/* Plan Info */}
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-muted-foreground text-xs">Plan:</span>
-                <span className="text-sm">{formatPlanName(subscription.price)}</span>
+                <span className="text-muted-foreground text-xs">{t("billing.ui.labels.plan")}</span>
+                <span className="text-sm">{formatPlanName(subscription.price, t)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground text-xs">Billing Amount:</span>
-                <span className="text-sm">{formatBillingAmount(subscription.price)}</span>
+                <span className="text-muted-foreground text-xs">{t("billing.ui.subscription.billing_amount")}</span>
+                <span className="text-sm">
+                  {formatBillingAmount(subscription.price, t("billing.ui.not_available"), fmt)}
+                </span>
               </div>
             </div>
 
             {/* Current Period */}
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-muted-foreground text-xs">Current Period:</span>
+                <span className="text-muted-foreground text-xs">{t("billing.ui.subscription.current_period")}</span>
                 <span className="text-sm">
-                  {formatDate(subscription.currentPeriodStart)} - {formatDate(subscription.currentPeriodEnd)}
+                  {formatDate(subscription.currentPeriodStart, fmt)} - {formatDate(subscription.currentPeriodEnd, fmt)}
                 </span>
               </div>
             </div>
@@ -149,8 +163,8 @@ export function SubscriptionDetails({
             {/* Trial Info */}
             {subscription.trialEnd && (
               <div className="flex justify-between">
-                <span className="text-muted-foreground text-xs">Trial Ends:</span>
-                <span className="text-sm">{formatDate(subscription.trialEnd)}</span>
+                <span className="text-muted-foreground text-xs">{t("billing.ui.subscription.trial_ends")}</span>
+                <span className="text-sm">{formatDate(subscription.trialEnd, fmt)}</span>
               </div>
             )}
 
@@ -158,8 +172,9 @@ export function SubscriptionDetails({
             {subscription.cancelAtPeriodEnd && (
               <div className="bg-warning/15 border-warning/30 rounded-lg border p-3">
                 <p className="text-warning text-xs/relaxed">
-                  This subscription will be canceled at the end of the current period on{" "}
-                  {formatDate(subscription.currentPeriodEnd)}.
+                  {t("billing.ui.subscription.cancel_at_period_end", {
+                    date: formatDate(subscription.currentPeriodEnd, fmt),
+                  })}
                 </p>
               </div>
             )}
@@ -168,30 +183,30 @@ export function SubscriptionDetails({
             <div className="flex flex-wrap gap-2 pt-4 border-t">
               {onChangePlan && (
                 <Button variant="default" onClick={() => onChangePlan(subscription)}>
-                  Change Plan
+                  {t("billing.ui.subscription.change_plan")}
                 </Button>
               )}
 
               {canPause && (
                 <Button variant="outline" onClick={handlePause} disabled={isProcessing}>
-                  {isProcessing ? "Pausing..." : "Pause"}
+                  {isProcessing ? t("billing.ui.subscription.pausing") : t("billing.ui.subscription.pause")}
                 </Button>
               )}
 
               {canResume && (
                 <Button variant="outline" onClick={handleResume} disabled={isProcessing}>
-                  {isProcessing ? "Resuming..." : "Resume"}
+                  {isProcessing ? t("billing.ui.subscription.resuming") : t("billing.ui.subscription.resume")}
                 </Button>
               )}
 
               {canCancel && (
                 <Button variant="destructive" onClick={() => setShowCancel(true)}>
-                  Cancel
+                  {t("ui.buttons.cancel")}
                 </Button>
               )}
 
               <Button variant="outline" onClick={handleManageViaPortal}>
-                Manage via Portal
+                {t("billing.ui.subscription.manage_portal")}
               </Button>
             </div>
           </div>

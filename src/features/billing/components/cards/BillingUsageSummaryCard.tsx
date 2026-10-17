@@ -1,7 +1,9 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Activity, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, Skeleton } from "../../../../shadcnui";
+import { useI18nLocale } from "../../../../i18n";
 import { MeterInterface, MeterSummaryInterface } from "../../stripe-usage";
 
 type BillingUsageSummaryCardProps = {
@@ -12,8 +14,8 @@ type BillingUsageSummaryCardProps = {
   onViewDetailsClick: () => void;
 };
 
-function formatNumber(value: number): string {
-  return new Intl.NumberFormat(undefined, {
+function formatNumber(value: number, locale: string): string {
+  return new Intl.NumberFormat(locale, {
     notation: "compact",
     compactDisplay: "short",
   }).format(value);
@@ -26,11 +28,13 @@ export function BillingUsageSummaryCard({
   error,
   onViewDetailsClick,
 }: BillingUsageSummaryCardProps) {
+  const t = useTranslations();
+  const locale = useI18nLocale();
   if (loading) {
     return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle>Usage This Month</CardTitle>
+          <CardTitle>{t("billing.ui.cards.usage.title")}</CardTitle>
           <Activity className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -45,7 +49,7 @@ export function BillingUsageSummaryCard({
     return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle>Usage This Month</CardTitle>
+          <CardTitle>{t("billing.ui.cards.usage.title")}</CardTitle>
           <Activity className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -67,26 +71,32 @@ export function BillingUsageSummaryCard({
   return (
     <Card className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={onViewDetailsClick}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle>Usage This Month</CardTitle>
+        <CardTitle>{t("billing.ui.cards.usage.title")}</CardTitle>
         <Activity className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
         {meters.length === 0 ? (
           <div className="space-y-2">
-            <p className="text-xl font-bold text-muted-foreground">No meters</p>
-            <p className="text-xs text-muted-foreground">No usage meters are configured</p>
+            <p className="text-xl font-bold text-muted-foreground">{t("billing.ui.cards.usage.no_meters")}</p>
+            <p className="text-xs text-muted-foreground">{t("billing.ui.cards.usage.no_meters_description")}</p>
           </div>
         ) : (
           <div className="space-y-2">
-            <p className="text-xl font-bold">{formatNumber(totalUsage)} units</p>
+            <p className="text-xl font-bold">
+              {t("billing.ui.cards.usage.units", { value: formatNumber(totalUsage, locale) })}
+            </p>
             {primaryMeter && primarySummary && (
               <p className="text-sm text-muted-foreground">
-                {primaryMeter.displayName}: {formatNumber(primarySummary.aggregatedValue)}
+                {primaryMeter.displayName}: {formatNumber(primarySummary.aggregatedValue, locale)}
               </p>
             )}
-            {meters.length > 1 && <p className="text-xs text-muted-foreground">Across {meters.length} meters</p>}
+            {meters.length > 1 && (
+              <p className="text-xs text-muted-foreground">
+                {t("billing.ui.cards.usage.across_meters", { count: meters.length })}
+              </p>
+            )}
             <span className="flex items-center text-xs text-muted-foreground">
-              View details
+              {t("billing.ui.cards.view_details")}
               <ChevronRight className="h-3 w-3 ms-1 rtl:rotate-180" />
             </span>
           </div>

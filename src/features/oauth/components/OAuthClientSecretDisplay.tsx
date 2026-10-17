@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState, useCallback } from "react";
 import { Copy, Check, AlertTriangle } from "lucide-react";
 import {
@@ -42,6 +43,7 @@ export interface OAuthClientSecretDisplayProps {
  * ```
  */
 export function OAuthClientSecretDisplay({ secret, onDismiss, open, clientName }: OAuthClientSecretDisplayProps) {
+  const t = useTranslations();
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(async () => {
@@ -65,21 +67,21 @@ export function OAuthClientSecretDisplay({ secret, onDismiss, open, clientName }
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-warning" />
-            Save Your Client Secret
+            {t("oauth.ui.secret_display.title")}
           </DialogTitle>
           <DialogDescription>
             {clientName
-              ? `Your client secret for "${clientName}" is shown below.`
-              : "Your client secret is shown below."}
+              ? t("oauth.ui.secret_display.description_named", { name: clientName })
+              : t("oauth.ui.secret_display.description")}
           </DialogDescription>
         </DialogHeader>
 
         <Alert variant="destructive" className="my-4">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
-            <strong>This is the only time your client secret will be displayed.</strong>
+            <strong>{t("oauth.ui.secret_display.warning_title")}</strong>
             <br />
-            Copy it now and store it securely. You will not be able to retrieve it later.
+            {t("oauth.ui.secret_display.warning_body")}
           </AlertDescription>
         </Alert>
 
@@ -92,17 +94,17 @@ export function OAuthClientSecretDisplay({ secret, onDismiss, open, clientName }
             variant="outline"
             size="icon"
             onClick={handleCopy}
-            title={copied ? "Copied!" : "Copy to clipboard"}
+            title={copied ? t("oauth.ui.secret_display.copied_short") : t("oauth.ui.secret_display.copy_to_clipboard")}
           >
             {copied ? <Check className="text-success h-4 w-4" /> : <Copy className="h-4 w-4" />}
           </Button>
         </div>
 
-        {copied && <p className="text-success text-center text-sm">Copied to clipboard!</p>}
+        {copied && <p className="text-success text-center text-sm">{t("oauth.ui.secret_display.copied")}</p>}
 
         <DialogFooter className="mt-4">
           <Button onClick={handleDismiss} className="w-full">
-            I've Saved My Secret
+            {t("oauth.ui.secret_display.confirm")}
           </Button>
         </DialogFooter>
       </DialogContent>

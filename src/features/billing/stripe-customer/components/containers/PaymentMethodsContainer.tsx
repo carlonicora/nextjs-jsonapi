@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { CreditCard } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "../../../../../shadcnui";
@@ -8,6 +9,7 @@ import { PaymentMethodEditor } from "../forms/PaymentMethodEditor";
 import { PaymentMethodsList } from "../lists/PaymentMethodsList";
 
 export function PaymentMethodsContainer() {
+  const t = useTranslations();
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodInterface[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [showAddPaymentMethod, setShowAddPaymentMethod] = useState<boolean>(false);
@@ -31,7 +33,7 @@ export function PaymentMethodsContainer() {
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <p className="text-muted-foreground">Loading payment methods...</p>
+        <p className="text-muted-foreground">{t("billing.ui.payment_methods.loading")}</p>
       </div>
     );
   }
@@ -42,9 +44,9 @@ export function PaymentMethodsContainer() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-3">
           <CreditCard className="h-8 w-8" />
-          <h1 className="text-primary text-3xl font-semibold">Payment Methods</h1>
+          <h1 className="text-primary text-3xl font-semibold">{t("billing.ui.payment_methods.title")}</h1>
         </div>
-        <Button onClick={() => setShowAddPaymentMethod(true)}>Add Payment Method</Button>
+        <Button onClick={() => setShowAddPaymentMethod(true)}>{t("billing.ui.payment_methods.add")}</Button>
       </div>
 
       {/* Empty State */}
@@ -52,11 +54,9 @@ export function PaymentMethodsContainer() {
         <div className="flex flex-col items-center justify-center gap-y-4 rounded-lg border-2 border-dashed border-gray-300 bg-muted/50 p-12">
           <CreditCard className="h-16 w-16 text-muted-foreground" />
           <div className="text-center">
-            <h3 className="mb-2 text-sm font-medium">No payment methods</h3>
-            <p className="mb-4 text-muted-foreground">
-              Add a payment method to enable subscriptions and secure checkout.
-            </p>
-            <Button onClick={() => setShowAddPaymentMethod(true)}>Add Your First Card</Button>
+            <h3 className="mb-2 text-sm font-medium">{t("billing.ui.payment_methods.empty_title")}</h3>
+            <p className="mb-4 text-muted-foreground">{t("billing.ui.payment_methods.empty_description")}</p>
+            <Button onClick={() => setShowAddPaymentMethod(true)}>{t("billing.ui.payment_methods.add_first")}</Button>
           </div>
         </div>
       )}

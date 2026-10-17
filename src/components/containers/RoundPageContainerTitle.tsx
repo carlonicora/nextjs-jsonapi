@@ -5,6 +5,7 @@ import { ActionBarProvider, useSharedContext } from "@/contexts";
 import { ModuleWithPermissions } from "@/permissions";
 import { cn, useIsMobile } from "@/utils";
 import { InfoIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
 
 /**
@@ -35,13 +36,15 @@ export function RoundPageContainerTitle({
   showDetails,
   setShowDetails,
 }: RoundPageContainerTitleProps) {
+  const t = useTranslations();
   const { title } = useSharedContext();
   const isMobile = useIsMobile();
 
   // A Tooltip on the toggle stays stuck on screen after a tap, so a phone gets
   // the bare button. The aria-label carries the same text the tooltip shows,
   // since the icon alone does not name the control.
-  const detailsLabel = `${showDetails ? "Hide" : "Show"} ${typeof detailsTitle === "string" ? detailsTitle : "details"}`;
+  const toggleVerb = showDetails ? t("ui.labels.hide") : t("ui.labels.show");
+  const detailsLabel = `${toggleVerb} ${typeof detailsTitle === "string" ? detailsTitle : t("ui.labels.details_fallback")}`;
   const detailsToggle = details ? (
     isMobile ? (
       <Button
@@ -71,7 +74,7 @@ export function RoundPageContainerTitle({
           {detailsIcon ?? <InfoIcon />}
         </TooltipTrigger>
         <TooltipContent>
-          {showDetails ? "Hide" : "Show"} {detailsTitle ?? "details"}
+          {toggleVerb} {detailsTitle ?? t("ui.labels.details_fallback")}
         </TooltipContent>
       </Tooltip>
     )

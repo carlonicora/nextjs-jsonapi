@@ -159,7 +159,7 @@ export default function Register() {
       clearReferralCode();
       setShowConfirmation(true);
     } catch (e) {
-      errorToast({ error: e });
+      errorToast({ title: t("common.errors.error"), error: e });
     }
   };
 

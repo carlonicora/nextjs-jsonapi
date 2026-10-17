@@ -56,7 +56,7 @@ export function HelpSideNav() {
   const isActive = (mode: string, slug: string) => pathname.endsWith(`/help/${mode}/${slug}`);
 
   return (
-    <nav aria-label="Help navigation" className="flex h-full flex-col gap-3 overflow-y-auto p-4">
+    <nav aria-label={t("help.sideNav.label")} className="flex h-full flex-col gap-3 overflow-y-auto p-4">
       <input
         type="search"
         value={query}

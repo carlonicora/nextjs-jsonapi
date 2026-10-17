@@ -109,6 +109,69 @@ function humaniseKey(key: string): string {
 }
 
 /**
+ * The untyped call signature of next-intl's `t`. Every key below is computed
+ * from wire identifiers, so the generated message-key union cannot describe it.
+ */
+type LooseTranslate = ((key: string, values?: Record<string, unknown>) => string) & {
+  has?: (key: string) => boolean;
+};
+
+/**
+ * Translates `key` when the host app defines it, else `undefined`. `t.has` is
+ * the only non-throwing probe: a plain `t()` on a missing key either throws or
+ * returns the key path, depending on the app's next-intl error handler.
+ */
+function translateIfPresent(t: LooseTranslate, key: string, values?: Record<string, unknown>): string | undefined {
+  if (typeof t.has !== "function" || !t.has(key)) return undefined;
+  try {
+    const text = t(key, values);
+    return text && text !== key ? text : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Message-key segments a JSON:API type may be filed under in the app's
+ * `features.<feature>` namespace: `npcs` → `npc`, `knives` → `knife`,
+ * `stories` → `story`, `scene-cornerstones` → `scene-cornerstone` and
+ * `sceneCornerstone`.
+ */
+function featureKeyCandidates(type: string): string[] {
+  if (!type) return [];
+  const singulars = new Set<string>();
+  if (type.endsWith("ives")) singulars.add(`${type.slice(0, -4)}ife`);
+  if (type.endsWith("ies")) singulars.add(`${type.slice(0, -3)}y`);
+  if (type.endsWith("s")) singulars.add(type.slice(0, -1));
+  singulars.add(type);
+  const candidates = new Set<string>();
+  for (const singular of singulars) {
+    candidates.add(singular);
+    candidates.add(singular.replace(/[-_]+([a-z0-9])/g, (_, letter: string) => letter.toUpperCase()));
+  }
+  return [...candidates];
+}
+
+/**
+ * Label of an attribute or relationship, in the active language. Tries, in
+ * order: the entity editor's own label (`features.<feature>.fields.<key>.label`),
+ * the generic `ui.fields.<key>`, then the humanised key — so a field no app
+ * catalogue knows still renders exactly as it did before translation existed.
+ */
+function fieldLabel(t: LooseTranslate, type: string, key: string): string {
+  for (const feature of featureKeyCandidates(type)) {
+    const label = translateIfPresent(t, `features.${feature}.fields.${key}.label`);
+    if (label !== undefined) return label;
+  }
+  return translateIfPresent(t, `ui.fields.${key}`) ?? humaniseKey(key);
+}
+
+/** Singular entity name from the app's `entities.<type>` plural message, else the humanised type. */
+function entityName(t: LooseTranslate, type: string): string {
+  return translateIfPresent(t, `entities.${type}`, { count: 1 }) ?? humaniseType(type);
+}
+
+/**
  * Plain text of a BlockNote document, without importing BlockNote: walk the
  * blocks, concatenate the text runs of each block's `content`, recurse into
  * `children`, and join the blocks with newlines.
@@ -336,7 +399,9 @@ export function ApprovalActionCard({ actionId, summary, onResolved, hiddenRelati
   const presented = useMemo(() => parseOperatorProposal(actionProposal), [actionProposal]);
   const legacy = useMemo(() => (presented ? undefined : parseLegacyProposal(toolArgs)), [presented, toolArgs]);
   const isUpdate = toolName === "update_entity";
-  const entityLabel = humaniseType(presented?.type ?? legacy?.type ?? "");
+  const entityType = presented?.type ?? legacy?.type ?? "";
+  const loose = t as unknown as LooseTranslate;
+  const entityLabel = entityName(loose, entityType);
   const targetLabel = presented?.target?.label ?? "";
 
   const rows = useMemo<ProposalRow[]>(() => {
@@ -345,7 +410,9 @@ export function ApprovalActionCard({ actionId, summary, onResolved, hiddenRelati
     const attributes = presented?.attributes ?? legacy?.attributes;
     const attributeRows = Object.entries(attributes ?? {}).flatMap<ProposalRow>(([key, value]) => {
       const text = formatAttribute(value, yes, no);
-      return text === undefined ? [] : [{ key: `attribute:${key}`, label: humaniseKey(key), value: text }];
+      return text === undefined
+        ? []
+        : [{ key: `attribute:${key}`, label: fieldLabel(loose, entityType, key), value: text }];
     });
     if (!presented) return attributeRows;
 
@@ -353,7 +420,9 @@ export function ApprovalActionCard({ actionId, summary, onResolved, hiddenRelati
     const relationshipRows = Object.entries(presented.relationships ?? {}).flatMap<ProposalRow>(([key, refs]) => {
       if (hidden.has(key)) return [];
       const text = formatRefs(refs);
-      return text === undefined ? [] : [{ key: `relationship:${key}`, label: humaniseKey(key), value: text }];
+      return text === undefined
+        ? []
+        : [{ key: `relationship:${key}`, label: fieldLabel(loose, entityType, key), value: text }];
     });
 
     const linkRows: ProposalRow[] = [];
@@ -361,7 +430,7 @@ export function ApprovalActionCard({ actionId, summary, onResolved, hiddenRelati
       linkRows.push({
         key: "link:relationship",
         label: t("features.assistant.approval.proposal.relationship"),
-        value: humaniseKey(presented.relationship),
+        value: fieldLabel(loose, entityType, presented.relationship),
       });
     }
     const targetsText = formatRefs(presented.targets ?? []);
@@ -374,7 +443,7 @@ export function ApprovalActionCard({ actionId, summary, onResolved, hiddenRelati
     }
 
     return [...attributeRows, ...relationshipRows, ...linkRows];
-  }, [presented, legacy, t, hiddenRelationshipKeys]);
+  }, [presented, legacy, t, loose, entityType, hiddenRelationshipKeys]);
 
   const hasProposal = rows.length > 0;
 

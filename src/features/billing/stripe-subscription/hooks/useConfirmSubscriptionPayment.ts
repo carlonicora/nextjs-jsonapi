@@ -1,6 +1,7 @@
 "use client";
 
 import { useStripe } from "@stripe/react-stripe-js";
+import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 
 export interface ConfirmPaymentResult {
@@ -42,6 +43,7 @@ export interface UseConfirmSubscriptionPaymentReturn {
  */
 export function useConfirmSubscriptionPayment(): UseConfirmSubscriptionPaymentReturn {
   const stripe = useStripe();
+  const t = useTranslations();
   const [isConfirming, setIsConfirming] = useState(false);
 
   const confirmPayment = useCallback(
@@ -50,7 +52,7 @@ export function useConfirmSubscriptionPayment(): UseConfirmSubscriptionPaymentRe
         console.error("[useConfirmSubscriptionPayment] Stripe not initialized");
         return {
           success: false,
-          error: "Payment system not initialized. Please refresh the page and try again.",
+          error: t("billing.ui.payment_confirm.errors.not_initialized"),
         };
       }
 
@@ -58,7 +60,7 @@ export function useConfirmSubscriptionPayment(): UseConfirmSubscriptionPaymentRe
         console.error("[useConfirmSubscriptionPayment] No client secret provided");
         return {
           success: false,
-          error: "Payment confirmation failed. Missing payment details.",
+          error: t("billing.ui.payment_confirm.errors.missing_details"),
         };
       }
 
@@ -71,7 +73,7 @@ export function useConfirmSubscriptionPayment(): UseConfirmSubscriptionPaymentRe
           console.error("[useConfirmSubscriptionPayment] Stripe error:", stripeError);
           return {
             success: false,
-            error: stripeError.message || "Payment confirmation failed. Please try again.",
+            error: stripeError.message || t("billing.ui.payment_confirm.errors.failed"),
           };
         }
 
@@ -83,25 +85,25 @@ export function useConfirmSubscriptionPayment(): UseConfirmSubscriptionPaymentRe
           // This shouldn't happen as Stripe handles 3DS inline, but handle it just in case
           return {
             success: false,
-            error: "Additional authentication required. Please complete the verification.",
+            error: t("billing.ui.payment_confirm.errors.requires_action"),
           };
         }
 
         return {
           success: false,
-          error: "Payment could not be completed. Please try again.",
+          error: t("billing.ui.payment_confirm.errors.not_completed"),
         };
       } catch (err: any) {
         console.error("[useConfirmSubscriptionPayment] Unexpected error:", err);
         return {
           success: false,
-          error: err.message || "An unexpected error occurred during payment confirmation.",
+          error: err.message || t("billing.ui.payment_confirm.errors.unexpected"),
         };
       } finally {
         setIsConfirming(false);
       }
     },
-    [stripe],
+    [stripe, t],
   );
 
   return {

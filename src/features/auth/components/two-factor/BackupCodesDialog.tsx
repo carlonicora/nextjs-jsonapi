@@ -59,7 +59,7 @@ export function BackupCodesDialog({ remainingCodes, onRegenerate, trigger }: Bac
   };
 
   const handleDownload = () => {
-    const text = `Backup Codes\n\n${codes.join("\n")}\n\nKeep these codes safe. Each code can only be used once.`;
+    const text = `${t("auth.two_factor.backup_codes")}\n\n${codes.join("\n")}\n\n${t("auth.two_factor.backup_codes_file_note")}`;
     const blob = new Blob([text], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

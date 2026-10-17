@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../../../../../shadcnui";
 import { PaymentMethodForm } from "./PaymentMethodForm";
 
@@ -10,6 +11,7 @@ type PaymentMethodEditorProps = {
 };
 
 export function PaymentMethodEditor({ open, onOpenChange, onSuccess }: PaymentMethodEditorProps) {
+  const t = useTranslations();
   const handleSuccess = () => {
     onSuccess();
     onOpenChange(false);
@@ -23,10 +25,8 @@ export function PaymentMethodEditor({ open, onOpenChange, onSuccess }: PaymentMe
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Add Payment Method</DialogTitle>
-          <DialogDescription>
-            Add a new payment method to your account. Your card information is securely processed by Stripe.
-          </DialogDescription>
+          <DialogTitle>{t("billing.ui.payment_methods.add")}</DialogTitle>
+          <DialogDescription>{t("billing.ui.payment_methods.add_description")}</DialogDescription>
         </DialogHeader>
         {open && <PaymentMethodForm onSuccess={handleSuccess} onCancel={handleCancel} />}
       </DialogContent>

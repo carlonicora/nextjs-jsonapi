@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import { useI18nLocale } from "../../../../i18n";
 import { Button, Separator, Tooltip, TooltipContent, TooltipTrigger } from "../../../../shadcnui";
 import { useCurrentUserContext } from "../../../user/contexts";
 
@@ -30,7 +31,7 @@ interface TokenStatusIndicatorProps {
  * which overstates the debt. trunc keeps it at -1 and matches floor for
  * non-negative values.
  */
-const asWholeCredits = (value: number): string => Math.trunc(value).toLocaleString();
+const asWholeCredits = (value: number, locale: string): string => Math.trunc(value).toLocaleString(locale);
 
 /**
  * TokenStatusIndicator displays the current status of available monthly and extra pages
@@ -50,6 +51,7 @@ export function TokenStatusIndicator({
 }: TokenStatusIndicatorProps) {
   const { company } = useCurrentUserContext();
   const t = useTranslations();
+  const locale = useI18nLocale();
 
   // Don't render if no company data
   if (!company) return null;
@@ -114,7 +116,7 @@ export function TokenStatusIndicator({
             {t("billing.tokens.monthly", { defaultValue: "Monthly Pages" })}:
           </span>
           <span className={cn("font-medium", getStatusColor())}>
-            {asWholeCredits(availableMonthlyCredits)} / {asWholeCredits(monthlyCredits)}
+            {asWholeCredits(availableMonthlyCredits, locale)} / {asWholeCredits(monthlyCredits, locale)}
           </span>
         </div>
         <div className="flex items-center justify-between gap-4">
@@ -131,7 +133,7 @@ export function TokenStatusIndicator({
           <span className="text-muted-foreground">
             {t("billing.tokens.available_extra", { defaultValue: "Extra Pages" })}:
           </span>
-          <span className="font-medium text-blue-500">{asWholeCredits(availableExtraCredits)}</span>
+          <span className="font-medium text-blue-500">{asWholeCredits(availableExtraCredits, locale)}</span>
         </div>
         <Link href="/settings/billing?action=subscribe" className="w-full flex justify-end my-4">
           <Button variant="outline" size="sm">
@@ -146,13 +148,13 @@ export function TokenStatusIndicator({
     <>
       {getBatteryIcon()}
       <span className={cn(textSize, "text-muted-foreground font-medium leading-none")}>
-        {asWholeCredits(availableMonthlyCredits)}
+        {asWholeCredits(availableMonthlyCredits, locale)}
       </span>
       {showExtraPages && availableExtraCredits > 0 && (
         <span className="inline-flex items-center gap-0.5">
           <PlusCircle className={cn(smallIconSize, "text-blue-500")} />
           <span className={cn(textSize, "text-blue-500 font-medium leading-none")}>
-            {asWholeCredits(availableExtraCredits)}
+            {asWholeCredits(availableExtraCredits, locale)}
           </span>
         </span>
       )}

@@ -115,7 +115,7 @@ export function WaitlistForm({ onSuccess }: WaitlistFormProps) {
       setIsSuccess(true);
       onSuccess?.();
     } catch (e) {
-      errorToast({ error: e });
+      errorToast({ title: t("common.errors.error"), error: e });
     } finally {
       setIsSubmitting(false);
     }

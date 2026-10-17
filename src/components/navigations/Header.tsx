@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useIsMobile } from "@/utils";
 import { useIsBreadcrumbRootHidden } from "../../contexts/BreadcrumbRootContext";
 import { useHeaderRootLabel } from "../../contexts/HeaderChildrenContext";
@@ -31,6 +32,7 @@ export function Header({
   className,
   hideSidebarTriggerOnMobile,
 }: HeaderProps) {
+  const t = useTranslations();
   const { breadcrumbs } = useSharedContext();
   const rootLabel = useHeaderRootLabel();
   const isRootHidden = useIsBreadcrumbRootHidden();
@@ -56,7 +58,7 @@ export function Header({
       <div className="bg-sidebar flex h-12 w-full flex-row items-center justify-between ps-2 pe-4">
         {isMobile && logo && <div className="flex shrink-0 flex-row items-center pe-1">{logo}</div>}
         {sidebar && !(isMobile && hideSidebarTriggerOnMobile) && (
-          <SidebarTrigger aria-label="Toggle sidebar" id="sidebar-trigger" />
+          <SidebarTrigger aria-label={t("ui.labels.toggle_sidebar")} id="sidebar-trigger" />
         )}
         {leftContent}
         <div className="flex w-full flex-row items-center justify-start max-md:min-w-0">

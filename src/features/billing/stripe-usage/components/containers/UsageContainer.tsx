@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Activity } from "lucide-react";
 import { useEffect, useState } from "react";
 import { StripeSubscriptionInterface, StripeSubscriptionService } from "../../../stripe-subscription";
@@ -8,6 +9,7 @@ import { StripeUsageService } from "../../data/stripe-usage.service";
 import { UsageSummaryCards } from "../widgets/UsageSummaryCards";
 
 export function UsageContainer() {
+  const t = useTranslations();
   const [meters, setMeters] = useState<MeterInterface[]>([]);
   const [summaries, setSummaries] = useState<Record<string, MeterSummaryInterface | null>>({});
   const [loading, setLoading] = useState<boolean>(true);
@@ -76,7 +78,7 @@ export function UsageContainer() {
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <p className="text-muted-foreground">Loading usage data...</p>
+        <p className="text-muted-foreground">{t("billing.ui.usage.loading")}</p>
       </div>
     );
   }
@@ -86,7 +88,7 @@ export function UsageContainer() {
       {/* Header */}
       <div className="flex items-center gap-x-3">
         <Activity className="h-8 w-8" />
-        <h1 className="text-primary text-3xl font-semibold">Usage Tracking</h1>
+        <h1 className="text-primary text-3xl font-semibold">{t("billing.ui.usage.title")}</h1>
       </div>
 
       {/* Empty State */}
@@ -94,10 +96,8 @@ export function UsageContainer() {
         <div className="bg-muted/50 flex flex-col items-center justify-center gap-y-4 rounded-lg border-2 border-dashed border-gray-300 p-12">
           <Activity className="text-muted-foreground h-16 w-16" />
           <div className="text-center">
-            <h3 className="mb-2 text-sm font-medium">No usage meters configured</h3>
-            <p className="text-muted-foreground">
-              Usage tracking will appear here when you have metered subscriptions with configured meters.
-            </p>
+            <h3 className="mb-2 text-sm font-medium">{t("billing.ui.usage.empty_title")}</h3>
+            <p className="text-muted-foreground">{t("billing.ui.usage.empty_description")}</p>
           </div>
         </div>
       )}

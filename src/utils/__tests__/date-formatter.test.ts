@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { formatDate, FormatOption } from "../date-formatter";
+import { dateFormatLocale, formatDate, FormatOption } from "../date-formatter";
 
 describe("formatDate", () => {
   beforeEach(() => {
@@ -156,6 +156,29 @@ describe("formatDate", () => {
 
       // Italian format: DD/MM/YYYY
       expect(result).toBe("15/06/2024");
+    });
+  });
+
+  describe("timeSince in other languages", () => {
+    it("keeps the English wording for en-GB", () => {
+      expect(formatDate(new Date("2024-06-15T09:00:00Z"), "timeSince", "en-GB")).toBe("3 hours ago");
+    });
+
+    it("uses the locale's relative-time wording for Italian", () => {
+      expect(formatDate(new Date("2024-06-15T09:00:00Z"), "timeSince", "it")).toBe("3 ore fa");
+      expect(formatDate(new Date("2024-06-15T11:59:30Z"), "timeSince", "it")).toBe("30 secondi fa");
+    });
+  });
+
+  describe("dateFormatLocale", () => {
+    it("maps English and missing locales to en-GB", () => {
+      expect(dateFormatLocale("en")).toBe("en-GB");
+      expect(dateFormatLocale("en-US")).toBe("en-GB");
+      expect(dateFormatLocale(undefined)).toBe("en-GB");
+    });
+
+    it("passes other locales through", () => {
+      expect(dateFormatLocale("it")).toBe("it");
     });
   });
 });

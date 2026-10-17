@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { OAuthConsentInfo, OAuthConsentRequest } from "../interfaces/oauth.interface";
 import { OAuthService } from "../data/oauth.service";
 import { useCurrentUserContextOptional } from "../../user/contexts/CurrentUserContext";
@@ -60,6 +61,11 @@ export function useOAuthConsent(
   const [companyId, setCompanyId] = useState<string | undefined>(undefined);
   const contextCompanyId = useCurrentUserContextOptional()?.company?.id;
   const currentCompanyId = options?.defaultCompanyId ?? contextCompanyId;
+  const t = useTranslations();
+  // A ref, not a dependency: the translator must not re-create the callbacks below
+  // (they drive effects that refetch), it only words the fallback errors.
+  const tRef = useRef(t);
+  tRef.current = t;
 
   // Seed the studio choice once the user's companies arrive: the studio open in
   // the web session when it is in the list, otherwise the first one.
@@ -78,7 +84,7 @@ export function useOAuthConsent(
       // scope is deliberately NOT required: RFC 6749 §3.3 makes it optional
       // and the server defaults to the client's registered scopes.
       if (!params.clientId || !params.redirectUri) {
-        setError(new Error("Missing required authorization parameters"));
+        setError(new Error(tRef.current("oauth.ui.errors.missing_parameters")));
         setIsLoading(false);
         return;
       }
@@ -91,7 +97,7 @@ export function useOAuthConsent(
         setClientInfo(info);
       } catch (err) {
         console.error("[useOAuthConsent] Failed to fetch authorization info:", err);
-        setError(err instanceof Error ? err : new Error("Failed to load authorization info"));
+        setError(err instanceof Error ? err : new Error(tRef.current("oauth.ui.errors.load_authorization")));
       } finally {
         setIsLoading(false);
       }
@@ -120,7 +126,7 @@ export function useOAuthConsent(
       }
     } catch (err) {
       console.error("[useOAuthConsent] Failed to approve authorization:", err);
-      setError(err instanceof Error ? err : new Error("Failed to approve authorization"));
+      setError(err instanceof Error ? err : new Error(tRef.current("oauth.ui.errors.approve_authorization")));
       setIsSubmitting(false);
     }
     // Note: Don't set isSubmitting to false on success - we're redirecting
@@ -139,7 +145,7 @@ export function useOAuthConsent(
       }
     } catch (err) {
       console.error("[useOAuthConsent] Failed to deny authorization:", err);
-      setError(err instanceof Error ? err : new Error("Failed to deny authorization"));
+      setError(err instanceof Error ? err : new Error(tRef.current("oauth.ui.errors.deny_authorization")));
       setIsSubmitting(false);
     }
     // Note: Don't set isSubmitting to false on success - we're redirecting

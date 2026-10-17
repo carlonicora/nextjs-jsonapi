@@ -61,11 +61,12 @@ const CellButton = memo(function CellButton({
   );
 });
 
-const ACTION_LABELS: Record<ActionType, string> = {
-  read: "Read",
-  create: "Create",
-  update: "Update",
-  delete: "Delete",
+/** Message keys for the action column headers. */
+const ACTION_LABEL_KEYS: Record<ActionType, string> = {
+  read: "rbac.actions.read",
+  create: "rbac.actions.create",
+  update: "rbac.actions.update",
+  delete: "rbac.actions.delete",
 };
 
 export default function RbacByRoleContainer() {
@@ -192,7 +193,7 @@ export default function RbacByRoleContainer() {
                           key={action}
                           className="min-w-28 px-2 py-2 text-center text-xs font-medium text-muted-foreground"
                         >
-                          {ACTION_LABELS[action]}
+                          {t(ACTION_LABEL_KEYS[action])}
                         </th>
                       ))}
                     </tr>

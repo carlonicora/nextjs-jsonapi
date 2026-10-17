@@ -42,7 +42,9 @@ export class StripePromotionCodeService {
       return {
         valid: false,
         code: params.code,
-        errorMessage: response.error || "Failed to validate promotion code",
+        // No English fallback here: a service cannot translate, so the caller words
+        // the missing message in the active language.
+        errorMessage: response.error || undefined,
       };
     }
 

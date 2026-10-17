@@ -13,6 +13,7 @@ import { useI18nRouter } from "../../../../../i18n";
 import { Alert, AlertDescription, AlertTitle, Button, Checkbox, Input } from "../../../../../shadcnui";
 import { showToast } from "../../../../../utils/toast";
 import { FeatureInterface, FeatureService } from "../../../../feature";
+import { useBillingFormatOptions } from "../../../components/utils";
 import { priceLabel, usePriceContext } from "../../../contexts/PriceContext";
 import { StripePriceInput, StripePriceInterface } from "../../data/stripe-price.interface";
 import { StripePriceSeed } from "../../data/stripe-price.transfer";
@@ -54,6 +55,7 @@ function PriceEditorInternal({
   onDialogOpenChange,
 }: PriceEditorProps) {
   const t = useTranslations();
+  const fmt = useBillingFormatOptions();
   const router = useI18nRouter();
   const { createPrice, updatePrice, productId: contextProductId } = usePriceContext();
   const [allFeatures, setAllFeatures] = useState<FeatureInterface[]>([]);
@@ -266,7 +268,7 @@ function PriceEditorInternal({
     <EditorSheet
       form={form}
       entityType={t("billing.admin.prices.entity")}
-      entityName={price ? priceLabel(price) : undefined}
+      entityName={price ? priceLabel(price, fmt) : undefined}
       isEdit={isEdit}
       module={Modules.StripePrice}
       size="lg"

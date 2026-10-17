@@ -66,7 +66,14 @@ function BreadcrumbSeparator({ children, className, ...props }: React.ComponentP
   );
 }
 
-function BreadcrumbEllipsis({ className, ...props }: React.ComponentProps<"span">) {
+function BreadcrumbEllipsis({
+  className,
+  label = "More",
+  ...props
+}: React.ComponentProps<"span"> & {
+  /** Screen-reader text. Plain prop (no lookup): this file has no "use client" and may render on the server. */
+  label?: string;
+}) {
   return (
     <span
       data-slot="breadcrumb-ellipsis"
@@ -76,7 +83,7 @@ function BreadcrumbEllipsis({ className, ...props }: React.ComponentProps<"span"
       {...props}
     >
       <MoreHorizontalIcon />
-      <span className="sr-only">More</span>
+      <span className="sr-only">{label}</span>
     </span>
   );
 }

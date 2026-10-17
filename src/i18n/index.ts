@@ -6,6 +6,7 @@ export {
   useI18nDateFnsLocale,
   getI18nLink,
   getI18nServerLocale,
+  getI18nSupportedLocales,
 } from "./config";
 
 export type {

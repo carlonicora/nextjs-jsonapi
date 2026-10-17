@@ -1,8 +1,11 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Check, X, Loader2 } from "lucide-react";
 import { Button, Input } from "../../../../shadcnui";
+import { useI18nLocale } from "../../../../i18n";
+import { formatFixed } from "../../components/utils";
 import { PromotionCodeValidationResult } from "../data/stripe-promotion-code.interface";
 
 type PromoCodeInputProps = {
@@ -22,6 +25,8 @@ export function PromoCodeInput({
   onRemove,
   disabled = false,
 }: PromoCodeInputProps) {
+  const t = useTranslations();
+  const locale = useI18nLocale();
   const [code, setCode] = useState("");
 
   const handleApply = () => {
@@ -40,23 +45,23 @@ export function PromoCodeInput({
   // Format discount for display
   const formatDiscount = (result: PromotionCodeValidationResult): string => {
     if (result.discountType === "percent_off") {
-      return `${result.discountValue}% off`;
+      return t("billing.ui.wizard.review.percent_off", { value: String(result.discountValue) });
     }
     // amount_off is in cents, convert to dollars
     const amount = (result.discountValue || 0) / 100;
     const currency = result.currency?.toUpperCase() || "USD";
-    return `${currency} ${amount.toFixed(2)} off`;
+    return t("billing.ui.wizard.review.amount_off", { amount: `${currency} ${formatFixed(amount, locale, 2)}` });
   };
 
   // Format duration for display
   const formatDuration = (result: PromotionCodeValidationResult): string => {
     switch (result.duration) {
       case "forever":
-        return "Applied to all payments";
+        return t("billing.ui.promo_code.duration_forever");
       case "once":
-        return "Applied to first payment only";
+        return t("billing.ui.promo_code.duration_once");
       case "repeating":
-        return `Applied for ${result.durationInMonths} months`;
+        return t("billing.ui.promo_code.duration_repeating", { months: String(result.durationInMonths) });
       default:
         return "";
     }
@@ -91,7 +96,7 @@ export function PromoCodeInput({
     <div className="space-y-2">
       <div className="flex gap-2">
         <Input
-          placeholder="Enter promo code"
+          placeholder={t("billing.ui.promo_code.placeholder")}
           value={code}
           onChange={(e) => setCode(e.target.value.toUpperCase())}
           onKeyDown={handleKeyDown}
@@ -99,7 +104,7 @@ export function PromoCodeInput({
           className="flex-1"
         />
         <Button variant="outline" onClick={handleApply} disabled={disabled || isValidating || !code.trim()}>
-          {isValidating ? <Loader2 className="h-4 w-4 animate-spin" /> : "Apply"}
+          {isValidating ? <Loader2 className="h-4 w-4 animate-spin" /> : t("billing.ui.promo_code.apply")}
         </Button>
       </div>
       {error && <p className="text-destructive text-xs/relaxed">{error}</p>}

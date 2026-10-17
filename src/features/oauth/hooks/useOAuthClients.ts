@@ -1,7 +1,8 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useAtom, useSetAtom } from "jotai";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import {
   addOAuthClientAtom,
   oauthClientsAtom,
@@ -48,6 +49,11 @@ export function useOAuthClients(): UseOAuthClientsReturn {
   const [error, setError] = useAtom(oauthClientsErrorAtom);
   const addClient = useSetAtom(addOAuthClientAtom);
   const setNewClientSecret = useSetAtom(setNewClientSecretAtom);
+  const t = useTranslations();
+  // A ref, not a dependency: the translator must not re-create the callbacks below
+  // (they drive effects that refetch), it only words the fallback errors.
+  const tRef = useRef(t);
+  tRef.current = t;
 
   const fetchClients = useCallback(async () => {
     setIsLoading(true);
@@ -58,7 +64,7 @@ export function useOAuthClients(): UseOAuthClientsReturn {
       setClients(fetchedClients);
     } catch (err) {
       console.error("[useOAuthClients] Failed to fetch clients:", err);
-      setError(err instanceof Error ? err : new Error("Failed to fetch OAuth clients"));
+      setError(err instanceof Error ? err : new Error(tRef.current("oauth.ui.errors.fetch_clients")));
     } finally {
       setIsLoading(false);
     }
@@ -91,7 +97,7 @@ export function useOAuthClients(): UseOAuthClientsReturn {
         return result;
       } catch (err) {
         console.error("[useOAuthClients] Failed to create client:", err);
-        const error = err instanceof Error ? err : new Error("Failed to create OAuth client");
+        const error = err instanceof Error ? err : new Error(tRef.current("oauth.ui.errors.create_client"));
         setError(error);
         throw error;
       } finally {

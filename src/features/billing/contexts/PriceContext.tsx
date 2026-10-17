@@ -8,7 +8,12 @@ import { usePageUrlGenerator } from "../../../hooks";
 import { BreadcrumbItemData } from "../../../interfaces";
 import { getRoleId } from "../../../roles";
 import { useCurrentUserContext } from "../../user/contexts";
-import { formatCurrency, formatInterval } from "../components/utils/currency";
+import {
+  type BillingFormatOptions,
+  formatCurrency,
+  formatInterval,
+  useBillingFormatOptions,
+} from "../components/utils";
 import { PriceArchiver } from "../stripe-price/components/forms/PriceArchiver";
 import PriceEditor from "../stripe-price/components/forms/PriceEditor";
 import { StripePriceInput, StripePriceInterface } from "../stripe-price/data/stripe-price.interface";
@@ -63,9 +68,15 @@ const defaultContextValue: PriceContextType = {
   productId: undefined,
 };
 
-/** Human label for a price: its nickname, else amount + interval. */
-export function priceLabel(price: StripePriceInterface): string {
-  return price.nickname ?? `${formatCurrency(price.unitAmount, price.currency)} ${formatInterval(price)}`.trim();
+/**
+ * Human label for a price: its nickname, else amount + interval. Pass the
+ * caller's `useBillingFormatOptions()` so the amount and interval follow the
+ * active locale; without it the label is formatted in English.
+ */
+export function priceLabel(price: StripePriceInterface, fmt: BillingFormatOptions = {}): string {
+  return (
+    price.nickname ?? `${formatCurrency(price.unitAmount, price.currency, fmt)} ${formatInterval(price, fmt)}`.trim()
+  );
 }
 
 export const PriceProvider = ({
@@ -75,6 +86,7 @@ export const PriceProvider = ({
   productId: productIdProp,
 }: PriceProviderProps) => {
   const t = useTranslations();
+  const fmt = useBillingFormatOptions();
   const generateUrl = usePageUrlGenerator();
   const { hasRole } = useCurrentUserContext();
 
@@ -170,7 +182,7 @@ export const PriceProvider = ({
         name: price.product.name,
         href: generateUrl({ page: Modules.StripeProduct, id: price.product.id }),
       });
-    if (price) items.push({ name: priceLabel(price) });
+    if (price) items.push({ name: priceLabel(price, fmt) });
     return items;
   };
 
@@ -178,7 +190,7 @@ export const PriceProvider = ({
     const response: any = { type: t("billing.admin.prices.title") };
     if (!price) return response;
 
-    response.element = priceLabel(price);
+    response.element = priceLabel(price, fmt);
 
     // narr8 note: gate on hasRole ONLY. hasPermissionToModule always returns
     // false in this app, so gating an editor on it hides the editor outright.

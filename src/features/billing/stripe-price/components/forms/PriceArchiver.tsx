@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { errorToast } from "../../../../../components/errors";
 import { Button, ConfirmDialog } from "../../../../../shadcnui";
+import { useBillingFormatOptions } from "../../../components/utils";
 import { priceLabel, usePriceContext } from "../../../contexts/PriceContext";
 import { StripePriceInterface } from "../../data/stripe-price.interface";
 
@@ -20,6 +21,7 @@ type PriceArchiverProps = {
  */
 export function PriceArchiver({ price }: PriceArchiverProps) {
   const t = useTranslations();
+  const fmt = useBillingFormatOptions();
   const { archivePrice, restorePrice } = usePriceContext();
   const [open, setOpen] = useState<boolean>(false);
 
@@ -36,7 +38,7 @@ export function PriceArchiver({ price }: PriceArchiverProps) {
         open={open}
         onOpenChange={setOpen}
         title={t(`billing.admin.prices.${scope}.title`)}
-        description={t(`billing.admin.prices.${scope}.description`, { label: priceLabel(price) })}
+        description={t(`billing.admin.prices.${scope}.description`, { label: priceLabel(price, fmt) })}
         confirmLabel={t(`billing.admin.prices.${scope}.confirm`)}
         cancelLabel={t("ui.buttons.cancel")}
         destructive={!isArchived}

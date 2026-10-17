@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { CreditCard, Loader2, Wallet } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -51,6 +52,7 @@ type ErrorState = {
 };
 
 export function BillingDashboardContainer() {
+  const t = useTranslations();
   const [data, setData] = useState<DataState>({
     customer: null,
     subscriptions: [],
@@ -68,6 +70,7 @@ export function BillingDashboardContainer() {
     usage: true,
   });
 
+  // Error state holds message keys; they are translated at render time.
   const [errors, setErrors] = useState<ErrorState>({
     customer: null,
     subscriptions: null,
@@ -118,7 +121,7 @@ export function BillingDashboardContainer() {
       if ((error as { status?: number })?.status === 404) {
         setNoCustomerExists(true);
       } else {
-        setErrors((prev) => ({ ...prev, customer: "Failed to load billing account" }));
+        setErrors((prev) => ({ ...prev, customer: "billing.ui.dashboard.errors.load_customer" }));
       }
     } finally {
       setLoading((prev) => ({ ...prev, customer: false }));
@@ -146,7 +149,7 @@ export function BillingDashboardContainer() {
         return subscriptions;
       } catch (error) {
         console.error("[BillingDashboard] Failed to load subscriptions:", error);
-        setErrors((prev) => ({ ...prev, subscriptions: "Failed to load subscriptions" }));
+        setErrors((prev) => ({ ...prev, subscriptions: "billing.ui.dashboard.errors.load_subscriptions" }));
         return [];
       } finally {
         setLoading((prev) => ({ ...prev, subscriptions: false }));
@@ -161,7 +164,7 @@ export function BillingDashboardContainer() {
         setErrors((prev) => ({ ...prev, paymentMethods: null }));
       } catch (error) {
         console.error("[BillingDashboard] Failed to load payment methods:", error);
-        setErrors((prev) => ({ ...prev, paymentMethods: "Failed to load payment methods" }));
+        setErrors((prev) => ({ ...prev, paymentMethods: "billing.ui.dashboard.errors.load_payment_methods" }));
       } finally {
         setLoading((prev) => ({ ...prev, paymentMethods: false }));
       }
@@ -175,7 +178,7 @@ export function BillingDashboardContainer() {
         setErrors((prev) => ({ ...prev, invoices: null }));
       } catch (error) {
         console.error("[BillingDashboard] Failed to load invoices:", error);
-        setErrors((prev) => ({ ...prev, invoices: "Failed to load invoices" }));
+        setErrors((prev) => ({ ...prev, invoices: "billing.ui.dashboard.errors.load_invoices" }));
       } finally {
         setLoading((prev) => ({ ...prev, invoices: false }));
       }
@@ -206,7 +209,7 @@ export function BillingDashboardContainer() {
       await fetchAllData();
     } catch (error) {
       console.error("[BillingDashboard] Failed to create customer:", error);
-      setErrors((prev) => ({ ...prev, customer: "Failed to set up billing" }));
+      setErrors((prev) => ({ ...prev, customer: "billing.ui.dashboard.errors.setup" }));
     } finally {
       setCreatingCustomer(false);
     }
@@ -242,7 +245,7 @@ export function BillingDashboardContainer() {
       setErrors((prev) => ({ ...prev, usage: null }));
     } catch (error) {
       console.error("[BillingDashboard] Failed to load usage data:", error);
-      setErrors((prev) => ({ ...prev, usage: "Failed to load usage data" }));
+      setErrors((prev) => ({ ...prev, usage: "billing.ui.dashboard.errors.load_usage" }));
     } finally {
       setLoading((prev) => ({ ...prev, usage: false }));
     }
@@ -311,13 +314,13 @@ export function BillingDashboardContainer() {
   const getModalTitle = (type: ModalType): string => {
     switch (type) {
       case "subscriptions":
-        return "Manage Subscriptions";
+        return t("billing.ui.dashboard.modal.subscriptions");
       case "payment-methods":
-        return "Payment Methods";
+        return t("billing.ui.payment_methods.title");
       case "invoices":
-        return "Invoice History";
+        return t("billing.ui.dashboard.modal.invoices");
       case "usage":
-        return "Usage Tracking";
+        return t("billing.ui.usage.title");
       default:
         return "";
     }
@@ -331,7 +334,7 @@ export function BillingDashboardContainer() {
       {/* Header */}
       <div className="flex items-center gap-x-3">
         <Wallet className="h-8 w-8" />
-        <h1 className="text-primary text-3xl font-semibold">Billing</h1>
+        <h1 className="text-primary text-3xl font-semibold">{t("billing.title")}</h1>
       </div>
 
       {/* Initial Loading State */}
@@ -350,27 +353,24 @@ export function BillingDashboardContainer() {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
               <CreditCard className="h-8 w-8 text-primary" />
             </div>
-            <CardTitle>Set Up Billing</CardTitle>
-            <CardDescription>
-              Your company doesn&apos;t have a billing account yet. Set one up to manage subscriptions, payment methods,
-              and view invoices.
-            </CardDescription>
+            <CardTitle>{t("billing.ui.dashboard.setup_title")}</CardTitle>
+            <CardDescription>{t("billing.ui.dashboard.setup_description")}</CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center pb-8">
             <Button onClick={handleCreateCustomer} disabled={creatingCustomer} size="lg">
               {creatingCustomer ? (
                 <>
                   <Loader2 className="me-2 h-4 w-4 animate-spin" />
-                  Setting up...
+                  {t("billing.ui.dashboard.setting_up")}
                 </>
               ) : (
-                "Set Up Billing Account"
+                t("billing.ui.dashboard.setup_button")
               )}
             </Button>
           </CardContent>
           {errors.customer && (
             <CardContent className="pt-0">
-              <p className="text-center text-destructive text-xs/relaxed">{errors.customer}</p>
+              <p className="text-center text-destructive text-xs/relaxed">{t(errors.customer)}</p>
             </CardContent>
           )}
         </Card>
@@ -394,7 +394,7 @@ export function BillingDashboardContainer() {
             <SubscriptionSummaryCard
               subscriptions={data.subscriptions}
               loading={loading.subscriptions}
-              error={errors.subscriptions || undefined}
+              error={errors.subscriptions ? t(errors.subscriptions) : undefined}
               onManageClick={() => {
                 if (data.subscriptions.length === 0) {
                   // No subscriptions - open wizard directly
@@ -410,20 +410,20 @@ export function BillingDashboardContainer() {
               paymentMethods={data.paymentMethods}
               defaultPaymentMethodId={data.customer?.defaultPaymentMethodId}
               loading={loading.paymentMethods}
-              error={errors.paymentMethods || undefined}
+              error={errors.paymentMethods ? t(errors.paymentMethods) : undefined}
               onManageClick={() => setActiveModal("payment-methods")}
             />
 
             <CustomerInfoCard
               customer={data.customer}
               loading={loading.customer}
-              error={errors.customer || undefined}
+              error={errors.customer ? t(errors.customer) : undefined}
             />
 
             <InvoicesSummaryCard
               invoices={data.invoices}
               loading={loading.invoices}
-              error={errors.invoices || undefined}
+              error={errors.invoices ? t(errors.invoices) : undefined}
               onViewAllClick={() => setActiveModal("invoices")}
             />
 
@@ -433,7 +433,7 @@ export function BillingDashboardContainer() {
                 meters={data.meters}
                 summaries={data.meterSummaries}
                 loading={loading.usage}
-                error={errors.usage || undefined}
+                error={errors.usage ? t(errors.usage) : undefined}
                 onViewDetailsClick={() => setActiveModal("usage")}
               />
             )}
