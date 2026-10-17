@@ -1,3 +1,9 @@
+## [4.1.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.1.1...v4.1.2) (2026-10-17)
+
+### 🚨 Tests
+
+* vitest reporter that lists tests slower than 1s ([fb4ab6e](https://github.com/carlonicora/nextjs-jsonapi/commit/fb4ab6e89ac62d823273a495aa2efeab159785a5))
+
 ## [4.1.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.1.0...v4.1.1) (2026-10-15)
 
 ### 🐛 Bug Fixes
