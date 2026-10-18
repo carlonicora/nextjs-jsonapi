@@ -1,3 +1,9 @@
+## [4.2.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.2.1...v4.2.2) (2026-10-18)
+
+### 🐛 Bug Fixes
+
+* **lists:** re-fetch a list when its hidden route comes back; unstick fetch flags ([e8d1f08](https://github.com/carlonicora/nextjs-jsonapi/commit/e8d1f08b228b1de458688a3a1d5299f091cefd0d))
+
 ## [4.2.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.2.0...v4.2.1) (2026-10-18)
 
 ### 🚨 Tests
