@@ -1,3 +1,9 @@
+## [4.2.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.2.0...v4.2.1) (2026-10-18)
+
+### 🚨 Tests
+
+* rename *.test.* to *.spec.* ([1b09fa4](https://github.com/carlonicora/nextjs-jsonapi/commit/1b09fa454e82de60d9d5af7486c605a29de71a17))
+
 ## [4.2.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.1.2...v4.2.0) (2026-10-17)
 
 ### 🚀 Features
