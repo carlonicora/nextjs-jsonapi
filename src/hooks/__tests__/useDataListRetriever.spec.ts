@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, waitFor, act } from "@testing-library/react";
+import { Activity, createElement, ReactNode } from "react";
 import { useDataListRetriever } from "../useDataListRetriever";
 import { createMockModule, createMockApiData } from "../../testing";
 
@@ -342,6 +343,62 @@ describe("useDataListRetriever", () => {
         const lastCall = retriever.mock.calls[retriever.mock.calls.length - 1][0];
         expect(lastCall.filter).toBeUndefined();
       });
+    });
+  });
+
+  describe("skipped calls", () => {
+    it("still fetches a later search after a call the already-loaded guard skipped", async () => {
+      const retriever = vi.fn().mockResolvedValue([createMockApiData({ type: "articles", id: "1" })]);
+
+      // An inline retriever, as list components write it: a new function each render keeps
+      // fetchData's closure current, so the already-loaded guard sees the loaded state.
+      const { result } = renderHook(() =>
+        useDataListRetriever({ retriever: (params) => retriever(params), module: mockModule, search: "" }),
+      );
+
+      await waitFor(() => expect(result.current.isLoaded).toBe(true));
+      expect(retriever).toHaveBeenCalledTimes(1);
+
+      // Single page, loaded, search unchanged: the guard skips this call.
+      act(() => {
+        result.current.addAdditionalParameter("filter", "active");
+      });
+      expect(retriever).toHaveBeenCalledTimes(1);
+
+      await act(async () => {
+        await result.current.search("dragon");
+      });
+
+      await waitFor(() => expect(retriever).toHaveBeenCalledTimes(2));
+      expect(retriever.mock.calls[1][0].search).toBe("dragon");
+    });
+  });
+
+  describe("hidden route coming back (Activity)", () => {
+    it("re-fetches a loaded list when it becomes visible again", async () => {
+      const first = [
+        createMockApiData({ type: "articles", id: "1" }),
+        createMockApiData({ type: "articles", id: "2" }),
+      ];
+      const second = [createMockApiData({ type: "articles", id: "2" })];
+      const retriever = vi.fn().mockResolvedValueOnce(first).mockResolvedValueOnce(second);
+
+      let mode: "visible" | "hidden" = "visible";
+      const wrapper = ({ children }: { children: ReactNode }) => createElement(Activity, { mode }, children);
+      const { result, rerender } = renderHook(() => useDataListRetriever({ retriever, module: mockModule }), {
+        wrapper,
+      });
+
+      await waitFor(() => expect(result.current.data?.map((item: any) => item.id)).toEqual(["1", "2"]));
+      expect(retriever).toHaveBeenCalledTimes(1);
+
+      mode = "hidden";
+      rerender();
+      mode = "visible";
+      rerender();
+
+      await waitFor(() => expect(result.current.data?.map((item: any) => item.id)).toEqual(["2"]));
+      expect(retriever).toHaveBeenCalledTimes(2);
     });
   });
 });

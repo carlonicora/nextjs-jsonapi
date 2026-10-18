@@ -121,7 +121,14 @@ export function useDataListRetriever<T>(params: {
   );
 
   const fetchData = useCallback(
-    async (fetchParams?: { isRefine?: boolean; isRefresh?: boolean; callNext?: boolean; callPrevious?: boolean }) => {
+    async (fetchParams?: {
+      isRefine?: boolean;
+      isRefresh?: boolean;
+      callNext?: boolean;
+      callPrevious?: boolean;
+      /** Re-fetch even though a single-page list is already loaded. */
+      force?: boolean;
+    }) => {
       if (ready === false) return;
 
       // Prevent concurrent pagination calls
@@ -132,19 +139,12 @@ export function useDataListRetriever<T>(params: {
       // Prevent concurrent fetches (unless it's a pagination call)
       if (isFetchingRef.current && !fetchParams?.callNext && !fetchParams?.callPrevious) return;
 
-      // Mark pagination in progress
-      if (fetchParams?.callNext || fetchParams?.callPrevious) {
-        isPaginatingRef.current = true;
-      }
-
-      const thisRequestId = ++requestIdRef.current;
-      isFetchingRef.current = true;
-
       if (stableParams.requiresSearch === true && fetchParams?.isRefine !== true && fetchParams?.isRefresh !== true) {
         return;
       }
 
       if (
+        fetchParams?.force !== true &&
         !nextPage &&
         !previousPage &&
         isLoaded &&
@@ -154,6 +154,16 @@ export function useDataListRetriever<T>(params: {
       ) {
         return;
       }
+
+      // Marked only once the call will really fetch: set before the early returns above, the
+      // flags stayed raised (only the `finally` below clears them) and every later
+      // search/filter/refresh call was dropped by the concurrency guards.
+      if (fetchParams?.callNext || fetchParams?.callPrevious) {
+        isPaginatingRef.current = true;
+      }
+
+      const thisRequestId = ++requestIdRef.current;
+      isFetchingRef.current = true;
 
       const currentSearchTerm = searchTermRef.current;
 
@@ -287,6 +297,25 @@ export function useDataListRetriever<T>(params: {
       fetchData({ isRefresh: true });
     }
   }, [ready, fetchData]);
+
+  // Cache Components keeps a visited route alive in a hidden <Activity>: leaving it cleans up
+  // its effects, coming back re-runs them with the old state intact. A loaded list would then
+  // keep showing rows a write on another page has changed (a record deleted from its detail
+  // page stayed listed after the redirect back), so re-fetch when the effects return with data
+  // already loaded. The stale rows stay on screen until the response replaces them.
+  const fetchDataRef = useRef(fetchData);
+  const isLoadedRef = useRef(isLoaded);
+  useEffect(() => {
+    fetchDataRef.current = fetchData;
+    isLoadedRef.current = isLoaded;
+  });
+  const wasHiddenRef = useRef(false);
+  useEffect(() => {
+    if (wasHiddenRef.current && isLoadedRef.current) fetchDataRef.current({ isRefresh: true, force: true });
+    return () => {
+      wasHiddenRef.current = true;
+    };
+  }, []);
 
   const loadNext = useCallback(
     async (onlyNewRecords?: boolean) => {
