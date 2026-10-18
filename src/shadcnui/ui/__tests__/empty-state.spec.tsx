@@ -1,4 +1,4 @@
-// packages/nextjs-jsonapi/src/shadcnui/ui/__tests__/empty-state.test.tsx
+// packages/nextjs-jsonapi/src/shadcnui/ui/__tests__/empty-state.spec.tsx
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { InboxIcon } from "lucide-react";

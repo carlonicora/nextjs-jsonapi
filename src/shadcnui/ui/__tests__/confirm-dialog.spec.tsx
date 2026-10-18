@@ -1,4 +1,4 @@
-// packages/nextjs-jsonapi/src/shadcnui/ui/__tests__/confirm-dialog.test.tsx
+// packages/nextjs-jsonapi/src/shadcnui/ui/__tests__/confirm-dialog.spec.tsx
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";

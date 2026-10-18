@@ -5,7 +5,7 @@ import { ContentListTable } from "../ContentListTable";
 // `ContentListTable` imports `useTableGenerator` from the `../../hooks` barrel,
 // which resolves columns through the table-generator registry. Mocking the
 // barrel (spreading the actual module so the other exports survive) is the same
-// approach the sibling `ContentListTable.test.tsx` in this folder uses; one
+// approach the sibling `ContentListTable.rendering.spec.tsx` in this folder uses; one
 // plain column is enough here.
 // `mockColumns.expandToggle` switches the mocked name cell to a button that
 // toggles row expansion (the `renderExpandedRow` suite), plus a second column so

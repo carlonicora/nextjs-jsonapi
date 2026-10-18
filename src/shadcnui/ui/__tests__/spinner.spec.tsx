@@ -1,4 +1,4 @@
-// packages/nextjs-jsonapi/src/shadcnui/ui/__tests__/spinner.test.tsx
+// packages/nextjs-jsonapi/src/shadcnui/ui/__tests__/spinner.spec.tsx
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { Spinner } from "../spinner";

@@ -17,7 +17,7 @@ export default defineConfig({
     // the consuming app's own vitest.config.ts already carries.
     testTimeout: 15000,
     hookTimeout: 30000,
-    include: ["src/**/*.{test,spec}.{ts,tsx}", "scripts/**/*.{test,spec}.{ts,tsx}"],
+    include: ["src/**/*.spec.{ts,tsx}", "scripts/**/*.spec.{ts,tsx}"],
     silent: true,
     // default output unchanged; the slow-test list is appended (report only).
     reporters: ["default", "./vitest.slow-tests.reporter.ts"],
@@ -26,7 +26,7 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "json", "html"],
       include: ["src/**/*.{ts,tsx}"],
-      exclude: ["src/**/*.{test,spec}.{ts,tsx}", "src/**/*.d.ts", "src/**/index.ts"],
+      exclude: ["src/**/*.spec.{ts,tsx}", "src/**/*.d.ts", "src/**/index.ts"],
     },
   },
   resolve: {
