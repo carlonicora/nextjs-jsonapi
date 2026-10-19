@@ -1,3 +1,9 @@
+## [5.1.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.1.1...v5.1.2) (2026-10-19)
+
+### 🐛 Bug Fixes
+
+* **messages:** say user, not employee, in the deleted and inactive errors ([cbc47c0](https://github.com/carlonicora/nextjs-jsonapi/commit/cbc47c048ec250ed5a692d108c5d82812a6c5217))
+
 ## [5.1.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.1.0...v5.1.1) (2026-10-19)
 
 ### 🐛 Bug Fixes
