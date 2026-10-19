@@ -1545,9 +1545,9 @@
     },
     "deleted": "Utente eliminato",
     "errors": {
-      "deleted": "Dipendente eliminato",
+      "deleted": "Utente eliminato",
       "email_exists": "Esiste già un altro utente con questa email",
-      "inactive": "Dipendente non attivo"
+      "inactive": "Utente non attivo"
     },
     "fields": {
       "bio": {

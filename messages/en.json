@@ -1545,9 +1545,9 @@
     },
     "deleted": "Deleted User",
     "errors": {
-      "deleted": "Deleted Employee",
+      "deleted": "Deleted user",
       "email_exists": "Another user with this email already exists",
-      "inactive": "Inactive Employee"
+      "inactive": "Inactive user"
     },
     "fields": {
       "bio": {
