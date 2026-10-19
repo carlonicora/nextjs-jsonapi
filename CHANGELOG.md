@@ -1,3 +1,15 @@
+## [5.0.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.2.3...v5.0.0) (2026-10-19)
+
+### ⚠ BREAKING CHANGES
+
+* **pwa:** `serwist` is no longer an option of `createNextConfig`.
+`usePushNotifications` requires `{ currentUser, canSubscribe }`. See
+docs/migrating-to-5.0.md.
+
+### 🚀 Features
+
+* **pwa:** ship the standard service worker, drop serwist ([936ab06](https://github.com/carlonicora/nextjs-jsonapi/commit/936ab06079da28f513303fd55d8e85bc99566f63))
+
 ## [4.2.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.2.2...v4.2.3) (2026-10-19)
 
 ### 🐛 Bug Fixes
