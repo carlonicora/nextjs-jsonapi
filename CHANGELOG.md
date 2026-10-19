@@ -1,3 +1,9 @@
+## [5.0.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.0.2...v5.0.3) (2026-10-19)
+
+### 📚 Documentation
+
+* **offline.template:** update comments for clarity on template usage and revision tracking ([bcf72b8](https://github.com/carlonicora/nextjs-jsonapi/commit/bcf72b886bcb286f2ff5aea192e30a6f8f180a9e))
+
 ## [5.0.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.0.1...v5.0.2) (2026-10-19)
 
 ### 📦 Code Refactoring
