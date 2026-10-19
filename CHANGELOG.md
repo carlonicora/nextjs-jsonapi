@@ -1,3 +1,9 @@
+## [5.0.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.0.1...v5.0.2) (2026-10-19)
+
+### 📦 Code Refactoring
+
+* **usePushNotifications:** update currentUser type to only include id ([3ce5a41](https://github.com/carlonicora/nextjs-jsonapi/commit/3ce5a41ad9bfbac60a948a7c30d7dad21929e35b))
+
 ## [5.0.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.0.0...v5.0.1) (2026-10-19)
 
 ### 📦 Code Refactoring
