@@ -147,12 +147,14 @@ describe("createNextConfig: behaviour", () => {
       dangerouslyAllowLocalIP: true,
     });
 
-    const full = createNextConfig({ ...base, mdx: true, serwist: true, imageMinimumCacheTTL: 86400 }) as Record<
-      string,
-      unknown
-    >;
+    const full = createNextConfig({
+      ...base,
+      mdx: true,
+      serwist: true,
+      imageMinimumCacheTTL: 86400,
+    } as never) as Record<string, unknown>;
     expect(full.pageExtensions).toEqual(["ts", "tsx", "mdx"]);
-    expect(full.serverExternalPackages).toEqual(["esbuild", "esbuild-wasm"]);
+    expect(full).not.toHaveProperty("serverExternalPackages");
     expect((full.images as { minimumCacheTTL: number }).minimumCacheTTL).toBe(86400);
   });
 

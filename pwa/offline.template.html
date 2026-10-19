@@ -1,0 +1,138 @@
+<!doctype html>
+<!--
+  Offline fallback served by the service worker (sw.js) when a page navigation
+  fails. It is deliberately self-contained: inline styles, inline icons, no
+  build assets, no external script, stylesheet or font, because the build's
+  chunks are not available offline and change on every deploy.
+
+  This is a template. Each app copies it to public/offline.html and fills the
+  placeholders by hand: the app name, the theme blocks (one root block of the
+  six tokens, then one class block per non-light theme), the default-locale
+  strings, and the config object read by the script below.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{APP_NAME}}</title>
+    <style>
+      /*{{THEME_CSS}}*/
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      body {
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        background: var(--background);
+        color: var(--foreground);
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        text-align: center;
+      }
+      .icon-circle {
+        width: 4rem;
+        height: 4rem;
+        margin: 0 auto 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        background: var(--muted);
+        color: var(--muted-foreground);
+      }
+      h1 {
+        margin-bottom: 0.5rem;
+        font-size: 1.5rem;
+        line-height: 2rem;
+        font-weight: 700;
+      }
+      p {
+        max-width: 28rem;
+        margin-bottom: 1.5rem;
+        color: var(--muted-foreground);
+        line-height: 1.5rem;
+      }
+      button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        height: 1.75rem;
+        padding: 0 0.5rem;
+        border: 1px solid transparent;
+        border-radius: 0.375rem;
+        background: var(--primary);
+        color: var(--primary-foreground);
+        font: inherit;
+        font-size: 0.75rem;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      button:hover {
+        background: color-mix(in oklch, var(--primary) 80%, transparent);
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <div class="icon-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 20h.01" />
+          <path d="M8.5 16.429a5 5 0 0 1 7 0" />
+          <path d="M5 12.859a10 10 0 0 1 5.17-2.69" />
+          <path d="M19 12.859a10 10 0 0 0-2.007-1.523" />
+          <path d="M2 8.82a15 15 0 0 1 4.177-2.643" />
+          <path d="M22 8.82a15 15 0 0 0-11.288-3.764" />
+          <path d="m2 2 20 20" />
+        </svg>
+      </div>
+      <h1 id="title">{{TITLE}}</h1>
+      <p id="description">{{DESCRIPTION}}</p>
+      <button type="button" onclick="window.location.reload()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+          <path d="M21 3v5h-5" />
+          <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+          <path d="M8 16H3v5" />
+        </svg>
+        <span id="retry">{{RETRY}}</span>
+      </button>
+    </div>
+    <script>
+      (function () {
+        var config = {{OFFLINE_CONFIG}};
+        var html = document.documentElement;
+        var theme = null;
+        try { theme = localStorage.getItem("theme"); } catch (e) { theme = null; }
+        theme = theme || config.defaultTheme;
+        if (theme === "system") {
+          theme = config.enableSystem
+            ? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+            : config.defaultTheme;
+        }
+        if (theme !== "light" && config.themes.indexOf(theme) !== -1) html.classList.add(theme);
+        var fromPath = location.pathname.split("/")[1];
+        var cookieMatch = document.cookie.match(/(?:^|; )NEXT_LOCALE=([^;]*)/);
+        var fromCookie = cookieMatch ? decodeURIComponent(cookieMatch[1]) : null;
+        var fromBrowser = (navigator.languages || []).map(function (l) { return l.toLowerCase().split("-")[0]; });
+        var candidates = [fromPath, fromCookie].concat(fromBrowser);
+        var locale = config.defaultLocale;
+        for (var i = 0; i < candidates.length; i++) {
+          if (candidates[i] && config.locales.indexOf(candidates[i]) !== -1) { locale = candidates[i]; break; }
+        }
+        html.lang = locale;
+        html.dir = config.rtl.indexOf(locale) !== -1 ? "rtl" : "ltr";
+        var strings = config.strings[locale];
+        if (strings) {
+          document.getElementById("title").textContent = strings.title;
+          document.getElementById("description").textContent = strings.description;
+          document.getElementById("retry").textContent = strings.retry;
+        }
+      })();
+    </script>
+  </body>
+</html>

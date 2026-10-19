@@ -3,7 +3,7 @@
 //
 // next.config.js is loaded at RUNTIME by `next start`, and the production image
 // installs with --prod. This entry may therefore import only Node built-ins at
-// runtime: never next-intl, @next/mdx, serwist or any devDependency. `next` is
+// runtime: never next-intl, @next/mdx or any devDependency. `next` is
 // imported for its types only.
 import type { NextConfig } from "next";
 import { buildCsp, listAppOrigins, type CspDirective, type CspService } from "./csp";
@@ -22,7 +22,6 @@ export interface NjaNextConfigOptions {
   imageMinimumCacheTTL?: number;
   permissionsPolicy?: { camera?: "none" | "self" };
   mdx?: boolean;
-  serwist?: boolean;
   securityHeaders?: boolean;
   authInterrupts?: boolean;
   reactCompiler?: boolean;
@@ -99,12 +98,6 @@ export function createNextConfig(options: NjaNextConfigOptions): NextConfig {
       NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "",
       ...options.env,
     },
-    // Inlined replacement for @serwist/turbopack's withSerwist wrapper, which
-    // does nothing but append these two entries. Requiring the package here
-    // instead CRASHES production: it is a devDependency, next.config.js is loaded
-    // at RUNTIME by `next start`, and the web-production image installs with
-    // --prod. Do not re-add a require of any devDependency to this file.
-    ...(options.serwist ? { serverExternalPackages: ["esbuild", "esbuild-wasm"] } : {}),
     // Next 16 builds AND serves dev with Turbopack, so this is what pins yjs to a
     // single instance in both modes.
     turbopack: {

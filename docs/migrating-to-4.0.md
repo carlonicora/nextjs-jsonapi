@@ -52,7 +52,6 @@ module.exports = withNextIntl(
     services: ["stripe", "discord"],        // "stripe" | "googleMaps" | "turnstile" | "discord" | "googleFonts"
     csp: { "frame-src": ["https://docs.google.com/"] },   // extras only, per directive
     mdx: false,
-    serwist: true,
     imageMinimumCacheTTL: 60,
     permissionsPolicy: { camera: "none" },
     rewrites: async () => ({ beforeFiles: [] }), // pass-through, verbatim from the old config
@@ -70,7 +69,7 @@ up as CSP violations on first load.
 The helper sets `cacheComponents: true`, `partialPrefetching: true`,
 `experimental.turbopackGc`, `authInterrupts`, the
 `yjs` alias, the E2E guards (`E2E_BUILD` → `distDir: .next-e2e`) and the security
-headers. Plugin wrapping (`next-intl/plugin`, `@next/mdx`, serwist) stays in the app:
+headers. Plugin wrapping (`next-intl/plugin`, `@next/mdx`) stays in the app:
 the helper must not require anything that is a devDependency of the app, because
 `next.config.js` is loaded at runtime in production.
 
@@ -129,9 +128,9 @@ Order of work that keeps the build green at each step:
    `[locale]/layout.tsx` exports `generateStaticParams` returning `routing.locales`
    and drops `setRequestLocale`.
 3. **Segment exports.** `dynamic`, `revalidate`, `fetchCache`, `dynamicParams` and
-   `runtime = 'edge'` all error under Cache Components, re-exports included. A route
-   that re-exports from `createSerwistRoute` keeps only `generateStaticParams` and
-   `GET`. Public pages that used `export const revalidate` go through the cached path
+   `runtime = 'edge'` all error under Cache Components, re-exports included. There is
+   no service-worker route to keep: since 5.0 the worker is a static file under
+   `public/` (see `migrating-to-5.0.md`). Public pages that used `export const revalidate` go through the cached path
    instead: a module with `cache: "<profile or tag>"` already does. A route handler that
    reads `req.url` stays dynamic and must not add its own `"use cache"` around a call
    that reads the locale.

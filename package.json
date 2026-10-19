@@ -88,7 +88,8 @@
       "types": "./dist/next-config/index.d.ts",
       "import": "./dist/next-config/index.mjs",
       "require": "./dist/next-config/index.js"
-    }
+    },
+    "./pwa/*": "./pwa/*"
   },
   "scripts": {
     "build": "rm -rf dist && NODE_OPTIONS='--max-old-space-size=8192' tsup && tsc -p scripts/generate-web-module/tsconfig.json",
@@ -108,6 +109,7 @@
     "dist",
     "src",
     "scripts",
+    "pwa",
     "README.md"
   ],
   "peerDependencies": {

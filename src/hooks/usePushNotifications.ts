@@ -2,11 +2,8 @@
 
 import { useEffect } from "react";
 import { ENV } from "../core/env";
-import { useCurrentUserContext } from "../contexts";
 import { UserInterface } from "../features/user/data";
 import { PushService } from "../features/push/data/push.service";
-import { getRoleId } from "../roles";
-import { getAppUrl } from "../client/config";
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -19,23 +16,22 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
   return outputArray;
 }
 
-export default function usePushNotifications(): void {
-  const { currentUser, hasRole } = useCurrentUserContext<UserInterface>();
+export default function usePushNotifications(params: {
+  currentUser: UserInterface | undefined;
+  canSubscribe: boolean;
+}): void {
+  const { currentUser, canSubscribe } = params;
+  const userId = currentUser?.id;
 
   useEffect(() => {
+    if (!userId || !canSubscribe) return;
+
     const register = async () => {
       if ("serviceWorker" in navigator && "PushManager" in window) {
         try {
-          // Check if we've already processed push notifications for this user in this session
-          const sessionKey = `push_registered_${currentUser?.id}`;
-          const lastRegisteredSubscription = sessionStorage.getItem(sessionKey);
+          const sessionKey = `push_registered_${userId}`;
 
-          // Dev uses a push-ONLY worker (public/sw-dev.js) with no fetch handler,
-          // so it can't cache stale Turbopack chunks the way the prod worker
-          // (sw.ts) would. Prod uses the full worker. Both live at scope "/", so
-          // the push subscription is identical either way.
-          const swUrl = ENV.IS_PRODUCTION ? `${getAppUrl()}/sw.js` : `${getAppUrl()}/sw-dev.js`;
-          const registration = await navigator.serviceWorker.register(swUrl);
+          const registration = await navigator.serviceWorker.register("/sw.js", { updateViaCache: "none" });
 
           // Check current permission status first
           let permission = Notification.permission;
@@ -75,8 +71,9 @@ export default function usePushNotifications(): void {
           // Create a simple hash to detect subscription changes
           const subscriptionHash = btoa(JSON.stringify(plainSubscription));
 
-          // Only call the API if subscription has changed or this is the first registration
-          if (lastRegisteredSubscription !== subscriptionHash) {
+          // Read the stored hash right before posting, not at the top: a rotation
+          // that lands while this registration awaits must not be posted twice.
+          if (sessionStorage.getItem(sessionKey) !== subscriptionHash) {
             await PushService.register({ data: plainSubscription });
             // Store the current subscription hash to avoid duplicate registrations
             sessionStorage.setItem(sessionKey, subscriptionHash);
@@ -87,6 +84,33 @@ export default function usePushNotifications(): void {
       }
     };
 
-    if (currentUser && !hasRole(getRoleId().Administrator)) register();
-  }, [currentUser]);
+    register();
+  }, [userId, canSubscribe]);
+
+  // When the worker re-subscribes after the push service rotates the subscription
+  // (pushsubscriptionchange), it cannot call the authenticated API itself: it posts
+  // the new subscription to one window client, and this tab re-registers it under
+  // the user's auth, with the same hash guard as the registration above.
+  useEffect(() => {
+    if (!userId || !canSubscribe) return;
+    if (!("serviceWorker" in navigator)) return;
+
+    const sessionKey = `push_registered_${userId}`;
+
+    const onMessage = (event: MessageEvent) => {
+      if (event.data?.type !== "PUSH_RESUBSCRIBED" || !event.data.subscription) return;
+
+      const subscription = event.data.subscription;
+      const subscriptionHash = btoa(JSON.stringify(subscription));
+      if (sessionStorage.getItem(sessionKey) === subscriptionHash) return;
+
+      void PushService.register({ data: subscription })
+        .then(() => sessionStorage.setItem(sessionKey, subscriptionHash))
+        .catch((error) => console.error("Error re-registering rotated push subscription:", error));
+    };
+
+    const container = navigator.serviceWorker;
+    container.addEventListener("message", onMessage);
+    return () => container.removeEventListener("message", onMessage);
+  }, [userId, canSubscribe]);
 }
