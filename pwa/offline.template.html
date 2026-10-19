@@ -5,10 +5,11 @@
   build assets, no external script, stylesheet or font, because the build's
   chunks are not available offline and change on every deploy.
 
-  This is a template. Each app copies it to public/offline.html and fills the
-  placeholders by hand: the app name, the theme blocks (one root block of the
-  six tokens, then one class block per non-light theme), the default-locale
-  strings, and the config object read by the script below.
+  Filled by hand from @carlonicora/nextjs-jsonapi pwa/offline.template.html:
+  the app name, the theme blocks (one root block of the six tokens, then one
+  class block per non-light theme), the default-locale strings, and the config
+  object read by the script below. After any edit, set offlineRevision in
+  public/sw-config.js to the first 8 hex characters of this file's sha256.
 -->
 <html lang="en">
   <head>
