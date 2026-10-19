@@ -1,3 +1,9 @@
+## [5.0.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.0.0...v5.0.1) (2026-10-19)
+
+### 📦 Code Refactoring
+
+* **push-notifications:** change export to named export for usePushNotifications ([82cb9fa](https://github.com/carlonicora/nextjs-jsonapi/commit/82cb9faecb84330b4bbfb5150c414c4e4cd5dfee))
+
 ## [5.0.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.2.3...v5.0.0) (2026-10-19)
 
 ### ⚠ BREAKING CHANGES
