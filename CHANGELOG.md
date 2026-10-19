@@ -1,3 +1,9 @@
+## [4.2.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.2.2...v4.2.3) (2026-10-19)
+
+### 🐛 Bug Fixes
+
+* **tables:** stop ContentListTable page-index reset render loop ([94132cd](https://github.com/carlonicora/nextjs-jsonapi/commit/94132cdd0182fabb753ac49ea76727a34d739d8d))
+
 ## [4.2.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v4.2.1...v4.2.2) (2026-10-18)
 
 ### 🐛 Bug Fixes
