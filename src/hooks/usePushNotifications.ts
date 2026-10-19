@@ -16,7 +16,7 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
   return outputArray;
 }
 
-export default function usePushNotifications(params: {
+export function usePushNotifications(params: {
   currentUser: UserInterface | undefined;
   canSubscribe: boolean;
 }): void {
@@ -114,3 +114,5 @@ export default function usePushNotifications(params: {
     return () => container.removeEventListener("message", onMessage);
   }, [userId, canSubscribe]);
 }
+
+export default usePushNotifications;
