@@ -1,3 +1,9 @@
+## [5.1.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.0.3...v5.1.0) (2026-10-19)
+
+### 🚀 Features
+
+* **i18n:** ship the library's messages and a mergeMessages helper ([8abf1ea](https://github.com/carlonicora/nextjs-jsonapi/commit/8abf1eae357107bbfe7f6713d9cf23ab25010309))
+
 ## [5.0.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.0.2...v5.0.3) (2026-10-19)
 
 ### 📚 Documentation
