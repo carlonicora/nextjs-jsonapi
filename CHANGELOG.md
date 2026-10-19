@@ -1,3 +1,9 @@
+## [5.1.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.1.0...v5.1.1) (2026-10-19)
+
+### 🐛 Bug Fixes
+
+* **messages:** accept string arrays in mergeMessages and drop an app word ([5f44da3](https://github.com/carlonicora/nextjs-jsonapi/commit/5f44da3b1481d46843f5feadb9941ccd61a459bb))
+
 ## [5.1.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.0.3...v5.1.0) (2026-10-19)
 
 ### 🚀 Features
