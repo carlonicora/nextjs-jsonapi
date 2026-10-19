@@ -71,6 +71,8 @@ const APP_WORDS = [
   /\bscen[ae]\b/i,
   /\bnpcs?\b/i,
   /\bpratich?[ae]\b/i,
+  /\bstorytellers?\b/i,
+  /\bnarrator[ei]\b/i,
 ];
 
 const isAppProvided = (key) => APP_PROVIDED_KEYS.some((p) => p.test(key));

@@ -22,6 +22,16 @@ describe("mergeMessages", () => {
     expect(mergeMessages({ a: "s" }, { a: { b: "t" } })).toEqual({ a: { b: "t" } });
     expect(mergeMessages({ a: { b: "t" } }, { a: "s" })).toEqual({ a: "s" });
   });
+  it("replaces arrays, never merges them, and copies them", () => {
+    const b: MessageTree = { title: { options: ["Mr", "Mrs", "Dr"] }, keep: ["a"] };
+    const o: MessageTree = { title: { options: ["Sig.", "Sig.ra"] } };
+    const merged = mergeMessages(b, o);
+    expect(merged).toEqual({ title: { options: ["Sig.", "Sig.ra"] }, keep: ["a"] });
+    expect((merged.title as MessageTree).options).not.toBe((o.title as MessageTree).options);
+    expect(merged.keep).not.toBe(b.keep);
+    expect(mergeMessages({ a: ["x"] }, { a: { b: "t" } })).toEqual({ a: { b: "t" } });
+    expect(mergeMessages({ a: { b: "t" } }, { a: ["x"] })).toEqual({ a: ["x"] });
+  });
   it("inputs untouched, result is a new object", () => {
     const b = { a: { x: "1" } };
     const o = { a: { y: "2" } };

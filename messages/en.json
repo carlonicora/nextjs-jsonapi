@@ -418,7 +418,7 @@
         },
         "placeholders": {
           "description": "What this product gives a subscriber",
-          "name": "e.g. Storyteller"
+          "name": "e.g. Pro plan"
         },
         "restore": {
           "confirm": "Restore",
