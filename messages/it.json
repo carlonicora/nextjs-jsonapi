@@ -1,0 +1,1653 @@
+{
+  "administration": {
+    "ai_connections": {
+      "description": "Provider AI, modelli e catene di fallback"
+    },
+    "billing": {
+      "description": "Prodotti Stripe, prezzi e crediti inclusi"
+    },
+    "companies": {
+      "description": "Aziende, i loro utenti e i loro abbonamenti"
+    },
+    "group": {
+      "platform": "Piattaforma"
+    },
+    "rbac": {
+      "description": "Ruoli e permessi dei moduli"
+    },
+    "subtitle": "Gestisci la piattaforma, le sue aziende e la fatturazione.",
+    "title": "Amministrazione",
+    "token_usage": {
+      "description": "Spesa AI, crediti e utilizzo nel tempo"
+    },
+    "users": {
+      "description": "Tutti gli utenti della piattaforma"
+    }
+  },
+  "ai_connections": {
+    "admin": {
+      "create": "Aggiungi connessione",
+      "delete": {
+        "confirm": "Elimina",
+        "description": "Questa connessione verrà tolta dalla catena e le chiamate passeranno alla connessione successiva.",
+        "title": "Elimina connessione"
+      },
+      "embedder_warning": {
+        "description": "Se cambi il modello di embedding o le sue dimensioni, tutti i vettori già salvati diventano inutilizzabili. Tutti i contenuti vanno reindicizzati prima che ricerca e recupero tornino a funzionare.",
+        "title": "Cambiare l'embedder invalida tutti i vettori salvati"
+      },
+      "empty": {
+        "description": "Aggiungi una connessione per mettere un provider prima del fallback .env.",
+        "title": "Ancora nessuna connessione"
+      },
+      "entity": "connessione",
+      "env_fallback": "Fallback .env",
+      "errors": {
+        "name": "Il nome della connessione è obbligatorio",
+        "required_field": "Questo campo è obbligatorio per il provider selezionato"
+      },
+      "fields": {
+        "allowFallbacks": "Consenti fallback tra provider",
+        "apiKey": "Chiave API",
+        "apiVersion": "Versione API",
+        "cachedInputCostPer1MTokens": "Costo input in cache per 1M di token",
+        "cfgScale": "Scala CFG",
+        "costPerImage": "Costo per immagine",
+        "costPerMinute": "Costo al minuto",
+        "costPerPage": "Costo a pagina",
+        "costs_section": "Costi",
+        "dimensions": "Dimensioni",
+        "directFormat": "Formato della richiesta diretta",
+        "directProvider": "Provider diretto",
+        "directUrl": "URL diretto",
+        "enabled": "Attiva",
+        "googleCredentialsBase64": "Credenziali Google (base64)",
+        "height": "Altezza",
+        "hideWatermark": "Nascondi filigrana",
+        "imageFormat": "Formato immagine",
+        "inputCostPer1MTokens": "Costo input per 1M di token",
+        "instance": "Istanza",
+        "language": "Lingua",
+        "maxOutputTokens": "Token massimi in uscita",
+        "model": "Modello",
+        "name": "Nome",
+        "negativePrompt": "Prompt negativo",
+        "outputCostPer1MTokens": "Costo output per 1M di token",
+        "provider": "Provider",
+        "reasoningEffort": "Sforzo di ragionamento",
+        "region": "Regione",
+        "safeMode": "Modalità sicura",
+        "steps": "Passaggi",
+        "url": "URL",
+        "width": "Larghezza"
+      },
+      "placeholders": {
+        "name": "es. OpenRouter principale",
+        "secret_unchanged": "Invariato: lascia vuoto per mantenerlo"
+      },
+      "reorder": {
+        "down": "Sposta dopo nella catena",
+        "up": "Sposta prima nella catena"
+      },
+      "scope": {
+        "company": "Azienda",
+        "global": "Globale",
+        "inherits_global": "Eredita la catena globale"
+      },
+      "title": "Connessioni IA",
+      "types": {
+        "ai": "Chat",
+        "aiLarge": "Chat (large)",
+        "aiLite": "Chat (lite)",
+        "audio": "Audio",
+        "documentAi": "IA per documenti",
+        "embedder": "Embedder",
+        "image": "Generazione di immagini",
+        "transcriber": "Trascrizione",
+        "vision": "Visione"
+      }
+    }
+  },
+  "analytics": {
+    "admin": {
+      "anonymous": "Anonimo",
+      "columns": {
+        "device": "Dispositivo",
+        "gap": "Intervallo",
+        "key": "Valore",
+        "landing": "Pagina di arrivo",
+        "page_views": "Visualizzazioni di pagina",
+        "pages": "Pagine",
+        "path": "Percorso",
+        "sessions": "Sessioni",
+        "source": "Sorgente / mezzo",
+        "started": "Iniziata",
+        "time": "Tempo",
+        "visitor": "Visitatore",
+        "visitors": "Visitatori"
+      },
+      "consented": "Consenso dato",
+      "description": "Visitatori, sessioni e visualizzazioni di pagina su sito e applicazione.",
+      "dimensions": {
+        "campaign": "Campagna",
+        "landing": "Pagine di arrivo",
+        "medium": "Mezzo",
+        "referrer": "Referrer",
+        "route": "Pagine",
+        "source": "Sorgente"
+      },
+      "filter": {
+        "granularity": "Granularità",
+        "granularity_day": "Giorno",
+        "granularity_month": "Mese",
+        "granularity_week": "Settimana",
+        "section": "Sezione",
+        "section_all": "Tutto",
+        "section_app": "Applicazione",
+        "section_public": "Sito"
+      },
+      "load_more": "Carica altro",
+      "no_data": "Nessun dato di analisi per questo periodo",
+      "not_consented": "Consenso non dato",
+      "other": "Altro",
+      "panels": {
+        "breakdown": "Ripartizione",
+        "journey": "Percorso",
+        "other_sessions": "Altre sessioni di questo visitatore",
+        "over_time": "Nel tempo",
+        "sessions": "Sessioni"
+      },
+      "series": {
+        "page_views": "Visualizzazioni di pagina",
+        "visitors": "Visitatori"
+      },
+      "tiles": {
+        "consent_share": "Visitatori che hanno dato il consenso",
+        "page_views": "Visualizzazioni di pagina",
+        "pages_per_session": "Pagine per sessione",
+        "sessions": "Sessioni",
+        "summarised_note": "I dati più vecchi di 13 mesi vengono riassunti in totali giornalieri, quindi per quel periodo non ci sono i dettagli di visitatori e sessioni.",
+        "visitors": "Visitatori",
+        "vs_previous": "rispetto al periodo precedente"
+      },
+      "title": "Analisi"
+    }
+  },
+  "auth": {
+    "accept_invitation": "Accetta l'invito",
+    "account_activated": "Account attivato",
+    "account_activated_description": "Il tuo account è pronto. Accedi per continuare.",
+    "activation_description": "Il tuo account è stato attivato. Tra poco verrai reindirizzato alla pagina di accesso.",
+    "activation_wait": "Attendi, stiamo attivando il tuo account...",
+    "add_email_to_reset": "Inserisci la tua email per reimpostare la password.",
+    "buttons": {
+      "forgot_password": "Password dimenticata?",
+      "login": "Accedi",
+      "login_with_discord": "Accedi con Discord",
+      "or": "oppure continua con",
+      "register": "Registrati",
+      "reset_password": "Reimposta la password",
+      "sign_in_with_google": "Accedi con Google"
+    },
+    "errors": {
+      "activating_account": "Si è verificato un errore durante l'attivazione del tuo account.",
+      "invalid_invitation_code": "Codice d'invito non valido",
+      "invalid_password_reset_code": "Codice di reimpostazione password non valido",
+      "password_invalid_format": "La password deve contenere almeno un numero e un carattere speciale (non alfanumerico)",
+      "password_reset_error": "Si è verificato un errore durante la reimpostazione della password.",
+      "password_retype_required": "Devi ripetere la password",
+      "password_too_short": "La password deve essere lunga almeno 8 caratteri"
+    },
+    "fields": {
+      "retype_password": {
+        "error": "Devi ripetere la password",
+        "error_not_match": "Le password non coincidono",
+        "label": "Ripeti la password",
+        "placeholder": "Ripeti la password",
+        "retype_label": "Ripeti la password"
+      }
+    },
+    "gdpr": {
+      "and": " e ",
+      "marketing_description": "Puoi annullare l'iscrizione in qualsiasi momento",
+      "privacy_policy": "Informativa sulla privacy",
+      "terms_of_service": "Termini di servizio",
+      "terms_prefix": "Accetto i ",
+      "terms_required": "Devi accettare i Termini di servizio e l'Informativa sulla privacy"
+    },
+    "password_reset": "Reimposta la password",
+    "register_confirmation": "Grazie per esserti registrato. Controlla la tua email per il link di conferma.",
+    "reset_confirmation": "Se la tua email è registrata, riceverai un messaggio con le istruzioni per reimpostare la password.",
+    "reset_password": "Da questa pagina puoi reimpostare la password del tuo account.",
+    "reset_success": "Password reimpostata",
+    "reset_success_description": "La tua password è stata reimpostata. Tra poco verrai reindirizzato alla pagina di accesso.",
+    "select_password": "Scegli la password che vuoi usare per accedere.",
+    "two_factor": {
+      "add_authenticator": "Aggiungi autenticatore",
+      "add_passkey": "Aggiungi passkey",
+      "authenticator": "Autenticatore",
+      "authenticator_added": "Autenticatore aggiunto",
+      "authenticator_apps": "App di autenticazione",
+      "authenticator_apps_description": "Usa un'app di autenticazione per generare i codici di verifica",
+      "authenticator_name": "Nome dell'autenticatore",
+      "authenticator_name_placeholder": "es. Il mio telefono",
+      "authenticator_removed": "Autenticatore rimosso",
+      "backup_code": "Codice di backup",
+      "backup_codes": "Codici di backup",
+      "backup_codes_description": "Usa i codici di backup se perdi l'accesso agli altri metodi di autenticazione",
+      "backup_codes_file_note": "Conserva questi codici in un posto sicuro. Ogni codice si può usare una sola volta.",
+      "codes_copied": "Codici di backup copiati negli appunti",
+      "codes_shown_once": "Questi codici verranno mostrati una sola volta. Salvali adesso!",
+      "confirm_delete_passkey": "Vuoi davvero rimuovere questa passkey?",
+      "copy_all": "Copia tutto",
+      "disable": "Disattiva",
+      "disable_2fa": "Disattiva l'autenticazione a due fattori",
+      "disable_warning": "Il tuo account resterà senza alcuna protezione aggiuntiva",
+      "disabled_description": "Aggiungi un livello di sicurezza in più al tuo account",
+      "disabled_success": "L'autenticazione a due fattori è stata disattivata",
+      "download": "Scarica",
+      "enable_2fa": "Attiva l'autenticazione a due fattori",
+      "enable_button": "Attiva 2FA",
+      "enable_description": "Attiva la 2FA per richiedere un codice di verifica a ogni accesso",
+      "enabled_description": "Il tuo account è protetto dall'autenticazione a due fattori",
+      "enabled_success": "L'autenticazione a due fattori è stata attivata",
+      "enter_authenticator_code": "Inserisci il codice a 6 cifre della tua app di autenticazione",
+      "enter_backup_code": "Inserisci uno dei tuoi codici di backup",
+      "enter_code_to_disable": "Inserisci un codice di verifica della tua app di autenticazione per disattivare la 2FA",
+      "enter_verification_code": "Inserisci il codice di verifica per continuare",
+      "generate": "Genera",
+      "generate_new_codes": "Genera nuovi codici",
+      "invalid_backup_code": "Codice di backup non valido",
+      "invalid_code": "Codice di verifica non valido",
+      "last_used": "Ultimo utilizzo",
+      "manage_backup_codes": "Gestisci i codici di backup",
+      "name_your_authenticator": "Dai un nome al tuo autenticatore per riconoscerlo in seguito",
+      "never_used": "Mai usato",
+      "no_authenticators": "Nessun autenticatore configurato",
+      "no_passkeys": "Nessuna passkey configurata",
+      "passkey": "Passkey",
+      "passkey_deleted": "Passkey rimossa",
+      "passkey_failed": "Autenticazione con la passkey non riuscita",
+      "passkey_name": "Nome della passkey",
+      "passkey_registered": "Passkey registrata",
+      "passkey_renamed": "Passkey rinominata",
+      "passkey_setup_description": "Registra una nuova passkey con l'autenticazione biometrica del tuo dispositivo",
+      "passkeys": "Passkey",
+      "passkeys_description": "Usa la biometria o una chiave di sicurezza per accedere senza password",
+      "regenerate_codes": "Rigenera i codici",
+      "regenerate_codes_warning": "Tutti i codici di backup attuali smetteranno di funzionare. Ricordati di salvare quelli nuovi.",
+      "register_passkey": "Registra passkey",
+      "remaining_codes": "Codici rimanenti",
+      "remove_authenticator": "Rimuovi autenticatore",
+      "remove_authenticator_confirm": "Vuoi davvero rimuovere questo autenticatore? Non potrai più usarlo per verificare la tua identità.",
+      "remove_passkey": "Rimuovi passkey",
+      "rename_passkey": "Rinomina passkey",
+      "save_backup_codes": "Salva questi codici in un posto sicuro. Non verranno mostrati di nuovo.",
+      "scan_qr_code": "Inquadra questo codice QR con la tua app di autenticazione",
+      "scan_with_app": "Inquadralo con la tua app di autenticazione (Google Authenticator, Authy, ecc.)",
+      "setup_authenticator": "Configura l'autenticatore",
+      "setup_passkey": "Registra una passkey",
+      "title": "Autenticazione a due fattori",
+      "use_passkey": "Usa la passkey",
+      "use_passkey_description": "Usa la passkey che hai registrato per verificare la tua identità",
+      "verification_required": "Autenticazione a due fattori",
+      "verify": "Verifica",
+      "verifying": "Verifica in corso..."
+    }
+  },
+  "billing": {
+    "admin": {
+      "prices": {
+        "actions": {
+          "addFeature": "Aggiungi caratteristica",
+          "clone": "Duplica prezzo",
+          "export": "Esporta prezzo",
+          "import": "Importa prezzo",
+          "removeFeature": "Rimuovi caratteristica"
+        },
+        "archive": {
+          "confirm": "Archivia",
+          "description": "{label} non accetterà più nuovi abbonamenti. Gli abbonamenti esistenti continuano senza cambiamenti. Potrai ripristinarlo in seguito.",
+          "title": "Archivia prezzo"
+        },
+        "badge": {
+          "metered": "A consumo",
+          "trial": "Prova"
+        },
+        "create": "Crea prezzo",
+        "empty": {
+          "description": "Aggiungi un prezzo per rendere questo prodotto sottoscrivibile.",
+          "title": "Ancora nessun prezzo"
+        },
+        "entity": "prezzo",
+        "errors": {
+          "amount": "Inserisci un importo pari o superiore a 0",
+          "currency": "La valuta è obbligatoria"
+        },
+        "fields": {
+          "actions": "Azioni",
+          "amount": "Importo",
+          "billing": "Fatturazione",
+          "currency": "Valuta",
+          "description": "Descrizione",
+          "features": "Caratteristiche di marketing",
+          "interval": "Intervallo di fatturazione",
+          "intervalCount": "Numero di intervalli",
+          "nickname": "Nome breve",
+          "platformFeatures": "Funzionalità della piattaforma",
+          "product": "Prodotto",
+          "status": "Stato",
+          "stripeId": "ID prezzo Stripe",
+          "token": "Crediti",
+          "trial": "Prezzo di prova",
+          "type": "Tipo",
+          "usageType": "Tipo di utilizzo"
+        },
+        "help": {
+          "core": "Base — sempre inclusa",
+          "trial": "Contrassegna questo come piano di prova. Solo un prezzo dovrebbe esserlo."
+        },
+        "immutability": {
+          "description": "Importo, valuta e intervallo di fatturazione non cambiano dopo la creazione del prezzo. Per modificarli, crea un nuovo prezzo e archivia questo.",
+          "title": "I prezzi Stripe non si possono modificare"
+        },
+        "import": {
+          "errors": {
+            "invalid": "Questo file non è un'esportazione di prezzo valida.",
+            "title": "Importazione non riuscita"
+          },
+          "warnings": {
+            "unknownFeatures": "Queste funzionalità della piattaforma non sono disponibili qui e sono state ignorate: {features}"
+          }
+        },
+        "interval": {
+          "day": "Giornaliero",
+          "month": "Mensile",
+          "one_time": "Una tantum",
+          "week": "Settimanale",
+          "year": "Annuale"
+        },
+        "placeholders": {
+          "amount": "9.99",
+          "description": "Cosa include questo livello",
+          "feature": "Caratteristica {index}",
+          "intervalCount": "1",
+          "nickname": "es. Mensile",
+          "token": "1000"
+        },
+        "restore": {
+          "confirm": "Ripristina",
+          "description": "{label} tornerà ad accettare nuovi abbonamenti.",
+          "title": "Ripristina prezzo"
+        },
+        "status": {
+          "active": "Attivo",
+          "archived": "Archiviato"
+        },
+        "title": "Prezzi",
+        "type": {
+          "oneTime": "Una tantum",
+          "recurring": "Ricorrente"
+        },
+        "usage": {
+          "licensed": "Licenza (per unità)",
+          "metered": "A consumo (in base all'utilizzo)"
+        }
+      },
+      "products": {
+        "archive": {
+          "confirm": "Archivia",
+          "description": "\"{name}\" non sarà più disponibile per nuovi abbonamenti. Gli abbonamenti esistenti non cambiano. Potrai ripristinarlo in seguito.",
+          "title": "Archivia prodotto"
+        },
+        "create": "Crea prodotto",
+        "empty": {
+          "description": "Crea un prodotto per iniziare a offrire abbonamenti.",
+          "title": "Ancora nessun prodotto"
+        },
+        "entity": "prodotto",
+        "errors": {
+          "name": "Il nome del prodotto è obbligatorio"
+        },
+        "fields": {
+          "description": "Descrizione",
+          "name": "Nome",
+          "prices": "Prezzi",
+          "status": "Stato",
+          "stripeId": "ID prodotto Stripe"
+        },
+        "placeholders": {
+          "description": "Cosa ottiene chi si abbona a questo prodotto",
+          "name": "es. Narratore"
+        },
+        "restore": {
+          "confirm": "Ripristina",
+          "description": "\"{name}\" tornerà disponibile per nuovi abbonamenti.",
+          "title": "Ripristina prodotto"
+        },
+        "status": {
+          "active": "Attivo",
+          "archived": "Archiviato"
+        },
+        "tabs": {
+          "details": "Dettagli"
+        },
+        "title": "Prodotti"
+      }
+    },
+    "title": "Fatturazione",
+    "tokens": {
+      "available": "Disponibili",
+      "available_extra": "Token extra disponibili",
+      "monthly": "Utilizzo mensile",
+      "purchase_extra": "Acquista token extra",
+      "status": "IA",
+      "upgrade_plan": "Passa a un piano superiore"
+    },
+    "ui": {
+      "alert": {
+        "payment_failed_description": "Il tuo ultimo pagamento non è andato a buon fine. Aggiorna il metodo di pagamento per evitare interruzioni del servizio.",
+        "payment_failed_title": "Pagamento non riuscito",
+        "trial_ending_description": "La tua prova termina tra {count} {count, plural, one {giorno} other {giorni}}. Aggiungi un metodo di pagamento per continuare l'abbonamento.",
+        "trial_ending_title": "La prova sta per finire",
+        "update_payment_method": "Aggiorna metodo di pagamento"
+      },
+      "cards": {
+        "customer": {
+          "credit_balance": "Saldo a credito:",
+          "manage_portal": "Gestisci nel portale Stripe",
+          "not_set_up": "Non configurato",
+          "not_set_up_description": "L'account di fatturazione verrà creato quando ti abboni",
+          "title": "Account di fatturazione"
+        },
+        "invoices": {
+          "empty_description": "Le fatture compariranno dopo il tuo primo ciclo di fatturazione",
+          "invoice_from": "Fattura del {date}",
+          "open_count": "{count} aperte",
+          "paid_count": "{count} pagate",
+          "title": "Fatture recenti"
+        },
+        "payment_method": {
+          "add_card": "Aggiungi carta",
+          "empty_description": "Aggiungi una carta per attivare gli abbonamenti",
+          "empty_title": "Nessun metodo di pagamento",
+          "more_cards": "+{count} altre carte",
+          "more_methods": "+{count} altri metodi"
+        },
+        "subscriptions": {
+          "canceling": "In disdetta",
+          "cancels_on": "Si disdice il {date}",
+          "empty_description": "Abbonati per iniziare",
+          "empty_title": "Nessun piano attivo",
+          "ends_on": "Termina il {date}",
+          "fallback_name": "Abbonamento",
+          "more": "+{count} altri abbonamenti",
+          "renews_on": "Si rinnova il {date}",
+          "view_plans": "Vedi i piani"
+        },
+        "usage": {
+          "across_meters": "Su {count} contatori",
+          "no_meters": "Nessun contatore",
+          "no_meters_description": "Non è configurato nessun contatore di utilizzo",
+          "title": "Utilizzo di questo mese",
+          "units": "{value} unità"
+        },
+        "view_all": "Vedi tutto",
+        "view_details": "Vedi dettagli"
+      },
+      "columns": {
+        "actions": "Azioni",
+        "amount": "Importo",
+        "date": "Data",
+        "date_time": "Data e ora",
+        "description": "Descrizione",
+        "event_id": "ID evento",
+        "invoice_number": "Fattura n.",
+        "meter_event": "Evento del contatore",
+        "period": "Periodo",
+        "plan": "Piano",
+        "quantity": "Quantità",
+        "status": "Stato"
+      },
+      "confirmation": {
+        "subscribe": "Abbonati",
+        "title": "Conferma il tuo abbonamento"
+      },
+      "dashboard": {
+        "errors": {
+          "load_customer": "Impossibile caricare l'account di fatturazione",
+          "load_invoices": "Impossibile caricare le fatture",
+          "load_payment_methods": "Impossibile caricare i metodi di pagamento",
+          "load_subscriptions": "Impossibile caricare gli abbonamenti",
+          "load_usage": "Impossibile caricare i dati di utilizzo",
+          "setup": "Impossibile configurare la fatturazione"
+        },
+        "modal": {
+          "invoices": "Storico fatture",
+          "subscriptions": "Gestisci abbonamenti"
+        },
+        "setting_up": "Configurazione in corso...",
+        "setup_button": "Configura l'account di fatturazione",
+        "setup_description": "La tua azienda non ha ancora un account di fatturazione. Configurane uno per gestire abbonamenti e metodi di pagamento e vedere le fatture.",
+        "setup_title": "Configura la fatturazione"
+      },
+      "interval": {
+        "one_time": "una tantum",
+        "per_day": "/giorno",
+        "per_days": "/{count} giorni",
+        "per_month": "/mese",
+        "per_months": "/{count} mesi",
+        "per_week": "/settimana",
+        "per_weeks": "/{count} settimane",
+        "per_year": "/anno",
+        "per_years": "/{count} anni"
+      },
+      "invalid_date": "Data non valida",
+      "invoice": {
+        "amount_due": "Importo dovuto:",
+        "amount_paid": "Importo pagato:",
+        "attempt_count": "Tentativi:",
+        "billing_period": "Periodo di fatturazione:",
+        "download_pdf": "Scarica PDF",
+        "due_date": "Scadenza:",
+        "line_items": "Voci",
+        "paid_date": "Data di pagamento:",
+        "retry_payment": "Riprova il pagamento",
+        "subtotal": "Subtotale:",
+        "tax": "Imposte:",
+        "title": "Fattura {number}",
+        "total": "Totale:",
+        "view_in_stripe": "Vedi su Stripe"
+      },
+      "invoice_status": {
+        "draft": "Bozza",
+        "open": "Aperta",
+        "paid": "Pagata",
+        "uncollectible": "Inesigibile",
+        "void": "Annullata"
+      },
+      "invoices": {
+        "empty_description": "Le fatture compariranno qui dopo il tuo primo ciclo di fatturazione",
+        "empty_title": "Ancora nessuna fattura",
+        "filter_all": "Tutte",
+        "loading": "Caricamento fatture..."
+      },
+      "labels": {
+        "plan": "Piano:",
+        "status": "Stato:"
+      },
+      "not_available": "N/D",
+      "payment_confirm": {
+        "errors": {
+          "failed": "Conferma del pagamento non riuscita. Riprova.",
+          "missing_details": "Conferma del pagamento non riuscita: mancano i dati di pagamento.",
+          "not_completed": "Non è stato possibile completare il pagamento. Riprova.",
+          "not_initialized": "Il sistema di pagamento non è pronto. Ricarica la pagina e riprova.",
+          "requires_action": "Serve un'ulteriore autenticazione. Completa la verifica.",
+          "unexpected": "Si è verificato un errore imprevisto durante la conferma del pagamento."
+        }
+      },
+      "payment_form": {
+        "errors": {
+          "add": "Impossibile aggiungere il metodo di pagamento. Controlla i dati della carta.",
+          "init": "Impossibile inizializzare il modulo di pagamento. Riprova.",
+          "unexpected": "Si è verificato un errore imprevisto. Riprova."
+        },
+        "loading": "Caricamento modulo di pagamento...",
+        "set_default": "Imposta come metodo di pagamento predefinito"
+      },
+      "payment_method": {
+        "expires": "Scade {date}",
+        "title": "Metodo di pagamento"
+      },
+      "payment_methods": {
+        "add": "Aggiungi metodo di pagamento",
+        "add_description": "Aggiungi un nuovo metodo di pagamento al tuo account. I dati della tua carta sono elaborati in modo sicuro da Stripe.",
+        "add_first": "Aggiungi la tua prima carta",
+        "default": "Predefinito",
+        "empty_description": "Aggiungi un metodo di pagamento per attivare gli abbonamenti e un pagamento sicuro.",
+        "empty_title": "Nessun metodo di pagamento",
+        "loading": "Caricamento metodi di pagamento...",
+        "remove_default_warning": "Questo è il tuo metodo di pagamento predefinito.",
+        "remove_description": "Vuoi davvero rimuovere questo metodo di pagamento? L'azione non si può annullare.",
+        "remove_title": "Rimuovi metodo di pagamento",
+        "removing": "Rimozione...",
+        "set_default": "Imposta come predefinito",
+        "title": "Metodi di pagamento"
+      },
+      "pricing": {
+        "card_aria": "Piano {description} a {price} {interval}",
+        "current": "Attuale",
+        "current_plan": "Piano attuale",
+        "no_plans": "Nessun piano disponibile",
+        "options_aria": "Opzioni di prezzo per {name}",
+        "selected": "Selezionato",
+        "standard": "Standard"
+      },
+      "promo_code": {
+        "apply": "Applica",
+        "duration_forever": "Applicato a tutti i pagamenti",
+        "duration_once": "Applicato solo al primo pagamento",
+        "duration_repeating": "Applicato per {months} mesi",
+        "placeholder": "Inserisci il codice promozionale"
+      },
+      "proration": {
+        "net_due_today": "Netto dovuto oggi",
+        "next_invoice": "Prossima fattura il {date} di {amount}",
+        "title": "Dettaglio del conguaglio"
+      },
+      "subscription": {
+        "billing_amount": "Importo fatturato:",
+        "cancel": {
+          "canceling": "Disdetta in corso...",
+          "confirm": "Conferma la disdetta",
+          "description": "Vuoi davvero disdire questo abbonamento? L'azione non si può annullare.",
+          "keep": "Mantieni l'abbonamento",
+          "reason": "Motivo (facoltativo)",
+          "reason_placeholder": "Dicci perché stai disdicendo...",
+          "remains_active": "Il tuo abbonamento resterà attivo fino al {date}. Fino ad allora puoi continuare a usare il servizio.",
+          "title": "Disdici abbonamento"
+        },
+        "cancel_at_period_end": "Questo abbonamento verrà disdetto alla fine del periodo corrente, il {date}.",
+        "change_plan": "Cambia piano",
+        "current_period": "Periodo corrente:",
+        "details_description": "Visualizza e gestisci il tuo abbonamento",
+        "details_title": "Dettagli abbonamento",
+        "manage_portal": "Gestisci dal portale",
+        "pause": "Sospendi",
+        "pausing": "Sospensione...",
+        "resume": "Riattiva",
+        "resuming": "Riattivazione...",
+        "trial_ends": "Fine della prova:",
+        "upgrade": "Passa a un piano superiore"
+      },
+      "subscription_status": {
+        "active": "Attivo",
+        "canceled": "Disdetto",
+        "incomplete": "Incompleto",
+        "incomplete_expired": "Scaduto",
+        "past_due": "Scaduto",
+        "paused": "Sospeso",
+        "trialing": "Prova",
+        "unpaid": "Non pagato"
+      },
+      "subscriptions": {
+        "empty_description": "Scegli un piano di abbonamento per iniziare a usare i nostri servizi.",
+        "empty_title": "Nessun abbonamento attivo",
+        "loading": "Caricamento abbonamenti...",
+        "purchase_addons": "Acquista componenti aggiuntivi",
+        "subscribe": "Abbonati a un piano",
+        "title": "Abbonamenti"
+      },
+      "usage": {
+        "empty_description": "Il monitoraggio dell'utilizzo comparirà qui quando avrai abbonamenti a consumo con contatori configurati.",
+        "empty_title": "Nessun contatore di utilizzo configurato",
+        "history_empty": "Nessuno storico di utilizzo disponibile.",
+        "history_title": "Storico utilizzo",
+        "loading": "Caricamento dati di utilizzo...",
+        "no_limit": "Nessun limite impostato",
+        "of_limit_used": "su {limit} usati",
+        "percent_used": "{value}% usato",
+        "period": "Periodo: {start} - {end}",
+        "title": "Monitoraggio utilizzo"
+      },
+      "wizard": {
+        "addons_description": "Scegli i prodotti una tantum da acquistare",
+        "back": "Indietro",
+        "change_description": "Scegli un nuovo piano per il tuo abbonamento",
+        "change_title": "Cambia piano di abbonamento",
+        "errors": {
+          "already_subscribed": "Hai già un abbonamento attivo. Cambia invece il piano attuale.",
+          "invalid_promo_code": "Codice promozionale non valido",
+          "payment_method_required": "Per passare dalla prova a un piano a pagamento serve un metodo di pagamento.",
+          "prepare_review": "Impossibile preparare il riepilogo",
+          "process_subscription": "Impossibile elaborare l'abbonamento",
+          "validate_promo_code": "Impossibile verificare il codice promozionale"
+        },
+        "next_review": "Avanti: riepilogo",
+        "payment_description": "Inserisci i dati della carta per completare l'abbonamento",
+        "review": {
+          "amount_off": "{amount} di sconto",
+          "charge_now": "Importo da addebitare ora:",
+          "confirm_change": "Conferma il cambio di piano",
+          "due_now": "Importo dovuto ora:",
+          "interval_monthly": "mensile",
+          "interval_one_time": "una tantum",
+          "interval_yearly": "annuale",
+          "no_payment_on_file": "Nessun metodo di pagamento registrato",
+          "no_plan": "Nessun piano selezionato. Torna indietro e scegline uno.",
+          "payment_on_file": "È registrato un metodo di pagamento",
+          "percent_off": "{value}% di sconto",
+          "processing": "Elaborazione...",
+          "promotion_code": "Codice promozionale",
+          "proration_description": "Il tuo prossimo addebito verrà adeguato per tenere conto del cambio di piano.",
+          "proration_summary": "Riepilogo del conguaglio",
+          "selected_plan": "Piano selezionato",
+          "subscribe_now": "Abbonati ora",
+          "trial_upgrade": "Passaggio dalla prova",
+          "trial_upgrade_description": "La tua prova terminerà subito e ti verrà addebitato il prezzo pieno."
+        },
+        "steps": {
+          "payment": "Pagamento",
+          "review": "Riepilogo",
+          "select_plan": "Scegli il piano"
+        },
+        "subscribe_description": "Scegli un piano di abbonamento per iniziare"
+      }
+    }
+  },
+  "common": {
+    "actions": {
+      "submitting": "Invio in corso..."
+    },
+    "association": {
+      "description": "Aggiungi o rimuovi associazioni con {type}",
+      "join": "Associa",
+      "label": "Associa {type}",
+      "success": "Associazione aggiornata",
+      "success_level": "Livello dell'associazione aggiornato"
+    },
+    "avatar": "Avatar",
+    "blocknote": {
+      "placeholder": "Scrivi del testo o digita '/' per i comandi"
+    },
+    "buttons": {
+      "cancel": "Annulla",
+      "continue": "Continua",
+      "delete": "Elimina",
+      "next": "Avanti",
+      "remove": "Rimuovi"
+    },
+    "cancel": "Annulla",
+    "date": {
+      "create": "Creazione",
+      "update": "Ultimo aggiornamento"
+    },
+    "delete": {
+      "confirmation": "Scrivi il nome di {type} per confermare l'eliminazione",
+      "description": "Eliminando {type} perderai tutti i dati collegati. Non si può annullare.",
+      "finalWarning": {
+        "bullet1": "Tutti i dati collegati",
+        "bullet2": "Tutti i record correlati",
+        "bullet3": "Tutta la cronologia delle attività",
+        "bullet4": "Tutte le relazioni collegate",
+        "bullet5": "Tutte le configurazioni correlate",
+        "description": "L'eliminazione rimuoverà per sempre:",
+        "subtitle": "Questa azione è definitiva e non si può annullare",
+        "title": "Ultimo avviso"
+      },
+      "subtitle": "Vuoi davvero eliminare {type}?",
+      "title": "Elimina {type}"
+    },
+    "edit": {
+      "create": {
+        "description": "Crea {type}",
+        "title": "Nuovo: {type}"
+      },
+      "update": {
+        "description": "Aggiorna {type} {name}",
+        "title": "Aggiorna {type}"
+      }
+    },
+    "errors": {
+      "delete": "Errore di eliminazione",
+      "error": "Errore",
+      "file": "Errore del file",
+      "file_large": "Il file sembra troppo grande da caricare. Prova con un file più piccolo.",
+      "file_max": "Il file è troppo grande. La dimensione massima è {size}MB",
+      "file_too_many": "Troppi file. Puoi caricarne al massimo {max}.",
+      "invalid_email": "Indirizzo email non valido",
+      "missing_company_name": "Il nome dell'azienda è obbligatorio",
+      "missing_name": "Il nome è obbligatorio",
+      "unauthorised": "Non autorizzato",
+      "unauthorised_description": "Ci dispiace, ma non hai il permesso di accedere a questo contenuto.",
+      "upload": "Errore di caricamento",
+      "upload_description": "Si è verificato un errore durante il caricamento del file. Riprova.",
+      "valid_url": "Inserisci un URL valido"
+    },
+    "fields": {
+      "codice_fiscale": {
+        "error": "Codice fiscale non valido",
+        "label": "Codice fiscale",
+        "placeholder": "Inserisci il codice fiscale"
+      },
+      "email": {
+        "error": "L'indirizzo email è obbligatorio",
+        "label": "Email",
+        "placeholder": "Inserisci l'indirizzo email"
+      },
+      "partita_iva": {
+        "error": "Partita IVA non valida",
+        "label": "Partita IVA",
+        "placeholder": "Inserisci la partita IVA"
+      },
+      "pec": {
+        "error": "Inserisci un indirizzo email valido",
+        "label": "PEC",
+        "placeholder": "Inserisci l'indirizzo PEC"
+      },
+      "rea": {
+        "label": "REA",
+        "placeholder": "Inserisci il numero REA"
+      },
+      "sdi": {
+        "label": "SDI",
+        "placeholder": "Inserisci il codice SDI"
+      }
+    },
+    "hide_password": "Nascondi password",
+    "home": "Home",
+    "hours": "Ore",
+    "loading": "Caricamento...",
+    "minutes": "Minuti",
+    "permissions": "Utenti",
+    "pick_date_time": "Scegli data e ora",
+    "recent_pages": "Pagine recenti",
+    "relationships": {
+      "author": {
+        "label": "Autore"
+      }
+    },
+    "relevance": "Pertinenza",
+    "relevant": "Contenuti pertinenti",
+    "relevant_users": "Utenti pertinenti",
+    "remove_item": "Rimuovi elemento",
+    "save": "Salva",
+    "show_password": "Mostra password",
+    "success": "Fatto"
+  },
+  "company": {
+    "click_drag_logo": "Clicca o trascina un logo per caricarlo",
+    "features_and_modules": "Funzionalità e moduli",
+    "fields": {
+      "city": {
+        "label": "Città"
+      },
+      "country": {
+        "label": "Paese"
+      },
+      "legal_address": {
+        "label": "Sede legale",
+        "placeholder": "Inserisci la sede legale"
+      },
+      "name": {
+        "error": "Il nome dell'azienda è obbligatorio",
+        "label": "Nome dell'azienda",
+        "placeholder": "Inserisci il nome dell'azienda"
+      },
+      "postcode": {
+        "label": "CAP"
+      },
+      "province": {
+        "label": "Provincia"
+      },
+      "region": {
+        "label": "Regione"
+      },
+      "street": {
+        "label": "Via"
+      },
+      "street_number": {
+        "label": "Numero civico"
+      }
+    },
+    "fiscal_data_invalid": "I dati fiscali non sono validi",
+    "logo_alt": "Logo dell'azienda",
+    "sections": {
+      "address_details": "Indirizzo",
+      "fiscal_data": "Dati fiscali"
+    }
+  },
+  "content": {
+    "fields": {
+      "name": {
+        "label": "Nome"
+      }
+    },
+    "news": "Contenuti recenti pertinenti"
+  },
+  "entities": {
+    "assistants": "{count, plural, =1 {Assistente} other {Assistenti}}",
+    "companies": "{count, plural, =1 {Azienda} other {Aziende}}",
+    "howtos": "{count, plural, =1 {Guida} other {Guide}}",
+    "rbac": "{count, plural, =1 {Permesso} other {Permessi}}",
+    "roles": "{count, plural, =1 {Ruolo} other {Ruoli}}",
+    "users": "{count, plural, =1 {Utente} other {Utenti}}"
+  },
+  "features": {
+    "assistant": {
+      "agent_name": "Assistente",
+      "approval": {
+        "approve": "Approva",
+        "deny": "Rifiuta",
+        "error": "Impossibile riprendere questa azione: richiedila di nuovo.",
+        "proposal": {
+          "heading": "Proposta: {entity}",
+          "no": "No",
+          "records": "Elementi",
+          "relationship": "Relazione",
+          "updateHeading": "Modifiche proposte a {entity}",
+          "yes": "Sì"
+        },
+        "status": {
+          "approved": "Approvata",
+          "denied": "Rifiutata",
+          "executed": "Eseguita",
+          "expired": "Scaduta",
+          "failed": "Non riuscita",
+          "pending": "In attesa"
+        },
+        "title": "Serve la tua approvazione"
+      },
+      "bucket_earlier": "Prima",
+      "bucket_today": "Oggi",
+      "bucket_week": "Questa settimana",
+      "delete": "Elimina",
+      "delete_confirm": "Eliminare questo assistente? Non si può annullare.",
+      "empty_sidebar": "Ancora nessun assistente.",
+      "empty_state": {
+        "title": "Come posso aiutarti?"
+      },
+      "keyboard_hint": "Invio per inviare · Maiusc+Invio per andare a capo",
+      "list_title": "Assistenti",
+      "message": {
+        "sources": {
+          "citations_count": "{count} citazioni",
+          "contents_count": "{count} contenuti",
+          "relevance": "Pertinenza",
+          "source": "Fonte",
+          "tabs": {
+            "citations": "Citazioni",
+            "contents": "Contenuti",
+            "references": "Riferimenti",
+            "suggested_questions": "Domande suggerite",
+            "users": "Utenti"
+          },
+          "toggle": "Mostra fonti ({count})",
+          "toggle_hide": "Nascondi fonti",
+          "type": "Tipo"
+        }
+      },
+      "new": "Nuovo assistente",
+      "operator_mode": "Modalità operatore",
+      "rename": "Rinomina",
+      "rename_placeholder": "Dai un nome a questo assistente",
+      "retry": "Riprova",
+      "send": "Invia",
+      "send_failed": "Invio non riuscito",
+      "thinking": "Sto pensando…"
+    },
+    "configuration": {
+      "country": "Paese",
+      "currency": "Valuta",
+      "updated_description": "Le configurazioni di sistema sono state aggiornate.",
+      "updated_title": "Configurazioni aggiornate",
+      "warning_description": "Cambiare queste impostazioni può influire sui dati esistenti. Controlla con attenzione prima di salvare."
+    }
+  },
+  "generic": {
+    "errors": {
+      "create": "Errore di creazione",
+      "update": "Errore di aggiornamento"
+    },
+    "search": {
+      "placeholder": "Cerca {type}..."
+    }
+  },
+  "handbook": {
+    "ask": {
+      "all": "Tutte le conversazioni",
+      "expand": "Apri la conversazione",
+      "open": "Chiedi al manuale",
+      "recent": "Recenti",
+      "thisPageOnly": "Solo questa pagina"
+    },
+    "chat": {
+      "ask": "Chiedi",
+      "delete_confirm": "Eliminare questa conversazione? Non si può annullare.",
+      "empty_sidebar": "Nessuna conversazione.",
+      "empty_state": {
+        "subtitle": "Fai una domanda sulla documentazione.",
+        "title": "Cosa vuoi sapere del manuale?"
+      },
+      "failed": "Non è stato possibile rispondere alla domanda",
+      "list_title": "Conversazioni",
+      "new": "Nuova domanda",
+      "pending": "Sto cercando nella documentazione…",
+      "placeholder": "Fai una domanda sulla documentazione…",
+      "rename_placeholder": "Dai un nome a questa conversazione",
+      "sources": "Fonti",
+      "title": "Chiedi al manuale"
+    },
+    "contents": {
+      "failures": "{count} non riuscite",
+      "status": "{count} pagine · sincronizzato il {date}",
+      "title": "Indice"
+    },
+    "empty": "Nessuna pagina indicizzata",
+    "notFound": "Pagina non trovata",
+    "reader": {
+      "contents": "Indice del manuale",
+      "next": "Successiva",
+      "onThisPage": "In questa pagina",
+      "previous": "Precedente"
+    },
+    "sections": {
+      "untitled": "Altre pagine"
+    },
+    "subtitle": "La documentazione del prodotto, indicizzata per la ricerca assistita",
+    "sync": "Sincronizza",
+    "syncFailed": "Sincronizzazione non riuscita",
+    "synced": "Sincronizzazione completata",
+    "syncing": "Sincronizzazione…",
+    "title": "Manuale"
+  },
+  "help": {
+    "article": {
+      "lastUpdated": "Ultimo aggiornamento {date}",
+      "next": "Successivo",
+      "previous": "Precedente",
+      "related": "Correlati"
+    },
+    "askAi": {
+      "button": "Chiedi all'IA",
+      "loginTooltip": "Accedi per fare domande all'assistente IA",
+      "sheet": {
+        "subtitle": "Domande sulle funzionalità e sulle guide. Le risposte usano solo i contenuti dell'aiuto.",
+        "title": "Chiedi all'IA"
+      }
+    },
+    "footerLink": "Aiuto e documentazione",
+    "header": {
+      "login": "Accedi",
+      "openApp": "Apri l'app",
+      "search": "Cerca nell'aiuto…"
+    },
+    "hint": {
+      "pickArticle": "Scegli un articolo",
+      "trigger": "Aiuto su questo",
+      "viewArticle": "Leggi l'articolo completo"
+    },
+    "landing": {
+      "heading": "Documentazione",
+      "subheading": "Guide e riferimenti per usare l'applicazione"
+    },
+    "modes": {
+      "explanation": "Spiegazioni",
+      "how-to": "Guide pratiche",
+      "reference": "Riferimento",
+      "tutorial": "Tutorial"
+    },
+    "search": {
+      "removed": "Articolo dell'aiuto (rimosso)"
+    },
+    "sideNav": {
+      "filterPlaceholder": "Filtra gli articoli…",
+      "label": "Navigazione della guida",
+      "noMatches": "Nessun articolo corrispondente"
+    },
+    "title": "Aiuto",
+    "toc": {
+      "title": "In questa pagina"
+    }
+  },
+  "howto": {
+    "command": {
+      "all": "Tutti",
+      "back": "Indietro",
+      "chat_button": "Chiedi all'assistente AI",
+      "empty": "Nessuna guida trovata",
+      "keyboard": {
+        "close": "Chiudi",
+        "navigate": "Naviga",
+        "select": "Seleziona"
+      },
+      "relevant": "Pertinenti",
+      "title": "Aiuto e supporto",
+      "trigger": "Aiuto e supporto"
+    },
+    "fields": {
+      "contextualKeys": {
+        "label": "Chiavi contestuali",
+        "placeholder": "Chiavi separate da virgola che mostrano questa guida nel contesto"
+      },
+      "description": {
+        "label": "Descrizione",
+        "placeholder": "Inserisci una descrizione"
+      },
+      "draft": {
+        "label": "Bozza (nascosta dalla documentazione pubblica)"
+      },
+      "howToType": {
+        "label": "Tipo",
+        "placeholder": "Seleziona un tipo"
+      },
+      "name": {
+        "error": "Il nome è obbligatorio",
+        "label": "Nome",
+        "placeholder": "Inserisci il nome"
+      },
+      "order": {
+        "label": "Ordine"
+      },
+      "pages": {
+        "add": "Aggiungi pagina",
+        "label": "Pagine",
+        "placeholder": "Inserisci il contenuto della pagina"
+      },
+      "relatedArticles": {
+        "label": "Articoli correlati",
+        "placeholder": "Cerca guide…"
+      },
+      "slug": {
+        "error": "Lo slug è obbligatorio",
+        "label": "Slug",
+        "placeholder": "slug-url"
+      },
+      "summary": {
+        "label": "Riepilogo",
+        "placeholder": "Riepilogo di una riga per schede e ricerca"
+      },
+      "tags": {
+        "label": "Tag",
+        "placeholder": "Tag separati da virgola"
+      }
+    },
+    "howToType": {
+      "explanation": "Spiegazione",
+      "how-to": "Guida pratica",
+      "reference": "Riferimento",
+      "tutorial": "Tutorial"
+    },
+    "keyboard": {
+      "esc": "Esc"
+    },
+    "reading_time": {
+      "label": "{minutes} min di lettura"
+    },
+    "reindex": {
+      "action": "Reindicizza",
+      "done": "Guide reindicizzate",
+      "failed": "Reindicizzazione non riuscita",
+      "running": "Reindicizzazione…"
+    },
+    "search": {
+      "placeholder": "Cerca guide..."
+    }
+  },
+  "notification": {
+    "all": "Vedi tutte le notifiche",
+    "archived": "Archiviate",
+    "buttons": {
+      "archive": "Archivia notifica"
+    },
+    "createdAt": "Ricevuta",
+    "description": "Notifica",
+    "empty": "Nessuna notifica",
+    "inbox": "In arrivo",
+    "ui": {
+      "error_boundary": {
+        "message": "Qualcosa è andato storto con le notifiche.",
+        "retry": "Riprova"
+      },
+      "errors": {
+        "load": "Impossibile caricare le notifiche",
+        "mark_read": "Impossibile segnare le notifiche come lette"
+      },
+      "list": {
+        "error_loading": "Errore nel caricamento delle notifiche: {error}",
+        "refresh_hint": "Prova a ricaricare la pagina."
+      }
+    },
+    "unread": "Non lette"
+  },
+  "oauth": {
+    "consent": {
+      "agreement": "Autorizzando accetti i",
+      "and": "e l'",
+      "authorize": "Autorizza",
+      "authorizing": "Autorizzazione in corso…",
+      "company_label": "Azienda",
+      "deny": "Rifiuta",
+      "invalid_request": "Richiesta di autorizzazione non valida. Riprova.",
+      "loading": "Caricamento della richiesta di autorizzazione…",
+      "privacy": "Informativa sulla privacy",
+      "redirect_notice": "Dopo l'autorizzazione verrai reindirizzato a:",
+      "scopes_heading": "L'applicazione potrà:",
+      "terms": "Termini di servizio",
+      "title": "Autorizza {client}",
+      "wants_access": "{client} vuole accedere al tuo account {appName}"
+    },
+    "settings": {
+      "create_title": "Crea applicazione OAuth",
+      "delete_description": "\"{name}\" verrà eliminata per sempre e tutti i token di accesso verranno revocati. Non si può annullare.",
+      "delete_title": "Eliminare l'applicazione OAuth?"
+    },
+    "ui": {
+      "card": {
+        "active": "Attiva",
+        "confidential": "Confidenziale",
+        "created": "Creata {ago}",
+        "inactive": "Inattiva",
+        "public": "Pubblica",
+        "unknown": "Sconosciuto"
+      },
+      "detail": {
+        "client_id": "Client ID",
+        "client_secret": "Client Secret",
+        "copy_client_id": "Copia il Client ID",
+        "created": "Creata: {date}",
+        "deleting": "Eliminazione...",
+        "grant_types": "Tipi di grant",
+        "regenerate": "Rigenera",
+        "regenerate_description": "Verrà generato un nuovo client secret e quello vecchio verrà invalidato. Tutti i token esistenti saranno revocati. Dovrai aggiornare la tua applicazione con il nuovo secret.",
+        "regenerate_help": "Rigenerarlo invaliderà il secret attuale e tutti i token esistenti.",
+        "regenerate_secret": "Rigenera il secret",
+        "regenerate_title": "Rigenerare il client secret?",
+        "regenerating": "Rigenerazione..."
+      },
+      "errors": {
+        "approve_authorization": "Impossibile approvare l'autorizzazione",
+        "create_client": "Impossibile creare l'applicazione OAuth",
+        "delete_client": "Impossibile eliminare l'applicazione OAuth",
+        "deny_authorization": "Impossibile negare l'autorizzazione",
+        "fetch_client": "Impossibile caricare l'applicazione OAuth",
+        "fetch_clients": "Impossibile caricare le applicazioni OAuth",
+        "load_authorization": "Impossibile caricare i dati dell'autorizzazione",
+        "missing_parameters": "Mancano parametri di autorizzazione obbligatori",
+        "regenerate_secret": "Impossibile rigenerare il client secret",
+        "update_client": "Impossibile aggiornare l'applicazione OAuth"
+      },
+      "form": {
+        "client_type": "Tipo di client",
+        "client_type_locked": "Il tipo di client non può essere cambiato dopo la creazione.",
+        "confidential_help": "Applicazione lato server che può conservare il client secret in modo sicuro.",
+        "create_description": "Registra una nuova applicazione per accedere all'API.",
+        "description": "Descrizione",
+        "description_placeholder": "Una breve descrizione della tua applicazione",
+        "edit_description": "Aggiorna le impostazioni della tua applicazione OAuth.",
+        "edit_title": "Modifica applicazione",
+        "errors": {
+          "name_required": "Il nome dell'applicazione è obbligatorio",
+          "redirect_uri_required": "Serve almeno un URI di reindirizzamento",
+          "scope_required": "Devi selezionare almeno uno scope"
+        },
+        "name": "Nome dell'applicazione",
+        "name_placeholder": "La mia applicazione",
+        "public_help": "Applicazione mobile o desktop. Richiede PKCE per l'autorizzazione.",
+        "save_changes": "Salva le modifiche",
+        "saving": "Salvataggio..."
+      },
+      "list": {
+        "create": "Crea applicazione",
+        "empty_message": "Ancora nessuna applicazione OAuth. Creane una per iniziare.",
+        "empty_title": "Nessuna applicazione OAuth",
+        "new_app": "Nuova app",
+        "title": "Applicazioni OAuth"
+      },
+      "redirect_uris": {
+        "add": "Aggiungi URI di reindirizzamento",
+        "help": "Inserisci gli URI a cui gli utenti verranno reindirizzati dopo l'autorizzazione. Usa https:// in produzione, o schemi personalizzati per le app mobili.",
+        "invalid": "Deve essere https://, http://localhost o uno schema personalizzato (app://)",
+        "label": "URI di reindirizzamento",
+        "placeholder": "https://example.com/callback o myapp://oauth",
+        "remove": "Rimuovi URI"
+      },
+      "scope_selector": {
+        "dangerous": "(Pericoloso)",
+        "general": "Generali",
+        "help": "Scegli i permessi di cui ha bisogno la tua applicazione.",
+        "label": "Scope consentiti"
+      },
+      "scopes": {
+        "admin": {
+          "description": "Accesso amministrativo completo al tuo account",
+          "name": "Accesso amministrativo"
+        },
+        "mcp": {
+          "description": "Consente a un assistente IA di leggere i tuoi dati e di agire su di essi tramite il server MCP",
+          "name": "Accesso al server MCP"
+        },
+        "profile": {
+          "description": "Accesso al tuo nome e alla tua email",
+          "name": "Visualizza profilo"
+        },
+        "read": {
+          "description": "Accesso in lettura ai tuoi dati",
+          "name": "Accesso in lettura"
+        },
+        "write": {
+          "description": "Accesso in scrittura ai tuoi dati",
+          "name": "Accesso in scrittura"
+        }
+      },
+      "secret_display": {
+        "confirm": "Ho salvato il secret",
+        "copied": "Copiato negli appunti!",
+        "copied_short": "Copiato!",
+        "copy_to_clipboard": "Copia negli appunti",
+        "description": "Il tuo client secret è mostrato qui sotto.",
+        "description_named": "Il client secret per \"{name}\" è mostrato qui sotto.",
+        "title": "Salva il tuo client secret",
+        "warning_body": "Copialo ora e conservalo in un posto sicuro. Non potrai recuperarlo in seguito.",
+        "warning_title": "È l'unica volta in cui il tuo client secret verrà mostrato."
+      }
+    }
+  },
+  "rbac": {
+    "actions": {
+      "create": "Creazione",
+      "delete": "Eliminazione",
+      "read": "Lettura",
+      "update": "Modifica"
+    },
+    "custom_segment_placeholder": "Segmento personalizzato...",
+    "defaults": "Predefiniti",
+    "inherit_from_defaults": "Eredita dai predefiniti",
+    "loading_error": "Errore nel caricamento della configurazione RBAC",
+    "module": "Modulo",
+    "preview": "Anteprima:",
+    "quick_value": "Valore rapido",
+    "relationships": "Relazioni",
+    "role": "Ruolo",
+    "save_to_file": "Salva in permissions.ts",
+    "saved_to": "Salvato in {path}",
+    "select_module_prompt": "Seleziona un modulo dall'elenco a sinistra",
+    "select_role_prompt": "Seleziona un ruolo dall'elenco a sinistra"
+  },
+  "referral": {
+    "description": "Invita i tuoi amici e guadagna ricompense",
+    "title": "Invita e guadagna",
+    "yourLink": "Il tuo link di invito"
+  },
+  "role": {
+    "fields": {
+      "description": {
+        "label": "Descrizione"
+      },
+      "name": {
+        "label": "Nome del ruolo"
+      }
+    },
+    "remove_user": {
+      "description_allowed": "Vuoi davvero rimuovere il ruolo {role} da {user}?",
+      "description_not_allowed": "Non puoi rimuovere il ruolo {role} da {user}: è l'unico utente con quel ruolo, e il ruolo ne richiede almeno uno!",
+      "subtitle_allowed": "Rimuovi un ruolo da un utente",
+      "subtitle_not_allowed": "Impossibile rimuovere l'utente dal ruolo",
+      "title": "Rimuovi ruolo dall'utente"
+    },
+    "roles": "{role, select, 2e1eee006cba45069059ccd24e4ea5b0 {Amministratore di sistema} other {N/D}}",
+    "roles_descriptions": "{role, select, 2e1eee006cba45069059ccd24e4ea5b0 {Ha ACCESSO COMPLETO ai dati e alle funzionalità dell'azienda.} other {N/D}}"
+  },
+  "token_usage": {
+    "admin": {
+      "all_companies": "Tutte le aziende",
+      "avg_per_call": "Media per chiamata",
+      "by_company": "Per azienda",
+      "by_user": "Per utente",
+      "cache_hit": "Cache hit",
+      "columns": {
+        "active_users": "Utenti attivi",
+        "calls": "Chiamate",
+        "cost": "Costo",
+        "credits": "Crediti",
+        "label": "Nome",
+        "share": "Quota",
+        "sublabel": "Dettaglio",
+        "tokens_in": "Token in ingresso",
+        "tokens_out": "Token in uscita"
+      },
+      "customer_by_operation": "Utilizzo clienti per operazione",
+      "customer_spend": "Spesa clienti",
+      "detail": "Dettaglio",
+      "granularity": {
+        "day": "Giorno",
+        "label": "Granularità",
+        "month": "Mese",
+        "week": "Settimana"
+      },
+      "metric": {
+        "cost": "Costo",
+        "credits": "Crediti",
+        "label": "Metrica",
+        "tokens": "Token"
+      },
+      "no_data": "Nessun utilizzo in questo periodo",
+      "other": "Altro",
+      "platform_by_operation": "Utilizzo piattaforma per operazione",
+      "platform_spend": "Spesa piattaforma",
+      "stack": {
+        "company": "Azienda",
+        "scope": "Ambito",
+        "type": "Tipo"
+      },
+      "stack_by": "Raggruppa per",
+      "title": "Utilizzo dei token",
+      "total_cost": "Costo totale",
+      "usage_over_time": "Utilizzo nel tempo",
+      "vs_previous": "rispetto al periodo precedente"
+    },
+    "report": {
+      "by_operation": "Per operazione",
+      "calls": "Chiamate IA",
+      "extra_credits": "Crediti extra",
+      "monthly_left": "Crediti mensili rimasti",
+      "no_data": "Nessun utilizzo in questo periodo",
+      "title": "Utilizzo IA",
+      "usage_over_time": "Utilizzo nel tempo",
+      "used_in_period": "Crediti usati in questo periodo",
+      "vs_previous": "rispetto al periodo precedente"
+    },
+    "series": {
+      "other": "Altro"
+    },
+    "timeline": {
+      "empty": "Nessun utilizzo registrato in questo periodo"
+    },
+    "types": {
+      "communitySummariser": "Panoramiche delle comunità",
+      "customer": "Cliente",
+      "embedding": "Indicizzazione per la ricerca",
+      "graphCreator": "Mappatura dei collegamenti",
+      "imageGeneration": "Generazione di immagini",
+      "operator": "Azioni dell'assistente",
+      "platform": "Piattaforma",
+      "responder": "Risposte dell'assistente",
+      "summariser": "Riassunti",
+      "textGeneration": "Generazione di testo",
+      "transcription": "Trascrizione"
+    }
+  },
+  "ui": {
+    "buttons": {
+      "cancel": "Annulla",
+      "clear": "Svuota",
+      "confirm": "Conferma",
+      "confirm_create": "Crea",
+      "confirm_delete": "Conferma eliminazione",
+      "confirm_update": "Aggiorna",
+      "create": "Crea nuovo",
+      "delete": "Elimina",
+      "delete_forever": "Elimina per sempre",
+      "deleting": "Eliminazione...",
+      "edit": "Modifica",
+      "go_back": "Torna indietro",
+      "is_deleting": "Eliminazione...",
+      "loading": "Caricamento...",
+      "remove": "Rimuovi",
+      "return_to_home": "Torna alla home",
+      "save": "Salva",
+      "select_date": "Seleziona data",
+      "show_less": "Mostra meno",
+      "show_more": "Mostra di più"
+    },
+    "dialogs": {
+      "unsaved_changes_description": "Hai modifiche non salvate. Vuoi davvero scartarle?",
+      "unsaved_changes_discard": "Scarta",
+      "unsaved_changes_title": "Modifiche non salvate"
+    },
+    "editor": {
+      "accept_change": "Accetta la modifica",
+      "ai": {
+        "fix_spelling": "Correggi l'ortografia",
+        "generate_from_template": "Genera dal modello",
+        "improve_writing": "Migliora la scrittura",
+        "simplify": "Semplifica",
+        "suggest_impression": "Suggerisci impressione",
+        "translate": "Traduci…",
+        "translate_prefill": "Traduci in "
+      },
+      "reject_change": "Rifiuta la modifica"
+    },
+    "empty_states": {
+      "no_results": "Nessun risultato."
+    },
+    "labels": {
+      "accepted_file_types": "Tipi di file accettati",
+      "close": "Chiudi",
+      "create_option": "Crea \"{value}\"",
+      "details": "Dettagli",
+      "details_fallback": "dettagli",
+      "file_holder": "contenitore dei file",
+      "hide": "Nascondi",
+      "images": "Immagini",
+      "loading": "Caricamento",
+      "more": "Altro",
+      "more_count": "+{count} altri",
+      "next_slide": "Slide successiva",
+      "pick_a_date": "Scegli una data",
+      "previous_slide": "Slide precedente",
+      "primary_navigation": "Principale",
+      "remove_file": "Rimuovi il file",
+      "searching": "Ricerca in corso...",
+      "select_all": "(Seleziona tutto)",
+      "select_options": "Seleziona le opzioni",
+      "select_row": "Seleziona la riga",
+      "show": "Mostra",
+      "sidebar": "Barra laterale",
+      "sidebar_description": "Mostra la barra laterale per dispositivi mobili.",
+      "toggle_menu": "Mostra o nascondi il menu",
+      "toggle_sidebar": "Mostra o nascondi la barra laterale"
+    },
+    "search": {
+      "button": "Cerca...",
+      "no_results": "Nessun {type} trovato",
+      "no_results_found": "Nessun risultato trovato.",
+      "no_results_generic": "Nessun risultato trovato",
+      "placeholder": "Cerca {type}...",
+      "placeholder_global": "Cerca..."
+    }
+  },
+  "user": {
+    "buttons": {
+      "reactivate": "Riattiva utente",
+      "resend_activation": "Invia di nuovo l'email di attivazione"
+    },
+    "deleted": "Utente eliminato",
+    "errors": {
+      "deleted": "Dipendente eliminato",
+      "email_exists": "Esiste già un altro utente con questa email",
+      "inactive": "Dipendente non attivo"
+    },
+    "fields": {
+      "bio": {
+        "label": "Bio",
+        "placeholder": "Inserisci la bio dell'utente"
+      },
+      "name": {
+        "error": "Il nome è obbligatorio",
+        "label": "Nome",
+        "placeholder": "Inserisci il nome"
+      },
+      "password": {
+        "error": "La password è obbligatoria",
+        "label": "Password",
+        "placeholder": "Inserisci la password"
+      },
+      "phone": {
+        "label": "Numero di telefono",
+        "placeholder": "Inserisci il numero di telefono dell'utente"
+      },
+      "title": {
+        "label": "Qualifica",
+        "placeholder": "Inserisci la qualifica dell'utente"
+      }
+    },
+    "reactivate": {
+      "description": "Riattivando {name} gli restituirai l'accesso. Potrà di nuovo accedere.",
+      "subtitle": "Vuoi davvero riattivare questo utente?",
+      "title": "Riattiva utente"
+    },
+    "resend_activation": {
+      "description": "Vuoi davvero inviare di nuovo l'email di attivazione a {email}?",
+      "email_sent": "Email inviata",
+      "email_sent_description": "L'email di attivazione è stata inviata a {email}",
+      "subtitle": "Vuoi davvero inviare di nuovo l'email di attivazione a questo utente?",
+      "title": "Invia di nuovo l'email di attivazione"
+    },
+    "send_activation_email": "Invia l'email di attivazione"
+  },
+  "waitlist": {
+    "admin": {
+      "actions": {
+        "awaiting_confirmation": "In attesa di conferma",
+        "invite": "Invita",
+        "invited_on": "Invitato il {date}",
+        "registered": "Registrato"
+      },
+      "all_statuses": "Tutti gli stati",
+      "columns": {
+        "actions": "Azioni",
+        "email": "Email",
+        "questionnaire": "Questionario",
+        "status": "Stato",
+        "submitted": "Inviato"
+      },
+      "empty": "Nessuna iscrizione alla lista d'attesa.",
+      "filter_placeholder": "Filtra per stato",
+      "invite_sent": "Invito inviato a {email}",
+      "questionnaire": {
+        "view_answers": "Vedi le risposte"
+      },
+      "status": {
+        "confirmed": "Confermato",
+        "invited": "Invitato",
+        "pending": "In attesa",
+        "registered": "Registrato"
+      },
+      "title": "Gestione lista d'attesa"
+    },
+    "buttons": {
+      "join": "Iscriviti alla lista d'attesa",
+      "register_with_discord": "Registrati con Discord",
+      "register_with_google": "Registrati con Google",
+      "return": "Torna alla lista d'attesa"
+    },
+    "confirmation": {
+      "error_default": "Non siamo riusciti a confermare la tua email",
+      "error_title": "Conferma non riuscita",
+      "loading": "Conferma della tua email in corso...",
+      "success_description": "La tua email è confermata. Ora sei in lista d'attesa e riceverai un invito quando sarà il tuo turno.",
+      "success_hint": "Ti scriveremo via email quando sarà il momento di completare la registrazione.",
+      "success_title": "Email confermata!"
+    },
+    "invite": {
+      "error_expired": "Questo invito è scaduto",
+      "error_invalid": "Codice d'invito non valido",
+      "error_validation_failed": "Impossibile verificare l'invito",
+      "invalid_title": "Invito non valido",
+      "join_link": "Iscriviti alla lista d'attesa",
+      "join_prompt": "Iscriviti alla lista d'attesa per ricevere un invito valido.",
+      "registration_description": "Al momento ci si registra solo su invito.",
+      "registration_hint": "Iscriviti alla lista d'attesa e ti avviseremo quando il tuo invito sarà pronto.",
+      "registration_title": "Registrazione su invito",
+      "validating_description": "Attendi, stiamo verificando il tuo invito.",
+      "validating_title": "Verifica dell'invito..."
+    },
+    "success": {
+      "description": "Grazie per esserti iscritto alla lista d'attesa. Ti abbiamo inviato un'email di conferma: aprila e clicca il link per confermare il tuo indirizzo.",
+      "hint": "Non hai ricevuto l'email? Controlla lo spam o riprova più tardi.",
+      "title": "Sei in lista!"
+    }
+  }
+}

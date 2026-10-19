@@ -1,0 +1,1653 @@
+{
+  "administration": {
+    "ai_connections": {
+      "description": "AI providers, models and fallback chains"
+    },
+    "billing": {
+      "description": "Stripe products, prices and credit allowances"
+    },
+    "companies": {
+      "description": "Companies, their users and their subscriptions"
+    },
+    "group": {
+      "platform": "Platform"
+    },
+    "rbac": {
+      "description": "Roles and module permissions"
+    },
+    "subtitle": "Manage the platform, its companies and its billing.",
+    "title": "Administration",
+    "token_usage": {
+      "description": "AI spend, credits and usage over time"
+    },
+    "users": {
+      "description": "Every user on the platform"
+    }
+  },
+  "ai_connections": {
+    "admin": {
+      "create": "Add connection",
+      "delete": {
+        "confirm": "Delete",
+        "description": "This connection will be removed from the chain and calls will move on to the next connection in line.",
+        "title": "Delete connection"
+      },
+      "embedder_warning": {
+        "description": "Changing the embedder model or its dimensions invalidates every vector already stored. All content must be re-embedded before search and retrieval work again.",
+        "title": "Changing the embedder invalidates every stored vector"
+      },
+      "empty": {
+        "description": "Add a connection to put a provider in front of the .env fallback.",
+        "title": "No connections yet"
+      },
+      "entity": "connection",
+      "env_fallback": ".env fallback",
+      "errors": {
+        "name": "A connection name is required",
+        "required_field": "This field is required for the selected provider"
+      },
+      "fields": {
+        "allowFallbacks": "Allow provider fallbacks",
+        "apiKey": "API key",
+        "apiVersion": "API version",
+        "cachedInputCostPer1MTokens": "Cached input cost per 1M tokens",
+        "cfgScale": "CFG scale",
+        "costPerImage": "Cost per image",
+        "costPerMinute": "Cost per minute",
+        "costPerPage": "Cost per page",
+        "costs_section": "Costs",
+        "dimensions": "Dimensions",
+        "directFormat": "Direct request format",
+        "directProvider": "Direct provider",
+        "directUrl": "Direct URL",
+        "enabled": "Enabled",
+        "googleCredentialsBase64": "Google credentials (base64)",
+        "height": "Height",
+        "hideWatermark": "Hide watermark",
+        "imageFormat": "Image format",
+        "inputCostPer1MTokens": "Input cost per 1M tokens",
+        "instance": "Instance",
+        "language": "Language",
+        "maxOutputTokens": "Maximum output tokens",
+        "model": "Model",
+        "name": "Name",
+        "negativePrompt": "Negative prompt",
+        "outputCostPer1MTokens": "Output cost per 1M tokens",
+        "provider": "Provider",
+        "reasoningEffort": "Reasoning effort",
+        "region": "Region",
+        "safeMode": "Safe mode",
+        "steps": "Steps",
+        "url": "URL",
+        "width": "Width"
+      },
+      "placeholders": {
+        "name": "e.g. OpenRouter primary",
+        "secret_unchanged": "Unchanged — leave blank to keep"
+      },
+      "reorder": {
+        "down": "Move later in the chain",
+        "up": "Move earlier in the chain"
+      },
+      "scope": {
+        "company": "Company",
+        "global": "Global",
+        "inherits_global": "Inheriting the global chain"
+      },
+      "title": "AI Connections",
+      "types": {
+        "ai": "Chat",
+        "aiLarge": "Chat (large)",
+        "aiLite": "Chat (lite)",
+        "audio": "Audio",
+        "documentAi": "Document AI",
+        "embedder": "Embedder",
+        "image": "Image generation",
+        "transcriber": "Transcriber",
+        "vision": "Vision"
+      }
+    }
+  },
+  "analytics": {
+    "admin": {
+      "anonymous": "Anonymous",
+      "columns": {
+        "device": "Device",
+        "gap": "Gap",
+        "key": "Value",
+        "landing": "Landing page",
+        "page_views": "Page views",
+        "pages": "Pages",
+        "path": "Path",
+        "sessions": "Sessions",
+        "source": "Source / medium",
+        "started": "Started",
+        "time": "Time",
+        "visitor": "Visitor",
+        "visitors": "Visitors"
+      },
+      "consented": "Consented",
+      "description": "Visitors, sessions and page views across the website and the application.",
+      "dimensions": {
+        "campaign": "Campaign",
+        "landing": "Landing pages",
+        "medium": "Medium",
+        "referrer": "Referrer",
+        "route": "Pages",
+        "source": "Source"
+      },
+      "filter": {
+        "granularity": "Granularity",
+        "granularity_day": "Day",
+        "granularity_month": "Month",
+        "granularity_week": "Week",
+        "section": "Section",
+        "section_all": "All",
+        "section_app": "Application",
+        "section_public": "Website"
+      },
+      "load_more": "Load more",
+      "no_data": "No analytics data for this period",
+      "not_consented": "Not consented",
+      "other": "Other",
+      "panels": {
+        "breakdown": "Breakdown",
+        "journey": "Journey",
+        "other_sessions": "Other sessions by this visitor",
+        "over_time": "Over time",
+        "sessions": "Sessions"
+      },
+      "series": {
+        "page_views": "Page views",
+        "visitors": "Visitors"
+      },
+      "tiles": {
+        "consent_share": "Consenting visitors",
+        "page_views": "Page views",
+        "pages_per_session": "Pages per session",
+        "sessions": "Sessions",
+        "summarised_note": "Data older than 13 months is summarised into daily totals, so visitor and session details are not available for it.",
+        "visitors": "Visitors",
+        "vs_previous": "vs previous period"
+      },
+      "title": "Analytics"
+    }
+  },
+  "auth": {
+    "accept_invitation": "Accept Invitation",
+    "account_activated": "Account Activated",
+    "account_activated_description": "Your account is ready. Log in to continue.",
+    "activation_description": "Your account has been successfully activated. You will be redirected to the login page shortly.",
+    "activation_wait": "Please wait while your account is being activated...",
+    "add_email_to_reset": "Please add your email to reset your password.",
+    "buttons": {
+      "forgot_password": "Forgot Password?",
+      "login": "Login",
+      "login_with_discord": "Login with Discord",
+      "or": "or continue with",
+      "register": "Register",
+      "reset_password": "Reset Password",
+      "sign_in_with_google": "Sign in with Google"
+    },
+    "errors": {
+      "activating_account": "An error occurred while activating your account.",
+      "invalid_invitation_code": "Invalid invitation code",
+      "invalid_password_reset_code": "Invalid password reset code",
+      "password_invalid_format": "Password must contain at least one number and one special character (non-alphanumeric)",
+      "password_reset_error": "An error occurred while resetting the password.",
+      "password_retype_required": "Password retype is required",
+      "password_too_short": "Password must be at least 8 characters long"
+    },
+    "fields": {
+      "retype_password": {
+        "error": "Password retype is required",
+        "error_not_match": "Passwords do not match",
+        "label": "Repeat Password",
+        "placeholder": "Repeat Password",
+        "retype_label": "Retype Password"
+      }
+    },
+    "gdpr": {
+      "and": " and ",
+      "marketing_description": "You can unsubscribe at any time",
+      "privacy_policy": "Privacy Policy",
+      "terms_of_service": "Terms of Service",
+      "terms_prefix": "I agree to the ",
+      "terms_required": "You must accept the Terms of Service and Privacy Policy"
+    },
+    "password_reset": "Reset Password",
+    "register_confirmation": "Thank you for registering. Please check your email for the confirmation link.",
+    "reset_confirmation": "If your email is registered in our system, you will receive an email with instructions to reset your password.",
+    "reset_password": "You can reset your account password from this page.",
+    "reset_success": "Password Reset Successful",
+    "reset_success_description": "Your password has been successfully reset. You will be redirected to the login page shortly.",
+    "select_password": "Please choose the password you will use to log in.",
+    "two_factor": {
+      "add_authenticator": "Add Authenticator",
+      "add_passkey": "Add Passkey",
+      "authenticator": "Authenticator",
+      "authenticator_added": "Authenticator added successfully",
+      "authenticator_apps": "Authenticator Apps",
+      "authenticator_apps_description": "Use an authenticator app to generate verification codes",
+      "authenticator_name": "Authenticator name",
+      "authenticator_name_placeholder": "e.g., My Phone",
+      "authenticator_removed": "Authenticator removed successfully",
+      "backup_code": "Backup Code",
+      "backup_codes": "Backup Codes",
+      "backup_codes_description": "Use backup codes if you lose access to your other authentication methods",
+      "backup_codes_file_note": "Keep these codes safe. Each code can only be used once.",
+      "codes_copied": "Backup codes copied to clipboard",
+      "codes_shown_once": "These codes will only be shown once. Save them now!",
+      "confirm_delete_passkey": "Are you sure you want to remove this passkey?",
+      "copy_all": "Copy All",
+      "disable": "Disable",
+      "disable_2fa": "Disable Two-Factor Authentication",
+      "disable_warning": "This will remove all protection from your account",
+      "disabled_description": "Add an extra layer of security to your account",
+      "disabled_success": "Two-factor authentication has been disabled",
+      "download": "Download",
+      "enable_2fa": "Enable Two-Factor Authentication",
+      "enable_button": "Enable 2FA",
+      "enable_description": "Turn on 2FA to require verification codes when logging in",
+      "enabled_description": "Your account is protected with two-factor authentication",
+      "enabled_success": "Two-factor authentication has been enabled",
+      "enter_authenticator_code": "Enter the 6-digit code from your authenticator app",
+      "enter_backup_code": "Enter one of your backup codes",
+      "enter_code_to_disable": "Enter a verification code from your authenticator app to disable 2FA",
+      "enter_verification_code": "Enter your verification code to continue",
+      "generate": "Generate",
+      "generate_new_codes": "Generate New Codes",
+      "invalid_backup_code": "Invalid backup code",
+      "invalid_code": "Invalid verification code",
+      "last_used": "Last used",
+      "manage_backup_codes": "Manage Backup Codes",
+      "name_your_authenticator": "Give your authenticator a name to identify it later",
+      "never_used": "Never used",
+      "no_authenticators": "No authenticators configured",
+      "no_passkeys": "No passkeys configured",
+      "passkey": "Passkey",
+      "passkey_deleted": "Passkey removed successfully",
+      "passkey_failed": "Passkey authentication failed",
+      "passkey_name": "Passkey name",
+      "passkey_registered": "Passkey registered successfully",
+      "passkey_renamed": "Passkey renamed successfully",
+      "passkey_setup_description": "Register a new passkey using your device's biometric authentication",
+      "passkeys": "Passkeys",
+      "passkeys_description": "Use biometrics or security keys for passwordless authentication",
+      "regenerate_codes": "Regenerate codes",
+      "regenerate_codes_warning": "This will invalidate all your existing backup codes. Make sure to save the new codes.",
+      "register_passkey": "Register Passkey",
+      "remaining_codes": "Remaining codes",
+      "remove_authenticator": "Remove Authenticator",
+      "remove_authenticator_confirm": "Are you sure you want to remove this authenticator? You will no longer be able to use it to verify your identity.",
+      "remove_passkey": "Remove passkey",
+      "rename_passkey": "Rename Passkey",
+      "save_backup_codes": "Save these codes in a safe place. They won't be shown again.",
+      "scan_qr_code": "Scan this QR code with your authenticator app",
+      "scan_with_app": "Scan with your authenticator app (Google Authenticator, Authy, etc.)",
+      "setup_authenticator": "Set Up Authenticator",
+      "setup_passkey": "Register a passkey",
+      "title": "Two-Factor Authentication",
+      "use_passkey": "Use Passkey",
+      "use_passkey_description": "Use your registered passkey to verify your identity",
+      "verification_required": "Two-Factor Authentication",
+      "verify": "Verify",
+      "verifying": "Verifying..."
+    }
+  },
+  "billing": {
+    "admin": {
+      "prices": {
+        "actions": {
+          "addFeature": "Add feature",
+          "clone": "Clone price",
+          "export": "Export price",
+          "import": "Import price",
+          "removeFeature": "Remove feature"
+        },
+        "archive": {
+          "confirm": "Archive",
+          "description": "{label} will stop accepting new subscriptions. Existing subscriptions continue unchanged. You can restore it later.",
+          "title": "Archive price"
+        },
+        "badge": {
+          "metered": "Metered",
+          "trial": "Trial"
+        },
+        "create": "Create Price",
+        "empty": {
+          "description": "Add a price to make this product subscribable.",
+          "title": "No prices yet"
+        },
+        "entity": "price",
+        "errors": {
+          "amount": "Enter an amount of 0 or more",
+          "currency": "A currency is required"
+        },
+        "fields": {
+          "actions": "Actions",
+          "amount": "Amount",
+          "billing": "Billing",
+          "currency": "Currency",
+          "description": "Description",
+          "features": "Marketing features",
+          "interval": "Billing interval",
+          "intervalCount": "Interval count",
+          "nickname": "Nickname",
+          "platformFeatures": "Platform features",
+          "product": "Product",
+          "status": "Status",
+          "stripeId": "Stripe price ID",
+          "token": "Credits",
+          "trial": "Trial price",
+          "type": "Type",
+          "usageType": "Usage type"
+        },
+        "help": {
+          "core": "Core — always included",
+          "trial": "Marks this as the trial plan. Only one price should be marked as trial."
+        },
+        "immutability": {
+          "description": "Amount, currency and billing interval cannot change after a price is created. To change them, create a new price and archive this one.",
+          "title": "Stripe prices are immutable"
+        },
+        "import": {
+          "errors": {
+            "invalid": "That file is not a valid price export.",
+            "title": "Import failed"
+          },
+          "warnings": {
+            "unknownFeatures": "These platform features are not available here and were ignored: {features}"
+          }
+        },
+        "interval": {
+          "day": "Daily",
+          "month": "Monthly",
+          "one_time": "One-time",
+          "week": "Weekly",
+          "year": "Yearly"
+        },
+        "placeholders": {
+          "amount": "9.99",
+          "description": "What this tier includes",
+          "feature": "Feature {index}",
+          "intervalCount": "1",
+          "nickname": "e.g. Monthly",
+          "token": "1000"
+        },
+        "restore": {
+          "confirm": "Restore",
+          "description": "{label} will accept new subscriptions again.",
+          "title": "Restore price"
+        },
+        "status": {
+          "active": "Active",
+          "archived": "Archived"
+        },
+        "title": "Prices",
+        "type": {
+          "oneTime": "One-time",
+          "recurring": "Recurring"
+        },
+        "usage": {
+          "licensed": "Licensed (per unit)",
+          "metered": "Metered (usage-based)"
+        }
+      },
+      "products": {
+        "archive": {
+          "confirm": "Archive",
+          "description": "\"{name}\" will stop being available for new subscriptions. Existing subscriptions are unaffected. You can restore it later.",
+          "title": "Archive product"
+        },
+        "create": "Create Product",
+        "empty": {
+          "description": "Create a product to start offering subscriptions.",
+          "title": "No products yet"
+        },
+        "entity": "product",
+        "errors": {
+          "name": "A product name is required"
+        },
+        "fields": {
+          "description": "Description",
+          "name": "Name",
+          "prices": "Prices",
+          "status": "Status",
+          "stripeId": "Stripe product ID"
+        },
+        "placeholders": {
+          "description": "What this product gives a subscriber",
+          "name": "e.g. Storyteller"
+        },
+        "restore": {
+          "confirm": "Restore",
+          "description": "\"{name}\" will be available for new subscriptions again.",
+          "title": "Restore product"
+        },
+        "status": {
+          "active": "Active",
+          "archived": "Archived"
+        },
+        "tabs": {
+          "details": "Details"
+        },
+        "title": "Products"
+      }
+    },
+    "title": "Billing",
+    "tokens": {
+      "available": "Available",
+      "available_extra": "Extra tokens available",
+      "monthly": "Monthly Usage",
+      "purchase_extra": "Purchase Extra Tokens",
+      "status": "AI",
+      "upgrade_plan": "Upgrade plan"
+    },
+    "ui": {
+      "alert": {
+        "payment_failed_description": "Your last payment failed. Please update your payment method to avoid service interruption.",
+        "payment_failed_title": "Payment Failed",
+        "trial_ending_description": "Your trial ends in {count} {count, plural, one {day} other {days}}. Add a payment method to continue your subscription.",
+        "trial_ending_title": "Trial Ending Soon",
+        "update_payment_method": "Update Payment Method"
+      },
+      "cards": {
+        "customer": {
+          "credit_balance": "Credit Balance:",
+          "manage_portal": "Manage in Stripe Portal",
+          "not_set_up": "Not set up",
+          "not_set_up_description": "Billing account will be created when you subscribe",
+          "title": "Billing Account"
+        },
+        "invoices": {
+          "empty_description": "Invoices will appear after your first billing cycle",
+          "invoice_from": "Invoice from {date}",
+          "open_count": "{count} open",
+          "paid_count": "{count} paid",
+          "title": "Recent Invoices"
+        },
+        "payment_method": {
+          "add_card": "Add Card",
+          "empty_description": "Add a card to enable subscriptions",
+          "empty_title": "No payment method",
+          "more_cards": "+{count} more card(s)",
+          "more_methods": "+{count} more method(s)"
+        },
+        "subscriptions": {
+          "canceling": "Canceling",
+          "cancels_on": "Cancels on {date}",
+          "empty_description": "Subscribe to get started",
+          "empty_title": "No active plan",
+          "ends_on": "Ends on {date}",
+          "fallback_name": "Subscription",
+          "more": "+{count} more subscription(s)",
+          "renews_on": "Renews on {date}",
+          "view_plans": "View Plans"
+        },
+        "usage": {
+          "across_meters": "Across {count} meters",
+          "no_meters": "No meters",
+          "no_meters_description": "No usage meters are configured",
+          "title": "Usage This Month",
+          "units": "{value} units"
+        },
+        "view_all": "View all",
+        "view_details": "View details"
+      },
+      "columns": {
+        "actions": "Actions",
+        "amount": "Amount",
+        "date": "Date",
+        "date_time": "Date & Time",
+        "description": "Description",
+        "event_id": "Event ID",
+        "invoice_number": "Invoice #",
+        "meter_event": "Meter Event",
+        "period": "Period",
+        "plan": "Plan",
+        "quantity": "Quantity",
+        "status": "Status"
+      },
+      "confirmation": {
+        "subscribe": "Subscribe",
+        "title": "Confirm Your Subscription"
+      },
+      "dashboard": {
+        "errors": {
+          "load_customer": "Failed to load billing account",
+          "load_invoices": "Failed to load invoices",
+          "load_payment_methods": "Failed to load payment methods",
+          "load_subscriptions": "Failed to load subscriptions",
+          "load_usage": "Failed to load usage data",
+          "setup": "Failed to set up billing"
+        },
+        "modal": {
+          "invoices": "Invoice History",
+          "subscriptions": "Manage Subscriptions"
+        },
+        "setting_up": "Setting up...",
+        "setup_button": "Set Up Billing Account",
+        "setup_description": "Your company doesn't have a billing account yet. Set one up to manage subscriptions, payment methods, and view invoices.",
+        "setup_title": "Set Up Billing"
+      },
+      "interval": {
+        "one_time": "one-time",
+        "per_day": "/day",
+        "per_days": "/{count} days",
+        "per_month": "/month",
+        "per_months": "/{count} months",
+        "per_week": "/week",
+        "per_weeks": "/{count} weeks",
+        "per_year": "/year",
+        "per_years": "/{count} years"
+      },
+      "invalid_date": "Invalid Date",
+      "invoice": {
+        "amount_due": "Amount Due:",
+        "amount_paid": "Amount Paid:",
+        "attempt_count": "Attempt Count:",
+        "billing_period": "Billing Period:",
+        "download_pdf": "Download PDF",
+        "due_date": "Due Date:",
+        "line_items": "Line Items",
+        "paid_date": "Paid Date:",
+        "retry_payment": "Retry Payment",
+        "subtotal": "Subtotal:",
+        "tax": "Tax:",
+        "title": "Invoice {number}",
+        "total": "Total:",
+        "view_in_stripe": "View in Stripe"
+      },
+      "invoice_status": {
+        "draft": "Draft",
+        "open": "Open",
+        "paid": "Paid",
+        "uncollectible": "Uncollectible",
+        "void": "Void"
+      },
+      "invoices": {
+        "empty_description": "Invoices will appear here after your first billing cycle",
+        "empty_title": "No invoices yet",
+        "filter_all": "All",
+        "loading": "Loading invoices..."
+      },
+      "labels": {
+        "plan": "Plan:",
+        "status": "Status:"
+      },
+      "not_available": "N/A",
+      "payment_confirm": {
+        "errors": {
+          "failed": "Payment confirmation failed. Please try again.",
+          "missing_details": "Payment confirmation failed. Missing payment details.",
+          "not_completed": "Payment could not be completed. Please try again.",
+          "not_initialized": "Payment system not initialized. Please refresh the page and try again.",
+          "requires_action": "Additional authentication required. Please complete the verification.",
+          "unexpected": "An unexpected error occurred during payment confirmation."
+        }
+      },
+      "payment_form": {
+        "errors": {
+          "add": "Failed to add payment method. Please check your card details.",
+          "init": "Failed to initialize payment form. Please try again.",
+          "unexpected": "An unexpected error occurred. Please try again."
+        },
+        "loading": "Loading payment form...",
+        "set_default": "Set as default payment method"
+      },
+      "payment_method": {
+        "expires": "Expires {date}",
+        "title": "Payment Method"
+      },
+      "payment_methods": {
+        "add": "Add Payment Method",
+        "add_description": "Add a new payment method to your account. Your card information is securely processed by Stripe.",
+        "add_first": "Add Your First Card",
+        "default": "Default",
+        "empty_description": "Add a payment method to enable subscriptions and secure checkout.",
+        "empty_title": "No payment methods",
+        "loading": "Loading payment methods...",
+        "remove_default_warning": "This is your default payment method.",
+        "remove_description": "Are you sure you want to remove this payment method? This action cannot be undone.",
+        "remove_title": "Remove Payment Method",
+        "removing": "Removing...",
+        "set_default": "Set as Default",
+        "title": "Payment Methods"
+      },
+      "pricing": {
+        "card_aria": "{description} plan at {price} {interval}",
+        "current": "Current",
+        "current_plan": "Current Plan",
+        "no_plans": "No plans available",
+        "options_aria": "Pricing options for {name}",
+        "selected": "Selected",
+        "standard": "Standard"
+      },
+      "promo_code": {
+        "apply": "Apply",
+        "duration_forever": "Applied to all payments",
+        "duration_once": "Applied to first payment only",
+        "duration_repeating": "Applied for {months} months",
+        "placeholder": "Enter promo code"
+      },
+      "proration": {
+        "net_due_today": "Net Due Today",
+        "next_invoice": "Next invoice on {date} for {amount}",
+        "title": "Proration Breakdown"
+      },
+      "subscription": {
+        "billing_amount": "Billing Amount:",
+        "cancel": {
+          "canceling": "Canceling...",
+          "confirm": "Confirm Cancellation",
+          "description": "Are you sure you want to cancel this subscription? This action cannot be undone.",
+          "keep": "Keep Subscription",
+          "reason": "Reason (Optional)",
+          "reason_placeholder": "Let us know why you're canceling...",
+          "remains_active": "Your subscription will remain active until {date}. You can continue using the service until then.",
+          "title": "Cancel Subscription"
+        },
+        "cancel_at_period_end": "This subscription will be canceled at the end of the current period on {date}.",
+        "change_plan": "Change Plan",
+        "current_period": "Current Period:",
+        "details_description": "View and manage your subscription",
+        "details_title": "Subscription Details",
+        "manage_portal": "Manage via Portal",
+        "pause": "Pause",
+        "pausing": "Pausing...",
+        "resume": "Resume",
+        "resuming": "Resuming...",
+        "trial_ends": "Trial Ends:",
+        "upgrade": "Upgrade"
+      },
+      "subscription_status": {
+        "active": "Active",
+        "canceled": "Canceled",
+        "incomplete": "Incomplete",
+        "incomplete_expired": "Expired",
+        "past_due": "Past Due",
+        "paused": "Paused",
+        "trialing": "Trial",
+        "unpaid": "Unpaid"
+      },
+      "subscriptions": {
+        "empty_description": "Choose a subscription plan to get started with our services.",
+        "empty_title": "No Active Subscriptions",
+        "loading": "Loading subscriptions...",
+        "purchase_addons": "Purchase Add-ons",
+        "subscribe": "Subscribe to a Plan",
+        "title": "Subscriptions"
+      },
+      "usage": {
+        "empty_description": "Usage tracking will appear here when you have metered subscriptions with configured meters.",
+        "empty_title": "No usage meters configured",
+        "history_empty": "No usage history available.",
+        "history_title": "Usage History",
+        "loading": "Loading usage data...",
+        "no_limit": "No limit set",
+        "of_limit_used": "of {limit} used",
+        "percent_used": "{value}% used",
+        "period": "Period: {start} - {end}",
+        "title": "Usage Tracking"
+      },
+      "wizard": {
+        "addons_description": "Select one-time products to purchase",
+        "back": "Back",
+        "change_description": "Select a new plan for your subscription",
+        "change_title": "Change Subscription Plan",
+        "errors": {
+          "already_subscribed": "You already have an active subscription. Please change your existing plan instead.",
+          "invalid_promo_code": "Invalid promotion code",
+          "payment_method_required": "A payment method is required to upgrade from your trial.",
+          "prepare_review": "Failed to prepare review",
+          "process_subscription": "Failed to process subscription",
+          "validate_promo_code": "Failed to validate promotion code"
+        },
+        "next_review": "Next: Review",
+        "payment_description": "Enter your card details to complete your subscription",
+        "review": {
+          "amount_off": "{amount} off",
+          "charge_now": "Amount to charge now:",
+          "confirm_change": "Confirm Plan Change",
+          "due_now": "Amount due now:",
+          "interval_monthly": "monthly",
+          "interval_one_time": "one-time",
+          "interval_yearly": "yearly",
+          "no_payment_on_file": "No payment method on file",
+          "no_plan": "No plan selected. Please go back and select a plan.",
+          "payment_on_file": "A payment method is on file",
+          "percent_off": "{value}% off",
+          "processing": "Processing...",
+          "promotion_code": "Promotion Code",
+          "proration_description": "Your next charge will be adjusted to account for the plan change.",
+          "proration_summary": "Proration Summary",
+          "selected_plan": "Selected Plan",
+          "subscribe_now": "Subscribe Now",
+          "trial_upgrade": "Trial Upgrade",
+          "trial_upgrade_description": "Your trial will end immediately and you will be charged the full price."
+        },
+        "steps": {
+          "payment": "Payment",
+          "review": "Review",
+          "select_plan": "Select Plan"
+        },
+        "subscribe_description": "Choose a subscription plan to get started"
+      }
+    }
+  },
+  "common": {
+    "actions": {
+      "submitting": "Submitting..."
+    },
+    "association": {
+      "description": "Add or remove {type} associations",
+      "join": "Join",
+      "label": "Associate {type}",
+      "success": "Association updated successfully",
+      "success_level": "Association level updated successfully"
+    },
+    "avatar": "Avatar",
+    "blocknote": {
+      "placeholder": "Type text or enter '/' for commands"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "continue": "Continue",
+      "delete": "Delete",
+      "next": "Next",
+      "remove": "Remove"
+    },
+    "cancel": "Cancel",
+    "date": {
+      "create": "Creation",
+      "update": "Last Updated"
+    },
+    "delete": {
+      "confirmation": "Please type the name of the {type} to confirm deletion",
+      "description": "Deleting this {type} will result in the loss of all associated data. This action cannot be undone.",
+      "finalWarning": {
+        "bullet1": "All associated data",
+        "bullet2": "All related records",
+        "bullet3": "All historical activity",
+        "bullet4": "All linked relationships",
+        "bullet5": "All related configurations",
+        "description": "Deleting this will permanently remove the following:",
+        "subtitle": "This action is permanent and cannot be undone",
+        "title": "Final Warning"
+      },
+      "subtitle": "Are you sure you want to delete this {type}?",
+      "title": "Delete {type}"
+    },
+    "edit": {
+      "create": {
+        "description": "Create a new {type}",
+        "title": "New {type}"
+      },
+      "update": {
+        "description": "Update the existing {type} {name}",
+        "title": "Update {type}"
+      }
+    },
+    "errors": {
+      "delete": "Deletion Error",
+      "error": "Error",
+      "file": "File Error",
+      "file_large": "The file appears to be too large to upload. Please try a smaller file.",
+      "file_max": "The file is too large. The maximum size is {size}MB",
+      "file_too_many": "Too many files. Only {max} allowed.",
+      "invalid_email": "Invalid email address",
+      "missing_company_name": "The company name is required",
+      "missing_name": "Name is required",
+      "unauthorised": "Unauthorised",
+      "unauthorised_description": "We are sorry, but you are not allowed to access this content.",
+      "upload": "Upload Error",
+      "upload_description": "An error occurred while uploading the file. Please try again.",
+      "valid_url": "Please enter a valid URL"
+    },
+    "fields": {
+      "codice_fiscale": {
+        "error": "Invalid fiscal code",
+        "label": "Fiscal Code",
+        "placeholder": "Enter fiscal code"
+      },
+      "email": {
+        "error": "The email address is required",
+        "label": "Email",
+        "placeholder": "Add email address"
+      },
+      "partita_iva": {
+        "error": "Invalid partita IVA",
+        "label": "Partita IVA",
+        "placeholder": "Enter partita IVA"
+      },
+      "pec": {
+        "error": "Please enter a valid email address",
+        "label": "PEC",
+        "placeholder": "Enter PEC address"
+      },
+      "rea": {
+        "label": "REA",
+        "placeholder": "Enter REA number"
+      },
+      "sdi": {
+        "label": "SDI",
+        "placeholder": "Enter SDI code"
+      }
+    },
+    "hide_password": "Hide Password",
+    "home": "Home",
+    "hours": "Hours",
+    "loading": "Loading...",
+    "minutes": "Minutes",
+    "permissions": "Users",
+    "pick_date_time": "Pick date & time",
+    "recent_pages": "Recent Pages",
+    "relationships": {
+      "author": {
+        "label": "Author"
+      }
+    },
+    "relevance": "Relevance",
+    "relevant": "Relevant Contents",
+    "relevant_users": "Relevant Users",
+    "remove_item": "Remove item",
+    "save": "Save",
+    "show_password": "Show Password",
+    "success": "Success"
+  },
+  "company": {
+    "click_drag_logo": "Click or drag a logo to upload it",
+    "features_and_modules": "Features and Modules",
+    "fields": {
+      "city": {
+        "label": "City"
+      },
+      "country": {
+        "label": "Country"
+      },
+      "legal_address": {
+        "label": "Legal Address",
+        "placeholder": "Enter legal address"
+      },
+      "name": {
+        "error": "The company name is required",
+        "label": "Company Name",
+        "placeholder": "Enter Company Name"
+      },
+      "postcode": {
+        "label": "Postcode"
+      },
+      "province": {
+        "label": "Province"
+      },
+      "region": {
+        "label": "Region"
+      },
+      "street": {
+        "label": "Street"
+      },
+      "street_number": {
+        "label": "Street Number"
+      }
+    },
+    "fiscal_data_invalid": "Fiscal data validation failed",
+    "logo_alt": "Company Logo",
+    "sections": {
+      "address_details": "Address Details",
+      "fiscal_data": "Fiscal Data"
+    }
+  },
+  "content": {
+    "fields": {
+      "name": {
+        "label": "Name"
+      }
+    },
+    "news": "Recent Relevant Contents"
+  },
+  "entities": {
+    "assistants": "{count, plural, =1 {Assistant} other {Assistants}}",
+    "companies": "{count, plural, =1 {Company} other {Companies}}",
+    "howtos": "{count, plural, =1 {How-To} other {How-Tos}}",
+    "rbac": "{count, plural, =1 {Permission} other {Permissions}}",
+    "roles": "{count, plural, =1 {Role} other {Roles}}",
+    "users": "{count, plural, =1 {User} other {Users}}"
+  },
+  "features": {
+    "assistant": {
+      "agent_name": "Assistant",
+      "approval": {
+        "approve": "Approve",
+        "deny": "Deny",
+        "error": "Could not resume this action — please re-ask.",
+        "proposal": {
+          "heading": "Proposed {entity}",
+          "no": "No",
+          "records": "Records",
+          "relationship": "Relationship",
+          "updateHeading": "Proposed changes to {entity}",
+          "yes": "Yes"
+        },
+        "status": {
+          "approved": "Approved",
+          "denied": "Denied",
+          "executed": "Executed",
+          "expired": "Expired",
+          "failed": "Failed",
+          "pending": "Pending"
+        },
+        "title": "Approval required"
+      },
+      "bucket_earlier": "Earlier",
+      "bucket_today": "Today",
+      "bucket_week": "This week",
+      "delete": "Delete",
+      "delete_confirm": "Delete this assistant? This cannot be undone.",
+      "empty_sidebar": "No assistants yet.",
+      "empty_state": {
+        "title": "What can I help you with?"
+      },
+      "keyboard_hint": "Enter to send · Shift+Enter for newline",
+      "list_title": "Assistants",
+      "message": {
+        "sources": {
+          "citations_count": "{count} citations",
+          "contents_count": "{count} contents",
+          "relevance": "Relevance",
+          "source": "Source",
+          "tabs": {
+            "citations": "Citations",
+            "contents": "Contents",
+            "references": "References",
+            "suggested_questions": "Suggested questions",
+            "users": "Users"
+          },
+          "toggle": "Show sources ({count})",
+          "toggle_hide": "Hide sources",
+          "type": "Type"
+        }
+      },
+      "new": "New Assistant",
+      "operator_mode": "Operator mode",
+      "rename": "Rename",
+      "rename_placeholder": "Name this assistant",
+      "retry": "Retry",
+      "send": "Send",
+      "send_failed": "Failed to send",
+      "thinking": "Thinking…"
+    },
+    "configuration": {
+      "country": "Country",
+      "currency": "Currency",
+      "updated_description": "The system configurations have been updated successfully.",
+      "updated_title": "Configurations Updated",
+      "warning_description": "Changing these settings may impact existing data. Please review carefully before saving."
+    }
+  },
+  "generic": {
+    "errors": {
+      "create": "Creation Error",
+      "update": "Update Error"
+    },
+    "search": {
+      "placeholder": "Search {type}..."
+    }
+  },
+  "handbook": {
+    "ask": {
+      "all": "All conversations",
+      "expand": "Open the conversation",
+      "open": "Ask the handbook",
+      "recent": "Recent",
+      "thisPageOnly": "This page only"
+    },
+    "chat": {
+      "ask": "Ask",
+      "delete_confirm": "Delete this conversation? This cannot be undone.",
+      "empty_sidebar": "No conversations.",
+      "empty_state": {
+        "subtitle": "Ask a question about the documentation.",
+        "title": "What would you like to know about the handbook?"
+      },
+      "failed": "The question could not be answered",
+      "list_title": "Conversations",
+      "new": "New question",
+      "pending": "Searching the documentation…",
+      "placeholder": "Ask a question about the documentation…",
+      "rename_placeholder": "Name this conversation",
+      "sources": "Sources",
+      "title": "Ask the handbook"
+    },
+    "contents": {
+      "failures": "{count} failed",
+      "status": "{count} pages · synced on {date}",
+      "title": "Contents"
+    },
+    "empty": "No pages indexed",
+    "notFound": "Page not found",
+    "reader": {
+      "contents": "Handbook contents",
+      "next": "Next",
+      "onThisPage": "On this page",
+      "previous": "Previous"
+    },
+    "sections": {
+      "untitled": "Other pages"
+    },
+    "subtitle": "The product documentation, indexed for assisted search",
+    "sync": "Sync",
+    "syncFailed": "Sync failed",
+    "synced": "Sync complete",
+    "syncing": "Syncing…",
+    "title": "Handbook"
+  },
+  "help": {
+    "article": {
+      "lastUpdated": "Last updated {date}",
+      "next": "Next",
+      "previous": "Previous",
+      "related": "Related"
+    },
+    "askAi": {
+      "button": "Ask AI",
+      "loginTooltip": "Log in to ask the AI assistant",
+      "sheet": {
+        "subtitle": "Questions about the features and guides. Answers use only the help content.",
+        "title": "Ask AI"
+      }
+    },
+    "footerLink": "Help & Documentation",
+    "header": {
+      "login": "Log in",
+      "openApp": "Open app",
+      "search": "Search help…"
+    },
+    "hint": {
+      "pickArticle": "Choose an article",
+      "trigger": "Help on this",
+      "viewArticle": "View full article"
+    },
+    "landing": {
+      "heading": "Documentation",
+      "subheading": "Guides and references for using the app"
+    },
+    "modes": {
+      "explanation": "Explanation",
+      "how-to": "How-to guides",
+      "reference": "Reference",
+      "tutorial": "Tutorials"
+    },
+    "search": {
+      "removed": "Help article (removed)"
+    },
+    "sideNav": {
+      "filterPlaceholder": "Filter articles…",
+      "label": "Help navigation",
+      "noMatches": "No matching articles"
+    },
+    "title": "Help",
+    "toc": {
+      "title": "On this page"
+    }
+  },
+  "howto": {
+    "command": {
+      "all": "All",
+      "back": "Back",
+      "chat_button": "Ask AI Assistant",
+      "empty": "No how-tos found",
+      "keyboard": {
+        "close": "Close",
+        "navigate": "Navigate",
+        "select": "Select"
+      },
+      "relevant": "Relevant",
+      "title": "Help & Support",
+      "trigger": "Help & Support"
+    },
+    "fields": {
+      "contextualKeys": {
+        "label": "Contextual keys",
+        "placeholder": "Comma-separated keys that surface this guide in context"
+      },
+      "description": {
+        "label": "Description",
+        "placeholder": "Enter description"
+      },
+      "draft": {
+        "label": "Draft (hidden from public docs)"
+      },
+      "howToType": {
+        "label": "Type",
+        "placeholder": "Select a type"
+      },
+      "name": {
+        "error": "Name is required",
+        "label": "Name",
+        "placeholder": "Enter name"
+      },
+      "order": {
+        "label": "Order"
+      },
+      "pages": {
+        "add": "Add Page",
+        "label": "Pages",
+        "placeholder": "Enter page content"
+      },
+      "relatedArticles": {
+        "label": "Related articles",
+        "placeholder": "Search how-tos…"
+      },
+      "slug": {
+        "error": "Slug is required",
+        "label": "Slug",
+        "placeholder": "url-slug"
+      },
+      "summary": {
+        "label": "Summary",
+        "placeholder": "One-line summary for cards and search"
+      },
+      "tags": {
+        "label": "Tags",
+        "placeholder": "Comma-separated tags"
+      }
+    },
+    "howToType": {
+      "explanation": "Explanation",
+      "how-to": "How-to guide",
+      "reference": "Reference",
+      "tutorial": "Tutorial"
+    },
+    "keyboard": {
+      "esc": "Esc"
+    },
+    "reading_time": {
+      "label": "{minutes} min read"
+    },
+    "reindex": {
+      "action": "Reindex",
+      "done": "Guides reindexed",
+      "failed": "Reindexing failed",
+      "running": "Reindexing…"
+    },
+    "search": {
+      "placeholder": "Search how-tos..."
+    }
+  },
+  "notification": {
+    "all": "View all notifications",
+    "archived": "Archived",
+    "buttons": {
+      "archive": "Archive Notification"
+    },
+    "createdAt": "Received",
+    "description": "Notification",
+    "empty": "No notifications",
+    "inbox": "Inbox",
+    "ui": {
+      "error_boundary": {
+        "message": "Something went wrong with notifications.",
+        "retry": "Try again"
+      },
+      "errors": {
+        "load": "Failed to load notifications",
+        "mark_read": "Failed to mark notifications as read"
+      },
+      "list": {
+        "error_loading": "Error loading notifications: {error}",
+        "refresh_hint": "Please try refreshing the page."
+      }
+    },
+    "unread": "Unread"
+  },
+  "oauth": {
+    "consent": {
+      "agreement": "By authorising you accept the",
+      "and": "and",
+      "authorize": "Authorise",
+      "authorizing": "Authorising…",
+      "company_label": "Company",
+      "deny": "Deny",
+      "invalid_request": "Invalid authorisation request. Please try again.",
+      "loading": "Loading the authorisation request…",
+      "privacy": "Privacy Policy",
+      "redirect_notice": "After authorising you will be redirected to:",
+      "scopes_heading": "The application will be able to:",
+      "terms": "Terms of Service",
+      "title": "Authorise {client}",
+      "wants_access": "{client} wants to access your {appName} account"
+    },
+    "settings": {
+      "create_title": "Create OAuth Application",
+      "delete_description": "This will permanently delete \"{name}\" and revoke all access tokens. This action cannot be undone.",
+      "delete_title": "Delete OAuth Application?"
+    },
+    "ui": {
+      "card": {
+        "active": "Active",
+        "confidential": "Confidential",
+        "created": "Created {ago}",
+        "inactive": "Inactive",
+        "public": "Public",
+        "unknown": "Unknown"
+      },
+      "detail": {
+        "client_id": "Client ID",
+        "client_secret": "Client Secret",
+        "copy_client_id": "Copy Client ID",
+        "created": "Created: {date}",
+        "deleting": "Deleting...",
+        "grant_types": "Grant Types",
+        "regenerate": "Regenerate",
+        "regenerate_description": "This will generate a new client secret and invalidate the old one. All existing tokens will be revoked. You will need to update your application with the new secret.",
+        "regenerate_help": "Regenerating will invalidate the current secret and all existing tokens.",
+        "regenerate_secret": "Regenerate Secret",
+        "regenerate_title": "Regenerate Client Secret?",
+        "regenerating": "Regenerating..."
+      },
+      "errors": {
+        "approve_authorization": "Failed to approve authorization",
+        "create_client": "Failed to create OAuth client",
+        "delete_client": "Failed to delete OAuth client",
+        "deny_authorization": "Failed to deny authorization",
+        "fetch_client": "Failed to fetch OAuth client",
+        "fetch_clients": "Failed to fetch OAuth clients",
+        "load_authorization": "Failed to load authorization info",
+        "missing_parameters": "Missing required authorization parameters",
+        "regenerate_secret": "Failed to regenerate client secret",
+        "update_client": "Failed to update OAuth client"
+      },
+      "form": {
+        "client_type": "Client Type",
+        "client_type_locked": "Client type cannot be changed after creation.",
+        "confidential_help": "Server-side application that can securely store the client secret.",
+        "create_description": "Register a new application to access the API.",
+        "description": "Description",
+        "description_placeholder": "A brief description of your application",
+        "edit_description": "Update your OAuth application settings.",
+        "edit_title": "Edit Application",
+        "errors": {
+          "name_required": "Application name is required",
+          "redirect_uri_required": "At least one redirect URI is required",
+          "scope_required": "At least one scope must be selected"
+        },
+        "name": "Application Name",
+        "name_placeholder": "My Application",
+        "public_help": "Mobile or desktop application. Requires PKCE for authorization.",
+        "save_changes": "Save Changes",
+        "saving": "Saving..."
+      },
+      "list": {
+        "create": "Create Application",
+        "empty_message": "No OAuth applications yet. Create one to get started.",
+        "empty_title": "No OAuth Applications",
+        "new_app": "New App",
+        "title": "OAuth Applications"
+      },
+      "redirect_uris": {
+        "add": "Add Redirect URI",
+        "help": "Enter the URIs where users will be redirected after authorization. Use https:// for production, or custom schemes for mobile apps.",
+        "invalid": "Must be https://, http://localhost, or a custom scheme (app://)",
+        "label": "Redirect URIs",
+        "placeholder": "https://example.com/callback or myapp://oauth",
+        "remove": "Remove URI"
+      },
+      "scope_selector": {
+        "dangerous": "(Dangerous)",
+        "general": "General",
+        "help": "Select the permissions your application needs.",
+        "label": "Allowed Scopes"
+      },
+      "scopes": {
+        "admin": {
+          "description": "Full administrative access to your account",
+          "name": "Administrative Access"
+        },
+        "mcp": {
+          "description": "Let an AI assistant read and act on your data through the MCP server",
+          "name": "MCP Server Access"
+        },
+        "profile": {
+          "description": "Access your name and email",
+          "name": "View Profile"
+        },
+        "read": {
+          "description": "Read access to your data",
+          "name": "Read Access"
+        },
+        "write": {
+          "description": "Write access to your data",
+          "name": "Write Access"
+        }
+      },
+      "secret_display": {
+        "confirm": "I've Saved My Secret",
+        "copied": "Copied to clipboard!",
+        "copied_short": "Copied!",
+        "copy_to_clipboard": "Copy to clipboard",
+        "description": "Your client secret is shown below.",
+        "description_named": "Your client secret for \"{name}\" is shown below.",
+        "title": "Save Your Client Secret",
+        "warning_body": "Copy it now and store it securely. You will not be able to retrieve it later.",
+        "warning_title": "This is the only time your client secret will be displayed."
+      }
+    }
+  },
+  "rbac": {
+    "actions": {
+      "create": "Create",
+      "delete": "Delete",
+      "read": "Read",
+      "update": "Update"
+    },
+    "custom_segment_placeholder": "Custom segment...",
+    "defaults": "Defaults",
+    "inherit_from_defaults": "Inherit from defaults",
+    "loading_error": "Error loading RBAC configuration",
+    "module": "Module",
+    "preview": "Preview:",
+    "quick_value": "Quick value",
+    "relationships": "Relationships",
+    "role": "Role",
+    "save_to_file": "Save to permissions.ts",
+    "saved_to": "Saved to {path}",
+    "select_module_prompt": "Select a module from the list on the left",
+    "select_role_prompt": "Select a role from the list on the left"
+  },
+  "referral": {
+    "description": "Invite friends and earn rewards",
+    "title": "Refer & Earn",
+    "yourLink": "Your referral link"
+  },
+  "role": {
+    "fields": {
+      "description": {
+        "label": "Description"
+      },
+      "name": {
+        "label": "Role Name"
+      }
+    },
+    "remove_user": {
+      "description_allowed": "Are you sure you want to remove the {role} role from {user}?",
+      "description_not_allowed": "You cannot remove the {role} role from {user} because they are the only user in that role and it requires at least one user!",
+      "subtitle_allowed": "Remove a role from a user",
+      "subtitle_not_allowed": "Cannot remove user from role",
+      "title": "Remove Role from User"
+    },
+    "roles": "{role, select, 2e1eee006cba45069059ccd24e4ea5b0 {System Administrator} other {N/A}}",
+    "roles_descriptions": "{role, select, 2e1eee006cba45069059ccd24e4ea5b0 {Has FULL ACCESS to the data and features of the company.} other {N/A}}"
+  },
+  "token_usage": {
+    "admin": {
+      "all_companies": "All companies",
+      "avg_per_call": "Average per call",
+      "by_company": "By company",
+      "by_user": "By user",
+      "cache_hit": "Cache hit",
+      "columns": {
+        "active_users": "Active users",
+        "calls": "Calls",
+        "cost": "Cost",
+        "credits": "Credits",
+        "label": "Name",
+        "share": "Share",
+        "sublabel": "Detail",
+        "tokens_in": "Tokens in",
+        "tokens_out": "Tokens out"
+      },
+      "customer_by_operation": "Customer usage by operation",
+      "customer_spend": "Customer spend",
+      "detail": "Detail",
+      "granularity": {
+        "day": "Day",
+        "label": "Granularity",
+        "month": "Month",
+        "week": "Week"
+      },
+      "metric": {
+        "cost": "Cost",
+        "credits": "Credits",
+        "label": "Metric",
+        "tokens": "Tokens"
+      },
+      "no_data": "No usage in this period",
+      "other": "Other",
+      "platform_by_operation": "Platform usage by operation",
+      "platform_spend": "Platform spend",
+      "stack": {
+        "company": "Company",
+        "scope": "Scope",
+        "type": "Type"
+      },
+      "stack_by": "Stack by",
+      "title": "Token usage",
+      "total_cost": "Total cost",
+      "usage_over_time": "Usage over time",
+      "vs_previous": "vs previous period"
+    },
+    "report": {
+      "by_operation": "By operation",
+      "calls": "AI calls",
+      "extra_credits": "Extra credits",
+      "monthly_left": "Monthly credits left",
+      "no_data": "No usage in this period",
+      "title": "AI usage",
+      "usage_over_time": "Usage over time",
+      "used_in_period": "Credits used this period",
+      "vs_previous": "vs previous period"
+    },
+    "series": {
+      "other": "Other"
+    },
+    "timeline": {
+      "empty": "No usage recorded in this period"
+    },
+    "types": {
+      "communitySummariser": "Community overviews",
+      "customer": "Customer",
+      "embedding": "Search indexing",
+      "graphCreator": "Connection mapping",
+      "imageGeneration": "Image generation",
+      "operator": "Assistant actions",
+      "platform": "Platform",
+      "responder": "Assistant answers",
+      "summariser": "Summarisation",
+      "textGeneration": "Text generation",
+      "transcription": "Transcription"
+    }
+  },
+  "ui": {
+    "buttons": {
+      "cancel": "Cancel",
+      "clear": "Clear",
+      "confirm": "Confirm",
+      "confirm_create": "Create",
+      "confirm_delete": "Confirm Deletion",
+      "confirm_update": "Update",
+      "create": "Create New",
+      "delete": "Delete",
+      "delete_forever": "Delete Forever",
+      "deleting": "Deleting...",
+      "edit": "Edit",
+      "go_back": "Go Back",
+      "is_deleting": "Deleting...",
+      "loading": "Loading...",
+      "remove": "Remove",
+      "return_to_home": "Return to Home",
+      "save": "Save",
+      "select_date": "Select Date",
+      "show_less": "Show less",
+      "show_more": "Show more"
+    },
+    "dialogs": {
+      "unsaved_changes_description": "You have unsaved changes. Are you sure you want to discard them?",
+      "unsaved_changes_discard": "Discard",
+      "unsaved_changes_title": "Unsaved Changes"
+    },
+    "editor": {
+      "accept_change": "Accept change",
+      "ai": {
+        "fix_spelling": "Fix Spelling",
+        "generate_from_template": "Generate from Template",
+        "improve_writing": "Improve Writing",
+        "simplify": "Simplify",
+        "suggest_impression": "Suggest impression",
+        "translate": "Translate…",
+        "translate_prefill": "Translate to "
+      },
+      "reject_change": "Reject change"
+    },
+    "empty_states": {
+      "no_results": "No results."
+    },
+    "labels": {
+      "accepted_file_types": "Accepted file types",
+      "close": "Close",
+      "create_option": "Create \"{value}\"",
+      "details": "Details",
+      "details_fallback": "details",
+      "file_holder": "content file holder",
+      "hide": "Hide",
+      "images": "Images",
+      "loading": "Loading",
+      "more": "More",
+      "more_count": "+{count} more",
+      "next_slide": "Next slide",
+      "pick_a_date": "Pick a date",
+      "previous_slide": "Previous slide",
+      "primary_navigation": "Primary",
+      "remove_file": "Remove file",
+      "searching": "Searching...",
+      "select_all": "(Select All)",
+      "select_options": "Select options",
+      "select_row": "Select row",
+      "show": "Show",
+      "sidebar": "Sidebar",
+      "sidebar_description": "Displays the mobile sidebar.",
+      "toggle_menu": "Toggle menu",
+      "toggle_sidebar": "Toggle sidebar"
+    },
+    "search": {
+      "button": "Search...",
+      "no_results": "No {type} found",
+      "no_results_found": "No results found.",
+      "no_results_generic": "No results found",
+      "placeholder": "Search {type}...",
+      "placeholder_global": "Search..."
+    }
+  },
+  "user": {
+    "buttons": {
+      "reactivate": "Reactivate User",
+      "resend_activation": "Resend Activation Email"
+    },
+    "deleted": "Deleted User",
+    "errors": {
+      "deleted": "Deleted Employee",
+      "email_exists": "Another user with this email already exists",
+      "inactive": "Inactive Employee"
+    },
+    "fields": {
+      "bio": {
+        "label": "Bio",
+        "placeholder": "Enter user's Bio"
+      },
+      "name": {
+        "error": "The name is required",
+        "label": "Name",
+        "placeholder": "Enter Name"
+      },
+      "password": {
+        "error": "The password is required",
+        "label": "Password",
+        "placeholder": "Enter Password"
+      },
+      "phone": {
+        "label": "Phone Number",
+        "placeholder": "Enter user's Phone Number"
+      },
+      "title": {
+        "label": "Title",
+        "placeholder": "Enter user's Title"
+      }
+    },
+    "reactivate": {
+      "description": "Reactivating {name} will restore their access. They will be able to log in again.",
+      "subtitle": "Are you sure you want to reactivate this user?",
+      "title": "Reactivate User"
+    },
+    "resend_activation": {
+      "description": "Are you sure you want to resend the activation email to {email}?",
+      "email_sent": "Email Sent",
+      "email_sent_description": "The activation email has been sent to {email}",
+      "subtitle": "Are you sure you want to resend the activation email to this user?",
+      "title": "Resend Activation Email"
+    },
+    "send_activation_email": "Send Activation Email"
+  },
+  "waitlist": {
+    "admin": {
+      "actions": {
+        "awaiting_confirmation": "Awaiting confirmation",
+        "invite": "Invite",
+        "invited_on": "Invited {date}",
+        "registered": "Registered"
+      },
+      "all_statuses": "All statuses",
+      "columns": {
+        "actions": "Actions",
+        "email": "Email",
+        "questionnaire": "Questionnaire",
+        "status": "Status",
+        "submitted": "Submitted"
+      },
+      "empty": "No waitlist entries found.",
+      "filter_placeholder": "Filter by status",
+      "invite_sent": "Invitation sent to {email}",
+      "questionnaire": {
+        "view_answers": "View answers"
+      },
+      "status": {
+        "confirmed": "Confirmed",
+        "invited": "Invited",
+        "pending": "Pending",
+        "registered": "Registered"
+      },
+      "title": "Waitlist Management"
+    },
+    "buttons": {
+      "join": "Join Waitlist",
+      "register_with_discord": "Register with Discord",
+      "register_with_google": "Register with Google",
+      "return": "Return to Waitlist"
+    },
+    "confirmation": {
+      "error_default": "Failed to confirm your email",
+      "error_title": "Confirmation Failed",
+      "loading": "Confirming your email...",
+      "success_description": "Your email has been confirmed successfully. You are now on our waitlist and will receive an invitation when your spot is ready.",
+      "success_hint": "We will notify you via email when it is time to complete your registration.",
+      "success_title": "Email Confirmed!"
+    },
+    "invite": {
+      "error_expired": "This invitation has expired",
+      "error_invalid": "Invalid invitation code",
+      "error_validation_failed": "Failed to validate invitation",
+      "invalid_title": "Invalid Invitation",
+      "join_link": "Join the Waitlist",
+      "join_prompt": "Please join the waitlist to receive a valid invitation.",
+      "registration_description": "Registration is currently available by invitation only.",
+      "registration_hint": "Join our waitlist to be notified when your invitation is ready.",
+      "registration_title": "Registration by Invitation",
+      "validating_description": "Please wait while we verify your invitation.",
+      "validating_title": "Validating Invitation..."
+    },
+    "success": {
+      "description": "Thank you for joining our waitlist. We have sent you a confirmation email. Please check your inbox and click the link to confirm your email address.",
+      "hint": "Did not receive the email? Check your spam folder or try again later.",
+      "title": "You are on the list!"
+    }
+  }
+}

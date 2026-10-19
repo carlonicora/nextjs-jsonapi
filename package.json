@@ -89,13 +89,14 @@
       "import": "./dist/next-config/index.mjs",
       "require": "./dist/next-config/index.js"
     },
-    "./pwa/*": "./pwa/*"
+    "./pwa/*": "./pwa/*",
+    "./messages/*": "./messages/*"
   },
   "scripts": {
     "build": "rm -rf dist && NODE_OPTIONS='--max-old-space-size=8192' tsup && tsc -p scripts/generate-web-module/tsconfig.json",
     "dev": "node scripts/dev-watch.mjs",
     "clean": "rm -rf dist",
-    "lint": "eslint \"src/**/*.ts\" \"src/**/*.tsx\" --fix && node scripts/check-rtl-classes.mjs",
+    "lint": "eslint \"src/**/*.ts\" \"src/**/*.tsx\" --fix && node scripts/check-rtl-classes.mjs && node scripts/validate-messages.mjs",
     "format": "prettier --write \"src/**/*.ts\"",
     "prepublishOnly": "pnpm build",
     "prepare": "tsc -p scripts/generate-web-module/tsconfig.json",
@@ -110,6 +111,7 @@
     "src",
     "scripts",
     "pwa",
+    "messages",
     "README.md"
   ],
   "peerDependencies": {

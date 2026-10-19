@@ -609,6 +609,9 @@ import {
 | `/analytics`           | Analytics feature client components (`AnalyticsTracker`, ...)                                   |
 | `/analytics/server`    | `AnalyticsAdminPage`, `AnalyticsJourneyPage` server components                                  |
 | `/next-config`         | `createNextConfig` for `next.config.js` (see [docs/migrating-to-4.0.md](docs/migrating-to-4.0.md)) |
+| `/messages/*`          | `en.json`, `it.json`: the texts the library renders (see [docs/library-messages.md](docs/library-messages.md)) |
+
+The library ships its own English and Italian texts; an app merges them under its own messages with `mergeMessages` as described in [docs/library-messages.md](docs/library-messages.md).
 
 ## Unified API
 

@@ -226,6 +226,32 @@ Add to the app's global stylesheet, alongside `--warning`:
 Known status: `narr8` has it. Any other consumer using these components needs
 the same block.
 
+## Consumer requirement — messages
+
+This package ships the texts its components render in `messages/en.json` and
+`messages/it.json` (exported as `./messages/*`). The **consuming app** must merge
+them under its own files in `src/i18n/request.ts`, or every library text renders
+as its key:
+
+```ts
+import libraryEn from "@carlonicora/nextjs-jsonapi/messages/en.json";
+import { mergeMessages } from "@carlonicora/nextjs-jsonapi/core";
+import en from "../../messages/en.json";
+
+const MESSAGES = { en: mergeMessages(libraryEn, en) /* , it: mergeMessages(libraryIt, it) */ };
+```
+
+The app still provides the keys on `APP_PROVIDED_KEYS`
+(`scripts/validate-messages.mjs`): app name, product copy, app entities. The
+library holds none of them. The app's `validate-translations.mjs` falls back to
+the library files for every other key. Single-locale and extra-locale shapes, the
+validator rule, the prune rules and the guard are in
+[docs/library-messages.md](docs/library-messages.md).
+
+Package rules: never rename a key; add every new key to both files in the same
+change. `scripts/validate-messages.mjs` (runs in `pnpm lint`) fails on a key with
+no text, an unused leaf, en/it drift, or an app name in a value.
+
 ## Consumer requirement — RTL
 
 RTL support is app-owned. The package never derives direction from the locale —
