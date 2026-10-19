@@ -17,7 +17,7 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
 }
 
 export function usePushNotifications(params: {
-  currentUser: UserInterface | undefined;
+  currentUser: Pick<UserInterface, "id"> | undefined;
   canSubscribe: boolean;
 }): void {
   const { currentUser, canSubscribe } = params;

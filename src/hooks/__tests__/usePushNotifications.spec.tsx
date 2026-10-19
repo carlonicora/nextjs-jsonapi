@@ -1,6 +1,5 @@
 import { act, render, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { UserInterface } from "../../features/user/data";
 import usePushNotifications from "../usePushNotifications";
 
 // Hoisted so the vi.mock factories below can read it (Vitest hoists factories
@@ -19,7 +18,7 @@ vi.mock("../../features/push/data/push.service", () => ({
 
 // The hook reads only `id` from the user; the fixture is typed as the real
 // input so a signature change fails here first.
-const user = { id: "user-1" } as UserInterface;
+const user: Parameters<typeof usePushNotifications>[0]["currentUser"] = { id: "user-1" };
 
 function Probe(props: Parameters<typeof usePushNotifications>[0]) {
   usePushNotifications(props);
