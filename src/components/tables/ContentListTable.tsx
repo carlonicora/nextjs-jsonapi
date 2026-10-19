@@ -148,6 +148,12 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
     data: tableData,
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
+    // Pagination is server-side (the data retriever), never TanStack's. Left on,
+    // every core-row-model rebuild queues resetPageIndex -> setState -> re-render,
+    // and the table generators rebuild their columns on every render, so it never
+    // settles: a render loop that starves other updates (the current user never
+    // committed, leaving the sidebar empty).
+    autoResetPageIndex: false,
     ...(props.renderExpandedRow && {
       getExpandedRowModel: getExpandedRowModel(),
       // Key rows by record id so an expansion stays with its record when a search or filter reorders the rows.
