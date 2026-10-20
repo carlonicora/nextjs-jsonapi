@@ -41,6 +41,7 @@ export const APP_PROVIDED_KEYS = [
 // meaning, not an app's domain. Each entry carries its reason.
 const APP_WORD_EXEMPT_KEYS = new Map([
   ["analytics.admin.dimensions.campaign", "the utm_campaign dimension of web analytics"],
+  ["waitlist.admin.source.fields.sourceUtmCampaign", "the utm_campaign tag of a waitlist sign-up source"],
   ["help.modes.how-to", 'Italian "pratiche" = practical (how-to guides), not a case file'],
   ["howto.howToType.how-to", 'Italian "pratica" = practical (how-to guide), not a case file'],
 ]);

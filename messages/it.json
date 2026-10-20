@@ -1600,6 +1600,7 @@
         "actions": "Azioni",
         "email": "Email",
         "questionnaire": "Questionario",
+        "source": "Provenienza",
         "status": "Stato",
         "submitted": "Inviato"
       },
@@ -1609,13 +1610,25 @@
       "questionnaire": {
         "view_answers": "Vedi le risposte"
       },
+      "source": {
+        "direct": "Diretto",
+        "fields": {
+          "sourceLandingPath": "Pagina d'arrivo",
+          "sourceRef": "Ref",
+          "sourceReferrer": "Sito di provenienza",
+          "sourceUtmCampaign": "UTM campaign",
+          "sourceUtmMedium": "UTM medium",
+          "sourceUtmSource": "UTM source"
+        }
+      },
       "status": {
         "confirmed": "Confermato",
         "invited": "Invitato",
         "pending": "In attesa",
         "registered": "Registrato"
       },
-      "title": "Gestione lista d'attesa"
+      "title": "Gestione lista d'attesa",
+      "total": "Totale"
     },
     "buttons": {
       "join": "Iscriviti alla lista d'attesa",
@@ -1632,6 +1645,7 @@
       "success_title": "Email confermata!"
     },
     "invite": {
+      "email_locked_hint": "Gli inviti valgono solo per l'email a cui sono stati mandati.",
       "error_expired": "Questo invito è scaduto",
       "error_invalid": "Codice d'invito non valido",
       "error_validation_failed": "Impossibile verificare l'invito",

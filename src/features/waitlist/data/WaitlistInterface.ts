@@ -1,4 +1,5 @@
 import { ApiDataInterface } from "../../../core";
+import { SignupSource } from "../../signup-source/signup-source";
 
 export type WaitlistStatus = "pending" | "confirmed" | "invited" | "registered";
 
@@ -10,6 +11,7 @@ export type WaitlistInput = {
   marketingConsent?: boolean;
   marketingConsentAt?: string; // ISO timestamp when marketing consent was given
   questionnaire?: Record<string, any>; // Object for form handling, will be JSON.stringify'd by service
+  source?: SignupSource;
 };
 
 export interface WaitlistInterface extends ApiDataInterface {
@@ -18,11 +20,17 @@ export interface WaitlistInterface extends ApiDataInterface {
   get gdprConsentAt(): string;
   get marketingConsent(): boolean | undefined;
   get marketingConsentAt(): string | undefined;
-  get questionnaire(): string | undefined; // JSON string from backend
+  get questionnaire(): Record<string, any> | undefined; // the API sends the answers already parsed
   get status(): WaitlistStatus;
   get confirmedAt(): string | undefined;
   get invitedAt(): string | undefined;
   get registeredAt(): string | undefined;
+  get sourceRef(): string | undefined;
+  get sourceUtmSource(): string | undefined;
+  get sourceUtmMedium(): string | undefined;
+  get sourceUtmCampaign(): string | undefined;
+  get sourceReferrer(): string | undefined;
+  get sourceLandingPath(): string | undefined;
   // createdAt and updatedAt inherited from ApiDataInterface
 }
 

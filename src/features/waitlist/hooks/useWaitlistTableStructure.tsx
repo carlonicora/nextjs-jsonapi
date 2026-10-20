@@ -9,18 +9,8 @@ import { useI18nLocale } from "../../../i18n";
 import { Badge, Button } from "../../../shadcnui";
 import { WaitlistFields } from "../data/waitlist.fields";
 import { WaitlistInterface, WaitlistStatus } from "../data/WaitlistInterface";
-
-/**
- * Parse questionnaire JSON string safely
- */
-function parseQuestionnaire(questionnaire: string | undefined): Record<string, any> | null {
-  if (!questionnaire) return null;
-  try {
-    return JSON.parse(questionnaire);
-  } catch {
-    return null;
-  }
-}
+import { SIGNUP_SOURCE_FIELDS } from "../../signup-source/signup-source";
+import { formatSignupSource } from "./formatSignupSource";
 
 /**
  * Columns for the administrative waitlist. The invite action needs the list's
@@ -86,13 +76,35 @@ export const useWaitlistTableStructure: UseTableStructureHook<WaitlistInterface,
       enableSorting: false,
       enableHiding: false,
     }),
+    [WaitlistFields.source]: () => ({
+      id: "source",
+      header: t("waitlist.admin.columns.source"),
+      cell: ({ row }: { row: TableContent<WaitlistInterface> }) => {
+        const entry: WaitlistInterface = row.original.jsonApiData;
+        const details = SIGNUP_SOURCE_FIELDS.filter((field) => !!entry[field])
+          .map((field) => `${t(`waitlist.admin.source.fields.${field}`)}: ${entry[field]}`)
+          .join("\n");
+        const source = formatSignupSource(entry);
+
+        if (!source) {
+          return (
+            <span className="text-muted-foreground" title={details || undefined}>
+              {t("waitlist.admin.source.direct")}
+            </span>
+          );
+        }
+
+        return <span title={details}>{source}</span>;
+      },
+      enableSorting: false,
+      enableHiding: false,
+    }),
     [WaitlistFields.questionnaire]: () => ({
       id: "questionnaire",
       accessorKey: "questionnaire",
       header: t("waitlist.admin.columns.questionnaire"),
       cell: ({ row }: { row: TableContent<WaitlistInterface> }) => {
-        // IMPORTANT: Parse JSON string from backend
-        const questionnaire = parseQuestionnaire(row.original.jsonApiData.questionnaire);
+        const questionnaire = row.original.jsonApiData.questionnaire;
         if (!questionnaire || Object.keys(questionnaire).length === 0) {
           return <span className="text-muted-foreground">-</span>;
         }

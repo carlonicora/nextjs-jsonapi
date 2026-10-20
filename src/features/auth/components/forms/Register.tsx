@@ -22,6 +22,7 @@ import {
   Form,
   Link,
 } from "../../../../shadcnui";
+import { getSignupSource, SignupSource } from "../../../signup-source/signup-source";
 import { WaitlistService } from "../../../waitlist/data/WaitlistService";
 import { useAuthContext } from "../../contexts";
 import { AuthService } from "../../data/auth.service";
@@ -48,12 +49,17 @@ function clearReferralCode(): void {
   document.cookie = `${REFERRAL_COOKIE_NAME}=; path=/; max-age=0; SameSite=Lax`;
 }
 
-// Helper function to build OAuth URLs with both invite and referral codes
-function buildOAuthQueryParams(inviteCode?: string | null, referralCode?: string | null): string {
-  const params = new URLSearchParams();
-  if (inviteCode) params.set("invite", inviteCode);
-  if (referralCode) params.set("referral", referralCode);
-  return params.toString() ? `?${params.toString()}` : "";
+// Helper function to build OAuth URLs with invite code, referral code and sign-up source
+function buildOAuthQueryParams(
+  inviteCode?: string | null,
+  referralCode?: string | null,
+  source?: SignupSource,
+): string {
+  const params: string[] = [];
+  if (inviteCode) params.push(`invite=${encodeURIComponent(inviteCode)}`);
+  if (referralCode) params.push(`referral=${encodeURIComponent(referralCode)}`);
+  if (source) params.push(`source=${encodeURIComponent(JSON.stringify(source))}`);
+  return params.length ? `?${params.join("&")}` : "";
 }
 
 export default function Register() {
@@ -73,9 +79,12 @@ export default function Register() {
 
   // Store referral code from cookie on mount (must use useState to trigger re-render for OAuth links)
   const [referralCode, setReferralCode] = useState<string | null>(null);
+  // Sign-up source (memory or cookie) read on mount for the OAuth links
+  const [signupSource, setSignupSource] = useState<SignupSource | undefined>(undefined);
   useEffect(() => {
     const code = getReferralCode();
     setReferralCode(code);
+    setSignupSource(getSignupSource());
   }, []);
 
   const formSchema = z.object({
@@ -152,6 +161,7 @@ export default function Register() {
         marketingConsentAt: values.marketingConsent ? new Date().toISOString() : null,
         inviteCode: inviteCode ?? undefined,
         referralCode: referralCode ?? undefined,
+        source: getSignupSource(),
       };
 
       await AuthService.register(payload);
@@ -267,6 +277,8 @@ export default function Register() {
                 id="email"
                 name={t(`common.fields.email.label`)}
                 placeholder={t(`common.fields.email.placeholder`)}
+                disabled={inviteValidated}
+                description={inviteValidated ? t("waitlist.invite.email_locked_hint") : undefined}
               />
               <FormPassword
                 isRequired
@@ -296,7 +308,7 @@ export default function Register() {
                     <div className="space-y-2">
                       {isGoogleAuthEnabled() && (
                         <Link
-                          href={`${getPublicApiUrl()}auth/google${buildOAuthQueryParams(inviteCode, referralCode)}`}
+                          href={`${getPublicApiUrl()}auth/google${buildOAuthQueryParams(inviteCode, referralCode, signupSource)}`}
                           className="flex w-full"
                         >
                           <Button
@@ -328,7 +340,7 @@ export default function Register() {
                       )}
                       {isDiscordAuthEnabled() && (
                         <Link
-                          href={`${getPublicApiUrl()}auth/discord${buildOAuthQueryParams(inviteCode, referralCode)}`}
+                          href={`${getPublicApiUrl()}auth/discord${buildOAuthQueryParams(inviteCode, referralCode, signupSource)}`}
                           className="flex w-full"
                         >
                           <Button className="w-full" variant="outline" type="button">

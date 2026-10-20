@@ -1600,6 +1600,7 @@
         "actions": "Actions",
         "email": "Email",
         "questionnaire": "Questionnaire",
+        "source": "Source",
         "status": "Status",
         "submitted": "Submitted"
       },
@@ -1609,13 +1610,25 @@
       "questionnaire": {
         "view_answers": "View answers"
       },
+      "source": {
+        "direct": "Direct",
+        "fields": {
+          "sourceLandingPath": "Landing page",
+          "sourceRef": "Ref",
+          "sourceReferrer": "Referring site",
+          "sourceUtmCampaign": "UTM campaign",
+          "sourceUtmMedium": "UTM medium",
+          "sourceUtmSource": "UTM source"
+        }
+      },
       "status": {
         "confirmed": "Confirmed",
         "invited": "Invited",
         "pending": "Pending",
         "registered": "Registered"
       },
-      "title": "Waitlist Management"
+      "title": "Waitlist Management",
+      "total": "Total"
     },
     "buttons": {
       "join": "Join Waitlist",
@@ -1632,6 +1645,7 @@
       "success_title": "Email Confirmed!"
     },
     "invite": {
+      "email_locked_hint": "Invitations work only for the email they were sent to.",
       "error_expired": "This invitation has expired",
       "error_invalid": "Invalid invitation code",
       "error_validation_failed": "Failed to validate invitation",

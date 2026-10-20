@@ -2,7 +2,7 @@
 
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 import { FormInput, FormTextarea, FormSelect, FormCheckbox } from "../../../../components";
-import { QuestionnaireField } from "../../config/waitlist.config";
+import { QuestionnaireField, useWaitlistText } from "../../config/waitlist.config";
 
 interface WaitlistQuestionnaireRendererProps<T extends FieldValues> {
   form: UseFormReturn<T>;
@@ -15,6 +15,8 @@ export function WaitlistQuestionnaireRenderer<T extends FieldValues>({
   fields,
   fieldPrefix = "questionnaire",
 }: WaitlistQuestionnaireRendererProps<T>) {
+  const text = useWaitlistText();
+
   if (!fields || fields.length === 0) {
     return null;
   }
@@ -31,8 +33,8 @@ export function WaitlistQuestionnaireRenderer<T extends FieldValues>({
                 key={field.id}
                 form={form}
                 id={fieldId}
-                name={field.label}
-                placeholder={field.placeholder}
+                name={text(field.label) ?? field.label}
+                placeholder={text(field.placeholder)}
                 isRequired={field.required}
               />
             );
@@ -43,8 +45,8 @@ export function WaitlistQuestionnaireRenderer<T extends FieldValues>({
                 key={field.id}
                 form={form}
                 id={fieldId}
-                name={field.label}
-                placeholder={field.placeholder}
+                name={text(field.label) ?? field.label}
+                placeholder={text(field.placeholder)}
                 className="min-h-24"
               />
             );
@@ -58,10 +60,10 @@ export function WaitlistQuestionnaireRenderer<T extends FieldValues>({
                 key={field.id}
                 form={form}
                 id={fieldId}
-                name={field.label}
+                name={text(field.label) ?? field.label}
                 values={field.options.map((opt) => ({
                   id: opt.value,
-                  text: opt.label,
+                  text: text(opt.label) ?? opt.label,
                 }))}
               />
             );
@@ -73,8 +75,8 @@ export function WaitlistQuestionnaireRenderer<T extends FieldValues>({
                   key={field.id}
                   form={form}
                   id={fieldId}
-                  name={field.label}
-                  description={field.description}
+                  name={text(field.label) ?? field.label}
+                  description={text(field.description)}
                   isRequired={field.required}
                 />
               );
@@ -83,18 +85,18 @@ export function WaitlistQuestionnaireRenderer<T extends FieldValues>({
             return (
               <div key={field.id} className="space-y-2">
                 <span className="text-sm font-medium">
-                  {field.label}
+                  {text(field.label) ?? field.label}
                   {field.required && <span className="ms-1 text-destructive">*</span>}
                 </span>
-                {field.description && <p className="text-muted-foreground text-xs">{field.description}</p>}
+                {field.description && <p className="text-muted-foreground text-xs">{text(field.description)}</p>}
                 <div className="space-y-2">
                   {field.options.map((option) => (
                     <FormCheckbox
                       key={option.value}
                       form={form}
                       id={`${fieldId}.${option.value}` as Path<T>}
-                      name={option.label}
-                      description={option.description}
+                      name={text(option.label) ?? option.label}
+                      description={text(option.description)}
                     />
                   ))}
                 </div>

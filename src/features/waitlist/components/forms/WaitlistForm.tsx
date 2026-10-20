@@ -11,6 +11,7 @@ import { errorToast, FormInput, GdprConsentCheckbox } from "../../../../componen
 import { Button, Form, Link } from "../../../../shadcnui";
 import { SectionHeader } from "../../../../components/typography";
 import { getWaitlistConfig } from "../../config/waitlist.config";
+import { getSignupSource } from "../../../signup-source/signup-source";
 import { WaitlistService } from "../../data/WaitlistService";
 import { WaitlistQuestionnaireRenderer } from "./WaitlistQuestionnaireRenderer";
 
@@ -110,6 +111,7 @@ export function WaitlistForm({ onSuccess }: WaitlistFormProps) {
         marketingConsent: values.marketingConsent ?? false,
         marketingConsentAt: values.marketingConsent ? now : undefined,
         questionnaire: values.questionnaire,
+        source: getSignupSource(),
       });
 
       setIsSuccess(true);

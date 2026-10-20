@@ -52,6 +52,16 @@ export class Auth extends AbstractApiData implements AuthInterface {
     if (data.inviteCode !== undefined) response.data.attributes.inviteCode = data.inviteCode;
     if (data.referralCode !== undefined) response.data.attributes.referralCode = data.referralCode;
 
+    if (data.source !== undefined) {
+      const attributes = response.data.attributes;
+      if (data.source.sourceRef !== undefined) attributes.sourceRef = data.source.sourceRef;
+      if (data.source.sourceUtmSource !== undefined) attributes.sourceUtmSource = data.source.sourceUtmSource;
+      if (data.source.sourceUtmMedium !== undefined) attributes.sourceUtmMedium = data.source.sourceUtmMedium;
+      if (data.source.sourceUtmCampaign !== undefined) attributes.sourceUtmCampaign = data.source.sourceUtmCampaign;
+      if (data.source.sourceReferrer !== undefined) attributes.sourceReferrer = data.source.sourceReferrer;
+      if (data.source.sourceLandingPath !== undefined) attributes.sourceLandingPath = data.source.sourceLandingPath;
+    }
+
     return response;
   }
 }

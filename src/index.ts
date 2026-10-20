@@ -47,6 +47,9 @@ export type {
 export { configureReferral, getReferralConfig, isReferralEnabled } from "./features/referral/config";
 export type { ReferralConfig } from "./features/referral/config";
 
+// Sign-up source capture (utilities; SignupSourceCapture component via /components)
+export * from "./features/signup-source";
+
 // Toast utilities
 export { showToast, showError, dismissToast, showCustomToast, type ToastOptions } from "./utils/toast";
 

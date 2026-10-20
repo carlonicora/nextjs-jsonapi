@@ -101,11 +101,12 @@ export class WaitlistService extends AbstractService {
   }
 
   /**
-   * Get statistics (admin)
+   * Get statistics (admin): GET /waitlists/stats, rehydrated as waitlist-stats
    */
   static async getStats(): Promise<WaitlistStatsInterface> {
     const endpoint = new EndpointCreator({
-      endpoint: Modules.WaitlistStats,
+      endpoint: Modules.Waitlist,
+      id: "stats",
     });
 
     return this.callApi<WaitlistStatsInterface>({

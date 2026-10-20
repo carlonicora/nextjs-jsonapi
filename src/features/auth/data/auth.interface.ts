@@ -1,4 +1,5 @@
 import { ApiDataInterface } from "../../../core";
+import { SignupSource } from "../../signup-source/signup-source";
 import { UserInterface } from "../../user";
 
 export type AuthInput = {
@@ -14,6 +15,7 @@ export type AuthInput = {
   marketingConsentAt?: string | null;
   inviteCode?: string;
   referralCode?: string;
+  source?: SignupSource;
 };
 
 export type AuthQuery = {

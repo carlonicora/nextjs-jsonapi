@@ -4,23 +4,27 @@ import { useTranslations } from "next-intl";
 import { getPublicApiUrl } from "../../../../client/config";
 import { isGoogleAuthEnabled } from "../../../../login";
 import { Button, Link } from "../../../../shadcnui";
+import { SignupSource } from "../../../signup-source/signup-source";
 
 interface GoogleSignInButtonProps {
   referralCode?: string | null;
+  source?: SignupSource;
 }
 
-export function GoogleSignInButton({ referralCode }: GoogleSignInButtonProps) {
+export function GoogleSignInButton({ referralCode, source }: GoogleSignInButtonProps) {
   const t = useTranslations();
 
   if (!isGoogleAuthEnabled()) {
     return null;
   }
 
-  // Build OAuth URL with referral parameter if available
+  // Build OAuth URL with referral and sign-up source parameters if available
   const buildGoogleOAuthUrl = (): string => {
     const baseUrl = `${getPublicApiUrl()}auth/google`;
-    if (!referralCode) return baseUrl;
-    return `${baseUrl}?referral=${encodeURIComponent(referralCode)}`;
+    const params: string[] = [];
+    if (referralCode) params.push(`referral=${encodeURIComponent(referralCode)}`);
+    if (source) params.push(`source=${encodeURIComponent(JSON.stringify(source))}`);
+    return params.length ? `${baseUrl}?${params.join("&")}` : baseUrl;
   };
 
   return (

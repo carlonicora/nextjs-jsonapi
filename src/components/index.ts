@@ -34,6 +34,7 @@ export * from "../features/feature/components";
 export * from "../features/notification/components";
 export * from "../features/onboarding/components";
 export * from "../features/referral/components";
+export { SignupSourceCapture } from "../features/signup-source/SignupSourceCapture";
 export * from "../features/role/components";
 export * from "../features/user/components";
 export * from "../features/oauth/components";
