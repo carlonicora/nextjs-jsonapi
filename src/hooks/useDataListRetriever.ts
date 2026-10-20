@@ -136,8 +136,12 @@ export function useDataListRetriever<T>(params: {
         return;
       }
 
-      // Prevent concurrent fetches (unless it's a pagination call)
-      if (isFetchingRef.current && !fetchParams?.callNext && !fetchParams?.callPrevious) return;
+      // Prevent concurrent fetches, except a refine (search / parameter change) or pagination.
+      // A refine has already written its term or parameter into the refs, so dropping it lost
+      // the user's filter for good; it supersedes the in-flight call instead, whose response the
+      // request-id check below discards.
+      if (isFetchingRef.current && !fetchParams?.isRefine && !fetchParams?.callNext && !fetchParams?.callPrevious)
+        return;
 
       if (stableParams.requiresSearch === true && fetchParams?.isRefine !== true && fetchParams?.isRefresh !== true) {
         return;

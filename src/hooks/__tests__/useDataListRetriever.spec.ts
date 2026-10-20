@@ -346,6 +346,75 @@ describe("useDataListRetriever", () => {
     });
   });
 
+  describe("concurrent fetches", () => {
+    function deferred<V>() {
+      let resolve!: (value: V) => void;
+      const promise = new Promise<V>((r) => (resolve = r));
+      return { promise, resolve };
+    }
+
+    it("issues a parameter change made while a fetch is in flight", async () => {
+      const retriever = vi.fn().mockResolvedValueOnce([createMockApiData({ type: "articles", id: "1" })]);
+
+      const { result } = renderHook(() => useDataListRetriever({ retriever, module: mockModule }));
+      await waitFor(() => expect(result.current.isLoaded).toBe(true));
+
+      const slow = deferred<any[]>();
+      retriever.mockReturnValueOnce(slow.promise).mockResolvedValue([createMockApiData({ type: "articles", id: "2" })]);
+
+      act(() => {
+        result.current.addAdditionalParameter("completed", "completed");
+      });
+      act(() => {
+        result.current.removeAdditionalParameter("completed");
+      });
+
+      expect(retriever).toHaveBeenCalledTimes(3);
+      expect(retriever.mock.calls[2][0].completed).toBeUndefined();
+
+      await act(async () => {
+        slow.resolve([]);
+      });
+    });
+
+    it("keeps the newer response when the superseded one arrives last", async () => {
+      const retriever = vi.fn().mockResolvedValueOnce([createMockApiData({ type: "articles", id: "1" })]);
+
+      const { result } = renderHook(() => useDataListRetriever({ retriever, module: mockModule }));
+      await waitFor(() => expect(result.current.isLoaded).toBe(true));
+
+      const older = deferred<any[]>();
+      const newer = deferred<any[]>();
+      retriever.mockReturnValueOnce(older.promise).mockReturnValueOnce(newer.promise);
+
+      act(() => {
+        result.current.addAdditionalParameter("completed", "completed");
+      });
+      act(() => {
+        result.current.removeAdditionalParameter("completed");
+      });
+
+      await act(async () => {
+        newer.resolve([createMockApiData({ type: "articles", id: "open" })]);
+      });
+      await act(async () => {
+        older.resolve([createMockApiData({ type: "articles", id: "done" })]);
+      });
+
+      expect(result.current.data?.map((item: any) => item.id)).toEqual(["open"]);
+      expect(result.current.isLoaded).toBe(true);
+    });
+
+    it("still sends one request for the first load", async () => {
+      const retriever = vi.fn().mockResolvedValue([createMockApiData({ type: "articles", id: "1" })]);
+
+      const { result } = renderHook(() => useDataListRetriever({ retriever, module: mockModule }));
+      await waitFor(() => expect(result.current.isLoaded).toBe(true));
+
+      expect(retriever).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe("skipped calls", () => {
     it("still fetches a later search after a call the already-loaded guard skipped", async () => {
       const retriever = vi.fn().mockResolvedValue([createMockApiData({ type: "articles", id: "1" })]);
