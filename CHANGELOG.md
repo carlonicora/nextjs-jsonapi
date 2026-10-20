@@ -1,3 +1,9 @@
+## [5.1.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.1.2...v5.1.3) (2026-10-20)
+
+### 🐛 Bug Fixes
+
+* **data-list:** let a search/filter change supersede an in-flight fetch ([dd7262d](https://github.com/carlonicora/nextjs-jsonapi/commit/dd7262d26ded3b44865ed20c4ea0c0b03b2aeac4))
+
 ## [5.1.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.1.1...v5.1.2) (2026-10-19)
 
 ### 🐛 Bug Fixes
