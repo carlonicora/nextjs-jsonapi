@@ -245,16 +245,22 @@ describe("usePageTracker", () => {
     const view = mount(store);
     await waitFor(() => expect(pages(store)[0]?.title).toBe("Venezia Obscura"));
     const firstTimestamp = pages(store)[0].timestamp;
+    // Both visits can land in the same millisecond; move the clock so the refresh is observable.
+    const now = vi.spyOn(Date, "now").mockReturnValue(firstTimestamp + 1000);
 
-    pathnameRef.current = "/campaigns/camp-1//npcs";
-    document.title = "[Campaign] NPCs Venezia Obscura | App";
-    view.rerender(
-      <Provider store={store}>
-        <Harness />
-      </Provider>,
-    );
+    try {
+      pathnameRef.current = "/campaigns/camp-1//npcs";
+      document.title = "[Campaign] NPCs Venezia Obscura | App";
+      view.rerender(
+        <Provider store={store}>
+          <Harness />
+        </Provider>,
+      );
 
-    await waitFor(() => expect(pages(store)[0]?.timestamp).not.toBe(firstTimestamp));
+      await waitFor(() => expect(pages(store)[0]?.timestamp).toBe(firstTimestamp + 1000));
+    } finally {
+      now.mockRestore();
+    }
     expect(pages(store)[0].title).toBe("Venezia Obscura");
     expect(pages(store)[0].url).toBe("/campaigns/camp-1");
     expect(pages(store)).toHaveLength(1);
