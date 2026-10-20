@@ -1,3 +1,13 @@
+## [5.2.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.1.3...v5.2.0) (2026-10-20)
+
+### 🚀 Features
+
+* **waitlist:** sign-up source capture, admin totals and source column, translatable config ([2155bc2](https://github.com/carlonicora/nextjs-jsonapi/commit/2155bc2f8fc86d04bccd808be3f859046a13711d))
+
+### 🚨 Tests
+
+* **page-tracker:** pin the clock so the sub-page refresh is observable in the same millisecond ([cc3b969](https://github.com/carlonicora/nextjs-jsonapi/commit/cc3b9693354ad0fc85c73e80a2afe03797893c90))
+
 ## [5.1.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.1.2...v5.1.3) (2026-10-20)
 
 ### 🐛 Bug Fixes
