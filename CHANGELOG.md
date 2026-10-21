@@ -1,3 +1,9 @@
+## [5.3.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.2.0...v5.3.0) (2026-10-21)
+
+### 🚀 Features
+
+* **email-automation:** admin canvas, step editor, recipients and public unsubscribe page ([607fd5b](https://github.com/carlonicora/nextjs-jsonapi/commit/607fd5b3886153bcedd0dc10b4805b6deda90b6a))
+
 ## [5.2.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.1.3...v5.2.0) (2026-10-20)
 
 ### 🚀 Features
