@@ -41,6 +41,11 @@ export interface FoundationModuleDefinitions {
   // Waitlist modules
   Waitlist: ModuleWithPermissions;
   WaitlistStats: ModuleWithPermissions;
+  // Email automation modules
+  EmailAutomation: ModuleWithPermissions;
+  EmailAutomationStep: ModuleWithPermissions;
+  EmailAutomationEnrollment: ModuleWithPermissions;
+  EmailAutomationTrigger: ModuleWithPermissions;
   // Referral modules
   Referral: ModuleWithPermissions;
   ReferralStats: ModuleWithPermissions;

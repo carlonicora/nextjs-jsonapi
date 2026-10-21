@@ -67,6 +67,14 @@ export * from "../features/content/content.module";
 export * from "../features/content/data";
 export * from "../features/how-to/HowToModule";
 export * from "../features/how-to/data";
+export * from "../features/email-automation/EmailAutomationModule";
+export * from "../features/email-automation/EmailAutomationStepModule";
+export * from "../features/email-automation/EmailAutomationEnrollmentModule";
+export * from "../features/email-automation/EmailAutomationTriggerModule";
+// Email automation data (models, services, interfaces, fields): server-safe, so a
+// server page can wrap EmailAutomationService.findOne in cache(). The client-marked
+// ./email-automations entry carries only components, contexts and hooks.
+export * from "../features/email-automation/data";
 export * from "../features/handbook/HandbookPageModule";
 export * from "../features/handbook/HandbookSectionModule";
 export * from "../features/handbook/HandbookThreadMessageModule";

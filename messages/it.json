@@ -736,6 +736,15 @@
       }
     }
   },
+  "canvas": {
+    "toolbar": {
+      "fitView": "Adatta alla vista",
+      "tidy": "Riordina",
+      "tidyTooltip": "Cancella le posizioni manuali e rifai il layout automatico",
+      "zoomIn": "Ingrandisci",
+      "zoomOut": "Riduci"
+    }
+  },
   "common": {
     "actions": {
       "submitting": "Invio in corso..."
@@ -905,6 +914,114 @@
       }
     },
     "news": "Contenuti recenti pertinenti"
+  },
+  "emailAutomations": {
+    "admin": {
+      "editAutomation": "Modifica automazione",
+      "empty": "Nessuna automazione email.",
+      "newAutomation": "Nuova automazione",
+      "title": "Automazioni email"
+    },
+    "canvas": {
+      "addEmail": "Aggiungi email",
+      "chainError": "Questo collegamento romperebbe la sequenza.",
+      "deleteEmail": "Elimina email",
+      "deleteEmailConfirm": "Eliminare questa email? La sequenza si richiude e chi la stava aspettando passa all'email successiva.",
+      "emptyBody": "Fai clic destro sul canvas o trascina dall'evento per aggiungere la prima.",
+      "emptyTitle": "Ancora nessuna email",
+      "hoursAfterEntering": "ore dopo l'ingresso nell'automazione",
+      "hoursAfterPrevious": "ore dopo l'email precedente",
+      "noTrigger": "Nessun evento",
+      "orphan": "fuori dalla sequenza",
+      "sent": "inviate {count}"
+    },
+    "fields": {
+      "exitTrigger": {
+        "label": "Evento di uscita"
+      },
+      "isActive": {
+        "help": "Spenta, tiene tutti fermi dove sono; le email in ritardo partono quando la riaccendi.",
+        "label": "Attiva"
+      },
+      "name": {
+        "error": "Il nome è obbligatorio",
+        "label": "Nome"
+      },
+      "replyTo": {
+        "error": "Inserisci un indirizzo email valido",
+        "label": "Rispondi a"
+      },
+      "trigger": {
+        "label": "Evento di ingresso",
+        "none": "— nessuno —"
+      }
+    },
+    "list": {
+      "columns": {
+        "active": "Attivi",
+        "completed": "Completati",
+        "name": "Nome",
+        "status": "Stato",
+        "steps": "Email",
+        "trigger": "Evento",
+        "unsubscribed": "Disiscritti"
+      },
+      "status": {
+        "off": "Spenta",
+        "on": "Attiva"
+      }
+    },
+    "recipients": {
+      "columns": {
+        "currentStep": "Prossima email",
+        "email": "Email",
+        "name": "Nome",
+        "nextSendAt": "In programma",
+        "sentCount": "Inviate",
+        "status": "Stato"
+      },
+      "empty": "Nessuno è ancora entrato in questa automazione.",
+      "status": {
+        "active": "Attivi",
+        "all": "Tutti",
+        "completed": "Completati",
+        "exited": "Usciti",
+        "failed": "Non riusciti",
+        "unsubscribed": "Disiscritti"
+      }
+    },
+    "step": {
+      "editTitle": "Modifica email",
+      "fields": {
+        "body": {
+          "error": "Il testo è obbligatorio",
+          "label": "Testo (Markdown)"
+        },
+        "delayHours": {
+          "label": "Attesa"
+        },
+        "subject": {
+          "error": "L'oggetto è obbligatorio",
+          "label": "Oggetto"
+        }
+      },
+      "title": "Nuova email",
+      "unsubscribeHint": "I link per disiscriversi vengono sempre aggiunti sotto il testo.",
+      "variablesHint": "Variabili:"
+    },
+    "tabs": {
+      "canvas": "Canvas",
+      "recipients": "Destinatari"
+    },
+    "unsubscribe": {
+      "alsoStopAll": "Interrompi anche tutte le email promozionali",
+      "invalidBody": "Questo link non è valido.",
+      "invalidTitle": "Link non valido",
+      "loading": "Aggiornamento delle tue preferenze email in corso...",
+      "stoppedAll": "Non riceverai più nessuna email promozionale da noi.",
+      "stoppedAutomation": "Non riceverai altre email da {name}.",
+      "title": "Disiscrizione completata"
+    }
   },
   "entities": {
     "assistants": "{count, plural, =1 {Assistente} other {Assistenti}}",

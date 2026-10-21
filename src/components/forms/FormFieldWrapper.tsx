@@ -21,7 +21,7 @@ type FormFieldWrapperProps<T extends FieldValues> = {
    * label built by the caller, so the label row stays one element.
    */
   labelAction?: ReactNode;
-  description?: string;
+  description?: ReactNode;
   isRequired?: boolean;
   orientation?: "vertical" | "horizontal" | "responsive";
   className?: string;

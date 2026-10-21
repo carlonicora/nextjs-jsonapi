@@ -1,5 +1,6 @@
 "use client";
 
+import { ReactNode } from "react";
 import { Textarea } from "../../shadcnui";
 import { cn } from "../../utils";
 import { FormFieldWrapper } from "./FormFieldWrapper";
@@ -21,7 +22,7 @@ export function FormTextarea({
   placeholder?: string;
   className?: string;
   testId?: string;
-  description?: string;
+  description?: ReactNode;
   isRequired?: boolean;
   textareaRef?: React.RefObject<HTMLTextAreaElement>;
 }) {

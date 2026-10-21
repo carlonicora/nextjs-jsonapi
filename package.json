@@ -59,6 +59,11 @@
       "import": "./dist/billing/index.mjs",
       "require": "./dist/billing/index.js"
     },
+    "./email-automations": {
+      "types": "./dist/email-automations/index.d.ts",
+      "import": "./dist/email-automations/index.mjs",
+      "require": "./dist/email-automations/index.js"
+    },
     "./help": {
       "types": "./dist/features/help/index.d.ts",
       "import": "./dist/features/help/index.mjs",
@@ -118,6 +123,7 @@
     "@stripe/react-stripe-js": ">=6.8.0",
     "@stripe/stripe-js": ">=9.13.0",
     "@tanstack/react-table": ">=8.0.0",
+    "@xyflow/react": ">=12.0.0",
     "next": ">=16.4.0",
     "next-intl": ">=4.0.0",
     "react": ">=19.3.0",
@@ -132,6 +138,9 @@
       "optional": true
     },
     "@tanstack/react-table": {
+      "optional": true
+    },
+    "@xyflow/react": {
       "optional": true
     },
     "next-intl": {
@@ -220,6 +229,7 @@
     "@vitejs/plugin-react": "^6.1.2",
     "@vitest/coverage-v8": "^5.0.3",
     "@vitest/ui": "^5.0.3",
+    "@xyflow/react": "^12.12.0",
     "conventional-changelog-conventionalcommits": "9.3.1",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",

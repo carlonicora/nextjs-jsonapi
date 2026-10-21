@@ -736,6 +736,15 @@
       }
     }
   },
+  "canvas": {
+    "toolbar": {
+      "fitView": "Fit to view",
+      "tidy": "Tidy",
+      "tidyTooltip": "Clear manual positions and re-run auto-layout",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out"
+    }
+  },
   "common": {
     "actions": {
       "submitting": "Submitting..."
@@ -905,6 +914,114 @@
       }
     },
     "news": "Recent Relevant Contents"
+  },
+  "emailAutomations": {
+    "admin": {
+      "editAutomation": "Edit automation",
+      "empty": "No email automations yet.",
+      "newAutomation": "New automation",
+      "title": "Email automations"
+    },
+    "canvas": {
+      "addEmail": "Add email",
+      "chainError": "That connection would break the sequence.",
+      "deleteEmail": "Delete email",
+      "deleteEmailConfirm": "Delete this email? The sequence closes around it and anyone waiting on it moves to the next email.",
+      "emptyBody": "Right-click the canvas or drag from the trigger to add the first one.",
+      "emptyTitle": "No emails yet",
+      "hoursAfterEntering": "hours after entering the automation",
+      "hoursAfterPrevious": "hours after the previous email",
+      "noTrigger": "No trigger",
+      "orphan": "not in the sequence",
+      "sent": "sent {count}"
+    },
+    "fields": {
+      "exitTrigger": {
+        "label": "Exit trigger"
+      },
+      "isActive": {
+        "help": "Off holds everyone in place; overdue emails go out when you switch it back on.",
+        "label": "Active"
+      },
+      "name": {
+        "error": "Name is required",
+        "label": "Name"
+      },
+      "replyTo": {
+        "error": "Enter a valid email address",
+        "label": "Reply-to"
+      },
+      "trigger": {
+        "label": "Trigger",
+        "none": "— none —"
+      }
+    },
+    "list": {
+      "columns": {
+        "active": "Active",
+        "completed": "Done",
+        "name": "Name",
+        "status": "Status",
+        "steps": "Emails",
+        "trigger": "Trigger",
+        "unsubscribed": "Left"
+      },
+      "status": {
+        "off": "Off",
+        "on": "On"
+      }
+    },
+    "recipients": {
+      "columns": {
+        "currentStep": "Next email",
+        "email": "Email",
+        "name": "Name",
+        "nextSendAt": "Due",
+        "sentCount": "Sent",
+        "status": "Status"
+      },
+      "empty": "Nobody has entered this automation yet.",
+      "status": {
+        "active": "Active",
+        "all": "All",
+        "completed": "Completed",
+        "exited": "Exited",
+        "failed": "Failed",
+        "unsubscribed": "Unsubscribed"
+      }
+    },
+    "step": {
+      "editTitle": "Edit email",
+      "fields": {
+        "body": {
+          "error": "Body is required",
+          "label": "Body (Markdown)"
+        },
+        "delayHours": {
+          "label": "Delay"
+        },
+        "subject": {
+          "error": "Subject is required",
+          "label": "Subject"
+        }
+      },
+      "title": "New email",
+      "unsubscribeHint": "The unsubscribe links are always added below the body.",
+      "variablesHint": "Variables:"
+    },
+    "tabs": {
+      "canvas": "Canvas",
+      "recipients": "Recipients"
+    },
+    "unsubscribe": {
+      "alsoStopAll": "Also stop all marketing emails",
+      "invalidBody": "This link is not valid.",
+      "invalidTitle": "Link not valid",
+      "loading": "Updating your email preferences...",
+      "stoppedAll": "You will not receive any more marketing emails from us.",
+      "stoppedAutomation": "You will not receive more emails from {name}.",
+      "title": "You are unsubscribed"
+    }
   },
   "entities": {
     "assistants": "{count, plural, =1 {Assistant} other {Assistants}}",
