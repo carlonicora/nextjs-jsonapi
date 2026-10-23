@@ -3,7 +3,6 @@
 import { useTranslations } from "next-intl";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { SharedProvider } from "../../../contexts";
-import { usePageUrlGenerator } from "../../../hooks";
 import { BreadcrumbItemData } from "../../../interfaces";
 import { TokenUsageAdminFilterBar } from "../components/TokenUsageAdminFilterBar";
 import type { TokenUsageAdminBreakdownInterface } from "../data/tokenusage-admin-breakdown.interface";
@@ -11,13 +10,6 @@ import type { TokenUsageAdminSummaryInterface } from "../data/tokenusage-admin-s
 import type { TokenUsageAdminTimelineInterface } from "../data/tokenusage-admin-timeline.interface";
 import type { Granularity, Metric, StackBy } from "../data/tokenusage-admin.types";
 import { TokenUsageAdminService } from "../data/TokenUsageAdminService";
-
-/**
- * Default route the breadcrumb links back to. A host app that mounts the page
- * elsewhere overrides it with the `pageUrl` prop — the constant stays here
- * because the breadcrumb is built by this provider, not by the app.
- */
-const TOKEN_USAGE_ADMIN_PAGE_URL = "/administration/token-usage";
 
 /** Rows kept per ranked panel before the repository folds the tail into "other". */
 const DEFAULT_TOP_N = 10;
@@ -72,8 +64,6 @@ type TokenUsageAdminProviderProps = {
   initialTo?: string;
   /** Rows per ranked panel. Defaults to 10. */
   topN?: number;
-  /** Route the breadcrumb links back to. */
-  pageUrl?: string;
 };
 
 /**
@@ -91,10 +81,8 @@ export const TokenUsageAdminProvider = ({
   initialFrom,
   initialTo,
   topN = DEFAULT_TOP_N,
-  pageUrl = TOKEN_USAGE_ADMIN_PAGE_URL,
 }: TokenUsageAdminProviderProps) => {
   const t = useTranslations();
-  const generateUrl = usePageUrlGenerator();
 
   const [filters, setFilterState] = useState<TokenUsageAdminFilterState>(() => {
     const range = defaultRange();
@@ -185,12 +173,9 @@ export const TokenUsageAdminProvider = ({
     [byCompany],
   );
 
-  const breadcrumb = (): BreadcrumbItemData[] => [
-    {
-      name: t("token_usage.admin.title"),
-      href: generateUrl({ page: pageUrl }),
-    },
-  ];
+  // Unlinked: this provider only serves the token-usage page, so the root is
+  // always the current page.
+  const breadcrumb = (): BreadcrumbItemData[] => [{ name: t("token_usage.admin.title") }];
 
   const title = () => ({
     type: t("token_usage.admin.title"),

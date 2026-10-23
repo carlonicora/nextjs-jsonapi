@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useSharedContext } from "../../../../contexts/SharedContext";
 import { TokenUsageAdminService } from "../../data/TokenUsageAdminService";
 import { TokenUsageAdminProvider, useTokenUsageAdmin } from "../TokenUsageAdminContext";
 
@@ -14,6 +15,11 @@ vi.mock("../../data/TokenUsageAdminService", () => ({
 function Probe() {
   const ctx = useTokenUsageAdmin();
   return <span data-testid="mode">{String(ctx.singleCustomerMode)}</span>;
+}
+
+function BreadcrumbProbe() {
+  const { breadcrumbs } = useSharedContext();
+  return <span data-testid="breadcrumbs">{JSON.stringify(breadcrumbs)}</span>;
 }
 
 describe("TokenUsageAdminContext", () => {
@@ -76,5 +82,16 @@ describe("TokenUsageAdminContext", () => {
     expect(calls).not.toContainEqual(["operation", "platform"]);
     expect(calls).toHaveLength(3);
     expect(screen.getByTestId("mode")).toHaveTextContent("true");
+  });
+
+  it("publishes the page as an unlinked breadcrumb, since it is the current page", async () => {
+    render(
+      <TokenUsageAdminProvider>
+        <BreadcrumbProbe />
+      </TokenUsageAdminProvider>,
+    );
+
+    await waitFor(() => expect(TokenUsageAdminService.getSummary).toHaveBeenCalled());
+    expect(screen.getByTestId("breadcrumbs")).toHaveTextContent(JSON.stringify([{ name: "token_usage.admin.title" }]));
   });
 });

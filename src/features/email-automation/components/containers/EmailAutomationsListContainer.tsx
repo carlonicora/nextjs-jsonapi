@@ -1,8 +1,10 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { RoundPageContainer } from "../../../../components";
+import { SharedProvider } from "../../../../contexts/SharedContext";
 import { Modules } from "../../../../core";
-import { AdministrationProvider } from "../../../administration/contexts/AdministrationContext";
+import { BreadcrumbItemData } from "../../../../interfaces";
 import { EmailAutomationsList } from "../lists/EmailAutomationsList";
 
 /**
@@ -15,13 +17,20 @@ import { EmailAutomationsList } from "../lists/EmailAutomationsList";
  *
  * No `forceHeader`: ContentListTable draws its own header row with the title
  * and the create action, exactly as the company and user list pages do.
+ *
+ * Publishes its own breadcrumb, as CompanyProvider does for the companies list:
+ * the list root comes first and has no href because it is the current page.
  */
 export function EmailAutomationsListContainer() {
+  const t = useTranslations();
+
+  const breadcrumbs: BreadcrumbItemData[] = [{ name: t("emailAutomations.admin.title") }];
+
   return (
-    <AdministrationProvider>
+    <SharedProvider value={{ breadcrumbs, title: { type: t("emailAutomations.admin.title") } }}>
       <RoundPageContainer module={Modules.EmailAutomation} fullWidth>
         <EmailAutomationsList fullWidth />
       </RoundPageContainer>
-    </AdministrationProvider>
+    </SharedProvider>
   );
 }

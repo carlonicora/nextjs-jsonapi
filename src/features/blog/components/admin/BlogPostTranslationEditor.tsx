@@ -90,11 +90,17 @@ export function BlogPostTranslationEditor({ translation, trigger, onSuccess }: B
       onSuccess={onSuccess ?? (() => {})}
       trigger={trigger}
     >
-      <div className="flex w-full flex-col gap-y-4">
+      <div className="flex h-full min-h-0 w-full flex-col gap-y-4">
         <FormInput form={form} id="title" name={t("blog.fields.title")} isRequired />
-        <FormInput form={form} id="slug" name={t("blog.fields.slug")} description={t("blog.fields.slugHelp")} />
-        <FormTextarea form={form} id="summary" name={t("blog.fields.summary")} />
-        <FormInput form={form} id="coverImageAlt" name={t("blog.fields.coverImageAlt")} />
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="flex flex-col gap-y-4">
+            <FormInput form={form} id="slug" name={t("blog.fields.slug")} description={t("blog.fields.slugHelp")} />
+            <FormTextarea form={form} id="summary" name={t("blog.fields.summary")} className="min-h-24" />
+          </div>
+          <div className="flex flex-col gap-y-4">
+            <FormInput form={form} id="coverImageAlt" name={t("blog.fields.coverImageAlt")} />
+          </div>
+        </div>
         <FormBlockNote
           uploadKeyPrefix={BLOG_POST_UPLOAD_PREFIX}
           form={form}
@@ -102,6 +108,8 @@ export function BlogPostTranslationEditor({ translation, trigger, onSuccess }: B
           name={t("blog.fields.body")}
           type="blog-post"
           isRequired
+          stretch
+          className="min-h-96"
           onEmptyChange={setIsBodyEmptyState}
         />
       </div>

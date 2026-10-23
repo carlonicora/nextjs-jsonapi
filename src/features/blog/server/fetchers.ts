@@ -28,21 +28,20 @@ export async function fetchPublicBlogPosts(params: {
   language: string;
   categorySlug?: string;
   search?: string;
-  page: number;
+  /** 1-based list page; ignored with `all`. */
+  page?: number;
+  /** Every matching post, read in API-sized pages (a sitemap). `hasMore` is then false. */
+  all?: boolean;
 }): Promise<PublicBlogList> {
+  if (params.all) return { posts: await fetchEveryPublicBlogPost(params), hasMore: false };
+
   // Matches the API cap (120 = 10 pages of 12); a larger ?page= is served as the last allowed one.
   const page = Math.min(10, Math.max(1, Math.floor(params.page || 1)));
   const size = BLOG_PAGE_SIZE * page;
 
-  const endpoint = new EndpointCreator({ endpoint: publicPostsEndpoint() });
-  endpoint.addAdditionalParam("language", params.language);
-  if (params.categorySlug) endpoint.addAdditionalParam("category", encodeURIComponent(params.categorySlug));
-  if (params.search) endpoint.addAdditionalParam("search", encodeURIComponent(params.search));
-  endpoint.addAdditionalParam("page[size]", String(size));
-
   const res = await ServerJsonApiGet({
     classKey: { ...Modules.BlogPost, cache: "minutes" },
-    endpoint: endpoint.generate(),
+    endpoint: publicPostsListEndpoint({ ...params, size }),
     language: params.language,
   });
   if (!res.ok) return { posts: [], hasMore: false };
@@ -52,6 +51,56 @@ export async function fetchPublicBlogPosts(params: {
   const hasMore = Number.isFinite(total) ? total > posts.length : false;
 
   return { posts, hasMore };
+}
+
+function publicPostsListEndpoint(params: {
+  language: string;
+  categorySlug?: string;
+  search?: string;
+  size: number;
+  offset?: number;
+}): string {
+  const endpoint = new EndpointCreator({ endpoint: publicPostsEndpoint() });
+  endpoint.addAdditionalParam("language", params.language);
+  if (params.categorySlug) endpoint.addAdditionalParam("category", encodeURIComponent(params.categorySlug));
+  if (params.search) endpoint.addAdditionalParam("search", encodeURIComponent(params.search));
+  endpoint.addAdditionalParam("page[size]", String(params.size));
+  if (params.offset) endpoint.addAdditionalParam("page[offset]", String(params.offset));
+  return endpoint.generate();
+}
+
+// The API serves at most PUBLIC_MAX_PAGE_SIZE posts per request, so "all" walks
+// page[offset] until a short page comes back. MAX_ALL_PAGES only stops a runaway loop.
+const PUBLIC_MAX_PAGE_SIZE = 120;
+const MAX_ALL_PAGES = 100;
+
+async function fetchEveryPublicBlogPost(params: {
+  language: string;
+  categorySlug?: string;
+  search?: string;
+}): Promise<PublicBlogPost[]> {
+  const posts: PublicBlogPost[] = [];
+
+  // In sequence: a failing cached call throws, and parallel failing cached calls
+  // never close the response.
+  for (let index = 0; index < MAX_ALL_PAGES; index++) {
+    const res = await ServerJsonApiGet({
+      classKey: { ...Modules.BlogPost, cache: "minutes" },
+      endpoint: publicPostsListEndpoint({
+        ...params,
+        size: PUBLIC_MAX_PAGE_SIZE,
+        offset: index * PUBLIC_MAX_PAGE_SIZE,
+      }),
+      language: params.language,
+    });
+    if (!res.ok) break;
+
+    const batch = asArray<BlogPostInterface>(res.data);
+    posts.push(...batch.map(toPublicBlogPost));
+    if (batch.length < PUBLIC_MAX_PAGE_SIZE) break;
+  }
+
+  return posts;
 }
 
 export async function fetchPublicBlogPost(params: { language: string; slug: string }): Promise<PublicBlogPost | null> {

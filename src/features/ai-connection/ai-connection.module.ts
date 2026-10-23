@@ -1,3 +1,4 @@
+import { PlugZapIcon } from "lucide-react";
 import { ModuleFactory } from "../../permissions";
 import { AiConnection } from "./data";
 
@@ -11,4 +12,5 @@ export const AiConnectionModule = (factory: ModuleFactory) =>
     pageUrl: "/administration/ai-connections",
     model: AiConnection,
     moduleId: "7d3f2b8a-91c4-4e6d-a5f0-2c9b8e4d1a37",
+    icon: PlugZapIcon,
   });

@@ -33,6 +33,8 @@ export default defineConfig({
     alias: {
       // Self-reference used by the analytics server pages (see tsup.config.ts).
       "@carlonicora/nextjs-jsonapi/analytics": path.resolve(__dirname, "./src/features/analytics/index.ts"),
+      // Self-reference used by BlockNoteServerContent (see tsup.config.ts).
+      "@carlonicora/nextjs-jsonapi/components": path.resolve(__dirname, "./src/components/index.ts"),
       // Self-reference used by serverRequest (see package.json "./cached-get").
       "@carlonicora/nextjs-jsonapi/cached-get": path.resolve(__dirname, "./src/server/cachedGet.ts"),
       "@/components/ui": path.resolve(__dirname, "./src/shadcnui/ui"),

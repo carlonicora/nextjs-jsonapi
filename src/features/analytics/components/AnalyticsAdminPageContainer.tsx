@@ -4,7 +4,10 @@ import { AnalyticsAdminProvider } from "../contexts/AnalyticsAdminContext";
 import { AnalyticsAdminContainer } from "./AnalyticsAdminContainer";
 
 type Props = {
-  /** Route the breadcrumb links back to. Defaults to the provider's default. */
+  /**
+   * @deprecated No longer read: the dashboard is the current page, so its
+   * breadcrumb is not linked. Kept so existing callers still compile.
+   */
   pageUrl?: string;
   /** Base route of the journey page each session row links to. */
   sessionPageUrl?: string;
@@ -16,9 +19,9 @@ type Props = {
  * the `RoundPageContainer`; the provider sits above it because it publishes the
  * filter bar into the title bar.
  */
-export function AnalyticsAdminPageContainer({ pageUrl, sessionPageUrl }: Props) {
+export function AnalyticsAdminPageContainer({ sessionPageUrl }: Props) {
   return (
-    <AnalyticsAdminProvider pageUrl={pageUrl} sessionPageUrl={sessionPageUrl}>
+    <AnalyticsAdminProvider sessionPageUrl={sessionPageUrl}>
       <AnalyticsAdminContainer />
     </AnalyticsAdminProvider>
   );

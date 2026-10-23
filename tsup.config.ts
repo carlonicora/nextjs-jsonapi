@@ -33,6 +33,7 @@ export default defineConfig({
     "server/index": "src/server/index.ts",
     "client/index": "src/client/index.ts",
     "components/index": "src/components/index.ts",
+    "components/editors/server": "src/components/editors/server-entry.ts",
     "contexts/index": "src/contexts/index.ts",
     "testing/index": "src/testing/index.ts",
     "billing/index": "src/billing/index.ts",
@@ -89,6 +90,9 @@ export default defineConfig({
     // server entry reach them through the "use client" bundle instead of
     // inlining client code into a server module.
     "@carlonicora/nextjs-jsonapi/analytics",
+    // Same for BlockNoteServerContent, which renders the "use client"
+    // BlockNoteStaticViewer through the components subpath.
+    "@carlonicora/nextjs-jsonapi/components",
     // serverRequest imports the cached GET through this package's own export so the
     // `react-server` condition can swap in a stub for client bundles (package.json).
     "@carlonicora/nextjs-jsonapi/cached-get",

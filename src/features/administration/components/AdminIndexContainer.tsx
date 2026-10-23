@@ -8,14 +8,21 @@ import { Link } from "../../../shadcnui";
 import { AdministrationProvider } from "../contexts/AdministrationContext";
 import type { AdminGroup, AdminSection } from "../data/admin-section.types";
 
+/** Keys of the built-in platform sections, for `hiddenSections`. */
+export type PlatformSectionKey = "companies" | "users" | "token-usage" | "ai-connections" | "rbac" | "billing";
+
 /**
- * The sections every NJA project has. Hrefs are constants rather than props:
- * the path convention IS the contract that makes this component reusable, and
- * it already exists in the package (see TOKEN_USAGE_ADMIN_PAGE_URL in
- * features/tokenusage/contexts/TokenUsageAdminContext.tsx).
+ * The sections every NJA project has, by key. Hrefs are constants rather than
+ * props: the path convention IS the contract that makes this component
+ * reusable. Exported so an app that passes its own `groups` places these
+ * entries without retyping their keys, icons and copy.
+ *
+ * `billing` is the only conditional entry: the default platform group shows it
+ * only when Stripe is configured (see AdminIndexGrid). An app that places it in
+ * its own `groups` applies the same check itself.
  */
-const PLATFORM_SECTIONS: AdminSection[] = [
-  {
+export const ADMIN_PLATFORM_SECTIONS: Record<PlatformSectionKey, AdminSection> = {
+  companies: {
     key: "companies",
     icon: Building2Icon,
     labelKey: "entities.companies",
@@ -23,7 +30,7 @@ const PLATFORM_SECTIONS: AdminSection[] = [
     descriptionKey: "administration.companies.description",
     href: "/administration/companies",
   },
-  {
+  users: {
     key: "users",
     icon: UsersIcon,
     labelKey: "entities.users",
@@ -31,21 +38,21 @@ const PLATFORM_SECTIONS: AdminSection[] = [
     descriptionKey: "administration.users.description",
     href: "/administration/users",
   },
-  {
+  "token-usage": {
     key: "token-usage",
     icon: CoinsIcon,
     labelKey: "token_usage.admin.title",
     descriptionKey: "administration.token_usage.description",
     href: "/administration/token-usage",
   },
-  {
+  "ai-connections": {
     key: "ai-connections",
     icon: PlugZapIcon,
     labelKey: "ai_connections.admin.title",
     descriptionKey: "administration.ai_connections.description",
     href: "/administration/ai-connections",
   },
-  {
+  rbac: {
     key: "rbac",
     icon: ShieldCheckIcon,
     labelKey: "entities.rbac",
@@ -53,27 +60,33 @@ const PLATFORM_SECTIONS: AdminSection[] = [
     descriptionKey: "administration.rbac.description",
     href: "/administration/rbac",
   },
-];
-
-/**
- * The only conditional entry. getStripePublishableKey comes from /client rather
- * than isStripeConfigured() from /billing on purpose: /billing exists to keep
- * Stripe.js out of the global bundle, and isStripeConfigured lives in
- * StripeProvider.tsx, which imports @stripe/stripe-js at module scope. The two
- * are the same check — isStripeConfigured is a one-line wrapper over this call.
- */
-const BILLING_SECTION: AdminSection = {
-  key: "billing",
-  icon: CreditCardIcon,
-  labelKey: "billing.admin.products.title",
-  descriptionKey: "administration.billing.description",
-  href: "/administration/products",
+  billing: {
+    key: "billing",
+    icon: CreditCardIcon,
+    labelKey: "billing.admin.products.title",
+    descriptionKey: "administration.billing.description",
+    href: "/administration/products",
+  },
 };
 
-/** Keys of the built-in platform sections, for `hiddenSections`. */
-export type PlatformSectionKey = "companies" | "users" | "token-usage" | "ai-connections" | "rbac" | "billing";
+/** The unconditional platform entries, in the default group's order. */
+const PLATFORM_SECTIONS: AdminSection[] = [
+  ADMIN_PLATFORM_SECTIONS.companies,
+  ADMIN_PLATFORM_SECTIONS.users,
+  ADMIN_PLATFORM_SECTIONS["token-usage"],
+  ADMIN_PLATFORM_SECTIONS["ai-connections"],
+  ADMIN_PLATFORM_SECTIONS.rbac,
+];
 
 type AdminIndexProps = {
+  /**
+   * Replaces the default groups (the built-in platform group plus
+   * `additionalGroups`) with exactly these, in this order. For an app that
+   * arranges its administration by its own headings; it places the platform
+   * entries it wants from ADMIN_PLATFORM_SECTIONS. When set, `additionalGroups`
+   * is ignored and the Stripe check on `billing` is the app's to apply.
+   */
+  groups?: AdminGroup[];
   /** Project-specific groups, appended after the built-in platform group. */
   additionalGroups?: AdminGroup[];
   /**
@@ -90,10 +103,12 @@ type AdminIndexProps = {
  * The grid itself, with no page shell — this is what the specs render, because
  * RoundPageContainer pulls in the app Header and its four header contexts.
  */
-export function AdminIndexGrid({ additionalGroups = [], hiddenSections = [] }: AdminIndexProps) {
+export function AdminIndexGrid({ groups: customGroups, additionalGroups = [], hiddenSections = [] }: AdminIndexProps) {
   const t = useTranslations();
 
-  const available = getStripePublishableKey() ? [...PLATFORM_SECTIONS, BILLING_SECTION] : PLATFORM_SECTIONS;
+  const available = getStripePublishableKey()
+    ? [...PLATFORM_SECTIONS, ADMIN_PLATFORM_SECTIONS.billing]
+    : PLATFORM_SECTIONS;
 
   const platformGroup: AdminGroup = {
     key: "platform",
@@ -101,7 +116,16 @@ export function AdminIndexGrid({ additionalGroups = [], hiddenSections = [] }: A
     sections: available.filter((section) => !hiddenSections.includes(section.key as PlatformSectionKey)),
   };
 
-  const groups = [platformGroup, ...additionalGroups].filter((group) => group.sections.length > 0);
+  // Custom groups still honour hiddenSections, so a project that cannot serve
+  // a platform route drops it the same way in either mode.
+  const groups = (
+    customGroups
+      ? customGroups.map((group) => ({
+          ...group,
+          sections: group.sections.filter((section) => !hiddenSections.includes(section.key as PlatformSectionKey)),
+        }))
+      : [platformGroup, ...additionalGroups]
+  ).filter((group) => group.sections.length > 0);
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 py-8">
@@ -146,11 +170,15 @@ export function AdminIndexGrid({ additionalGroups = [], hiddenSections = [] }: A
  * and its own page chrome (AdministrationProvider), so it does not inherit the
  * title and breadcrumb of whatever page rendered before it.
  */
-export function AdminIndexContainer({ additionalGroups, hiddenSections }: AdminIndexProps) {
+export function AdminIndexContainer({ groups, additionalGroups, hiddenSections }: AdminIndexProps) {
+  const t = useTranslations();
+
+  // The index is the "Administration" page itself, so it names itself in the
+  // breadcrumb like every administration page does ("Home > Companies").
   return (
-    <AdministrationProvider>
+    <AdministrationProvider section={t("administration.title")}>
       <RoundPageContainer>
-        <AdminIndexGrid additionalGroups={additionalGroups} hiddenSections={hiddenSections} />
+        <AdminIndexGrid groups={groups} additionalGroups={additionalGroups} hiddenSections={hiddenSections} />
       </RoundPageContainer>
     </AdministrationProvider>
   );

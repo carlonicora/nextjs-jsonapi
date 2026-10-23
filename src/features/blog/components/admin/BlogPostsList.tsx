@@ -12,7 +12,7 @@ import "../../hooks/useBlogPostTableStructure";
 import { BlogPostEditor } from "./BlogPostEditor";
 
 type BlogPostsListProps = {
-  /** Pass when the list is the page's own content inside a `RoundPageContainer fullWidth`. */
+  /** Pass only when the list is the page's whole content inside a `RoundPageContainer fullWidth`; omit it in a tab so the list keeps its bordered card. */
   fullWidth?: boolean;
 };
 

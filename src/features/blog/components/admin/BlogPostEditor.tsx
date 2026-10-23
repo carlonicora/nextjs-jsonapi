@@ -149,7 +149,7 @@ export function BlogPostEditor({ post, trigger, onSuccess }: BlogPostEditorProps
       onNavigate={(url) => router.push(url)}
       trigger={trigger}
     >
-      <div className="flex w-full flex-col gap-y-4">
+      <div className="flex h-full min-h-0 w-full flex-col gap-y-4">
         {!post && (
           <FormSelect
             form={form}
@@ -160,38 +160,45 @@ export function BlogPostEditor({ post, trigger, onSuccess }: BlogPostEditorProps
           />
         )}
         <FormInput form={form} id="title" name={t("blog.fields.title")} isRequired />
-        {post && (
-          <FormInput form={form} id="slug" name={t("blog.fields.slug")} description={t("blog.fields.slugHelp")} />
-        )}
-        <FormTextarea
-          form={form}
-          id="summary"
-          name={t("blog.fields.summary")}
-          description={t("blog.fields.summaryHelp")}
-        />
-        <BlogCoverImageField
-          form={form}
-          id="coverImage"
-          label={t("blog.fields.coverImage")}
-          keyPrefix={BLOG_POST_UPLOAD_PREFIX}
-          entityId={form.getValues("id")}
-          currentUrl={post?.coverImage}
-          alt={original?.coverImageAlt}
-          selection={cover}
-          onSelectionChange={setCover}
-        />
-        <FormInput form={form} id="coverImageAlt" name={t("blog.fields.coverImageAlt")} />
-        <EntityMultiSelector<BlogCategoryInterface>
-          id="categories"
-          form={form}
-          label={t("blog.fields.categories")}
-          retriever={(params) => BlogCategoryService.findMany(params)}
-          module={Modules.BlogCategory}
-          getLabel={blogCategoryAdminName}
-          // A post's included categories carry no translations, so the stored chip
-          // names come from the category list.
-          getFormValueLabel={(value: { id: string; name?: string }) => value.name || categoryName(value.id)}
-        />
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="flex flex-col gap-y-4">
+            {post && (
+              <FormInput form={form} id="slug" name={t("blog.fields.slug")} description={t("blog.fields.slugHelp")} />
+            )}
+            <EntityMultiSelector<BlogCategoryInterface>
+              id="categories"
+              form={form}
+              label={t("blog.fields.categories")}
+              retriever={(params) => BlogCategoryService.findMany(params)}
+              module={Modules.BlogCategory}
+              getLabel={blogCategoryAdminName}
+              // A post's included categories carry no translations, so the stored chip
+              // names come from the category list.
+              getFormValueLabel={(value: { id: string; name?: string }) => value.name || categoryName(value.id)}
+            />
+            <FormTextarea
+              form={form}
+              id="summary"
+              name={t("blog.fields.summary")}
+              description={t("blog.fields.summaryHelp")}
+              className="min-h-24"
+            />
+          </div>
+          <div className="flex flex-col gap-y-4">
+            <BlogCoverImageField
+              form={form}
+              id="coverImage"
+              label={t("blog.fields.coverImage")}
+              keyPrefix={BLOG_POST_UPLOAD_PREFIX}
+              entityId={form.getValues("id")}
+              currentUrl={post?.coverImage}
+              alt={original?.coverImageAlt}
+              selection={cover}
+              onSelectionChange={setCover}
+            />
+            <FormInput form={form} id="coverImageAlt" name={t("blog.fields.coverImageAlt")} />
+          </div>
+        </div>
         <FormBlockNote
           uploadKeyPrefix={BLOG_POST_UPLOAD_PREFIX}
           form={form}
@@ -199,6 +206,8 @@ export function BlogPostEditor({ post, trigger, onSuccess }: BlogPostEditorProps
           name={t("blog.fields.body")}
           type="blog-post"
           isRequired
+          stretch
+          className="min-h-96"
           onEmptyChange={setIsBodyEmptyState}
         />
       </div>

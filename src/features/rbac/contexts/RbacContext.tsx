@@ -4,8 +4,6 @@ import { DownloadIcon, Loader2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { SharedProvider } from "../../../contexts";
-import { Modules } from "../../../core";
-import { usePageUrlGenerator } from "../../../hooks";
 import { BreadcrumbItemData } from "../../../interfaces";
 import { Button } from "../../../shadcnui";
 import { showError, showToast } from "../../../utils/toast";
@@ -70,7 +68,6 @@ export const RbacProvider = ({
   moduleNames,
   outputPath = DEFAULT_OUTPUT_PATH,
 }: RbacProviderProps) => {
-  const generateUrl = usePageUrlGenerator();
   const t = useTranslations();
 
   const [matrix, setMatrix] = useState<RbacMatrix | null>(null);
@@ -149,10 +146,10 @@ export const RbacProvider = ({
 
   const breadcrumb = (): BreadcrumbItemData[] => {
     const response: BreadcrumbItemData[] = [];
-    response.push({
-      name: t(`entities.rbac`, { count: 2 }),
-      href: generateUrl({ page: Modules.RbacMatrix }),
-    });
+    // Unlinked: the provider only serves the RBAC page, so the root is always
+    // the current page. The dev matrix module has no pageUrl either, so a link
+    // built from it pointed at "undefined".
+    response.push({ name: t(`entities.rbac`, { count: 2 }) });
     return response;
   };
 

@@ -105,7 +105,7 @@ export function BlogCoverImageField({
                   alt={alt ?? label}
                   width={320}
                   height={180}
-                  className="h-auto max-h-48 w-auto rounded-md object-cover"
+                  className="h-auto max-h-48 w-auto max-w-full rounded-md object-cover"
                   unoptimized={isRemoteImageSrc(previewUrl ? undefined : currentUrl)}
                 />
               ) : (

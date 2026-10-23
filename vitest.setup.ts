@@ -57,52 +57,55 @@ vi.mock("next/headers", () => ({
   headers: () => new Headers(),
 }));
 
-// Mock browser APIs not available in jsdom
-Object.defineProperty(window, "matchMedia", {
-  writable: true,
-  value: vi.fn().mockImplementation((query: string) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })),
-});
+// Browser mocks only: a spec that opts into `@vitest-environment node` (the
+// BlockNote server render) has no window, document or Element.
+if (typeof window !== "undefined") {
+  // Mock browser APIs not available in jsdom
+  Object.defineProperty(window, "matchMedia", {
+    writable: true,
+    value: vi.fn().mockImplementation((query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  });
 
-// Mock ResizeObserver
-class ResizeObserverMock {
-  observe = vi.fn();
-  unobserve = vi.fn();
-  disconnect = vi.fn();
+  // Mock ResizeObserver
+  class ResizeObserverMock {
+    observe = vi.fn();
+    unobserve = vi.fn();
+    disconnect = vi.fn();
+  }
+  global.ResizeObserver = ResizeObserverMock;
+
+  // Mock IntersectionObserver
+  class IntersectionObserverMock {
+    root = null;
+    rootMargin = "";
+    thresholds = [];
+    observe = vi.fn();
+    unobserve = vi.fn();
+    disconnect = vi.fn();
+    takeRecords = vi.fn(() => []);
+  }
+  global.IntersectionObserver = IntersectionObserverMock as unknown as typeof IntersectionObserver;
+
+  // Mock scrollTo
+  window.scrollTo = vi.fn();
+
+  // Mock pointer capture methods for Radix UI compatibility
+  Element.prototype.hasPointerCapture = vi.fn(() => false);
+  Element.prototype.setPointerCapture = vi.fn();
+  Element.prototype.releasePointerCapture = vi.fn();
+
+  // Mock scrollIntoView
+  Element.prototype.scrollIntoView = vi.fn();
 }
-global.ResizeObserver = ResizeObserverMock;
-
-// Mock IntersectionObserver
-class IntersectionObserverMock {
-  root = null;
-  rootMargin = "";
-  thresholds = [];
-  observe = vi.fn();
-  unobserve = vi.fn();
-  disconnect = vi.fn();
-  takeRecords = vi.fn(() => []);
-}
-global.IntersectionObserver =
-  IntersectionObserverMock as unknown as typeof IntersectionObserver;
-
-// Mock scrollTo
-window.scrollTo = vi.fn();
-
-// Mock pointer capture methods for Radix UI compatibility
-Element.prototype.hasPointerCapture = vi.fn(() => false);
-Element.prototype.setPointerCapture = vi.fn();
-Element.prototype.releasePointerCapture = vi.fn();
-
-// Mock scrollIntoView
-Element.prototype.scrollIntoView = vi.fn();
 
 // Mock crypto.randomUUID if not available
 if (!global.crypto?.randomUUID) {

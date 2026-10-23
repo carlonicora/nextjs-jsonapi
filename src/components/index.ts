@@ -7,6 +7,7 @@ export * from "./contents";
 export * from "./details";
 export * from "./editors";
 export { BlockNoteViewerContainer } from "./viewers/BlockNoteViewerContainer";
+export { BlockNoteStaticViewer } from "./viewers/BlockNoteStaticViewer";
 export * from "./errors";
 export * from "./forms";
 export * from "./navigations";

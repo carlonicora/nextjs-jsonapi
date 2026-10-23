@@ -1,6 +1,5 @@
 "use client";
 
-import { useFormatter } from "next-intl";
 import Image from "next/image";
 import { MicroLabel, SectionHeader } from "../../../../components/typography";
 import { Link } from "../../../../shadcnui";
@@ -59,16 +58,10 @@ export function BlogPostCard(props: {
   headingLevel?: "h2" | "h3";
 }) {
   const { post, categories, basePath, variant = "card", priority, headingLevel = "h2" } = props;
-  const format = useFormatter();
   const category = resolvePostCategory(post, categories);
   const isProminent = variant === "hero" || variant === "large";
 
-  const eyebrow =
-    variant === "row" && post.publishedAt
-      ? [category?.name, format.dateTime(new Date(post.publishedAt), { day: "numeric", month: "short" })]
-          .filter(Boolean)
-          .join(" · ")
-      : category?.name;
+  const eyebrow = category?.name;
 
   const text = (
     <div className="flex min-w-0 flex-col">
@@ -79,7 +72,7 @@ export function BlogPostCard(props: {
         </Link>
       </SectionHeader>
       {post.summary ? <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{post.summary}</p> : null}
-      <BlogPostMeta post={post} showAuthor={isProminent} showDate={isProminent} className="mt-3" />
+      <BlogPostMeta post={post} showAuthor={isProminent} className="mt-3" />
     </div>
   );
 

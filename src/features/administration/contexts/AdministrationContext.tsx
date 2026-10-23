@@ -11,6 +11,14 @@ const AdministrationContext = createContext<AdministrationContextType | undefine
 
 type AdministrationProviderProps = {
   children: ReactNode;
+  /**
+   * The page's own name, already translated (the same label the sidebar and the
+   * administration index use for it). When given, the breadcrumb reads
+   * "Home > {section}" with no link (it is the current page) and the title bar
+   * shows it. A plain string so a Server Component page can pass an already translated label.
+   * Omitted, the breadcrumb is empty and the title is "Administration".
+   */
+  section?: string;
 };
 
 /**
@@ -26,13 +34,13 @@ type AdministrationProviderProps = {
  * Mirrors CommonProvider (contexts/CommonContext.tsx), which does the same job
  * for the ordinary application shell.
  */
-export const AdministrationProvider = ({ children }: AdministrationProviderProps) => {
+export const AdministrationProvider = ({ children, section }: AdministrationProviderProps) => {
   const t = useTranslations();
 
-  const breadcrumbs: BreadcrumbItemData[] = [];
+  const breadcrumbs: BreadcrumbItemData[] = section ? [{ name: section }] : [];
 
   return (
-    <SharedProvider value={{ breadcrumbs, title: { type: t(`administration.title`) } }}>
+    <SharedProvider value={{ breadcrumbs, title: { type: section ?? t(`administration.title`) } }}>
       <AdministrationContext.Provider value={{}}>{children}</AdministrationContext.Provider>
     </SharedProvider>
   );

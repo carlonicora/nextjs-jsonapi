@@ -89,7 +89,6 @@ function BlogPostShell() {
       <RoundPageContainer
         module={Modules.BlogPost}
         id={post.id}
-        fullWidth
         forceHeader
         tabs={translations.map((translation) => ({
           sectionKey: translation.language,

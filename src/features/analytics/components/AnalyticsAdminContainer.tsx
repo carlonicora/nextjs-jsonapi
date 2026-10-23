@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { RoundPageContainer } from "../../../components";
+import { Modules } from "../../../core";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../shadcnui";
 import { useAnalyticsAdmin } from "../contexts/AnalyticsAdminContext";
 import { AnalyticsAdminTiles } from "./AnalyticsAdminTiles";
@@ -33,7 +34,7 @@ export function AnalyticsAdminContainer() {
 
   if (error) {
     return (
-      <RoundPageContainer fullWidth forceHeader>
+      <RoundPageContainer module={Modules.AnalyticsSummary} fullWidth forceHeader>
         <div className="p-4">
           <Card>
             <CardContent>
@@ -47,10 +48,10 @@ export function AnalyticsAdminContainer() {
 
   // Loading renders nothing in the body: the title bar (with the filter bar) is
   // already mounted, so a spinner would only make the controls jump on arrival.
-  if (isLoading) return <RoundPageContainer fullWidth forceHeader />;
+  if (isLoading) return <RoundPageContainer module={Modules.AnalyticsSummary} fullWidth forceHeader />;
 
   return (
-    <RoundPageContainer fullWidth forceHeader>
+    <RoundPageContainer module={Modules.AnalyticsSummary} fullWidth forceHeader>
       <div className="flex w-full flex-col gap-4 p-4">
         <div className="flex flex-col gap-2">
           <AnalyticsAdminTiles summary={summary} />

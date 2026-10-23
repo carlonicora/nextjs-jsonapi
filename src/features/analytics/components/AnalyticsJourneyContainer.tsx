@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { DetailField, RoundPageContainer } from "../../../components";
 import { SharedProvider } from "../../../contexts";
+import { Modules } from "../../../core";
 import { usePageUrlGenerator } from "../../../hooks";
 import { BreadcrumbItemData } from "../../../interfaces";
 import {
@@ -125,7 +126,7 @@ export function AnalyticsJourneyContainer({ sessionId, pageUrl = ANALYTICS_ADMIN
   const renderBody = () => {
     if (error) {
       return (
-        <RoundPageContainer fullWidth forceHeader>
+        <RoundPageContainer module={Modules.AnalyticsSession} fullWidth forceHeader>
           <div className="p-4">
             <Card>
               <CardContent>
@@ -138,14 +139,14 @@ export function AnalyticsJourneyContainer({ sessionId, pageUrl = ANALYTICS_ADMIN
     }
 
     // Loading renders nothing in the body, as on the dashboard.
-    if (isLoading || !session) return <RoundPageContainer fullWidth forceHeader />;
+    if (isLoading || !session) return <RoundPageContainer module={Modules.AnalyticsSession} fullWidth forceHeader />;
 
     const source = [session.utmSource ?? session.referrerHost, session.utmMedium, session.utmCampaign]
       .filter(Boolean)
       .join(" / ");
 
     return (
-      <RoundPageContainer fullWidth forceHeader>
+      <RoundPageContainer module={Modules.AnalyticsSession} fullWidth forceHeader>
         <div className="flex w-full flex-col gap-4 p-4">
           <Card data-testid="analytics-journey-attribution">
             <CardContent className="flex flex-col gap-3">

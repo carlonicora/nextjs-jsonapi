@@ -7,8 +7,8 @@ import type { PublicBlogPost } from "../../types/blog-public.types";
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 /**
- * "author · date · updated · reading time". Each part is opt-in so cards show
- * only the reading time while the hero and the post page show more.
+ * "author · date · updated · reading time". Each part except reading time is
+ * opt-in. The public blog shows no dates, so its callers pass only showAuthor.
  */
 export function BlogPostMeta(props: {
   post: PublicBlogPost;

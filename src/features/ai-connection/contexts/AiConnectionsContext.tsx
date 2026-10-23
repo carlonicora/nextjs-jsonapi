@@ -3,17 +3,8 @@
 import { useTranslations } from "next-intl";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { SharedProvider } from "../../../contexts";
-import { usePageUrlGenerator } from "../../../hooks";
 import { BreadcrumbItemData } from "../../../interfaces";
 import { AiConnectionEnvDefaults, AiConnectionInterface, AiConnectionService, AiProviderRegistry } from "../data";
-
-/**
- * Route the breadcrumb links back to. Constant rather than a prop for the same
- * reason TOKEN_USAGE_ADMIN_PAGE_URL is
- * (features/tokenusage/contexts/TokenUsageAdminContext.tsx): the breadcrumb is
- * built here, not by the consuming app, and the path convention IS the contract.
- */
-export const AI_CONNECTIONS_ADMIN_PAGE_URL = "/administration/ai-connections";
 
 export interface AiConnectionsContextType {
   /** Every connection, both scopes — the cards filter per scope themselves. */
@@ -57,7 +48,6 @@ export type AiConnectionsProviderProps = {
  */
 export const AiConnectionsProvider = ({ children }: AiConnectionsProviderProps) => {
   const t = useTranslations();
-  const generateUrl = usePageUrlGenerator();
 
   const [connections, setConnections] = useState<AiConnectionInterface[]>([]);
   const [providerRegistry, setProviderRegistry] = useState<AiProviderRegistry>({});
@@ -94,12 +84,9 @@ export const AiConnectionsProvider = ({ children }: AiConnectionsProviderProps) 
     [connections, providerRegistry, envDefaults, scopeCompanyId, refresh, isLoading],
   );
 
-  const breadcrumbs: BreadcrumbItemData[] = [
-    {
-      name: t("ai_connections.admin.title"),
-      href: generateUrl({ page: AI_CONNECTIONS_ADMIN_PAGE_URL }),
-    },
-  ];
+  // Unlinked: this provider only serves the AI-connections page, so the root is
+  // always the current page.
+  const breadcrumbs: BreadcrumbItemData[] = [{ name: t("ai_connections.admin.title") }];
 
   return (
     <SharedProvider value={{ breadcrumbs, title: { type: t("ai_connections.admin.title") } }}>

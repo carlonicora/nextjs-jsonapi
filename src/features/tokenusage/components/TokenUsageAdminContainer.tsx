@@ -4,6 +4,7 @@ import { cn } from "../../../lib/utils";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { RoundPageContainer } from "../../../components";
+import { Modules } from "../../../core";
 import {
   Card,
   CardAction,
@@ -75,7 +76,7 @@ export function TokenUsageAdminContainer() {
 
   if (error) {
     return (
-      <RoundPageContainer fullWidth forceHeader>
+      <RoundPageContainer module={Modules.TokenUsageAdminSummary} fullWidth forceHeader>
         <div className="p-4">
           <Card>
             <CardContent>
@@ -89,12 +90,12 @@ export function TokenUsageAdminContainer() {
 
   // Loading renders nothing in the body: the title bar (with the filter bar) is
   // already mounted, so a spinner would only make the controls jump on arrival.
-  if (isLoading) return <RoundPageContainer fullWidth forceHeader />;
+  if (isLoading) return <RoundPageContainer module={Modules.TokenUsageAdminSummary} fullWidth forceHeader />;
 
   const emptyLabel = t("token_usage.admin.no_data");
 
   return (
-    <RoundPageContainer fullWidth forceHeader>
+    <RoundPageContainer module={Modules.TokenUsageAdminSummary} fullWidth forceHeader>
       <div className="flex w-full flex-col gap-4 p-4">
         <TokenUsageAdminTiles summary={summary} metric={filters.metric} singleCustomerMode={hidePlatform} />
 

@@ -2,6 +2,7 @@
 
 import { ArrowLeftIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 import { BlockNoteEditorContainer } from "../../../../components/editors/BlockNoteEditorContainer";
 import { ContentTitle } from "../../../../components/navigations/ContentTitle";
 import { SectionHeader } from "../../../../components/typography";
@@ -14,14 +15,19 @@ import { BlogPostMeta } from "./BlogPostMeta";
 /**
  * Public post page: back link, category, title, summary, meta, cover, body,
  * then up to three posts from the same category.
+ *
+ * `body` replaces the client-only editor with server-rendered content (the app
+ * passes BlockNoteServerContent from `@carlonicora/nextjs-jsonapi/blocknote/server`),
+ * so the post text is in the HTML crawlers read.
  */
 export function BlogPostView(props: {
   post: PublicBlogPost;
   categories: PublicBlogCategory[];
   related: PublicBlogPost[];
   basePath: string;
+  body?: ReactNode;
 }) {
-  const { post, categories, related, basePath } = props;
+  const { post, categories, related, basePath, body } = props;
   const t = useTranslations();
   const category = resolvePostCategory(post, categories);
   const more = related.slice(0, 3);
@@ -36,7 +42,7 @@ export function BlogPostView(props: {
         <header className="mt-8">
           <ContentTitle type={category?.name} element={post.title} headingLevel={1} className="mb-0" />
           {post.summary ? <p className="text-muted-foreground mt-3 text-sm leading-relaxed">{post.summary}</p> : null}
-          <BlogPostMeta post={post} showAuthor showDate showUpdated className="mt-4" />
+          <BlogPostMeta post={post} showAuthor className="mt-4" />
         </header>
         {post.coverImage ? (
           <BlogPostCover
@@ -48,7 +54,7 @@ export function BlogPostView(props: {
           />
         ) : null}
         <div className="mt-8">
-          <BlockNoteEditorContainer id={post.id} type="blog-post" initialContent={post.body} />
+          {body ?? <BlockNoteEditorContainer id={post.id} type="blog-post" initialContent={post.body} />}
         </div>
       </div>
       {more.length > 0 ? (

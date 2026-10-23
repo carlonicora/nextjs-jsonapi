@@ -100,6 +100,8 @@ describe("BlogList", () => {
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
     expect(screen.getByRole("heading", { level: 1, name: "blog.public.title" })).toBeInTheDocument();
     expect(screen.getByText("blog.public.eyebrow")).toBeInTheDocument();
+    // The public blog shows no dates in any layout.
+    expect(screen.queryByText(/2026-10-12/)).not.toBeInTheDocument();
   });
 
   it("active category chip is marked and links back to all", () => {

@@ -100,24 +100,30 @@ describe("BlogPostView", () => {
     expect(screen.getByRole("link", { name: "Three-way scenes" })).toHaveAttribute("href", "/blog/three-way");
   });
 
-  it("shows updated only when the post changed more than a day after publishing", () => {
-    const { rerender } = render(<BlogPostView post={main} categories={cats} related={[]} basePath="/blog" />);
-    expect(screen.getByText(/blog\.public\.updated 2026-10-15/)).toBeInTheDocument();
-
-    rerender(
-      <BlogPostView
-        post={{ ...main, updatedAt: "2026-10-12T15:00:00.000Z" }}
-        categories={cats}
-        related={[]}
-        basePath="/blog"
-      />,
-    );
+  it("shows neither the publish date nor the updated date", () => {
+    render(<BlogPostView post={main} categories={cats} related={[]} basePath="/blog" />);
+    expect(screen.queryByText(/2026-10-12/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/2026-10-15/)).not.toBeInTheDocument();
     expect(screen.queryByText(/blog\.public\.updated/)).not.toBeInTheDocument();
   });
 
   it("omits the more-in section when there are no related posts", () => {
     render(<BlogPostView post={main} categories={cats} related={[]} basePath="/blog" />);
     expect(screen.queryByText(/blog\.public\.moreIn/)).not.toBeInTheDocument();
+  });
+
+  it("renders the body prop in place of the editor when given", () => {
+    render(
+      <BlogPostView
+        post={main}
+        categories={cats}
+        related={[]}
+        basePath="/blog"
+        body={<div data-testid="server-body">Server-rendered text</div>}
+      />,
+    );
+    expect(screen.getByTestId("server-body")).toHaveTextContent("Server-rendered text");
+    expect(screen.queryByTestId("post-body")).not.toBeInTheDocument();
   });
 
   it("caps related posts at three", () => {

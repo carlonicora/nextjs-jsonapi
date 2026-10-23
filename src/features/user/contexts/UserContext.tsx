@@ -7,6 +7,7 @@ import { JsonApiHydratedDataInterface, Modules, rehydrate } from "../../../core"
 import { usePageUrlGenerator } from "../../../hooks";
 import { BreadcrumbItemData } from "../../../interfaces";
 import { Action } from "../../../permissions";
+import { getRoleId } from "../../../roles";
 import { UserDeleter, UserEditor, UserReactivator, UserResentInvitationEmail } from "../components/forms";
 import { UserInterface } from "../data";
 import { useCurrentUserContext } from "./CurrentUserContext";
@@ -18,6 +19,14 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
+/**
+ * The platform-wide user list administrators use (PlatformUsersContainer). The
+ * User module's own `pageUrl` (/users) is the company-scoped list, which a
+ * system administrator, who belongs to no company, sees empty. Same path
+ * convention as the hrefs in AdminIndexContainer.
+ */
+const USERS_ADMIN_PAGE_URL = "/administration/users";
+
 type UserProviderProps = {
   children: ReactNode;
   dehydratedUser?: JsonApiHydratedDataInterface;
@@ -25,7 +34,7 @@ type UserProviderProps = {
 
 export const UserProvider = ({ children, dehydratedUser }: UserProviderProps) => {
   const generateUrl = usePageUrlGenerator();
-  const { hasPermissionToModule } = useCurrentUserContext<UserInterface>();
+  const { hasPermissionToModule, hasRole } = useCurrentUserContext<UserInterface>();
   const t = useTranslations();
 
   const [user, setUser] = useState<UserInterface | undefined>(
@@ -35,10 +44,16 @@ export const UserProvider = ({ children, dehydratedUser }: UserProviderProps) =>
   const breadcrumb = () => {
     const response: BreadcrumbItemData[] = [];
 
-    if (hasPermissionToModule({ module: Modules.User, action: Action.Update })) {
+    // Administrators are checked by role, as CompanyProvider does: an app may
+    // grant them no module permission, and their list is the administration one.
+    const isAdministrator = hasRole(getRoleId().Administrator);
+
+    // The list root comes first, linked ONLY when it is not the current page
+    // (same rule as CompanyProvider).
+    if (isAdministrator || hasPermissionToModule({ module: Modules.User, action: Action.Update })) {
       response.push({
         name: t(`entities.users`, { count: 2 }),
-        href: generateUrl({ page: Modules.User }),
+        ...(user ? { href: generateUrl({ page: isAdministrator ? USERS_ADMIN_PAGE_URL : Modules.User }) } : {}),
       });
     }
 

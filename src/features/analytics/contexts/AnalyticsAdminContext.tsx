@@ -4,7 +4,6 @@ import { useTranslations } from "next-intl";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Modules, NextRef } from "../../../core";
 import { SharedProvider } from "../../../contexts";
-import { usePageUrlGenerator } from "../../../hooks";
 import { BreadcrumbItemData } from "../../../interfaces";
 import { AnalyticsAdminFilterBar } from "../components/AnalyticsAdminFilterBar";
 import type { AnalyticsBreakdownInterface } from "../data/analytics-breakdown.interface";
@@ -18,13 +17,6 @@ import {
   type AnalyticsSection,
 } from "../data/analytics.types";
 import { AnalyticsAdminService } from "../data/AnalyticsAdminService";
-
-/**
- * Default route the breadcrumb links back to. A host app that mounts the page
- * elsewhere overrides it with the `pageUrl` prop — the constant stays here
- * because the breadcrumb is built by this provider, not by the app.
- */
-const ANALYTICS_ADMIN_PAGE_URL = "/administration/analytics";
 
 /** Default base route of the journey page each session row links to. */
 const ANALYTICS_SESSION_PAGE_URL = "/administration/analytics/sessions";
@@ -86,7 +78,11 @@ type AnalyticsAdminProviderProps = {
   initialFrom?: string;
   /** ISO 8601 instant. Defaults to now. */
   initialTo?: string;
-  /** Route the breadcrumb links back to. */
+  /**
+   * @deprecated No longer read. This provider only serves the dashboard, which
+   * is the current page, so its breadcrumb is not linked. Kept so existing
+   * callers still compile.
+   */
   pageUrl?: string;
   /** Base route of the journey page each session row links to. */
   sessionPageUrl?: string;
@@ -105,11 +101,9 @@ export const AnalyticsAdminProvider = ({
   children,
   initialFrom,
   initialTo,
-  pageUrl = ANALYTICS_ADMIN_PAGE_URL,
   sessionPageUrl = ANALYTICS_SESSION_PAGE_URL,
 }: AnalyticsAdminProviderProps) => {
   const t = useTranslations();
-  const generateUrl = usePageUrlGenerator();
 
   const [filters, setFilterState] = useState<AnalyticsAdminFilterState>(() => {
     const range = defaultRange();
@@ -205,12 +199,9 @@ export const AnalyticsAdminProvider = ({
     }
   }, [sessionsNextPage]);
 
-  const breadcrumb = (): BreadcrumbItemData[] => [
-    {
-      name: t("analytics.admin.title"),
-      href: generateUrl({ page: pageUrl }),
-    },
-  ];
+  // Unlinked: this provider only serves the dashboard, so the root is always
+  // the current page. The journey page publishes its own linked breadcrumb.
+  const breadcrumb = (): BreadcrumbItemData[] => [{ name: t("analytics.admin.title") }];
 
   const title = () => ({
     type: t("analytics.admin.title"),

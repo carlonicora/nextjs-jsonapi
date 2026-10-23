@@ -22,6 +22,17 @@ vi.mock("../../../../components", async (importOriginal) => {
   };
 });
 
+// The container hands `Modules.AnalyticsSession` to the (mocked) page chrome for
+// its header icon; no app bootstrap registers modules here, so the registry
+// lookup would throw.
+vi.mock("../../../../core", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../../../core")>();
+  return {
+    ...actual,
+    Modules: new Proxy({}, { get: () => undefined }),
+  };
+});
+
 beforeAll(() => {
   configureI18n({
     useRouter: () => ({

@@ -35,7 +35,8 @@ describe("analytics server entry", () => {
 
     expect(mocks.hasRole).toHaveBeenCalledWith("role-admin");
     expect(element.type).toBe(AnalyticsAdminPageContainer);
-    expect(element.props).toEqual({ pageUrl: "/admin/stats", sessionPageUrl: "/admin/stats/sessions" });
+    // `pageUrl` is deprecated and no longer forwarded: the dashboard breadcrumb is unlinked.
+    expect(element.props).toEqual({ sessionPageUrl: "/admin/stats/sessions" });
   });
 
   it("AnalyticsAdminPage redirects to `/` by default without the role", async () => {

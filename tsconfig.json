@@ -6,6 +6,7 @@
       "@/hooks/*": ["./src/hooks/*"],
       "@/components/ui/*": ["./src/shadcnui/ui/*"],
       "@carlonicora/nextjs-jsonapi/analytics": ["./src/features/analytics/index.ts"],
+      "@carlonicora/nextjs-jsonapi/components": ["./src/components/index.ts"],
       "@carlonicora/nextjs-jsonapi/cached-get": ["./src/server/cachedGet.ts"]
     },
     "target": "ES2022",

@@ -1,3 +1,4 @@
+import { CoinsIcon } from "lucide-react";
 import { ModuleFactory } from "../../permissions";
 import { TokenUsageAdminBreakdown } from "./data/tokenusage-admin-breakdown";
 import { TokenUsageAdminSummary } from "./data/tokenusage-admin-summary";
@@ -17,10 +18,10 @@ import { TokenUsageAdminTimeline } from "./data/tokenusage-admin-timeline";
  * object. These individual factories are kept for backward compatibility.
  */
 export const TokenUsageAdminSummaryModule = (factory: ModuleFactory) =>
-  factory({ name: "tokenusages/administration/summary", model: TokenUsageAdminSummary });
+  factory({ name: "tokenusages/administration/summary", model: TokenUsageAdminSummary, icon: CoinsIcon });
 
 export const TokenUsageAdminTimelineModule = (factory: ModuleFactory) =>
-  factory({ name: "tokenusages/administration/timeline", model: TokenUsageAdminTimeline });
+  factory({ name: "tokenusages/administration/timeline", model: TokenUsageAdminTimeline, icon: CoinsIcon });
 
 export const TokenUsageAdminBreakdownModule = (factory: ModuleFactory) =>
-  factory({ name: "tokenusages/administration/breakdown", model: TokenUsageAdminBreakdown });
+  factory({ name: "tokenusages/administration/breakdown", model: TokenUsageAdminBreakdown, icon: CoinsIcon });

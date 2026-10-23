@@ -1,3 +1,4 @@
+import { CoinsIcon } from "lucide-react";
 import { ModuleFactory, ModuleWithPermissions } from "../../permissions";
 import { TokenUsageAdminBreakdown } from "./data/tokenusage-admin-breakdown";
 import { TokenUsageAdminSummary } from "./data/tokenusage-admin-summary";
@@ -28,11 +29,20 @@ import { TokenUsageReportTimeline } from "./data/tokenusage-report-timeline";
  */
 export const tokenUsageModules = (factory: ModuleFactory) =>
   ({
-    TokenUsageAdminSummary: factory({ name: "tokenusages/administration/summary", model: TokenUsageAdminSummary }),
-    TokenUsageAdminTimeline: factory({ name: "tokenusages/administration/timeline", model: TokenUsageAdminTimeline }),
+    TokenUsageAdminSummary: factory({
+      name: "tokenusages/administration/summary",
+      model: TokenUsageAdminSummary,
+      icon: CoinsIcon,
+    }),
+    TokenUsageAdminTimeline: factory({
+      name: "tokenusages/administration/timeline",
+      model: TokenUsageAdminTimeline,
+      icon: CoinsIcon,
+    }),
     TokenUsageAdminBreakdown: factory({
       name: "tokenusages/administration/breakdown",
       model: TokenUsageAdminBreakdown,
+      icon: CoinsIcon,
     }),
     TokenUsageReportSummary: factory({ name: "tokenusages/reports/summary", model: TokenUsageReportSummary }),
     TokenUsageReportTimeline: factory({ name: "tokenusages/reports/timeline", model: TokenUsageReportTimeline }),

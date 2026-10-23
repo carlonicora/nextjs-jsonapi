@@ -27,6 +27,17 @@ vi.mock("../../../../components", async (importOriginal) => {
   };
 });
 
+// The containers pass Modules.AnalyticsSummary / AnalyticsSession for the
+// header icon; no app bootstrap registers modules here, so the registry lookup
+// would throw.
+vi.mock("../../../../core", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../../../core")>();
+  return {
+    ...actual,
+    Modules: new Proxy({}, { get: () => undefined }),
+  };
+});
+
 beforeAll(() => {
   configureI18n({
     useRouter: () => ({
@@ -81,7 +92,7 @@ describe("AnalyticsAdminPageContainer", () => {
   });
 
   it("loads the dashboard and links each session under the given sessionPageUrl", async () => {
-    render(<AnalyticsAdminPageContainer pageUrl="/admin/stats" sessionPageUrl="/admin/stats/sessions" />);
+    render(<AnalyticsAdminPageContainer sessionPageUrl="/admin/stats/sessions" />);
 
     expect(await screen.findByTestId("analytics-session-link-s1")).toHaveAttribute("href", "/admin/stats/sessions/s1");
     expect(AnalyticsAdminService.getSummary).toHaveBeenCalledTimes(1);

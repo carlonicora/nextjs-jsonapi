@@ -1,3 +1,4 @@
+import { ChartNoAxesCombinedIcon } from "lucide-react";
 import { ModuleFactory, ModuleWithPermissions } from "../../permissions";
 import { AnalyticsBreakdown } from "./data/analytics-breakdown";
 import { AnalyticsEvent } from "./data/analytics-event";
@@ -22,9 +23,25 @@ import { AnalyticsTimeline } from "./data/analytics-timeline";
 export const analyticsModules = (factory: ModuleFactory) =>
   ({
     AnalyticsEvent: factory({ name: "analytics/events", model: AnalyticsEvent }),
-    AnalyticsSummary: factory({ name: "analytics/administration/summary", model: AnalyticsSummary }),
-    AnalyticsTimeline: factory({ name: "analytics/administration/timeline", model: AnalyticsTimeline }),
-    AnalyticsBreakdown: factory({ name: "analytics/administration/breakdown", model: AnalyticsBreakdown }),
-    AnalyticsSession: factory({ name: "analytics/administration/sessions", model: AnalyticsSession }),
-    AnalyticsPageView: factory({ name: "pageviews", model: AnalyticsPageView }),
+    AnalyticsSummary: factory({
+      name: "analytics/administration/summary",
+      model: AnalyticsSummary,
+      icon: ChartNoAxesCombinedIcon,
+    }),
+    AnalyticsTimeline: factory({
+      name: "analytics/administration/timeline",
+      model: AnalyticsTimeline,
+      icon: ChartNoAxesCombinedIcon,
+    }),
+    AnalyticsBreakdown: factory({
+      name: "analytics/administration/breakdown",
+      model: AnalyticsBreakdown,
+      icon: ChartNoAxesCombinedIcon,
+    }),
+    AnalyticsSession: factory({
+      name: "analytics/administration/sessions",
+      model: AnalyticsSession,
+      icon: ChartNoAxesCombinedIcon,
+    }),
+    AnalyticsPageView: factory({ name: "pageviews", model: AnalyticsPageView, icon: ChartNoAxesCombinedIcon }),
   }) satisfies Record<string, ModuleWithPermissions>;

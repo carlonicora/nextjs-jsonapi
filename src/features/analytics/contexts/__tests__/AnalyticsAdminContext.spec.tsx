@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useSharedContext } from "../../../../contexts/SharedContext";
 import { AnalyticsAdminService } from "../../data/AnalyticsAdminService";
 import { AnalyticsAdminProvider, useAnalyticsAdmin } from "../AnalyticsAdminContext";
 
@@ -38,6 +39,11 @@ function Probe() {
       </button>
     </div>
   );
+}
+
+function BreadcrumbProbe() {
+  const { breadcrumbs } = useSharedContext();
+  return <span data-testid="breadcrumbs">{JSON.stringify(breadcrumbs)}</span>;
 }
 
 describe("AnalyticsAdminContext", () => {
@@ -136,5 +142,16 @@ describe("AnalyticsAdminContext", () => {
       }),
     );
     expect(screen.getByTestId("has-more")).toHaveTextContent("false");
+  });
+
+  it("publishes the dashboard as an unlinked breadcrumb, since it is the current page", async () => {
+    render(
+      <AnalyticsAdminProvider>
+        <BreadcrumbProbe />
+      </AnalyticsAdminProvider>,
+    );
+
+    await waitFor(() => expect(AnalyticsAdminService.getSessions).toHaveBeenCalled());
+    expect(screen.getByTestId("breadcrumbs")).toHaveTextContent(JSON.stringify([{ name: "analytics.admin.title" }]));
   });
 });
