@@ -1,3 +1,9 @@
+## [5.5.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.4.0...v5.5.0) (2026-10-23)
+
+### 🚀 Features
+
+* server-rendered rich text, admin breadcrumbs and grouping, blog editor layout ([8340692](https://github.com/carlonicora/nextjs-jsonapi/commit/8340692e3066a9e33d40e71638c86376c6ba7075))
+
 ## [5.4.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.3.0...v5.4.0) (2026-10-23)
 
 ### 🚀 Features
