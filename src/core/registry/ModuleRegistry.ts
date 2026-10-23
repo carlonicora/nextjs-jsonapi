@@ -46,6 +46,12 @@ export interface FoundationModuleDefinitions {
   EmailAutomationStep: ModuleWithPermissions;
   EmailAutomationEnrollment: ModuleWithPermissions;
   EmailAutomationTrigger: ModuleWithPermissions;
+  // Blog modules
+  BlogPost: ModuleWithPermissions;
+  BlogPostTranslation: ModuleWithPermissions;
+  BlogCategory: ModuleWithPermissions;
+  BlogCategoryTranslation: ModuleWithPermissions;
+  BlogSettings: ModuleWithPermissions;
   // Referral modules
   Referral: ModuleWithPermissions;
   ReferralStats: ModuleWithPermissions;

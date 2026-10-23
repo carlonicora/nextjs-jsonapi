@@ -74,6 +74,16 @@
       "import": "./dist/features/help/server.mjs",
       "require": "./dist/features/help/server.js"
     },
+    "./blog": {
+      "types": "./dist/features/blog/index.d.ts",
+      "import": "./dist/features/blog/index.mjs",
+      "require": "./dist/features/blog/index.js"
+    },
+    "./blog/server": {
+      "types": "./dist/features/blog/server.d.ts",
+      "import": "./dist/features/blog/server.mjs",
+      "require": "./dist/features/blog/server.js"
+    },
     "./tokenusage": {
       "types": "./dist/features/tokenusage/index.d.ts",
       "import": "./dist/features/tokenusage/index.mjs",

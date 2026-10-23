@@ -736,6 +736,99 @@
       }
     }
   },
+  "blog": {
+    "admin": {
+      "title": "Blog",
+      "newPost": "Nuovo articolo",
+      "editPost": "Modifica articolo",
+      "newCategory": "Nuova categoria",
+      "editCategory": "Modifica categoria",
+      "empty": "Nessun articolo. Scrivi il primo.",
+      "emptyCategories": "Nessuna categoria."
+    },
+    "tabs": {
+      "posts": "Articoli",
+      "categories": "Categorie",
+      "layout": "Impaginazione"
+    },
+    "fields": {
+      "title": "Titolo",
+      "slug": "Slug",
+      "slugHelp": "L'ultima parte dell'indirizzo dell'articolo. Cambiarlo rompe i link che puntano già all'articolo.",
+      "summary": "Sommario",
+      "summaryHelp": "Lascialo vuoto e lo scriverà l'AI a partire dal testo.",
+      "body": "Testo",
+      "coverImage": "Immagine di copertina",
+      "coverImageAlt": "Descrizione dell'immagine di copertina",
+      "categories": "Categorie",
+      "originalLanguage": "Lingua originale",
+      "name": "Nome",
+      "description": "Descrizione",
+      "image": "Immagine",
+      "status": "Stato",
+      "publishedAt": "Pubblicato",
+      "languages": "Lingue pronte"
+    },
+    "status": {
+      "draft": "Bozza",
+      "published": "Pubblicato",
+      "unpublished": "Ritirato"
+    },
+    "actions": {
+      "publish": "Pubblica",
+      "unpublish": "Ritira",
+      "edit": "Modifica",
+      "translateAgain": "Traduci di nuovo",
+      "compareWithOriginal": "Confronta con l'originale",
+      "hideComparison": "Nascondi confronto"
+    },
+    "translation": {
+      "original": "Originale",
+      "translatedFrom": "Lingua originale: {language}, tradotto il {date}",
+      "editedByHand": "Modificato a mano",
+      "overwriteWarning": "Modificare l'originale lo farà tradurre di nuovo e sostituirà queste modifiche.",
+      "translating": "Traduzione in corso…",
+      "failed": "Traduzione non riuscita",
+      "pending": "In attesa di traduzione"
+    },
+    "layout": {
+      "title": "Impaginazione dell'elenco pubblico",
+      "featured": "In evidenza",
+      "featuredDescription": "L'articolo più recente in grande, poi una griglia di schede su tre colonne.",
+      "column": "Colonna",
+      "columnDescription": "Una colonna di lettura stretta, una riga per articolo con l'immagine accanto al testo.",
+      "rail": "Barra laterale",
+      "railDescription": "Ricerca e categorie in una barra laterale, l'articolo più recente in grande, gli altri su due colonne.",
+      "saved": "Impaginazione salvata"
+    },
+    "public": {
+      "eyebrow": "Blog",
+      "title": "Note e guide",
+      "subtitle": "Idee, guide e novità dal team.",
+      "all": "Tutti",
+      "search": "Cerca",
+      "searchPlaceholder": "Cerca negli articoli",
+      "loadMore": "Carica altri",
+      "readingTime": "{minutes} min di lettura",
+      "updated": "Aggiornato il {date}",
+      "by": "Di {author}",
+      "back": "Tutti gli articoli",
+      "moreIn": "Altro in {category}",
+      "empty": "Ancora nessun articolo.",
+      "noResults": "Nessun articolo corrisponde alla ricerca."
+    },
+    "entities": {
+      "post": "Articolo",
+      "posts": "Articoli",
+      "category": "Categoria",
+      "categories": "Categorie"
+    },
+    "errors": {
+      "title": "Il titolo è obbligatorio",
+      "name": "Il nome è obbligatorio",
+      "language": "Scegli la lingua originale"
+    }
+  },
   "canvas": {
     "toolbar": {
       "fitView": "Adatta alla vista",

@@ -41,6 +41,7 @@ export function FormBlockNote({
   aiConfig,
   aiHandleRef,
   headerAction,
+  uploadKeyPrefix,
 }: {
   form: any;
   id: string;
@@ -74,6 +75,8 @@ export function FormBlockNote({
   aiHandleRef?: React.MutableRefObject<import("../editors/BlockNoteEditor").BlockNoteAiHandle | null>;
   /** Rendered on the label row, right-aligned — e.g. a "Suggest impression" button. */
   headerAction?: React.ReactNode;
+  /** See `BlockNoteEditorProps.uploadKeyPrefix`. */
+  uploadKeyPrefix?: string;
 }) {
   const initialContentRef = useRef<any>(null);
   const lastEditorContentRef = useRef<any>(undefined);
@@ -133,6 +136,7 @@ export function FormBlockNote({
               bordered
               inlineContentSpecs={inlineContentSpecs}
               renderOverlays={renderOverlays}
+              uploadKeyPrefix={uploadKeyPrefix}
               enableMentions={enableMentions}
               mentionSearchFn={mentionSearchFn}
               mentionSearchParams={mentionSearchParams}

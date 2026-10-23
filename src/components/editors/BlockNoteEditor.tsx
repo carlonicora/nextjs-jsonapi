@@ -78,6 +78,13 @@ export type BlockNoteEditorProps = {
   diffContent?: PartialBlock[];
   placeholder?: string;
   bordered?: boolean;
+  /**
+   * Storage folder for pasted images, used instead of the current company's
+   * `companies/<companyId>/<type>` folder: the image key becomes
+   * `<uploadKeyPrefix>/<id>/<file name>`. For platform content edited by users
+   * who belong to no company (the blog). Omitted: the company folder, as before.
+   */
+  uploadKeyPrefix?: string;
   inlineContentSpecs?: Record<string, any>;
   renderOverlays?: (editor: any) => React.ReactNode;
   enableMentions?: boolean;
@@ -405,6 +412,7 @@ export default function BlockNoteEditor({
   diffContent,
   placeholder,
   bordered,
+  uploadKeyPrefix,
   inlineContentSpecs,
   renderOverlays,
   enableMentions,
@@ -547,7 +555,7 @@ export default function BlockNoteEditor({
 
   const uploadImage = useCallback(
     async (file: File): Promise<string> => {
-      if (!company) {
+      if (!company && !uploadKeyPrefix) {
         errorToast({
           title: t(`common.errors.upload`),
           error: t(`common.errors.upload_description`),
@@ -556,7 +564,9 @@ export default function BlockNoteEditor({
       }
 
       const fileType = file.type;
-      const key = `companies/${company.id}/${type}/${id}/${file.name}`;
+      const key = uploadKeyPrefix
+        ? `${uploadKeyPrefix}/${id}/${file.name}`
+        : `companies/${company!.id}/${type}/${id}/${file.name}`;
 
       const s3: S3Interface = await S3Service.getPreSignedUrl({
         key: key,
@@ -577,7 +587,7 @@ export default function BlockNoteEditor({
 
       return signedImage.url;
     },
-    [company, id, t],
+    [company, id, t, type, uploadKeyPrefix],
   );
 
   // Utility: Remove trailing empty blocks for read-only display

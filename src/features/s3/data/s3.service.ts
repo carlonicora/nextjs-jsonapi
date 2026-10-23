@@ -12,6 +12,23 @@ export class S3Service extends AbstractService {
     return this.callApi<S3Interface>({ type: Modules.S3, method: HttpMethod.GET, endpoint: endpoint.generate() });
   }
 
+  /**
+   * Presigns `key` and PUTs `file` to the presigned S3 URL. The PUT goes straight
+   * to object storage (not the JSON:API backend), so it cannot use callApi.
+   * Throws when the upload is rejected.
+   */
+  static async upload(params: { key: string; contentType: string; file: Blob; isPublic?: boolean }): Promise<void> {
+    const s3 = await this.getPreSignedUrl({
+      key: params.key,
+      contentType: params.contentType,
+      isPublic: params.isPublic,
+    });
+
+    const response = await fetch(s3.url, { method: "PUT", headers: s3.headers, body: params.file });
+
+    if (!response.ok) throw new Error(`S3 upload failed: ${response.status}`);
+  }
+
   static async getSignedUrl(params: { key: string; isPublic?: boolean }): Promise<S3Interface> {
     const endpoint = new EndpointCreator({ endpoint: Modules.S3, id: "sign" }).addAdditionalParam("key", params.key);
 

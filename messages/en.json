@@ -736,6 +736,99 @@
       }
     }
   },
+  "blog": {
+    "admin": {
+      "title": "Blog",
+      "newPost": "New post",
+      "editPost": "Edit post",
+      "newCategory": "New category",
+      "editCategory": "Edit category",
+      "empty": "No posts yet. Write the first one.",
+      "emptyCategories": "No categories yet."
+    },
+    "tabs": {
+      "posts": "Posts",
+      "categories": "Categories",
+      "layout": "Layout"
+    },
+    "fields": {
+      "title": "Title",
+      "slug": "Slug",
+      "slugHelp": "The last part of the post's address. Changing it breaks links that already point to the post.",
+      "summary": "Summary",
+      "summaryHelp": "Leave it empty to let AI write it from the body.",
+      "body": "Body",
+      "coverImage": "Cover image",
+      "coverImageAlt": "Cover image description",
+      "categories": "Categories",
+      "originalLanguage": "Original language",
+      "name": "Name",
+      "description": "Description",
+      "image": "Image",
+      "status": "Status",
+      "publishedAt": "Published",
+      "languages": "Languages ready"
+    },
+    "status": {
+      "draft": "Draft",
+      "published": "Published",
+      "unpublished": "Unpublished"
+    },
+    "actions": {
+      "publish": "Publish",
+      "unpublish": "Unpublish",
+      "edit": "Edit",
+      "translateAgain": "Translate again",
+      "compareWithOriginal": "Compare with original",
+      "hideComparison": "Hide comparison"
+    },
+    "translation": {
+      "original": "Original",
+      "translatedFrom": "Translated from {language} on {date}",
+      "editedByHand": "Edited by hand",
+      "overwriteWarning": "Editing the original will translate it again and replace these edits.",
+      "translating": "Translating…",
+      "failed": "Translation failed",
+      "pending": "Waiting to translate"
+    },
+    "layout": {
+      "title": "Public list layout",
+      "featured": "Featured",
+      "featuredDescription": "The newest post as a large hero, then a three-column grid of cards.",
+      "column": "Column",
+      "columnDescription": "A narrow reading column with one row per post, image beside the text.",
+      "rail": "Rail",
+      "railDescription": "Search and categories in a side rail, the newest post large, the rest in two columns.",
+      "saved": "Layout saved"
+    },
+    "public": {
+      "eyebrow": "Blog",
+      "title": "Notes and guides",
+      "subtitle": "Ideas, guides and news from the team.",
+      "all": "All",
+      "search": "Search",
+      "searchPlaceholder": "Search posts",
+      "loadMore": "Load more",
+      "readingTime": "{minutes} min read",
+      "updated": "Updated {date}",
+      "by": "By {author}",
+      "back": "All posts",
+      "moreIn": "More in {category}",
+      "empty": "No posts yet.",
+      "noResults": "No posts match your search."
+    },
+    "entities": {
+      "post": "Post",
+      "posts": "Posts",
+      "category": "Category",
+      "categories": "Categories"
+    },
+    "errors": {
+      "title": "A title is required",
+      "name": "A name is required",
+      "language": "Choose the original language"
+    }
+  },
   "canvas": {
     "toolbar": {
       "fitView": "Fit to view",

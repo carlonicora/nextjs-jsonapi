@@ -11,9 +11,20 @@ type TitleProps = {
   className?: string;
   module?: ModuleWithPermissions;
   prioritizeFunctions?: boolean;
+  /** Renders the title line as a real heading (public SEO pages). Omitted: a plain div, as before. */
+  headingLevel?: 1 | 2;
 };
 
-export function ContentTitle({ module, type, element, functions, className, prioritizeFunctions }: TitleProps) {
+export function ContentTitle({
+  module,
+  type,
+  element,
+  functions,
+  className,
+  prioritizeFunctions,
+  headingLevel,
+}: TitleProps) {
+  const ElementTag = headingLevel === 1 ? "h1" : headingLevel === 2 ? "h2" : "div";
   const [clientFunctions, setClientFunctions] = useState<ReactNode>(null);
   const [isClient, setIsClient] = useState(false);
 
@@ -43,9 +54,9 @@ export function ContentTitle({ module, type, element, functions, className, prio
           </div>
         )}
         {/* Element (name) - truncates with ellipsis when space is limited */}
-        <div className={cn("text-primary text-3xl font-semibold", prioritizeFunctions ? "truncate" : "w-full")}>
+        <ElementTag className={cn("text-primary text-3xl font-semibold", prioritizeFunctions ? "truncate" : "w-full")}>
           {element}
-        </div>
+        </ElementTag>
       </div>
       {/* Functions section - doesn't shrink when prioritizeFunctions is true */}
       {isClient && clientFunctions && (
