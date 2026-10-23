@@ -1,3 +1,9 @@
+## [5.4.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.3.0...v5.4.0) (2026-10-23)
+
+### 🚀 Features
+
+* **blog:** admin and public blog ([31bfff1](https://github.com/carlonicora/nextjs-jsonapi/commit/31bfff135c17e40b8bd3fa8eebff6469cf1168ab))
+
 ## [5.3.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.2.0...v5.3.0) (2026-10-21)
 
 ### 🚀 Features
