@@ -98,7 +98,7 @@ export class StripeSubscription extends AbstractApiData implements StripeSubscri
         : undefined;
 
     // Hydrate price relationship
-    this._price = this._readIncluded(data, "price", Modules.StripePrice) as StripePriceInterface;
+    this._price = this._readIncluded(data, "stripePrice", Modules.StripePrice) as StripePriceInterface;
 
     return this;
   }

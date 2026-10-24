@@ -35,6 +35,12 @@ const DECLARED_FOR_APP_RENDERED_SURFACES = new Set<string>([
   "administration.users.description",
   "administration.ai_connections.description",
   "analytics.admin.description",
+  // No longer read in the package (pause was removed), kept because library keys
+  // are never removed: apps may still render them.
+  "billing.ui.subscription.pause",
+  "billing.ui.subscription.pausing",
+  "billing.ui.subscription.resume",
+  "billing.ui.subscription.resuming",
   "handbook.chat.delete_confirm",
   "handbook.chat.rename_placeholder",
   "handbook.contents.title",

@@ -79,8 +79,12 @@ export function SubscriptionSummaryCard({
     );
   }
 
+  // A failing card (past_due) still counts as the GM's plan: they keep it during the grace period.
   const activeSubscriptions = subscriptions.filter(
-    (sub) => sub.status === SubscriptionStatus.ACTIVE || sub.status === SubscriptionStatus.TRIALING,
+    (sub) =>
+      sub.status === SubscriptionStatus.ACTIVE ||
+      sub.status === SubscriptionStatus.TRIALING ||
+      sub.status === SubscriptionStatus.PAST_DUE,
   );
   const primarySubscription = activeSubscriptions[0];
 
@@ -115,19 +119,23 @@ export function SubscriptionSummaryCard({
               <p className="text-xl font-bold">
                 {formatPlanName(primarySubscription, t("billing.ui.cards.subscriptions.fallback_name"))}
               </p>
-              <Badge
-                variant={
-                  primarySubscription.cancelAtPeriodEnd
-                    ? "secondary"
-                    : getStatusBadgeVariant(primarySubscription.status)
-                }
-              >
-                {primarySubscription.cancelAtPeriodEnd
-                  ? t("billing.ui.cards.subscriptions.canceling")
-                  : SUBSCRIPTION_STATUSES.includes(primarySubscription.status)
-                    ? t(`billing.ui.subscription_status.${primarySubscription.status}`)
-                    : primarySubscription.status}
-              </Badge>
+              {primarySubscription.status === SubscriptionStatus.PAST_DUE ? (
+                <Badge variant="softRed">{t("billing.ui.cards.subscriptions.payment_failing")}</Badge>
+              ) : (
+                <Badge
+                  variant={
+                    primarySubscription.cancelAtPeriodEnd
+                      ? "secondary"
+                      : getStatusBadgeVariant(primarySubscription.status)
+                  }
+                >
+                  {primarySubscription.cancelAtPeriodEnd
+                    ? t("billing.ui.cards.subscriptions.canceling")
+                    : SUBSCRIPTION_STATUSES.includes(primarySubscription.status)
+                      ? t(`billing.ui.subscription_status.${primarySubscription.status}`)
+                      : primarySubscription.status}
+                </Badge>
+              )}
             </div>
             <p className="text-xs text-muted-foreground">
               {!primarySubscription.price?.isTrial

@@ -597,7 +597,8 @@
           "fallback_name": "Abbonamento",
           "more": "+{count} altri abbonamenti",
           "renews_on": "Si rinnova il {date}",
-          "view_plans": "Vedi i piani"
+          "view_plans": "Vedi i piani",
+          "payment_failing": "Pagamento non riuscito"
         },
         "usage": {
           "across_meters": "Su {count} contatori",

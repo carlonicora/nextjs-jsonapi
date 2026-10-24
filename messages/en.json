@@ -597,7 +597,8 @@
           "fallback_name": "Subscription",
           "more": "+{count} more subscription(s)",
           "renews_on": "Renews on {date}",
-          "view_plans": "View Plans"
+          "view_plans": "View Plans",
+          "payment_failing": "Payment failing"
         },
         "usage": {
           "across_meters": "Across {count} meters",

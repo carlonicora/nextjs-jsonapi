@@ -214,6 +214,7 @@ export const BILLING_UI_I18N_KEYS = [
   "billing.ui.cards.subscriptions.ends_on",
   "billing.ui.cards.subscriptions.fallback_name",
   "billing.ui.cards.subscriptions.more",
+  "billing.ui.cards.subscriptions.payment_failing",
   "billing.ui.cards.subscriptions.renews_on",
   "billing.ui.cards.subscriptions.view_plans",
   "billing.ui.cards.usage.across_meters",

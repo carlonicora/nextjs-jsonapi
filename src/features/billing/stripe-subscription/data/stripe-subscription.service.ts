@@ -177,40 +177,6 @@ export class StripeSubscriptionService extends AbstractService {
   }
 
   /**
-   * Pause a subscription
-   */
-  static async pauseSubscription(params: { subscriptionId: string }): Promise<StripeSubscriptionInterface> {
-    const endpoint = new EndpointCreator({
-      endpoint: Modules.StripeSubscription,
-      id: params.subscriptionId,
-      childEndpoint: "pause",
-    });
-
-    return this.callApi<StripeSubscriptionInterface>({
-      type: Modules.StripeSubscription,
-      method: HttpMethod.POST,
-      endpoint: endpoint.generate(),
-    });
-  }
-
-  /**
-   * Resume a paused subscription
-   */
-  static async resumeSubscription(params: { subscriptionId: string }): Promise<StripeSubscriptionInterface> {
-    const endpoint = new EndpointCreator({
-      endpoint: Modules.StripeSubscription,
-      id: params.subscriptionId,
-      childEndpoint: "resume",
-    });
-
-    return this.callApi<StripeSubscriptionInterface>({
-      type: Modules.StripeSubscription,
-      method: HttpMethod.POST,
-      endpoint: endpoint.generate(),
-    });
-  }
-
-  /**
    * Sync a subscription with the latest data from Stripe
    * This is useful after payment confirmation to get the updated status
    */

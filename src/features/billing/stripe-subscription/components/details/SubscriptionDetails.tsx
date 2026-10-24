@@ -11,7 +11,7 @@ import {
 } from "../../../components/utils";
 import { StripeCustomerService } from "../../../stripe-customer";
 import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
-import { StripeSubscriptionInterface, StripeSubscriptionService, SubscriptionStatus } from "../../data";
+import { StripeSubscriptionInterface, SubscriptionStatus } from "../../data";
 import { CancelSubscriptionDialog } from "../forms/CancelSubscriptionDialog";
 import { SubscriptionStatusBadge } from "../widgets/SubscriptionStatusBadge";
 
@@ -75,31 +75,6 @@ export function SubscriptionDetails({
   const t = useTranslations();
   const fmt = useBillingFormatOptions();
   const [showCancel, setShowCancel] = useState<boolean>(false);
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
-
-  const handlePause = async () => {
-    setIsProcessing(true);
-    try {
-      await StripeSubscriptionService.pauseSubscription({ subscriptionId: subscription.id });
-      onSubscriptionChange();
-    } catch (error) {
-      console.error("[SubscriptionDetails] Failed to pause subscription:", error);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleResume = async () => {
-    setIsProcessing(true);
-    try {
-      await StripeSubscriptionService.resumeSubscription({ subscriptionId: subscription.id });
-      onSubscriptionChange();
-    } catch (error) {
-      console.error("[SubscriptionDetails] Failed to resume subscription:", error);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
 
   const handleManageViaPortal = async () => {
     try {
@@ -110,8 +85,6 @@ export function SubscriptionDetails({
     }
   };
 
-  const canPause = subscription.status === SubscriptionStatus.ACTIVE;
-  const canResume = subscription.status === SubscriptionStatus.PAUSED;
   const canCancel =
     subscription.status === SubscriptionStatus.ACTIVE ||
     subscription.status === SubscriptionStatus.TRIALING ||
@@ -184,18 +157,6 @@ export function SubscriptionDetails({
               {onChangePlan && (
                 <Button variant="default" onClick={() => onChangePlan(subscription)}>
                   {t("billing.ui.subscription.change_plan")}
-                </Button>
-              )}
-
-              {canPause && (
-                <Button variant="outline" onClick={handlePause} disabled={isProcessing}>
-                  {isProcessing ? t("billing.ui.subscription.pausing") : t("billing.ui.subscription.pause")}
-                </Button>
-              )}
-
-              {canResume && (
-                <Button variant="outline" onClick={handleResume} disabled={isProcessing}>
-                  {isProcessing ? t("billing.ui.subscription.resuming") : t("billing.ui.subscription.resume")}
                 </Button>
               )}
 
