@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../shadcnui";
 import { SectionHeader } from "../../../../../components/typography";
+import { dateFormatLocale } from "../../../../../utils";
 import { type BillingFormatOptions, useBillingFormatOptions } from "../../../components/utils";
 import { StripeUsageInterface } from "../../data/stripe-usage.interface";
 
@@ -19,7 +20,7 @@ function formatDateTime(date: Date | string | undefined, { locale, t }: Required
   const dateObj = typeof date === "string" ? new Date(date) : date;
 
   try {
-    return new Intl.DateTimeFormat(locale, {
+    return new Intl.DateTimeFormat(dateFormatLocale(locale), {
       month: "short",
       day: "numeric",
       year: "numeric",

@@ -7,8 +7,9 @@ export type BillingTranslator = (key: string, values?: Record<string, any>) => s
  * `useI18nLocale()` and `useTranslations()` and passes both here.
  *
  * Both are optional so existing callers keep their output: without a `locale`
- * the formatters use "en-US", without `t` they return the English literals they
- * always returned.
+ * the number formatters use "en-US" and `formatDate` uses "en-GB" (via
+ * `dateFormatLocale`), without `t` they return the English literals they always
+ * returned.
  */
 export type BillingFormatOptions = {
   /** BCP 47 locale for `Intl` (the app's active locale, from `useI18nLocale()`). */
@@ -17,4 +18,5 @@ export type BillingFormatOptions = {
   t?: BillingTranslator;
 };
 
+/** Number and currency locale when none is given. Dates use `dateFormatLocale` instead. */
 export const DEFAULT_BILLING_LOCALE = "en-US";

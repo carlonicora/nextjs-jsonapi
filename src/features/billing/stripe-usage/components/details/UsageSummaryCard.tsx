@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Activity } from "lucide-react";
 import { Card, CardContent, CardHeader } from "../../../../../shadcnui";
+import { dateFormatLocale } from "../../../../../utils";
 import { type BillingFormatOptions, formatFixed, useBillingFormatOptions } from "../../../components/utils";
 import { MeterInterface, MeterSummaryInterface } from "../../data/stripe-usage.interface";
 
@@ -28,7 +29,7 @@ function formatDate(date: Date | undefined, { locale, t }: Required<BillingForma
   if (!date) return t("billing.ui.not_available");
 
   try {
-    return new Intl.DateTimeFormat(locale, {
+    return new Intl.DateTimeFormat(dateFormatLocale(locale), {
       month: "short",
       day: "numeric",
     }).format(new Date(date));

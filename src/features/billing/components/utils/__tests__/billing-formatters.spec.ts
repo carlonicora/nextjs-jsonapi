@@ -41,10 +41,21 @@ describe("formatCurrency", () => {
 describe("formatDate", () => {
   const date = new Date(2025, 0, 15, 12);
 
-  it("keeps the English output without options", () => {
-    expect(formatDate(date)).toBe("Jan 15, 2025");
+  it("uses en-GB day-month order without options", () => {
+    expect(formatDate(date)).toBe("15 Jan 2025");
     expect(formatDate(undefined)).toBe("N/A");
     expect(formatDate(new Date("not a date"))).toBe("Invalid Date");
+  });
+
+  it("maps the English app locale to en-GB, never US order", () => {
+    const feb6 = new Date(2026, 1, 6, 12);
+    expect(formatDate(feb6, { locale: "en", t })).toBe("6 Feb 2026");
+    expect(formatDate(feb6, { locale: "en-US", t })).toBe("6 Feb 2026");
+    expect(formatDate("2026-02-06T12:00:00Z", { locale: "en", t })).toBe("6 Feb 2026");
+  });
+
+  it("formats Italian with the Italian locale", () => {
+    expect(formatDate(new Date(2026, 1, 6, 12), { locale: "it", t })).toBe("6 feb 2026");
   });
 
   it("uses the locale and the translator when given", () => {

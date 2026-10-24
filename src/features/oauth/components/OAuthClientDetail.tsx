@@ -24,6 +24,7 @@ import {
   AlertDialogTitle,
 } from "../../../shadcnui";
 import { useI18nLocale } from "../../../i18n";
+import { dateFormatLocale } from "../../../utils";
 import { useOAuthScopeText } from "../hooks/useOAuthScopeText";
 import { OAuthClientInterface } from "../interfaces/oauth.interface";
 
@@ -92,7 +93,7 @@ export function OAuthClientDetail({
   }, [onRegenerateSecret]);
 
   const createdDate = client.createdAt
-    ? new Date(client.createdAt).toLocaleDateString(locale, { dateStyle: "long" })
+    ? new Date(client.createdAt).toLocaleDateString(dateFormatLocale(locale), { dateStyle: "long" })
     : t("oauth.ui.card.unknown");
 
   return (
