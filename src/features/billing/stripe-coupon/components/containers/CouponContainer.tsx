@@ -2,10 +2,10 @@
 
 import { useTranslations } from "next-intl";
 import { RoundPageContainer } from "../../../../../components";
-import { Modules } from "../../../../../core";
 import { useCouponContext } from "../../../contexts/CouponContext";
 import { CouponDetails } from "../details/CouponDetails";
 import { CouponCodesList } from "../lists/CouponCodesList";
+import { couponPageModule } from "../../utils/coupon-page-module";
 
 export function CouponContainer() {
   const t = useTranslations();
@@ -15,7 +15,7 @@ export function CouponContainer() {
 
   return (
     <RoundPageContainer
-      module={Modules.StripeCoupon}
+      module={couponPageModule()}
       id={coupon.id}
       tabs={[
         {

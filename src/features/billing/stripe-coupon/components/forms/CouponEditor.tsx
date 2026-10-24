@@ -27,7 +27,7 @@ import {
   StripeCouponInput,
   StripeCouponInterface,
 } from "../../data/stripe-coupon.interface";
-import { STRIPE_COUPON_DETAIL_PAGE_URL } from "../../stripe-coupon.module";
+import { couponPageModule } from "../../utils/coupon-page-module";
 import { formatCouponDiscount } from "../../utils/format-coupon-discount";
 import {
   CouponCodeFields,
@@ -149,16 +149,6 @@ function toCouponInput(values: CouponCreateValues): StripeCouponInput {
   const maxRedemptions = parseOptionalPositiveInt(values.maxRedemptions);
   if (maxRedemptions !== undefined) payload.maxRedemptions = maxRedemptions;
   return payload;
-}
-
-/**
- * The module with the coupon's own route as pageUrl: the module's pageUrl is the
- * products page (the coupons list is its Codes tab), so EditorSheet's
- * navigate / revalidate after a save would otherwise land on
- * `/administration/products/<couponId>`.
- */
-function couponPageModule() {
-  return { ...Modules.StripeCoupon, pageUrl: STRIPE_COUPON_DETAIL_PAGE_URL };
 }
 
 function CouponRenameEditor({
