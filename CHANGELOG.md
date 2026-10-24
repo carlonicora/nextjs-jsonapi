@@ -1,3 +1,9 @@
+## [5.7.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.7.2...v5.7.3) (2026-10-24)
+
+### 📦 Code Refactoring
+
+* **billing:** remove pause functionality from subscription management ([9aad96b](https://github.com/carlonicora/nextjs-jsonapi/commit/9aad96b6b77c431c86ae9685887540c721388fe4))
+
 ## [5.7.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.7.1...v5.7.2) (2026-10-24)
 
 ### 🐛 Bug Fixes
