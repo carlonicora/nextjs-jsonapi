@@ -1,3 +1,9 @@
+## [5.6.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.5.0...v5.6.0) (2026-10-24)
+
+### 🚀 Features
+
+* **billing:** discount codes admin, automatic founding price and confirmed subscription payments ([adbe066](https://github.com/carlonicora/nextjs-jsonapi/commit/adbe066d30711534e1aa120761dec0475821454e))
+
 ## [5.5.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.4.0...v5.5.0) (2026-10-23)
 
 ### 🚀 Features
