@@ -1,3 +1,18 @@
+## [6.0.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.7.3...v6.0.0) (2026-10-24)
+
+### ⚠ BREAKING CHANGES
+
+* **billing:** StripeSubscriptionService.pauseSubscription and
+resumeSubscription are removed, and the subscription's price is read from the
+stripePrice relationship (requires nestjs-neo4jsonapi with the renamed
+relationship).
+
+Claude-Session: https://claude.ai/code/session_01BCLBwynYqcW9RZoRp5Ycbd
+
+### 🚀 Features
+
+* **billing:** payment-failing badge, stripePrice relationship, pause/resume removed ([3cbf389](https://github.com/carlonicora/nextjs-jsonapi/commit/3cbf38973fd1e2b17d57086098c88780b20a5dcc))
+
 ## [5.7.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.7.2...v5.7.3) (2026-10-24)
 
 ### 📦 Code Refactoring
