@@ -336,8 +336,6 @@ export const BILLING_UI_I18N_KEYS = [
   "billing.ui.subscription.details_description",
   "billing.ui.subscription.details_title",
   "billing.ui.subscription.manage_portal",
-  "billing.ui.subscription.pause",
-  "billing.ui.subscription.pausing",
   "billing.ui.subscription.resume",
   "billing.ui.subscription.resuming",
   "billing.ui.subscription.trial_ends",
