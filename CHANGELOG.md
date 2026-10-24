@@ -1,3 +1,9 @@
+## [5.7.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.7.1...v5.7.2) (2026-10-24)
+
+### 🐛 Bug Fixes
+
+* **billing:** English billing and OAuth dates in British order ([9a16d13](https://github.com/carlonicora/nextjs-jsonapi/commit/9a16d1324f336038f679fda73e6efe6d273d79fc))
+
 ## [5.7.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.7.0...v5.7.1) (2026-10-24)
 
 ### 🐛 Bug Fixes
