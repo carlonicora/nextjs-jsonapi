@@ -2,14 +2,23 @@
 
 import { useTranslations } from "next-intl";
 import { AlertCircle } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Alert, AlertDescription, Badge, Button } from "../../../../../shadcnui";
 import { SectionHeader } from "../../../../../components/typography";
-import { formatCurrency, useBillingFormatOptions } from "../../../components/utils";
+import {
+  applyDiscount,
+  formatCurrency,
+  promotionCodeDiscount,
+  subscriptionDiscount,
+  useBillingFormatOptions,
+} from "../../../components/utils";
 import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
 import { ProrationPreviewInterface } from "../../../stripe-invoice/data/stripe-invoice.interface";
 import { PromotionCodeValidationResult } from "../../../stripe-promotion-code";
 import { PromoCodeInput } from "../../../stripe-promotion-code/components/PromoCodeInput";
 import { StripeSubscriptionInterface } from "../../data";
+import { StripeCustomerService } from "../../../stripe-customer/data/stripe-customer.service";
+import { ReviewCard, reviewCard } from "./review-card";
 
 type WizardStepReviewProps = {
   selectedPrice: StripePriceInterface | null;
@@ -50,6 +59,29 @@ export function WizardStepReview({
 }: WizardStepReviewProps) {
   const t = useTranslations();
   const fmt = useBillingFormatOptions();
+  const [card, setCard] = useState<ReviewCard | null>(null);
+
+  // Show which card is on file. The step remounts after the payment step, so a
+  // card just added is read again here.
+  useEffect(() => {
+    if (!hasPaymentMethod) {
+      setCard(null);
+      return;
+    }
+    let cancelled = false;
+    Promise.all([StripeCustomerService.listPaymentMethods(), StripeCustomerService.getCustomer()])
+      .then(([methods, customer]) => {
+        if (!cancelled) setCard(reviewCard(methods, customer?.defaultPaymentMethodId));
+      })
+      .catch((err) => {
+        console.error("[WizardStepReview] Failed to load the card on file:", err);
+        if (!cancelled) setCard(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [hasPaymentMethod]);
+
   if (!selectedPrice) {
     return <div className="text-center py-8 text-muted-foreground">{t("billing.ui.wizard.review.no_plan")}</div>;
   }
@@ -64,60 +96,28 @@ export function WizardStepReview({
       : t("billing.ui.wizard.review.interval_monthly");
   };
 
-  // Calculate discounted price if promotion code is applied
-  const calculateDiscountedPrice = (): number | null => {
-    if (!promotionCode?.valid || !selectedPrice.unitAmount) return null;
+  // A code (typed or automatic) replaces the subscription's discount in Stripe.
+  // Without one, a plan change keeps the discount the subscription already carries.
+  const codeDiscount = promotionCodeDiscount(promotionCode);
+  const carriedDiscount = isChangingPlan && !codeDiscount ? subscriptionDiscount(subscription) : null;
+  const discount = codeDiscount ?? carriedDiscount;
 
-    const originalPrice = selectedPrice.unitAmount;
-
-    if (promotionCode.discountType === "percent_off" && promotionCode.discountValue) {
-      return originalPrice * (1 - promotionCode.discountValue / 100);
-    }
-
-    if (promotionCode.discountType === "amount_off" && promotionCode.discountValue) {
-      // amount_off is in cents, same as unitAmount
-      return Math.max(0, originalPrice - promotionCode.discountValue);
-    }
-
-    return null;
-  };
-
-  const discountedPrice = calculateDiscountedPrice();
+  const discountedPrice = applyDiscount(selectedPrice.unitAmount, discount);
 
   // Calculate discounted immediate charge for proration preview
-  const calculateDiscountedImmediateCharge = (): number | null => {
-    if (!promotionCode?.valid || !prorationPreview?.immediateCharge) return null;
-
-    const originalCharge = prorationPreview.immediateCharge;
-
-    if (promotionCode.discountType === "percent_off" && promotionCode.discountValue) {
-      return originalCharge * (1 - promotionCode.discountValue / 100);
-    }
-
-    if (promotionCode.discountType === "amount_off" && promotionCode.discountValue) {
-      return Math.max(0, originalCharge - promotionCode.discountValue);
-    }
-
-    return null;
-  };
-
-  const discountedImmediateCharge = calculateDiscountedImmediateCharge();
+  const discountedImmediateCharge = applyDiscount(prorationPreview?.immediateCharge, discount);
 
   // Format the discount description
   const getDiscountDescription = (): string | null => {
-    if (!promotionCode?.valid) return null;
+    if (!discount) return null;
 
-    if (promotionCode.discountType === "percent_off" && promotionCode.discountValue) {
-      return t("billing.ui.wizard.review.percent_off", { value: promotionCode.discountValue });
+    if (discount.discountType === "percent_off") {
+      return t("billing.ui.wizard.review.percent_off", { value: discount.discountValue });
     }
 
-    if (promotionCode.discountType === "amount_off" && promotionCode.discountValue) {
-      return t("billing.ui.wizard.review.amount_off", {
-        amount: formatCurrency(promotionCode.discountValue, promotionCode.currency || selectedPrice.currency, fmt),
-      });
-    }
-
-    return null;
+    return t("billing.ui.wizard.review.amount_off", {
+      amount: formatCurrency(discount.discountValue, discount.currency || selectedPrice.currency, fmt),
+    });
   };
 
   const discountDescription = getDiscountDescription();
@@ -142,6 +142,9 @@ export function WizardStepReview({
                   {formatCurrency(discountedPrice, selectedPrice.currency, fmt)}
                 </p>
                 {discountDescription && <Badge variant="softGreen">{discountDescription}</Badge>}
+                {carriedDiscount && (
+                  <p className="text-sm text-muted-foreground">{t("billing.ui.wizard.review.discount_carries_over")}</p>
+                )}
               </>
             ) : (
               <p className="font-semibold text-lg">
@@ -165,7 +168,9 @@ export function WizardStepReview({
           </h4>
           <p className={`text-sm ${isTrialUpgrade ? "text-warning" : "text-foreground"}`}>
             {isTrialUpgrade
-              ? t("billing.ui.wizard.review.trial_upgrade_description")
+              ? discountedImmediateCharge !== null
+                ? t("billing.ui.wizard.review.trial_upgrade_description_discounted")
+                : t("billing.ui.wizard.review.trial_upgrade_description")
               : t("billing.ui.wizard.review.proration_description")}
           </p>
           <div className="flex justify-between text-sm">
@@ -210,11 +215,17 @@ export function WizardStepReview({
             <h4 className="font-medium">{t("billing.ui.payment_method.title")}</h4>
             <p className="text-sm text-muted-foreground">
               {hasPaymentMethod
-                ? t("billing.ui.wizard.review.payment_on_file")
+                ? card
+                  ? t("billing.ui.wizard.review.card_on_file", { brand: card.brand, last4: card.last4 })
+                  : t("billing.ui.wizard.review.payment_on_file")
                 : t("billing.ui.wizard.review.no_payment_on_file")}
             </p>
           </div>
-          {!hasPaymentMethod && (
+          {hasPaymentMethod ? (
+            <Button variant="outline" onClick={onAddPaymentMethod} disabled={isProcessing}>
+              {t("billing.ui.wizard.review.use_another_card")}
+            </Button>
+          ) : (
             <Button variant="outline" onClick={onAddPaymentMethod}>
               {t("billing.ui.payment_methods.add")}
             </Button>

@@ -91,7 +91,8 @@ export function SubscriptionSummaryCard({
         <CreditCard className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        {subscriptions.length === 0 ? (
+        {/* No active or trialing plan (none at all, or only unpaid / ended ones): offer the plans */}
+        {!primarySubscription ? (
           <div className="space-y-2">
             <p className="text-xl font-bold text-muted-foreground">{t("billing.ui.cards.subscriptions.empty_title")}</p>
             <p className="text-xs text-muted-foreground">{t("billing.ui.cards.subscriptions.empty_description")}</p>
@@ -108,7 +109,7 @@ export function SubscriptionSummaryCard({
               <ChevronRight className="h-4 w-4 ms-1 rtl:rotate-180" />
             </Button>
           </div>
-        ) : primarySubscription ? (
+        ) : (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <p className="text-xl font-bold">
@@ -147,7 +148,7 @@ export function SubscriptionSummaryCard({
               </p>
             )}
           </div>
-        ) : null}
+        )}
       </CardContent>
     </Card>
   );

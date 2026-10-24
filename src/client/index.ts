@@ -21,6 +21,8 @@ import { useRoleTableStructure } from "../features/role/hooks";
 import { useUserTableStructure } from "../features/user/hooks";
 import { useStripePriceTableStructure } from "../features/billing/stripe-price/hooks/useStripePriceTableStructure";
 import { useStripeProductTableStructure } from "../features/billing/stripe-product/hooks/useStripeProductTableStructure";
+import { useStripeCouponTableStructure } from "../features/billing/stripe-coupon/hooks/useStripeCouponTableStructure";
+import { useStripeCouponCodeTableStructure } from "../features/billing/stripe-coupon/hooks/useStripeCouponCodeTableStructure";
 import { useWaitlistTableStructure } from "../features/waitlist/hooks/useWaitlistTableStructure";
 import { registerTableGenerator } from "../hooks";
 
@@ -35,5 +37,7 @@ registerTableGenerator("users", useUserTableStructure);
 registerTableGenerator("companies", useCompanyTableStructure);
 registerTableGenerator("stripe-products", useStripeProductTableStructure);
 registerTableGenerator("stripe-prices", useStripePriceTableStructure);
+registerTableGenerator("stripe-coupons", useStripeCouponTableStructure);
+registerTableGenerator("stripe-coupon-codes", useStripeCouponCodeTableStructure);
 registerTableGenerator("waitlists", useWaitlistTableStructure);
 // Note: Content registration moved to app-level to support app-specific cellTopic

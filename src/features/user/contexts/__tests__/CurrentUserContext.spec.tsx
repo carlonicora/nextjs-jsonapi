@@ -21,6 +21,8 @@ const permissionsMock = vi.hoisted(() => ({
 const socketMock = vi.hoisted(() => {
   const handlers: Record<string, ((data: any) => void)[]> = {};
   return {
+    // Read on every render, so a test can drop and restore the live connection
+    isConnected: false,
     socket: {
       on: (event: string, handler: (data: any) => void) => {
         (handlers[event] ??= []).push(handler);
@@ -39,7 +41,7 @@ const socketMock = vi.hoisted(() => {
 });
 
 vi.mock("../../../../contexts/SocketContext", () => ({
-  useSocketContext: () => ({ socket: socketMock.socket, isConnected: true }),
+  useSocketContext: () => ({ socket: socketMock.socket, isConnected: socketMock.isConnected }),
 }));
 
 vi.mock("../../../../core", () => {
@@ -113,6 +115,8 @@ describe("CurrentUserProvider", () => {
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();
+    socketMock.reset();
+    socketMock.isConnected = false;
   });
 
   it("keeps user hydrated from localStorage when token cookie is absent", async () => {
@@ -161,7 +165,7 @@ describe("CurrentUserProvider", () => {
     expect(updateToken).not.toHaveBeenCalled();
   });
 
-  it("does not hit the API when localStorage already holds the user", async () => {
+  it("does not hit the API on mount when localStorage already holds the user and no live connection is up", async () => {
     vi.mocked(getCookie).mockImplementation((name: any) => (name === "token" ? "jwt" : undefined));
     localStorage.setItem("user", JSON.stringify({ id: "cached", roles: [], company: null, modules: [] }));
 
@@ -239,6 +243,117 @@ describe("CurrentUserProvider", () => {
   });
 });
 
+describe("CurrentUserProvider live connection revalidation", () => {
+  const ACTIVE = { id: "user-1", roles: [], modules: [], company: { id: "company-1", isActiveSubscription: true } };
+  const ENDED = { id: "user-1", roles: [], modules: [], company: { id: "company-1", isActiveSubscription: false } };
+
+  function SubscriptionConsumer() {
+    const { company } = useCurrentUserContext();
+    return <div data-testid="active">{company ? String((company as any).isActiveSubscription) : "null"}</div>;
+  }
+
+  beforeEach(() => {
+    localStorage.clear();
+    socketMock.reset();
+    vi.clearAllMocks();
+    vi.mocked(getCookie).mockImplementation((name: any) => (name === "token" ? "jwt" : undefined));
+    vi.mocked(UserService.findFullUser).mockResolvedValue({ ...ENDED, dehydrate: () => ENDED } as any);
+  });
+
+  it("re-reads the user when the live connection comes up, so a change missed while no page was open shows", async () => {
+    // The subscription ended (Stripe webhook) while the browser was closed: the cache still says active
+    localStorage.setItem("user", JSON.stringify(ACTIVE));
+    socketMock.isConnected = true;
+
+    const { getByTestId } = render(
+      <CurrentUserProvider>
+        <SubscriptionConsumer />
+      </CurrentUserProvider>,
+    );
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+
+    expect(UserService.findFullUser).toHaveBeenCalledTimes(1);
+    expect(getByTestId("active").textContent).toBe("false");
+  });
+
+  it("re-reads once per connection, not on every render", async () => {
+    localStorage.setItem("user", JSON.stringify(ACTIVE));
+    socketMock.isConnected = true;
+
+    const { rerender } = render(
+      <CurrentUserProvider>
+        <SubscriptionConsumer />
+      </CurrentUserProvider>,
+    );
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+    rerender(
+      <CurrentUserProvider>
+        <SubscriptionConsumer />
+      </CurrentUserProvider>,
+    );
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+
+    expect(UserService.findFullUser).toHaveBeenCalledTimes(1);
+  });
+
+  it("re-reads again after the connection drops and comes back", async () => {
+    localStorage.setItem("user", JSON.stringify(ACTIVE));
+    socketMock.isConnected = true;
+
+    const tree = (
+      <CurrentUserProvider>
+        <SubscriptionConsumer />
+      </CurrentUserProvider>
+    );
+    const { rerender } = render(tree);
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+
+    socketMock.isConnected = false;
+    rerender(
+      <CurrentUserProvider>
+        <SubscriptionConsumer />
+      </CurrentUserProvider>,
+    );
+    socketMock.isConnected = true;
+    rerender(
+      <CurrentUserProvider>
+        <SubscriptionConsumer />
+      </CurrentUserProvider>,
+    );
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+
+    expect(UserService.findFullUser).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not re-read without a session cookie", async () => {
+    vi.mocked(getCookie).mockReturnValue(undefined);
+    localStorage.setItem("user", JSON.stringify(ACTIVE));
+    socketMock.isConnected = true;
+
+    render(
+      <CurrentUserProvider>
+        <SubscriptionConsumer />
+      </CurrentUserProvider>,
+    );
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+
+    expect(UserService.findFullUser).not.toHaveBeenCalled();
+  });
+});
+
 describe("CurrentUserProvider token updates", () => {
   const STORED_USER = {
     id: "user-1",
@@ -265,6 +380,9 @@ describe("CurrentUserProvider token updates", () => {
     localStorage.clear();
     socketMock.reset();
     vi.clearAllMocks();
+    // Connected, with no session cookie: these tests are about socket events, not the reconnect re-read
+    socketMock.isConnected = true;
+    vi.mocked(getCookie).mockReturnValue(undefined);
   });
 
   it("patches balances from company:credits_updated without refetching the user", async () => {
@@ -352,6 +470,7 @@ describe("CurrentUserProvider path permissions", () => {
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();
+    socketMock.isConnected = false;
     ctx = undefined;
     permissionsMock.checkPermissions.mockImplementation(() => true);
   });

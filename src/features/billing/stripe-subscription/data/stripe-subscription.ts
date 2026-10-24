@@ -1,6 +1,7 @@
 import { AbstractApiData, JsonApiHydratedDataInterface, Modules } from "../../../../core";
 import { StripePriceInterface } from "../../stripe-price";
 import {
+  StripeSubscriptionDiscount,
   StripeSubscriptionInput,
   StripeSubscriptionInterface,
   SubscriptionStatus,
@@ -16,6 +17,7 @@ export class StripeSubscription extends AbstractApiData implements StripeSubscri
   private _trialStart?: Date;
   private _trialEnd?: Date;
   private _price?: StripePriceInterface;
+  private _discount?: StripeSubscriptionDiscount;
 
   get stripeSubscriptionId(): string {
     if (!this._stripeSubscriptionId) throw new Error("stripeSubscriptionId is not defined");
@@ -57,6 +59,10 @@ export class StripeSubscription extends AbstractApiData implements StripeSubscri
     return this._price;
   }
 
+  get discount(): StripeSubscriptionDiscount | undefined {
+    return this._discount;
+  }
+
   rehydrate(data: JsonApiHydratedDataInterface): this {
     super.rehydrate(data);
 
@@ -75,6 +81,21 @@ export class StripeSubscription extends AbstractApiData implements StripeSubscri
 
     this._trialStart = data.jsonApi.attributes.trialStart ? new Date(data.jsonApi.attributes.trialStart) : undefined;
     this._trialEnd = data.jsonApi.attributes.trialEnd ? new Date(data.jsonApi.attributes.trialEnd) : undefined;
+
+    const attributes = data.jsonApi.attributes;
+    const percentOff = attributes.discountPercentOff ?? undefined;
+    const amountOff = attributes.discountAmountOff ?? undefined;
+    this._discount =
+      attributes.discountDuration && (percentOff !== undefined || amountOff !== undefined)
+        ? {
+            percentOff,
+            amountOff,
+            currency: attributes.discountCurrency ?? undefined,
+            duration: attributes.discountDuration,
+            durationInMonths: attributes.discountDurationInMonths ?? undefined,
+            end: attributes.discountEnd ? new Date(attributes.discountEnd) : undefined,
+          }
+        : undefined;
 
     // Hydrate price relationship
     this._price = this._readIncluded(data, "price", Modules.StripePrice) as StripePriceInterface;

@@ -3,7 +3,13 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../shadcnui";
-import { formatCurrency, formatDate, useBillingFormatOptions } from "../../../components/utils";
+import {
+  applyDiscount,
+  formatCurrency,
+  formatDate,
+  subscriptionDiscount,
+  useBillingFormatOptions,
+} from "../../../components/utils";
 import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
 import { StripeSubscriptionInterface, SubscriptionStatus } from "../../data";
 import { SubscriptionDetails } from "../details/SubscriptionDetails";
@@ -71,6 +77,10 @@ export function SubscriptionsList({ subscriptions, onSubscriptionsChange, onChan
             {subscriptions.map((subscription) => {
               const price = subscription.price;
               const amount = price?.unitAmount ? formatCurrency(price.unitAmount, price.currency, fmt) : "0";
+              // What Stripe bills: the price after the discount the subscription carries.
+              const discountedAmount = price
+                ? applyDiscount(price.unitAmount, subscriptionDiscount(subscription))
+                : null;
               const period = `${formatDate(subscription.currentPeriodStart, fmt)} - ${formatDate(subscription.currentPeriodEnd, fmt)}`;
 
               return (
@@ -87,7 +97,16 @@ export function SubscriptionsList({ subscriptions, onSubscriptionsChange, onChan
                   </TableCell>
                   <TableCell className="font-medium">{formatPlanName(price, t)}</TableCell>
                   <TableCell className="text-muted-foreground text-sm">{period}</TableCell>
-                  <TableCell className="text-end font-medium">{amount}</TableCell>
+                  <TableCell className="text-end font-medium">
+                    {discountedAmount !== null && price ? (
+                      <>
+                        <span className="line-through text-muted-foreground me-2">{amount}</span>
+                        <span className="text-success">{formatCurrency(discountedAmount, price.currency, fmt)}</span>
+                      </>
+                    ) : (
+                      amount
+                    )}
+                  </TableCell>
                   <TableCell className="text-end">
                     {(subscription.status === SubscriptionStatus.ACTIVE ||
                       subscription.status === SubscriptionStatus.TRIALING) &&

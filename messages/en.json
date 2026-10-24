@@ -297,6 +297,118 @@
   },
   "billing": {
     "admin": {
+      "coupons": {
+        "all_products": "All products",
+        "codes": {
+          "automatic": "Automatic",
+          "deactivate": {
+            "confirm": "Deactivate",
+            "description": "Nobody will be able to use \"{code}\" until you reactivate it. Subscriptions that already have it keep their discount.",
+            "title": "Deactivate code"
+          },
+          "empty": {
+            "description": "Add a code customers can use to get this coupon's discount.",
+            "title": "No codes yet"
+          },
+          "entity": "code",
+          "never": "Never",
+          "reactivate": {
+            "confirm": "Reactivate",
+            "description": "\"{code}\" can be used again.",
+            "title": "Reactivate code"
+          },
+          "status": {
+            "active": "Active",
+            "expired": "Expired",
+            "inactive": "Inactive",
+            "used_up": "Used up"
+          },
+          "title": "Codes"
+        },
+        "discount": {
+          "amount": "{amount} off",
+          "forever": "forever",
+          "once": "once",
+          "percent": "{value}% off",
+          "repeating": "for {months} months"
+        },
+        "duration": {
+          "forever": "Forever",
+          "once": "Once",
+          "repeating": "For a number of months"
+        },
+        "empty": {
+          "description": "Create a coupon to offer a discount at checkout.",
+          "title": "No coupons yet"
+        },
+        "entity": "coupon",
+        "errors": {
+          "amountOff": "Enter an amount above zero",
+          "durationInMonths": "Enter at least one month",
+          "minimumAmount": "Enter an amount above zero, or leave it empty",
+          "name": "A coupon name is required",
+          "percentOff": "Enter a percentage between 0.01 and 100"
+        },
+        "fields": {
+          "amountOff": "Amount off",
+          "automatic": "Apply automatically",
+          "code": "Code",
+          "codeMaxRedemptions": "Usage limit for this code",
+          "codes": "Codes",
+          "currency": "Currency",
+          "discount": "Discount",
+          "discountType": "Type",
+          "duration": "Duration",
+          "durationInMonths": "Months",
+          "expiresAt": "Expires",
+          "firstTimeTransaction": "First-time customers only",
+          "first_time_warning": "A GM coming from a trial counts as an existing customer, so leave this off for codes meant for trial GMs.",
+          "maxRedemptions": "Total usage limit",
+          "minimumAmount": "Minimum order amount",
+          "name": "Name",
+          "percentOff": "Percentage off",
+          "places": "Places",
+          "products": "Apply to specific products",
+          "redeemBy": "Redeem by",
+          "status": "Status",
+          "stripeCouponId": "ID",
+          "stripeCustomerId": "Limit to one customer",
+          "stripeId": "Stripe coupon ID"
+        },
+        "first_code": "First code",
+        "fixed_notice": "Stripe doesn't allow changing the discount, duration or limits of a coupon. Make a new coupon instead.",
+        "help": {
+          "automatic": "Applied by itself when a GM first pays. Only one code can have it: switching it on here switches it off on the code that had it.",
+          "products": "Leave empty to apply the coupon to every product."
+        },
+        "placeholders": {
+          "amountOff": "5.00",
+          "code": "Leave empty to let Stripe generate one",
+          "durationInMonths": "3",
+          "maxRedemptions": "No limit",
+          "minimumAmount": "0.00",
+          "name": "e.g. Founding GM",
+          "percentOff": "20",
+          "stripeCouponId": "Leave empty to let Stripe generate one"
+        },
+        "places": {
+          "limited": "{used} / {limit}",
+          "no_limit": "No limit",
+          "unlimited": "{used} / no limit"
+        },
+        "refresh": {
+          "title": "Refresh counts"
+        },
+        "status": {
+          "active": "Active",
+          "ended": "Ended"
+        },
+        "title": "Coupons",
+        "type": {
+          "amount_off": "Fixed amount off",
+          "percent_off": "Percentage off"
+        }
+      },
       "prices": {
         "actions": {
           "addFeature": "Add feature",
@@ -430,7 +542,9 @@
           "archived": "Archived"
         },
         "tabs": {
-          "details": "Details"
+          "codes": "Codes",
+          "details": "Details",
+          "products": "Products"
         },
         "title": "Products"
       }
@@ -626,10 +740,12 @@
       },
       "promo_code": {
         "apply": "Apply",
+        "automatic_label": "Applied automatically",
         "duration_forever": "Applied to all payments",
         "duration_once": "Applied to first payment only",
         "duration_repeating": "Applied for {months} months",
-        "placeholder": "Enter promo code"
+        "placeholder": "Enter promo code",
+        "use_different": "Have a different code?"
       },
       "proration": {
         "net_due_today": "Net Due Today",
@@ -698,8 +814,10 @@
         "change_title": "Change Subscription Plan",
         "errors": {
           "already_subscribed": "You already have an active subscription. Please change your existing plan instead.",
+          "discount_unavailable": "This discount is no longer available. You have not been charged.",
           "invalid_promo_code": "Invalid promotion code",
           "payment_method_required": "A payment method is required to upgrade from your trial.",
+          "payment_not_confirmed": "The payment was not completed. {reason} Nothing was charged: try again, or add another card.",
           "prepare_review": "Failed to prepare review",
           "process_subscription": "Failed to process subscription",
           "validate_promo_code": "Failed to validate promotion code"
@@ -708,6 +826,7 @@
         "payment_description": "Enter your card details to complete your subscription",
         "review": {
           "amount_off": "{amount} off",
+          "card_on_file": "{brand} ending in {last4}",
           "charge_now": "Amount to charge now:",
           "confirm_change": "Confirm Plan Change",
           "due_now": "Amount due now:",
@@ -725,7 +844,10 @@
           "selected_plan": "Selected Plan",
           "subscribe_now": "Subscribe Now",
           "trial_upgrade": "Trial Upgrade",
-          "trial_upgrade_description": "Your trial will end immediately and you will be charged the full price."
+          "trial_upgrade_description": "Your trial will end immediately and you will be charged the full price.",
+          "trial_upgrade_description_discounted": "Your trial will end immediately and you will be charged the discounted price.",
+          "use_another_card": "Use another card",
+          "discount_carries_over": "Your current discount carries over to the new plan."
         },
         "steps": {
           "payment": "Payment",

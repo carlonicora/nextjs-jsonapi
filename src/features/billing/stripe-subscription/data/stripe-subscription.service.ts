@@ -65,6 +65,8 @@ export class StripeSubscriptionService extends AbstractService {
       method: HttpMethod.POST,
       endpoint: endpoint.generate(),
       input: params,
+      // The wizard reads 410 / 409 / 402 / 422 itself; a global handler must not swallow them
+      suppressGlobalError: true,
     });
 
     return {
@@ -92,7 +94,42 @@ export class StripeSubscriptionService extends AbstractService {
       method: HttpMethod.POST,
       endpoint: endpoint.generate(),
       input: params,
+      // The wizard reads 410 / 409 / 402 / 422 itself; a global handler must not swallow them
+      suppressGlobalError: true,
     });
+  }
+
+  /**
+   * Change the plan of an existing subscription, with the payment meta.
+   *
+   * A trial upgrade charges at once; when the card asks for 3D Secure the API
+   * answers with `meta.requiresAction` and the `clientSecret` to confirm in the
+   * browser. Without that meta the change needs nothing more.
+   */
+  static async changePlanWithMeta(params: StripeSubscriptionInput): Promise<StripeSubscriptionCreateResponse> {
+    const endpoint = new EndpointCreator({
+      endpoint: Modules.StripeSubscription,
+      id: params.id,
+      childEndpoint: "change-plan",
+    });
+
+    const result = await this.callApiWithMeta<StripeSubscriptionInterface>({
+      type: Modules.StripeSubscription,
+      method: HttpMethod.POST,
+      endpoint: endpoint.generate(),
+      input: params,
+      // The wizard reads 410 / 409 / 402 / 422 itself; a global handler must not swallow them
+      suppressGlobalError: true,
+    });
+
+    return {
+      subscription: result.data,
+      meta: (result.meta as StripeSubscriptionCreateMeta) ?? {
+        clientSecret: null,
+        paymentIntentId: null,
+        requiresAction: false,
+      },
+    };
   }
 
   /**
@@ -188,6 +225,8 @@ export class StripeSubscriptionService extends AbstractService {
       type: Modules.StripeSubscription,
       method: HttpMethod.POST,
       endpoint: endpoint.generate(),
+      // The wizard logs a failed sync and carries on (the webhook catches up): no global error after a paid subscription
+      suppressGlobalError: true,
     });
   }
 }

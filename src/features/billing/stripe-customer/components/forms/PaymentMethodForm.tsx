@@ -10,9 +10,19 @@ type PaymentMethodFormProps = {
   onSuccess: () => void;
   onCancel: () => void;
   isLoading?: boolean;
+  /**
+   * Always make the new card the customer's default and hide the checkbox. The
+   * subscription wizard needs this: the next attempt must charge the card just added.
+   */
+  alwaysSetDefault?: boolean;
 };
 
-export function PaymentMethodForm({ onSuccess, onCancel, isLoading = false }: PaymentMethodFormProps) {
+export function PaymentMethodForm({
+  onSuccess,
+  onCancel,
+  isLoading = false,
+  alwaysSetDefault = false,
+}: PaymentMethodFormProps) {
   const t = useTranslations();
   const stripe = useStripe();
   const elements = useElements();
@@ -75,7 +85,7 @@ export function PaymentMethodForm({ onSuccess, onCancel, isLoading = false }: Pa
       }
 
       // Set as default if checkbox is checked
-      if (setAsDefault && confirmedSetupIntent?.payment_method) {
+      if ((alwaysSetDefault || setAsDefault) && confirmedSetupIntent?.payment_method) {
         await StripeCustomerService.setDefaultPaymentMethod({
           paymentMethodId:
             typeof confirmedSetupIntent.payment_method === "string"
@@ -132,12 +142,18 @@ export function PaymentMethodForm({ onSuccess, onCancel, isLoading = false }: Pa
       </div>
 
       {/* Set as Default Checkbox */}
-      <div className="flex items-center gap-x-2">
-        <Checkbox id="setAsDefault" checked={setAsDefault} onCheckedChange={(checked) => setSetAsDefault(!!checked)} />
-        <Label htmlFor="setAsDefault" className="cursor-pointer font-normal">
-          {t("billing.ui.payment_form.set_default")}
-        </Label>
-      </div>
+      {!alwaysSetDefault && (
+        <div className="flex items-center gap-x-2">
+          <Checkbox
+            id="setAsDefault"
+            checked={setAsDefault}
+            onCheckedChange={(checked) => setSetAsDefault(!!checked)}
+          />
+          <Label htmlFor="setAsDefault" className="cursor-pointer font-normal">
+            {t("billing.ui.payment_form.set_default")}
+          </Label>
+        </div>
+      )}
 
       {/* Error Alert */}
       {error && (

@@ -297,6 +297,118 @@
   },
   "billing": {
     "admin": {
+      "coupons": {
+        "all_products": "Tutti i prodotti",
+        "codes": {
+          "automatic": "Automatico",
+          "deactivate": {
+            "confirm": "Disattiva",
+            "description": "Nessuno potrà usare \"{code}\" finché non lo riattivi. Gli abbonamenti che lo hanno già mantengono lo sconto.",
+            "title": "Disattiva codice"
+          },
+          "empty": {
+            "description": "Aggiungi un codice che i clienti possono usare per avere lo sconto di questo coupon.",
+            "title": "Ancora nessun codice"
+          },
+          "entity": "codice",
+          "never": "Mai",
+          "reactivate": {
+            "confirm": "Riattiva",
+            "description": "\"{code}\" potrà essere usato di nuovo.",
+            "title": "Riattiva codice"
+          },
+          "status": {
+            "active": "Attivo",
+            "expired": "Scaduto",
+            "inactive": "Inattivo",
+            "used_up": "Esaurito"
+          },
+          "title": "Codici"
+        },
+        "discount": {
+          "amount": "{amount} di sconto",
+          "forever": "per sempre",
+          "once": "una volta",
+          "percent": "{value}% di sconto",
+          "repeating": "per {months} mesi"
+        },
+        "duration": {
+          "forever": "Per sempre",
+          "once": "Una volta",
+          "repeating": "Per un numero di mesi"
+        },
+        "empty": {
+          "description": "Crea un coupon per offrire uno sconto al pagamento.",
+          "title": "Ancora nessun coupon"
+        },
+        "entity": "coupon",
+        "errors": {
+          "amountOff": "Inserisci un importo maggiore di zero",
+          "durationInMonths": "Inserisci almeno un mese",
+          "minimumAmount": "Inserisci un importo maggiore di zero, o lascia vuoto",
+          "name": "Il nome del coupon è obbligatorio",
+          "percentOff": "Inserisci una percentuale tra 0,01 e 100"
+        },
+        "fields": {
+          "amountOff": "Importo dello sconto",
+          "automatic": "Applica automaticamente",
+          "code": "Codice",
+          "codeMaxRedemptions": "Limite di utilizzo per questo codice",
+          "codes": "Codici",
+          "currency": "Valuta",
+          "discount": "Sconto",
+          "discountType": "Tipo",
+          "duration": "Durata",
+          "durationInMonths": "Mesi",
+          "expiresAt": "Scadenza",
+          "firstTimeTransaction": "Solo nuovi clienti",
+          "first_time_warning": "Un GM che arriva da una prova conta come cliente esistente, quindi lascia disattivato per i codici pensati per i GM in prova.",
+          "maxRedemptions": "Limite di utilizzo totale",
+          "minimumAmount": "Importo minimo dell'ordine",
+          "name": "Nome",
+          "percentOff": "Percentuale di sconto",
+          "places": "Posti",
+          "products": "Applica a prodotti specifici",
+          "redeemBy": "Utilizzabile fino al",
+          "status": "Stato",
+          "stripeCouponId": "ID",
+          "stripeCustomerId": "Limita a un solo cliente",
+          "stripeId": "ID coupon Stripe"
+        },
+        "first_code": "Primo codice",
+        "fixed_notice": "Stripe non permette di cambiare sconto, durata o limiti di un coupon. Crea un nuovo coupon.",
+        "help": {
+          "automatic": "Si applica da solo quando un GM paga la prima volta. Solo un codice può averlo: attivarlo qui lo disattiva sul codice che lo aveva.",
+          "products": "Lascia vuoto per applicare il coupon a tutti i prodotti."
+        },
+        "placeholders": {
+          "amountOff": "5,00",
+          "code": "Lascia vuoto per farlo generare a Stripe",
+          "durationInMonths": "3",
+          "maxRedemptions": "Nessun limite",
+          "minimumAmount": "0,00",
+          "name": "es. GM fondatore",
+          "percentOff": "20",
+          "stripeCouponId": "Lascia vuoto per farlo generare a Stripe"
+        },
+        "places": {
+          "limited": "{used} / {limit}",
+          "no_limit": "Nessun limite",
+          "unlimited": "{used} / nessun limite"
+        },
+        "refresh": {
+          "title": "Aggiorna conteggi"
+        },
+        "status": {
+          "active": "Attivo",
+          "ended": "Terminato"
+        },
+        "title": "Coupon",
+        "type": {
+          "amount_off": "Importo fisso",
+          "percent_off": "Percentuale"
+        }
+      },
       "prices": {
         "actions": {
           "addFeature": "Aggiungi caratteristica",
@@ -430,7 +542,9 @@
           "archived": "Archiviato"
         },
         "tabs": {
-          "details": "Dettagli"
+          "codes": "Codici",
+          "details": "Dettagli",
+          "products": "Prodotti"
         },
         "title": "Prodotti"
       }
@@ -626,10 +740,12 @@
       },
       "promo_code": {
         "apply": "Applica",
+        "automatic_label": "Applicato automaticamente",
         "duration_forever": "Applicato a tutti i pagamenti",
         "duration_once": "Applicato solo al primo pagamento",
         "duration_repeating": "Applicato per {months} mesi",
-        "placeholder": "Inserisci il codice promozionale"
+        "placeholder": "Inserisci il codice promozionale",
+        "use_different": "Hai un altro codice?"
       },
       "proration": {
         "net_due_today": "Netto dovuto oggi",
@@ -698,8 +814,10 @@
         "change_title": "Cambia piano di abbonamento",
         "errors": {
           "already_subscribed": "Hai già un abbonamento attivo. Cambia invece il piano attuale.",
+          "discount_unavailable": "Questo sconto non è più disponibile. Non ti è stato addebitato nulla.",
           "invalid_promo_code": "Codice promozionale non valido",
           "payment_method_required": "Per passare dalla prova a un piano a pagamento serve un metodo di pagamento.",
+          "payment_not_confirmed": "Il pagamento non è stato completato. {reason} Non ti è stato addebitato nulla: riprova o aggiungi un'altra carta.",
           "prepare_review": "Impossibile preparare il riepilogo",
           "process_subscription": "Impossibile elaborare l'abbonamento",
           "validate_promo_code": "Impossibile verificare il codice promozionale"
@@ -708,6 +826,7 @@
         "payment_description": "Inserisci i dati della carta per completare l'abbonamento",
         "review": {
           "amount_off": "{amount} di sconto",
+          "card_on_file": "{brand} che termina con {last4}",
           "charge_now": "Importo da addebitare ora:",
           "confirm_change": "Conferma il cambio di piano",
           "due_now": "Importo dovuto ora:",
@@ -725,7 +844,10 @@
           "selected_plan": "Piano selezionato",
           "subscribe_now": "Abbonati ora",
           "trial_upgrade": "Passaggio dalla prova",
-          "trial_upgrade_description": "La tua prova terminerà subito e ti verrà addebitato il prezzo pieno."
+          "trial_upgrade_description": "La tua prova terminerà subito e ti verrà addebitato il prezzo pieno.",
+          "trial_upgrade_description_discounted": "La tua prova terminerà subito e ti verrà addebitato il prezzo scontato.",
+          "use_another_card": "Usa un'altra carta",
+          "discount_carries_over": "Il tuo sconto attuale resta valido anche sul nuovo piano."
         },
         "steps": {
           "payment": "Pagamento",

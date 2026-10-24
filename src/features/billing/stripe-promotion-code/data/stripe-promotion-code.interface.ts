@@ -11,4 +11,6 @@ export interface PromotionCodeValidationResult {
   duration?: "forever" | "once" | "repeating";
   durationInMonths?: number;
   errorMessage?: string;
+  /** True when the server applies this code by itself (no code typed by the GM). */
+  automatic?: boolean;
 }

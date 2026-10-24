@@ -29,6 +29,25 @@ export function PromoCodeInput({
   const locale = useI18nLocale();
   const [code, setCode] = useState("");
 
+  // Clear the typed text whenever a code becomes applied (typed or automatic):
+  // the box then reads empty after the applied code is removed, instead of
+  // still holding the removed code. Adjusting state during render on a prop
+  // change (React's "storing information from previous renders" pattern) —
+  // a failed validation keeps the text so the user can fix a typo.
+  const appliedKey = appliedCode?.valid
+    ? `${appliedCode.automatic ? "auto" : "typed"}:${appliedCode.code ?? ""}`
+    : null;
+  const [previousAppliedKey, setPreviousAppliedKey] = useState(appliedKey);
+  if (appliedKey !== previousAppliedKey) {
+    setPreviousAppliedKey(appliedKey);
+    if (appliedKey !== null) setCode("");
+  }
+
+  const handleRemove = () => {
+    setCode("");
+    onRemove();
+  };
+
   const handleApply = () => {
     if (code.trim()) {
       onApply(code.trim().toUpperCase());
@@ -67,32 +86,7 @@ export function PromoCodeInput({
     }
   };
 
-  // Show applied code state
-  if (appliedCode?.valid) {
-    return (
-      <div className="space-y-2">
-        <div className="bg-success/15 border-success/30 flex items-center justify-between rounded-lg border p-3">
-          <div className="flex items-center gap-2">
-            <Check className="text-success h-4 w-4" />
-            <span className="text-success font-medium">{appliedCode.code}</span>
-            <span className="text-success text-sm">{formatDiscount(appliedCode)}</span>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onRemove}
-            disabled={disabled}
-            className="text-success hover:bg-success/25 hover:text-success"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-        <p className="text-success text-sm">{formatDuration(appliedCode)}</p>
-      </div>
-    );
-  }
-
-  return (
+  const codeInput = (
     <div className="space-y-2">
       <div className="flex gap-2">
         <Input
@@ -110,4 +104,51 @@ export function PromoCodeInput({
       {error && <p className="text-destructive text-xs/relaxed">{error}</p>}
     </div>
   );
+
+  // Show the automatic code as applied, with the option to type a different one
+  if (appliedCode?.valid && appliedCode.automatic) {
+    return (
+      <div className="space-y-3">
+        <div className="space-y-2">
+          <div className="bg-success/15 border-success/30 flex items-center gap-2 rounded-lg border p-3">
+            <Check className="text-success h-4 w-4" />
+            <span className="text-success font-medium">{t("billing.ui.promo_code.automatic_label")}</span>
+            <span className="text-success text-sm">{formatDiscount(appliedCode)}</span>
+          </div>
+          <p className="text-success text-sm">{formatDuration(appliedCode)}</p>
+        </div>
+        <div className="space-y-2">
+          <p className="text-muted-foreground text-sm">{t("billing.ui.promo_code.use_different")}</p>
+          {codeInput}
+        </div>
+      </div>
+    );
+  }
+
+  // Show applied code state
+  if (appliedCode?.valid) {
+    return (
+      <div className="space-y-2">
+        <div className="bg-success/15 border-success/30 flex items-center justify-between rounded-lg border p-3">
+          <div className="flex items-center gap-2">
+            <Check className="text-success h-4 w-4" />
+            <span className="text-success font-medium">{appliedCode.code}</span>
+            <span className="text-success text-sm">{formatDiscount(appliedCode)}</span>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleRemove}
+            disabled={disabled}
+            className="text-success hover:bg-success/25 hover:text-success"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+        <p className="text-success text-sm">{formatDuration(appliedCode)}</p>
+      </div>
+    );
+  }
+
+  return codeInput;
 }

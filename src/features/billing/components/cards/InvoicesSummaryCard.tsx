@@ -71,8 +71,9 @@ export function InvoicesSummaryCard({ invoices, loading, error, onViewAllClick }
     );
   }
 
-  // Get the most recent invoice
-  const latestInvoice = invoices[0];
+  // The most recent invoice that could charge something: a void one is an unpaid first-payment
+  // attempt that was replaced, which never charged the GM (fall back to it only when nothing else exists)
+  const latestInvoice = invoices.find((inv) => inv.status !== InvoiceStatus.VOID) ?? invoices[0];
   const paidInvoices = invoices.filter((inv) => inv.status === InvoiceStatus.PAID);
   const openInvoices = invoices.filter((inv) => inv.status === InvoiceStatus.OPEN);
 

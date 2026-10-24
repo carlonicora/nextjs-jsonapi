@@ -225,6 +225,31 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
   // Track refresh in progress to prevent duplicate API calls
   const isRefreshingRef = useRef(false);
 
+  // Revalidate the cached user each time the live connection comes up.
+  //
+  // The cache above is trusted on mount, and changes reach an open page through
+  // `company:subscription_updated`. A change made while no page was connected
+  // (the browser closed when a Stripe webhook ended the subscription) never
+  // arrives, so the cache kept the old company until a token refresh: the sidebar
+  // hid "Upgrade" for a company that no longer had a plan, across reloads. The
+  // moment the connection comes up (page load, or back from a network drop) is
+  // exactly when such an event may have been missed, so re-read the user once.
+  const wasConnectedRef = useRef(false);
+  useEffect(() => {
+    if (!isConnected) {
+      wasConnectedRef.current = false;
+      return;
+    }
+    if (wasConnectedRef.current) return;
+    wasConnectedRef.current = true;
+
+    if (!getCookie("token") || isRefreshingRef.current) return;
+    isRefreshingRef.current = true;
+    refreshUserRef.current({ skipCookieUpdate: true }).finally(() => {
+      isRefreshingRef.current = false;
+    });
+  }, [isConnected]);
+
   // Listen for company WebSocket events that trigger user refresh
   useEffect(() => {
     if (!socket || !isConnected || !currentUser?.company?.id) {

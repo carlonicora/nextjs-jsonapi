@@ -11,14 +11,33 @@ import { SubscriptionsList } from "../lists";
 type SubscriptionsContainerProps = {
   onOpenWizard?: (subscription?: StripeSubscriptionInterface) => void;
   hasActiveRecurringSubscription?: boolean;
+  /**
+   * The list a parent already holds (the billing dashboard). When given, the container
+   * shows it instead of loading its own, and a change asks the parent to refresh through
+   * `onSubscriptionsChange`, so the dialog and the cards behind it never disagree.
+   */
+  subscriptions?: StripeSubscriptionInterface[];
+  onSubscriptionsChange?: () => void;
 };
 
-export function SubscriptionsContainer({ onOpenWizard, hasActiveRecurringSubscription }: SubscriptionsContainerProps) {
+export function SubscriptionsContainer({
+  onOpenWizard,
+  hasActiveRecurringSubscription,
+  subscriptions: parentSubscriptions,
+  onSubscriptionsChange,
+}: SubscriptionsContainerProps) {
   const t = useTranslations();
-  const [subscriptions, setSubscriptions] = useState<StripeSubscriptionInterface[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const isControlled = parentSubscriptions !== undefined;
+  const [ownSubscriptions, setSubscriptions] = useState<StripeSubscriptionInterface[]>([]);
+  const [ownLoading, setLoading] = useState<boolean>(!isControlled);
+  const subscriptions = parentSubscriptions ?? ownSubscriptions;
+  const loading = isControlled ? false : ownLoading;
 
   const loadSubscriptions = useCallback(async () => {
+    if (isControlled) {
+      onSubscriptionsChange?.();
+      return;
+    }
     setLoading(true);
     try {
       const fetchedSubscriptions = await StripeSubscriptionService.listSubscriptions();
@@ -28,10 +47,10 @@ export function SubscriptionsContainer({ onOpenWizard, hasActiveRecurringSubscri
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isControlled, onSubscriptionsChange]);
 
   useEffect(() => {
-    loadSubscriptions();
+    if (!isControlled) loadSubscriptions();
   }, []);
 
   // Detect critical subscriptions

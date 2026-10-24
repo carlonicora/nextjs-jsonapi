@@ -7,9 +7,24 @@ import { useI18nLocale } from "../../../../i18n";
 import { StripeCustomerService } from "../../stripe-customer/data/stripe-customer.service";
 import { ProrationPreviewInterface } from "../../stripe-invoice/data/stripe-invoice.interface";
 import { StripePriceInterface } from "../../stripe-price/data/stripe-price.interface";
+import { StripeCouponCodeService } from "../../stripe-coupon/data/stripe-coupon-code.service";
+import { toPromotionCodeResult } from "../../stripe-coupon/utils/to-promotion-code-result";
 import { PromotionCodeValidationResult, StripePromotionCodeService } from "../../stripe-promotion-code";
 import { BillingInterval } from "../components/widgets/IntervalToggle";
-import { StripeSubscriptionInterface, StripeSubscriptionService, SubscriptionStatus } from "../data";
+import {
+  StripeSubscriptionCreateResponse,
+  StripeSubscriptionInterface,
+  StripeSubscriptionService,
+  SubscriptionStatus,
+} from "../data";
+import {
+  isDiscountSoldOut,
+  isDiscountUnavailable,
+  promotionCodeToSend,
+  shouldLookUpAutomatic,
+} from "./wizard-promotion";
+import { useConfirmSubscriptionPayment } from "./useConfirmSubscriptionPayment";
+import { clientSecretToConfirm, subscriptionIdToSync } from "./wizard-payment";
 
 export type WizardStep = "plan-selection" | "review" | "payment-method";
 
@@ -97,6 +112,7 @@ export type UseSubscriptionWizardOptions = {
 export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseSubscriptionWizardOptions) {
   const t = useTranslations();
   const locale = useI18nLocale();
+  const { confirmPayment } = useConfirmSubscriptionPayment();
   const [state, dispatch] = useReducer(wizardReducer, {
     ...initialState,
     selectedPrice: subscription?.price || null,
@@ -130,6 +146,42 @@ export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseS
     dispatch({ type: "SET_STEP", step });
   }, []);
 
+  /**
+   * Puts the automatic code for this price (or none) in the wizard state, so the
+   * review shows what the server would really charge. Returns false when the
+   * lookup itself failed: the caller must then not show a price as the truth.
+   */
+  const lookUpAutomaticCode = useCallback(async (priceId: string): Promise<boolean> => {
+    try {
+      const automaticCode = await StripeCouponCodeService.findAutomatic({ priceId });
+      dispatch({
+        type: "SET_PROMOTION_CODE",
+        code: automaticCode ? toPromotionCodeResult(automaticCode) : null,
+      });
+      return true;
+    } catch (error) {
+      console.error("[useSubscriptionWizard] Failed to look up the automatic promotion code:", error);
+      dispatch({ type: "SET_PROMOTION_CODE", code: null });
+      return false;
+    }
+  }, []);
+
+  /**
+   * Re-reads the automatic code after the review's code changed. When the lookup
+   * fails, the review price cannot be trusted: back to plan selection.
+   */
+  const refreshAutomaticCodeOrLeaveReview = useCallback(
+    async (priceId: string): Promise<void> => {
+      const found = await lookUpAutomaticCode(priceId);
+      if (!found) {
+        // SET_STEP clears the error, so the error goes second
+        dispatch({ type: "SET_STEP", step: "plan-selection" });
+        dispatch({ type: "SET_ERROR", error: t("billing.ui.wizard.errors.prepare_review") });
+      }
+    },
+    [lookUpAutomaticCode, t],
+  );
+
   const goToReview = useCallback(async () => {
     if (!state.selectedPrice) return;
 
@@ -156,6 +208,16 @@ export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseS
         }
       }
 
+      // Fill the automatic code for this price, unless the GM typed one
+      // A failed lookup never shows full price as if nothing applied: stay off the review
+      if (shouldLookUpAutomatic(state.promotionCode)) {
+        const found = await lookUpAutomaticCode(state.selectedPrice.id);
+        if (!found) {
+          dispatch({ type: "SET_ERROR", error: t("billing.ui.wizard.errors.prepare_review") });
+          return;
+        }
+      }
+
       // If editing subscription, get proration preview
       if (subscription && state.selectedPrice.id !== subscription.price?.id) {
         const preview = await StripeSubscriptionService.getProrationPreview({
@@ -172,7 +234,15 @@ export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseS
     } finally {
       dispatch({ type: "SET_PROCESSING", isProcessing: false });
     }
-  }, [state.selectedPrice, state.hasPaymentMethod, subscription, checkPaymentMethod, t]);
+  }, [
+    state.selectedPrice,
+    state.hasPaymentMethod,
+    state.promotionCode,
+    subscription,
+    checkPaymentMethod,
+    lookUpAutomaticCode,
+    t,
+  ]);
 
   const confirmSubscription = useCallback(async () => {
     if (!state.selectedPrice) return;
@@ -181,27 +251,71 @@ export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseS
     dispatch({ type: "SET_ERROR", error: null });
 
     try {
+      let result: StripeSubscriptionCreateResponse;
       if (subscription) {
         // Change existing subscription
         const changePlanParams = {
           id: subscription.id,
           newPriceId: state.selectedPrice.id,
-          promotionCode: state.promotionCode?.promotionCodeId,
+          promotionCode: promotionCodeToSend(state.promotionCode),
         };
-        await StripeSubscriptionService.changePlan(changePlanParams);
+        result = await StripeSubscriptionService.changePlanWithMeta(changePlanParams);
       } else {
         // Create new subscription
         const createParams = {
           id: v4(),
           priceId: state.selectedPrice.id,
-          promotionCode: state.promotionCode?.promotionCodeId,
+          promotionCode: promotionCodeToSend(state.promotionCode),
         };
-        await StripeSubscriptionService.createSubscription(createParams);
+        result = await StripeSubscriptionService.createSubscription(createParams);
+      }
+
+      // The first payment waits on the browser (confirmation, 3D Secure): until it
+      // is confirmed nothing is paid, so the wizard stays open on a failure
+      const clientSecret = clientSecretToConfirm(result.meta);
+      if (clientSecret) {
+        const confirmation = await confirmPayment(clientSecret);
+        if (!confirmation.success) {
+          console.error("[useSubscriptionWizard] Payment not confirmed:", confirmation.error);
+          dispatch({
+            type: "SET_ERROR",
+            error: t("billing.ui.wizard.errors.payment_not_confirmed", { reason: confirmation.error ?? "" }),
+          });
+          return;
+        }
+
+        // Our copy is still incomplete until the webhooks land: store what Stripe has now,
+        // so the billing page shows the plan at once. A failed sync never blocks success.
+        const subscriptionId = subscriptionIdToSync(result.subscription, subscription);
+        if (subscriptionId) {
+          try {
+            await StripeSubscriptionService.syncSubscription({ subscriptionId });
+          } catch (syncError) {
+            console.error("[useSubscriptionWizard] Subscription sync after payment failed:", syncError);
+          }
+        }
       }
 
       onSuccessRef.current();
       onCloseRef.current();
     } catch (error: any) {
+      // 410 discount_sold_out (the automatic discount's last place has just gone) or
+      // 422 discount_unavailable (the automatic code shown is no longer valid): nothing
+      // was charged. Never retry: drop the code and re-read the automatic one, so the
+      // review shows the price that would really be charged now.
+      const soldOut = isDiscountSoldOut(error);
+      if (soldOut || isDiscountUnavailable(error)) {
+        dispatch({
+          type: "SET_ERROR",
+          error: soldOut
+            ? t("billing.ui.wizard.errors.discount_sold_out")
+            : t("billing.ui.wizard.errors.discount_unavailable"),
+        });
+        dispatch({ type: "SET_PROMOTION_CODE", code: null });
+        await refreshAutomaticCodeOrLeaveReview(state.selectedPrice.id);
+        return;
+      }
+
       // Handle 409 Conflict - duplicate recurring subscription
       if (error?.status === 409 || error?.response?.status === 409) {
         dispatch({
@@ -222,13 +336,14 @@ export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseS
     } finally {
       dispatch({ type: "SET_PROCESSING", isProcessing: false });
     }
-  }, [state.selectedPrice, state.promotionCode, subscription, t]);
+  }, [state.selectedPrice, state.promotionCode, subscription, refreshAutomaticCodeOrLeaveReview, confirmPayment, t]);
 
   const handlePaymentMethodSuccess = useCallback(async () => {
     dispatch({ type: "SET_HAS_PAYMENT_METHOD", hasMethod: true });
-    // Go back to review to confirm subscription
-    dispatch({ type: "SET_STEP", step: "review" });
-  }, []);
+    // Prepare the review exactly as "Next: Review" does: the trial path sent the GM
+    // here before the automatic-code lookup and the proration preview had run
+    await goToReview();
+  }, [goToReview]);
 
   const reset = useCallback(() => {
     dispatch({ type: "RESET" });
@@ -267,11 +382,22 @@ export function useSubscriptionWizard({ subscription, onSuccess, onClose }: UseS
     [state.selectedPrice?.id, t, locale],
   );
 
-  const clearPromoCode = useCallback(() => {
+  const clearPromoCode = useCallback(async () => {
     dispatch({ type: "SET_PROMOTION_CODE", code: null });
     dispatch({ type: "SET_PROMO_CODE_ERROR", error: null });
     dispatch({ type: "SET_ERROR", error: null });
-  }, []);
+
+    if (!state.selectedPrice) return;
+
+    // Removing a typed code: the server attaches the automatic code again, so the
+    // review must show it again
+    dispatch({ type: "SET_PROCESSING", isProcessing: true });
+    try {
+      await refreshAutomaticCodeOrLeaveReview(state.selectedPrice.id);
+    } finally {
+      dispatch({ type: "SET_PROCESSING", isProcessing: false });
+    }
+  }, [state.selectedPrice, refreshAutomaticCodeOrLeaveReview]);
 
   const actions = useMemo(
     () => ({

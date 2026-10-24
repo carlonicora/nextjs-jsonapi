@@ -19,7 +19,7 @@ export function WizardStepPaymentMethod({ onBack, onSuccess, isProcessing }: Wiz
         <p className="text-sm text-muted-foreground">{t("billing.ui.wizard.payment_description")}</p>
       </div>
 
-      <PaymentMethodForm onSuccess={onSuccess} onCancel={onBack} isLoading={isProcessing} />
+      <PaymentMethodForm onSuccess={onSuccess} onCancel={onBack} isLoading={isProcessing} alwaysSetDefault />
     </div>
   );
 }

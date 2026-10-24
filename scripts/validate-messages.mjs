@@ -28,6 +28,7 @@ export const APP_PROVIDED_KEYS = [
   /^features\.assistant\.starters\./, // example questions about the app's own domain
   /^features\.assistant\.empty_state\.subtitle$/, // says what the app's assistant knows about
   /^auth\.gdpr\.marketing_consent$/, // a consent must name who sends the news: the app
+  /^billing\.ui\.wizard\.errors\.discount_sold_out$/, // names who to contact: the app
   // The app's own entities (CommonDeleter / RecentPagesNavigator render
   // `entities.${type}` for any module). Only the library's own entities ship.
   /^entities\.(?!(?:assistants|companies|howtos|rbac|roles|users)(?:\.|$))/,

@@ -34,6 +34,9 @@ export interface FoundationModuleDefinitions {
   StripePrice: ModuleWithPermissions;
   StripeUsage: ModuleWithPermissions;
   StripePromotionCode: ModuleWithPermissions;
+  StripeCoupon: ModuleWithPermissions;
+  StripeCouponCode: ModuleWithPermissions;
+  StripeCouponOffer: ModuleWithPermissions;
   // AI connection administration
   AiConnection: ModuleWithPermissions;
   // OAuth modules

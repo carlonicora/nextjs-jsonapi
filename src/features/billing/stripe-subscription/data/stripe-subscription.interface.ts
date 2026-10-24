@@ -19,6 +19,19 @@ export enum SubscriptionStatus {
 // Subscription Interfaces
 // ============================================================================
 
+/**
+ * The discount Stripe applies to the subscription (read-only, synced from Stripe).
+ * Exactly one of percentOff / amountOff is set.
+ */
+export type StripeSubscriptionDiscount = {
+  percentOff?: number;
+  amountOff?: number; // minor units, in currency
+  currency?: string;
+  duration: "forever" | "once" | "repeating";
+  durationInMonths?: number;
+  end?: Date; // when a repeating discount stops
+};
+
 export interface StripeSubscriptionInterface extends ApiDataInterface {
   get stripeSubscriptionId(): string;
   get status(): SubscriptionStatus;
@@ -29,6 +42,7 @@ export interface StripeSubscriptionInterface extends ApiDataInterface {
   get trialStart(): Date | undefined;
   get trialEnd(): Date | undefined;
   get price(): StripePriceInterface | undefined;
+  get discount(): StripeSubscriptionDiscount | undefined;
 }
 
 // ============================================================================

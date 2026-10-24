@@ -22,6 +22,7 @@ import {
   SubscriptionSummaryCard,
 } from "../cards";
 import { BillingDetailModal } from "../modals/BillingDetailModal";
+import { urlWithoutParam } from "../utils/url";
 import { BillingAlertBanner } from "../widgets/BillingAlertBanner";
 
 type ModalType = "subscriptions" | "payment-methods" | "invoices" | "usage" | null;
@@ -282,14 +283,27 @@ export function BillingDashboardContainer() {
     fetchAllData();
   }, [fetchAllData]);
 
-  // Handle URL action parameter for deep linking
+  // Handle URL action parameter for deep linking. `?action=subscribe` records the
+  // intent to subscribe; the wizard itself only renders once a customer exists, so a
+  // company without one sees the setup card first and the wizard opens right after
+  // "Set Up Billing Account" succeeds.
   useEffect(() => {
     const action = searchParams.get("action");
     if (action === "subscribe") {
-      // Open wizard directly (no wrapper modal)
       setShowWizard(true);
-      // Clear the URL param to prevent re-triggering on refresh
-      window.history.replaceState({}, "", window.location.pathname);
+      // Drop only `action`, so a refresh does not re-trigger it. Every other parameter
+      // must survive: a host page (the settings hub) selects this dashboard through
+      // `?section=`, and losing it switches the page away and unmounts this component.
+      window.history.replaceState(
+        window.history.state,
+        "",
+        urlWithoutParam({
+          pathname: window.location.pathname,
+          search: window.location.search,
+          hash: window.location.hash,
+          param: "action",
+        }),
+      );
     }
   }, [searchParams]);
 
@@ -445,9 +459,12 @@ export function BillingDashboardContainer() {
             onOpenChange={handleModalClose}
             title={getModalTitle("subscriptions")}
           >
+            {/* The dashboard's list, so a wizard success (refreshData) refreshes the dialog too */}
             <SubscriptionsContainer
               onOpenWizard={handleOpenWizard}
               hasActiveRecurringSubscription={hasActiveRecurringSubscription}
+              subscriptions={data.subscriptions}
+              onSubscriptionsChange={refreshData}
             />
           </BillingDetailModal>
 
@@ -477,7 +494,7 @@ export function BillingDashboardContainer() {
 
           {/* Subscription Wizard - rendered at dashboard level to avoid nested dialogs */}
           <SubscriptionWizard
-            open={showWizard}
+            open={showWizard && !!data.customer}
             onOpenChange={(open) => !open && handleWizardClose()}
             onSuccess={refreshData}
             hasActiveRecurringSubscription={hasActiveRecurringSubscription}
