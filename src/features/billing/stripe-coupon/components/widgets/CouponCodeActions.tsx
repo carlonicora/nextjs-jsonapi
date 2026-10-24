@@ -4,7 +4,7 @@ import { PowerIcon, RotateCcwIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { errorToast } from "../../../../../components/errors";
-import { Button, ConfirmDialog, Switch } from "../../../../../shadcnui";
+import { Button, ConfirmDialog, FieldLabel, Switch } from "../../../../../shadcnui";
 import { useCouponContext } from "../../../contexts/CouponContext";
 import { StripeCouponCodeInterface } from "../../data/stripe-coupon-code.interface";
 import type { CouponCodeStatus } from "../../hooks/useStripeCouponCodeTableStructure";
@@ -33,7 +33,8 @@ export function CouponCodeActions({ code, status }: CouponCodeActionsProps) {
 
   return (
     <div className="flex items-center justify-end gap-x-4">
-      <label className="flex items-center gap-x-2 text-xs">
+      {/* Typography role 9 (field label): FieldLabel wraps the switch, so a click on the text toggles it. */}
+      <FieldLabel>
         <Switch
           checked={code.automatic}
           // Switching off is always allowed; switching on only for a live code.
@@ -53,7 +54,7 @@ export function CouponCodeActions({ code, status }: CouponCodeActionsProps) {
           }}
         />
         {t("billing.admin.coupons.fields.automatic")}
-      </label>
+      </FieldLabel>
       <Button variant="outline" size="sm" disabled={isDead} onClick={() => setOpen(true)}>
         {isInactive ? <RotateCcwIcon /> : <PowerIcon />}
         {t(`billing.admin.coupons.codes.${scope}.confirm`)}

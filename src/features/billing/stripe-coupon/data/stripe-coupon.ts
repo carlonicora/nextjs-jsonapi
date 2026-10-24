@@ -124,10 +124,12 @@ export class StripeCoupon extends AbstractApiData implements StripeCouponInterfa
 
     const attributes = response.data.attributes;
     if (data.stripeCouponId) attributes.stripeCouponId = data.stripeCouponId;
-    if (data.percentOff !== undefined) attributes.percentOff = data.percentOff;
-    if (data.amountOff !== undefined) attributes.amountOff = data.amountOff;
-    if (data.currency) attributes.currency = data.currency;
-    if (data.durationInMonths !== undefined) attributes.durationInMonths = data.durationInMonths;
+    if (data.discountType === "percent_off") attributes.percentOff = data.percentOff;
+    else {
+      attributes.amountOff = data.amountOff;
+      attributes.currency = data.currency;
+    }
+    if (data.duration === "repeating") attributes.durationInMonths = data.durationInMonths;
     if (data.productIds && data.productIds.length > 0) attributes.productIds = data.productIds;
     if (data.redeemBy !== undefined) attributes.redeemBy = data.redeemBy.toISOString();
     if (data.maxRedemptions !== undefined) attributes.maxRedemptions = data.maxRedemptions;

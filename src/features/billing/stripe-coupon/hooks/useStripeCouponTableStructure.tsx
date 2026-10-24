@@ -4,10 +4,10 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { Badge, Link } from "../../../../shadcnui";
-import { Modules } from "../../../../core";
 import { registerTableGenerator, TableContent, usePageUrlGenerator, UseTableStructureHook } from "../../../../hooks";
 import { useBillingFormatOptions } from "../../components/utils";
 import { StripeCouponFields } from "../data/stripe-coupon.fields";
+import { STRIPE_COUPON_DETAIL_PAGE_URL } from "../stripe-coupon.module";
 import { StripeCouponInterface } from "../data/stripe-coupon.interface";
 import { formatCouponDiscount } from "../utils/format-coupon-discount";
 
@@ -35,7 +35,7 @@ export const useStripeCouponTableStructure: UseTableStructureHook<StripeCouponIn
       header: t("billing.admin.coupons.fields.name"),
       cell: ({ row }: { row: TableContent<StripeCouponInterface> }) => {
         const coupon: StripeCouponInterface = row.original.jsonApiData;
-        return <Link href={generateUrl({ page: Modules.StripeCoupon, id: coupon.id })}>{coupon.name}</Link>;
+        return <Link href={generateUrl({ page: STRIPE_COUPON_DETAIL_PAGE_URL, id: coupon.id })}>{coupon.name}</Link>;
       },
       enableSorting: false,
       enableHiding: false,

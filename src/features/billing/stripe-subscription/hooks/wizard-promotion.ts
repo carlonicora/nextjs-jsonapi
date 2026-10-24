@@ -19,8 +19,14 @@ export function shouldLookUpAutomatic(code: PromotionCodeValidationResult | null
   return !code || code.automatic === true;
 }
 
-function errorStatus(error: any): number | undefined {
-  return error?.status ?? error?.response?.status;
+/** `value[key]` when `value` is an object, else undefined. */
+function read(value: unknown, key: string): unknown {
+  return typeof value === "object" && value !== null ? Reflect.get(value, key) : undefined;
+}
+
+function errorStatus(error: unknown): number | undefined {
+  const status = read(error, "status") ?? read(read(error, "response"), "status");
+  return typeof status === "number" ? status : undefined;
 }
 
 /**
@@ -29,10 +35,11 @@ function errorStatus(error: any): number | undefined {
  * attaches to the thrown error as `body`:
  * `{ message, errors: [{ status, code, title, detail, meta: { context: { code } } }] }`.
  */
-function errorCode(error: any): string | undefined {
-  const body = error?.body;
-  const first = body?.errors?.[0];
-  const code = first?.code ?? first?.meta?.context?.code ?? body?.code;
+function errorCode(error: unknown): string | undefined {
+  const body = read(error, "body");
+  const errors = read(body, "errors");
+  const first = Array.isArray(errors) ? errors[0] : undefined;
+  const code = read(first, "code") ?? read(read(read(first, "meta"), "context"), "code") ?? read(body, "code");
   return typeof code === "string" ? code : undefined;
 }
 
@@ -40,7 +47,7 @@ function errorCode(error: any): string | undefined {
  * True when the API refused the payment because the automatic discount has no
  * places left (HTTP 410, code `discount_sold_out`). Nothing was charged.
  */
-export function isDiscountSoldOut(error: any): boolean {
+export function isDiscountSoldOut(error: unknown): boolean {
   return errorStatus(error) === 410 && errorCode(error) === "discount_sold_out";
 }
 
@@ -49,6 +56,6 @@ export function isDiscountSoldOut(error: any): boolean {
  * showed is no longer valid (HTTP 422, code `discount_unavailable`). Nothing was
  * charged.
  */
-export function isDiscountUnavailable(error: any): boolean {
+export function isDiscountUnavailable(error: unknown): boolean {
   return errorStatus(error) === 422 && errorCode(error) === "discount_unavailable";
 }

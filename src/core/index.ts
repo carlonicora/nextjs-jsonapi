@@ -57,6 +57,9 @@ export * from "../features/billing/stripe-subscription";
 export * from "../features/billing/stripe-usage";
 export * from "../features/billing/stripe-promotion-code";
 export * from "../features/billing/stripe-coupon";
+// Billing formatters: plain functions, no React, so a server component can format
+// a price. The client-marked ./billing entry exports them too.
+export * from "../features/billing/components/utils/currency";
 // AI connection administration: data + module only, NOT the feature barrel —
 // that one also re-exports the feature's client components, and core must stay
 // importable from the server (same rationale as the tokenusage entries below).

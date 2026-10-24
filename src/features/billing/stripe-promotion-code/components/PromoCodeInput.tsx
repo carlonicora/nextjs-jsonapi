@@ -118,7 +118,7 @@ export function PromoCodeInput({
           <p className="text-success text-sm">{formatDuration(appliedCode)}</p>
         </div>
         <div className="space-y-2">
-          <p className="text-muted-foreground text-sm">{t("billing.ui.promo_code.use_different")}</p>
+          <p className="text-muted-foreground text-xs/relaxed">{t("billing.ui.promo_code.use_different")}</p>
           {codeInput}
         </div>
       </div>

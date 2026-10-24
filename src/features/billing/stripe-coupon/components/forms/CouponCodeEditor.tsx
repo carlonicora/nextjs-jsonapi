@@ -41,11 +41,12 @@ function CouponCodeEditorInternal({
   const { createCode } = useCouponContext();
 
   const formSchema = useMemo(() => z.object({ id: z.uuidv4() }).and(couponCodeSchema(t)), [t]);
+  type CouponCodeEditorValues = z.infer<typeof formSchema>;
 
-  const getDefaultValues = useCallback(() => ({ id: v4(), ...couponCodeDefaults() }), []);
+  const getDefaultValues = useCallback((): CouponCodeEditorValues => ({ id: v4(), ...couponCodeDefaults() }), []);
 
-  const form = useForm<any>({
-    resolver: zodResolver(formSchema as any) as any,
+  const form = useForm<CouponCodeEditorValues>({
+    resolver: zodResolver(formSchema),
     defaultValues: getDefaultValues(),
   });
 
@@ -57,11 +58,11 @@ function CouponCodeEditorInternal({
       module={Modules.StripeCouponCode}
       size="md"
       // A code has no page of its own: without onSuccess EditorSheet would
-      // navigate to `/administration/coupons/<codeId>`, which does not exist.
+      // navigate to `<module pageUrl>/<codeId>`, which does not exist.
       // The context's createCode already reloads the coupon and the codes list.
       onSuccess={onSuccess ?? (() => {})}
       onNavigate={(url) => router.push(url)}
-      onSubmit={async (values: any) => await createCode({ id: values.id, couponId, ...toCouponCodeInput(values) })}
+      onSubmit={async (values) => await createCode({ id: values.id, couponId, ...toCouponCodeInput(values) })}
       onReset={getDefaultValues}
       trigger={trigger}
       forceShow={forceShow}

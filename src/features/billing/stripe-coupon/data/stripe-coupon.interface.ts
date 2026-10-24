@@ -29,21 +29,25 @@ export interface StripeCouponInterface extends ApiDataInterface {
 // Stripe Coupon Input DTOs
 // ============================================================================
 
+/** The discount of a new coupon: a percentage, or a fixed amount in one currency. */
+export type StripeCouponDiscountInput =
+  | { discountType: "percent_off"; percentOff: number }
+  | { discountType: "amount_off"; amountOff: number; currency: string }; // amountOff in minor units
+
+/** How long a new coupon's discount lasts: months only when it repeats. */
+export type StripeCouponDurationInput =
+  { duration: "once" } | { duration: "forever" } | { duration: "repeating"; durationInMonths: number };
+
 export type StripeCouponInput = {
   id: string;
   name: string;
   stripeCouponId?: string;
-  discountType: StripeCouponDiscountType;
-  percentOff?: number;
-  amountOff?: number;
-  currency?: string;
-  duration: StripeCouponDurationType;
-  durationInMonths?: number;
   productIds?: string[]; // our StripeProduct ids
   redeemBy?: Date;
   maxRedemptions?: number;
   firstCode: Omit<StripeCouponCodeInput, "id" | "couponId">;
-};
+} & StripeCouponDiscountInput &
+  StripeCouponDurationInput;
 
 export type StripeCouponRenameInput = {
   id: string;

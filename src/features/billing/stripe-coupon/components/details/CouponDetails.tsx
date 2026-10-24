@@ -31,7 +31,10 @@ export function CouponDetails() {
             )
           }
         />
-        <DetailField label={t("billing.admin.coupons.fields.discount")} value={formatCouponDiscount(coupon, t, fmt)} />
+        <DetailField
+          label={t("billing.admin.coupons.fields.discount")}
+          value={<span className="tabular-nums">{formatCouponDiscount(coupon, t, fmt)}</span>}
+        />
         <DetailField
           label={t("billing.admin.coupons.fields.places")}
           value={
@@ -57,7 +60,7 @@ export function CouponDetails() {
         />
         <DetailField
           label={t("billing.admin.coupons.fields.redeemBy")}
-          value={coupon.redeemBy ? formatDate(coupon.redeemBy, fmt) : "—"}
+          value={<span className="tabular-nums">{coupon.redeemBy ? formatDate(coupon.redeemBy, fmt) : "—"}</span>}
         />
         <DetailField
           label={t("billing.admin.coupons.fields.stripeId")}

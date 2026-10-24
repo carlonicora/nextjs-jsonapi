@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Badge } from "../../../../shadcnui";
 import { registerTableGenerator, TableContent, UseTableStructureHook } from "../../../../hooks";
 import { formatDate, useBillingFormatOptions } from "../../components/utils";
@@ -20,8 +20,12 @@ export type CouponCodeStatus = "active" | "inactive" | "expired" | "used_up";
  * they win over a plain inactive flag. Places follow the same rule as the
  * backend: the smaller of the code's and the coupon's remaining limits.
  */
-export function couponCodeStatus(code: StripeCouponCodeInterface, coupon?: StripeCouponInterface): CouponCodeStatus {
-  if (code.expiresAt && code.expiresAt.getTime() <= Date.now()) return "expired";
+export function couponCodeStatus(
+  code: StripeCouponCodeInterface,
+  coupon: StripeCouponInterface | undefined,
+  now: Date,
+): CouponCodeStatus {
+  if (code.expiresAt && code.expiresAt.getTime() <= now.getTime()) return "expired";
   const left = couponPlacesLeft(code, coupon ?? { maxRedemptions: undefined, timesRedeemed: 0 });
   if (left === 0) return "used_up";
   return code.active ? "active" : "inactive";
@@ -43,6 +47,9 @@ export const useStripeCouponCodeTableStructure: UseTableStructureHook<
   // The codes list is mounted on the coupon's own page, so the coupon whose
   // limits share the places is the context's, not whatever the code includes.
   const { coupon } = useCouponContext();
+  // Read once on mount: render stays pure, and "expired" is judged against the
+  // moment the list was opened.
+  const [now] = useState(() => new Date());
 
   const tableData = useMemo(() => {
     return params.data.map((code: StripeCouponCodeInterface) => {
@@ -61,7 +68,7 @@ export const useStripeCouponCodeTableStructure: UseTableStructureHook<
       header: t("billing.admin.coupons.fields.code"),
       cell: ({ row }: { row: TableContent<StripeCouponCodeInterface> }) => {
         const code: StripeCouponCodeInterface = row.original.jsonApiData;
-        return <span className="text-xs font-medium">{code.code}</span>;
+        return <span className="text-xs">{code.code}</span>;
       },
       enableSorting: false,
       enableHiding: false,
@@ -123,7 +130,7 @@ export const useStripeCouponCodeTableStructure: UseTableStructureHook<
       header: t("billing.admin.coupons.fields.status"),
       cell: ({ row }: { row: TableContent<StripeCouponCodeInterface> }) => {
         const code: StripeCouponCodeInterface = row.original.jsonApiData;
-        const status = couponCodeStatus(code, code.coupon ?? coupon);
+        const status = couponCodeStatus(code, code.coupon ?? coupon, now);
         return <Badge variant={STATUS_VARIANT[status]}>{t(`billing.admin.coupons.codes.status.${status}`)}</Badge>;
       },
       enableSorting: false,
@@ -135,7 +142,7 @@ export const useStripeCouponCodeTableStructure: UseTableStructureHook<
       header: "",
       cell: ({ row }: { row: TableContent<StripeCouponCodeInterface> }) => {
         const code: StripeCouponCodeInterface = row.original.jsonApiData;
-        return <CouponCodeActions code={code} status={couponCodeStatus(code, code.coupon ?? coupon)} />;
+        return <CouponCodeActions code={code} status={couponCodeStatus(code, code.coupon ?? coupon, now)} />;
       },
       enableSorting: false,
       enableHiding: false,
@@ -146,7 +153,7 @@ export const useStripeCouponCodeTableStructure: UseTableStructureHook<
     return params.fields.map((field) => fieldColumnMap[field]?.()).filter((col) => col !== undefined) as ColumnDef<
       TableContent<StripeCouponCodeInterface>
     >[];
-  }, [params.fields, fieldColumnMap, t, coupon]);
+  }, [params.fields, fieldColumnMap, t, coupon, now]);
 
   return useMemo(() => ({ data: tableData, columns: columns }), [tableData, columns]);
 };

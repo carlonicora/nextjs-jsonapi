@@ -189,8 +189,6 @@ export const CouponProvider = ({ children, dehydratedCoupon, publishChrome = tru
 
     response.element = coupon.name;
 
-    // narr8 note: gate on hasRole ONLY. hasPermissionToModule always returns
-    // false in this app, so gating an editor on it hides the editor outright.
     if (hasRole(getRoleId().Administrator)) {
       response.functions = [
         <CouponRefresher key="couponRefresher" coupon={coupon} />,
