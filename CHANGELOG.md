@@ -1,3 +1,9 @@
+## [5.7.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.7.0...v5.7.1) (2026-10-24)
+
+### 🐛 Bug Fixes
+
+* **billing:** coupon page tabs stay on the coupon's own route ([82c9b7d](https://github.com/carlonicora/nextjs-jsonapi/commit/82c9b7d1368c4f1f4bd7dd8789487258e6d5c376))
+
 ## [5.7.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.6.0...v5.7.0) (2026-10-24)
 
 ### 🚀 Features
