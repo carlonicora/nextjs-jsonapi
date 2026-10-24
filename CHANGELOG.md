@@ -1,3 +1,9 @@
+## [5.7.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.6.0...v5.7.0) (2026-10-24)
+
+### 🚀 Features
+
+* **billing:** price formatting available to server pages, coupon admin clean-ups ([ba05a64](https://github.com/carlonicora/nextjs-jsonapi/commit/ba05a64966ae5b9dc774a788c059a7ac244246f7))
+
 ## [5.6.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.5.0...v5.6.0) (2026-10-24)
 
 ### 🚀 Features
