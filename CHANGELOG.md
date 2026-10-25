@@ -1,3 +1,9 @@
+## [6.5.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.4.0...v6.5.0) (2026-10-25)
+
+### 🚀 Features
+
+* **billing:** let an app replace the cancel subscription dialog ([60faab6](https://github.com/carlonicora/nextjs-jsonapi/commit/60faab6fd968dfb25cf31babe11b2731e8b5429d))
+
 ## [6.4.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.3.0...v6.4.0) (2026-10-25)
 
 ### 🚀 Features
