@@ -12,7 +12,7 @@ import {
 } from "../../../components/utils";
 import { StripePriceInterface } from "../../../stripe-price/data/stripe-price.interface";
 import { StripeSubscriptionInterface, SubscriptionStatus } from "../../data";
-import { SubscriptionDetails } from "../details/SubscriptionDetails";
+import { type RenderCancelDialog, SubscriptionDetails } from "../details/SubscriptionDetails";
 import { SubscriptionStatusBadge } from "../widgets/SubscriptionStatusBadge";
 
 /**
@@ -49,9 +49,15 @@ type SubscriptionsListProps = {
   subscriptions: StripeSubscriptionInterface[];
   onSubscriptionsChange: () => void;
   onChangePlan?: (subscription: StripeSubscriptionInterface) => void;
+  renderCancelDialog?: RenderCancelDialog;
 };
 
-export function SubscriptionsList({ subscriptions, onSubscriptionsChange, onChangePlan }: SubscriptionsListProps) {
+export function SubscriptionsList({
+  subscriptions,
+  onSubscriptionsChange,
+  onChangePlan,
+  renderCancelDialog,
+}: SubscriptionsListProps) {
   const t = useTranslations();
   const fmt = useBillingFormatOptions();
   const [selectedSub, setSelectedSub] = useState<StripeSubscriptionInterface | null>(null);
@@ -148,6 +154,7 @@ export function SubscriptionsList({ subscriptions, onSubscriptionsChange, onChan
                 }
               : undefined
           }
+          renderCancelDialog={renderCancelDialog}
         />
       )}
     </>

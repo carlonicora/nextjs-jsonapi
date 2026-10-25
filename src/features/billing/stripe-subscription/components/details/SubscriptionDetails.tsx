@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../../../../../shadcnui";
 import {
   type BillingFormatOptions,
@@ -57,12 +57,26 @@ function formatBillingAmount(
   return formatCurrency(price.unitAmount, price.currency, fmt);
 }
 
+/** Props an app receives when it replaces the library cancel dialog. */
+export type CancelDialogRenderProps = {
+  subscription: StripeSubscriptionInterface;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess: () => void;
+  /** Opens the plan-change wizard for this subscription and closes the details. Undefined when the host gave no onChangePlan. */
+  openChangePlan?: () => void;
+};
+
+/** Optional replacement for the library cancel dialog. Absent, the library renders CancelSubscriptionDialog. */
+export type RenderCancelDialog = (props: CancelDialogRenderProps) => ReactNode;
+
 type SubscriptionDetailsProps = {
   subscription: StripeSubscriptionInterface;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubscriptionChange: () => void;
   onChangePlan?: (subscription: StripeSubscriptionInterface) => void;
+  renderCancelDialog?: RenderCancelDialog;
 };
 
 export function SubscriptionDetails({
@@ -71,6 +85,7 @@ export function SubscriptionDetails({
   onOpenChange,
   onSubscriptionChange,
   onChangePlan,
+  renderCancelDialog,
 }: SubscriptionDetailsProps) {
   const t = useTranslations();
   const fmt = useBillingFormatOptions();
@@ -175,17 +190,34 @@ export function SubscriptionDetails({
       </Dialog>
 
       {/* Cancel Subscription Dialog */}
-      {showCancel && (
-        <CancelSubscriptionDialog
-          subscription={subscription}
-          open={showCancel}
-          onOpenChange={setShowCancel}
-          onSuccess={() => {
-            onSubscriptionChange();
-            setShowCancel(false);
-          }}
-        />
-      )}
+      {showCancel &&
+        (renderCancelDialog ? (
+          renderCancelDialog({
+            subscription,
+            open: showCancel,
+            onOpenChange: setShowCancel,
+            onSuccess: () => {
+              onSubscriptionChange();
+              setShowCancel(false);
+            },
+            openChangePlan: onChangePlan
+              ? () => {
+                  onChangePlan(subscription);
+                  onOpenChange(false);
+                }
+              : undefined,
+          })
+        ) : (
+          <CancelSubscriptionDialog
+            subscription={subscription}
+            open={showCancel}
+            onOpenChange={setShowCancel}
+            onSuccess={() => {
+              onSubscriptionChange();
+              setShowCancel(false);
+            }}
+          />
+        ))}
     </>
   );
 }

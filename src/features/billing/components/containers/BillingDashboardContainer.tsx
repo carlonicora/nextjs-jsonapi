@@ -10,7 +10,7 @@ import { PaymentMethodsContainer } from "../../stripe-customer/components";
 import { StripeInvoiceInterface, StripeInvoiceService } from "../../stripe-invoice";
 import { InvoicesContainer } from "../../stripe-invoice/components";
 import { StripeSubscriptionInterface, StripeSubscriptionService, SubscriptionStatus } from "../../stripe-subscription";
-import { SubscriptionsContainer } from "../../stripe-subscription/components";
+import { type RenderCancelDialog, SubscriptionsContainer } from "../../stripe-subscription/components";
 import { SubscriptionWizard } from "../../stripe-subscription/components/wizards";
 import { MeterInterface, MeterSummaryInterface, StripeUsageService } from "../../stripe-usage";
 import { UsageContainer } from "../../stripe-usage/components";
@@ -53,7 +53,7 @@ type ErrorState = {
   usage: string | null;
 };
 
-export function BillingDashboardContainer() {
+export function BillingDashboardContainer({ renderCancelDialog }: { renderCancelDialog?: RenderCancelDialog } = {}) {
   const t = useTranslations();
   const [data, setData] = useState<DataState>({
     customer: null,
@@ -482,6 +482,7 @@ export function BillingDashboardContainer() {
               hasActiveRecurringSubscription={hasActiveRecurringSubscription}
               subscriptions={data.subscriptions}
               onSubscriptionsChange={refreshData}
+              renderCancelDialog={renderCancelDialog}
             />
           </BillingDetailModal>
 

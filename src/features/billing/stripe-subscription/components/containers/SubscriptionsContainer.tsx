@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Button } from "../../../../../shadcnui";
 import { BillingAlertBanner } from "../../../components";
 import { StripeSubscriptionInterface, StripeSubscriptionService, SubscriptionStatus } from "../../data";
+import type { RenderCancelDialog } from "../details/SubscriptionDetails";
 import { SubscriptionsList } from "../lists";
 
 type SubscriptionsContainerProps = {
@@ -18,6 +19,8 @@ type SubscriptionsContainerProps = {
    */
   subscriptions?: StripeSubscriptionInterface[];
   onSubscriptionsChange?: () => void;
+  /** Replaces the library cancel dialog; absent, the library dialog renders. */
+  renderCancelDialog?: RenderCancelDialog;
 };
 
 export function SubscriptionsContainer({
@@ -25,6 +28,7 @@ export function SubscriptionsContainer({
   hasActiveRecurringSubscription,
   subscriptions: parentSubscriptions,
   onSubscriptionsChange,
+  renderCancelDialog,
 }: SubscriptionsContainerProps) {
   const t = useTranslations();
   const isControlled = parentSubscriptions !== undefined;
@@ -110,6 +114,7 @@ export function SubscriptionsContainer({
           subscriptions={subscriptions}
           onSubscriptionsChange={loadSubscriptions}
           onChangePlan={(sub) => onOpenWizard?.(sub)}
+          renderCancelDialog={renderCancelDialog}
         />
       )}
     </div>
