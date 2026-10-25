@@ -1,3 +1,9 @@
+## [6.4.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.3.0...v6.4.0) (2026-10-25)
+
+### 🚀 Features
+
+* **tokenusage:** export the validated chart palette helpers ([b69a6ee](https://github.com/carlonicora/nextjs-jsonapi/commit/b69a6ee9d26ebe6ee568b6a38b598e9c922311cb))
+
 ## [6.3.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.2.0...v6.3.0) (2026-10-25)
 
 ### 🚀 Features
