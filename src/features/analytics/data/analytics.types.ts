@@ -31,6 +31,8 @@ export type AnalyticsEventInput = {
   utmContent?: string;
   visitorId?: string;
   screenWidth?: number;
+  /** True only on the event sent by the Accept click: the API adopts the open cookieless session. */
+  consentGranted?: boolean;
 };
 
 // Input types for the read-only models' createJsonApi(). `id` is always

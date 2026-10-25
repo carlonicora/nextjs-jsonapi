@@ -57,6 +57,7 @@ export class AnalyticsEvent extends AbstractApiData implements AnalyticsEventInt
     if (data.utmContent !== undefined) response.data.attributes.utmContent = data.utmContent;
     if (data.visitorId !== undefined) response.data.attributes.visitorId = data.visitorId;
     if (data.screenWidth !== undefined) response.data.attributes.screenWidth = data.screenWidth;
+    if (data.consentGranted !== undefined) response.data.attributes.consentGranted = data.consentGranted;
 
     return response;
   }

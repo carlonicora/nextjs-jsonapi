@@ -212,6 +212,19 @@ describe("analytics models — createJsonApi", () => {
     expect(Object.keys(doc.data.relationships ?? {})).toHaveLength(0);
   });
 
+  it("serialises consentGranted only when given", () => {
+    const flagged = new AnalyticsEvent().createJsonApi({
+      id: "e2",
+      path: "/",
+      section: "public",
+      consentGranted: true,
+    });
+    const plain = new AnalyticsEvent().createJsonApi({ id: "e3", path: "/", section: "public" });
+
+    expect(flagged.data.attributes.consentGranted).toBe(true);
+    expect(plain.data.attributes).not.toHaveProperty("consentGranted");
+  });
+
   it("serialises a summary back to a JSON:API resource object", () => {
     const doc = new AnalyticsSummary().createJsonApi({
       id: "all|current",

@@ -20,7 +20,13 @@ type Attribution = Pick<
 >;
 
 type AnalyticsTrackerProps = {
-  hasConsent: boolean;
+  /**
+   * `undefined` while the app has not read its consent store yet: the tracker sends
+   * nothing and leaves the visitor cookie alone. `false` when there is no consent
+   * (refused or not chosen yet): the cookie is cleared and page views go out without
+   * an id. Never pass `false` as a placeholder for "not read yet".
+   */
+  hasConsent?: boolean;
   resolveSection: (pathname: string) => "public" | "app";
   sensitivePrefixes?: string[];
 };
@@ -63,11 +69,16 @@ function maskSensitivePath(path: string, sensitivePrefixes: string[] | undefined
 export function AnalyticsTracker({ hasConsent, resolveSection, sensitivePrefixes }: AnalyticsTrackerProps): null {
   const pathname = usePathname();
   const lastPath = useRef<string | null>(null);
-  const lastConsent = useRef<boolean>(false);
+  // The last consent value the app actually read. `undefined` until then, so a page
+  // load with consent already stored is never mistaken for the Accept click.
+  const lastKnownConsent = useRef<boolean | undefined>(undefined);
   const attribution = useRef<Attribution | null>(null);
 
   useEffect(() => {
-    if (!hasConsent) clearVisitorCookie();
+    // Consent not read yet: send nothing and keep the cookie, or a visitor who
+    // already accepted would lose their id on every tracker mount.
+    if (hasConsent === undefined) return;
+    if (hasConsent === false) clearVisitorCookie();
 
     if (!pathname) return;
     if (typeof navigator !== "undefined" && navigator.webdriver) return;
@@ -75,12 +86,13 @@ export function AnalyticsTracker({ hasConsent, resolveSection, sensitivePrefixes
     const path = pathname.split(/[?#]/)[0] || "/";
     if (path.startsWith(EXCLUDED_PREFIX)) return;
 
-    // One event per distinct path. The same path is sent again only when consent
-    // was just granted, so the processor starts a new visitor on the cookie id.
+    // One event per distinct path. The same path is sent again only when the
+    // visitor clicks Accept (a known `false` turning `true`), flagged so the API
+    // moves the open cookieless session onto the cookie id.
     const isNewPath = lastPath.current !== path;
-    const consentJustGranted = hasConsent && !lastConsent.current;
-    lastConsent.current = hasConsent;
-    if (!isNewPath && !consentJustGranted) return;
+    const consentGranted = hasConsent === true && lastKnownConsent.current === false;
+    lastKnownConsent.current = hasConsent;
+    if (!isNewPath && !consentGranted) return;
     lastPath.current = path;
 
     const sentPath = maskSensitivePath(path, sensitivePrefixes);
@@ -93,6 +105,7 @@ export function AnalyticsTracker({ hasConsent, resolveSection, sensitivePrefixes
     };
 
     if (hasConsent) input.visitorId = ensureVisitorCookie();
+    if (consentGranted) input.consentGranted = true;
 
     // The first event of the page load carries the attribution. The event sent
     // because consent was just granted carries it again, so the session opened
@@ -102,7 +115,7 @@ export function AnalyticsTracker({ hasConsent, resolveSection, sensitivePrefixes
       const referrer = readExternalReferrer();
       attribution.current = { ...(referrer ? { referrer } : {}), ...readUtm(window.location.search) };
     }
-    if (isFirstEvent || consentJustGranted) Object.assign(input, attribution.current);
+    if (isFirstEvent || consentGranted) Object.assign(input, attribution.current);
 
     // AnalyticsService.track never rejects: it logs and swallows its own failures.
     void AnalyticsService.track(input);

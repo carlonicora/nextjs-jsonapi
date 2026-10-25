@@ -215,6 +215,73 @@ describe("AnalyticsTracker", () => {
     expect(eventAt(1)).toEqual(expect.objectContaining({ path: "/pricing", visitorId: expect.stringMatching(UUID) }));
   });
 
+  it("sends nothing and keeps the cookie while consent is unknown", () => {
+    document.cookie = "analytics_visitor=keep-me; path=/";
+    mocks.pathname = "/";
+    const { rerender } = render(<AnalyticsTracker hasConsent={undefined} resolveSection={publicSection} />);
+
+    mocks.pathname = "/pricing";
+    rerender(<AnalyticsTracker hasConsent={undefined} resolveSection={publicSection} />);
+
+    expect(mocks.track).not.toHaveBeenCalled();
+    expect(document.cookie).toContain("analytics_visitor=keep-me");
+
+    rerender(<AnalyticsTracker hasConsent={true} resolveSection={publicSection} />);
+
+    expect(mocks.track).toHaveBeenCalledTimes(1);
+    expect(eventAt(0).path).toBe("/pricing");
+  });
+
+  it("keeps the existing cookie id when unknown consent resolves to accepted", () => {
+    document.cookie = "analytics_visitor=keep-me; path=/";
+    mocks.pathname = "/pricing";
+    const { rerender } = render(<AnalyticsTracker hasConsent={undefined} resolveSection={publicSection} />);
+    rerender(<AnalyticsTracker hasConsent={true} resolveSection={publicSection} />);
+
+    expect(mocks.track).toHaveBeenCalledTimes(1);
+    expect(eventAt(0)).toEqual(expect.objectContaining({ visitorId: "keep-me" }));
+    expect(eventAt(0)).not.toHaveProperty("consentGranted");
+  });
+
+  it("clears the cookie once unknown consent resolves to refused", () => {
+    document.cookie = "analytics_visitor=keep-me; path=/";
+    mocks.pathname = "/pricing";
+    const { rerender } = render(<AnalyticsTracker hasConsent={undefined} resolveSection={publicSection} />);
+
+    expect(mocks.track).not.toHaveBeenCalled();
+    expect(document.cookie).toContain("analytics_visitor=keep-me");
+
+    rerender(<AnalyticsTracker hasConsent={false} resolveSection={publicSection} />);
+
+    expect(mocks.track).toHaveBeenCalledTimes(1);
+    expect(eventAt(0).visitorId).toBeUndefined();
+    expect(document.cookie).not.toContain("analytics_visitor");
+  });
+
+  it("carries attribution on the first known event", () => {
+    setReferrer("https://elsewhere.example/");
+    mocks.pathname = "/pricing";
+    const { rerender } = render(<AnalyticsTracker hasConsent={undefined} resolveSection={publicSection} />);
+    rerender(<AnalyticsTracker hasConsent={true} resolveSection={publicSection} />);
+
+    expect(mocks.track).toHaveBeenCalledTimes(1);
+    expect(eventAt(0)).toEqual(
+      expect.objectContaining({ referrer: "https://elsewhere.example/", visitorId: expect.stringMatching(UUID) }),
+    );
+  });
+
+  it("flags the accept click", () => {
+    mocks.pathname = "/pricing";
+    const { rerender } = render(<AnalyticsTracker hasConsent={false} resolveSection={publicSection} />);
+    rerender(<AnalyticsTracker hasConsent={true} resolveSection={publicSection} />);
+
+    expect(mocks.track).toHaveBeenCalledTimes(2);
+    expect(eventAt(0)).not.toHaveProperty("consentGranted");
+    expect(eventAt(1)).toEqual(
+      expect.objectContaining({ consentGranted: true, visitorId: expect.stringMatching(UUID) }),
+    );
+  });
+
   it("skips automated browsers and the analytics admin pages", () => {
     setWebdriver(true);
     mocks.pathname = "/pricing";
