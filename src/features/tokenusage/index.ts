@@ -45,4 +45,9 @@ export { configureTokenUsage, getTokenUsageCurrency } from "./lib/config";
 export { createUsageFormatters, useUsageFormatters } from "./lib/formatters";
 export type { UsageFormatters } from "./lib/formatters";
 
+// The validated categorical palette, so app charts painted on the same card
+// surfaces reuse it instead of copying the steps.
+export { seriesColor, seriesTheme } from "./lib/palette";
+export type { ChartMode } from "./lib/palette";
+
 export { TOKEN_USAGE_REPORT_I18N_KEYS } from "./i18n-keys";
