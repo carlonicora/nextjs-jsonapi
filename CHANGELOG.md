@@ -1,3 +1,9 @@
+## [6.2.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.1.0...v6.2.0) (2026-10-25)
+
+### 🚀 Features
+
+* **analytics:** wait for known consent and flag the accept click ([cfbf6cc](https://github.com/carlonicora/nextjs-jsonapi/commit/cfbf6ccea75d248196b15175452a7fae62426c4b))
+
 ## [6.1.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.0.0...v6.1.0) (2026-10-25)
 
 ### 🚀 Features
