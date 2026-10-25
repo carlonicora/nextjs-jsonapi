@@ -40,4 +40,26 @@ describe("TokenUsageRankedBar", () => {
     expect(new Set(colours).size).toBe(3);
     expect(colours).toEqual(["0", "1", "2"]);
   });
+
+  it("puts the operation description behind a tooltip on operation rows, never on the folded tail", () => {
+    render(
+      <TokenUsageRankedBar
+        rows={[row("blog_translation", "blog_translation", 3), row("other", "other", 1)]}
+        metric="cost"
+        emptyLabel="nessun dato"
+        labelsAreOperationTypes
+      />,
+    );
+
+    expect(screen.getByTestId("ranked-description-blog_translation")).toHaveTextContent(
+      "token_usage.types.blogTranslation",
+    );
+    expect(screen.queryByTestId("ranked-description-other")).not.toBeInTheDocument();
+  });
+
+  it("renders entity names without a tooltip", () => {
+    render(<TokenUsageRankedBar rows={[row("a", "Studio Rossi", 1)]} metric="cost" emptyLabel="nessun dato" />);
+    expect(screen.queryByTestId("ranked-description-a")).not.toBeInTheDocument();
+    expect(screen.getByText("Studio Rossi")).toBeInTheDocument();
+  });
 });

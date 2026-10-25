@@ -9,6 +9,13 @@
 export const OPERATION_LABEL_NAMESPACE = "token_usage.types";
 
 /**
+ * Sibling namespace for an optional one-line explanation of each operation
+ * type, keyed exactly like `OPERATION_LABEL_NAMESPACE`. A type without an entry
+ * simply has no explanation — nothing falls back to the raw key here.
+ */
+export const OPERATION_DESCRIPTION_NAMESPACE = "token_usage.type_descriptions";
+
+/**
  * `snake_case` / `kebab-case` → `camelCase`, the shape the i18n keys use.
  *
  * Shared by every surface that renders an operation type — the timeline chart's
@@ -38,4 +45,17 @@ export const operationLabel = (
 ): string => {
   const key = `${OPERATION_LABEL_NAMESPACE}.${toCamelCase(type)}`;
   return has(key) ? translate(key) : type;
+};
+
+/**
+ * Resolves an operation type to its explanation, or `undefined` when the
+ * consuming app (or the package) provides none.
+ */
+export const operationDescription = (
+  type: string,
+  translate: (key: string) => string,
+  has: (key: string) => boolean,
+): string | undefined => {
+  const key = `${OPERATION_DESCRIPTION_NAMESPACE}.${toCamelCase(type)}`;
+  return has(key) ? translate(key) : undefined;
 };

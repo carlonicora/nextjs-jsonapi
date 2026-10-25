@@ -1776,17 +1776,40 @@
       "empty": "No usage recorded in this period"
     },
     "types": {
+      "analyser": "Analysis",
+      "blogSummary": "Blog summaries",
+      "blogTranslation": "Blog translations",
       "communitySummariser": "Community overviews",
+      "counterpartIdentificator": "Counterpart identification",
       "customer": "Customer",
       "embedding": "Search indexing",
+      "ethicist": "Ethics review",
       "graphCreator": "Connection mapping",
+      "imageAnalysis": "Image analysis",
       "imageGeneration": "Image generation",
       "operator": "Assistant actions",
       "platform": "Platform",
       "responder": "Assistant answers",
+      "retrievalEval": "Search quality tests",
+      "strategy": "Strategy",
       "summariser": "Summarisation",
       "textGeneration": "Text generation",
       "transcription": "Transcription"
+    },
+    "type_descriptions": {
+      "blogSummary": "Writes the summary of each blog post.",
+      "blogTranslation": "Translates blog posts and their categories into the other languages.",
+      "communitySummariser": "Writes an overview of each group of related content.",
+      "embedding": "Turns content into search vectors, so search and the assistant can find it.",
+      "graphCreator": "Reads new content and extracts its facts and the connections between the people, places and things it mentions.",
+      "imageAnalysis": "Reads the images inside uploaded documents so their content can be searched.",
+      "imageGeneration": "Creates images from a written description.",
+      "operator": "Actions the assistant carries out, such as searching or changing content.",
+      "responder": "The assistant's answers to questions.",
+      "retrievalEval": "Grades search quality during internal tests. Never started by customers.",
+      "summariser": "Writes summaries of processed content.",
+      "textGeneration": "AI writing in the editor, plus any AI call that does not record a more specific category.",
+      "transcription": "Turns recorded audio into text."
     }
   },
   "ui": {

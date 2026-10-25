@@ -1776,17 +1776,40 @@
       "empty": "Nessun utilizzo registrato in questo periodo"
     },
     "types": {
+      "analyser": "Analisi",
+      "blogSummary": "Riassunti del blog",
+      "blogTranslation": "Traduzioni del blog",
       "communitySummariser": "Panoramiche delle comunità",
+      "counterpartIdentificator": "Identificazione delle controparti",
       "customer": "Cliente",
       "embedding": "Indicizzazione per la ricerca",
+      "ethicist": "Revisione etica",
       "graphCreator": "Mappatura dei collegamenti",
+      "imageAnalysis": "Analisi delle immagini",
       "imageGeneration": "Generazione di immagini",
       "operator": "Azioni dell'assistente",
       "platform": "Piattaforma",
       "responder": "Risposte dell'assistente",
+      "retrievalEval": "Test di qualità della ricerca",
+      "strategy": "Strategia",
       "summariser": "Riassunti",
       "textGeneration": "Generazione di testo",
       "transcription": "Trascrizione"
+    },
+    "type_descriptions": {
+      "blogSummary": "Scrive il riassunto di ogni articolo del blog.",
+      "blogTranslation": "Traduce gli articoli del blog e le loro categorie nelle altre lingue.",
+      "communitySummariser": "Scrive una panoramica di ogni gruppo di contenuti collegati.",
+      "embedding": "Trasforma i contenuti in vettori di ricerca, così la ricerca e l'assistente possono trovarli.",
+      "graphCreator": "Legge i nuovi contenuti ed estrae i fatti e i collegamenti tra le persone, i luoghi e le cose citate.",
+      "imageAnalysis": "Legge le immagini dentro i documenti caricati, così il loro contenuto diventa ricercabile.",
+      "imageGeneration": "Crea immagini a partire da una descrizione scritta.",
+      "operator": "Le azioni svolte dall'assistente, come cercare o modificare contenuti.",
+      "responder": "Le risposte dell'assistente alle domande.",
+      "retrievalEval": "Valuta la qualità della ricerca durante i test interni. Mai avviato dai clienti.",
+      "summariser": "Scrive i riassunti dei contenuti elaborati.",
+      "textGeneration": "La scrittura con l'AI nell'editor, più ogni chiamata AI che non registra una categoria più specifica.",
+      "transcription": "Trasforma l'audio registrato in testo."
     }
   },
   "ui": {

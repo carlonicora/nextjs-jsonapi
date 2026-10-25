@@ -1,10 +1,11 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../../shadcnui";
 import type { Metric } from "../data/tokenusage-admin.types";
 import { useUsageFormatters } from "../lib/formatters";
 import { metricValue, type TokenUsageMetrics } from "../lib/metrics";
-import { operationLabel } from "../lib/operation-label";
+import { operationDescription, operationLabel } from "../lib/operation-label";
 import { SEQUENTIAL_RAMP } from "../lib/palette";
 
 /**
@@ -65,6 +66,37 @@ export function TokenUsageRankedBar({ rows, metric, emptyLabel, labelsAreOperati
     );
   };
 
+  const renderDescription = (row: TokenUsageRankedRow): string | undefined => {
+    if (row.id === "other" || !labelsAreOperationTypes) return undefined;
+    return operationDescription(
+      row.label,
+      (key) => t(key),
+      (key) => t.has(key),
+    );
+  };
+
+  // An operation type the app explains gets its explanation on hover; every
+  // other label (names, the folded "other" row) renders as plain text.
+  const renderLabelCell = (row: TokenUsageRankedRow) => {
+    const label = <span className="text-muted-foreground truncate text-xs">{renderLabel(row)}</span>;
+    const description = renderDescription(row);
+    if (!description) return label;
+    return (
+      <Tooltip>
+        <TooltipTrigger
+          data-testid={`ranked-description-${row.id}`}
+          className="min-w-0 cursor-help justify-self-start truncate"
+          render={<div />}
+        >
+          {label}
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-xs">
+          <p className="text-xs">{description}</p>
+        </TooltipContent>
+      </Tooltip>
+    );
+  };
+
   if (rows.length === 0) {
     return <p className="text-muted-foreground py-6 text-center text-sm">{emptyLabel}</p>;
   }
@@ -89,7 +121,7 @@ export function TokenUsageRankedBar({ rows, metric, emptyLabel, labelsAreOperati
         return (
           <div key={row.id} className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-3 gap-y-0.5 py-0.5">
             <div className="grid min-w-0 gap-0.5">
-              <span className="text-muted-foreground truncate text-xs">{renderLabel(row)}</span>
+              {renderLabelCell(row)}
               {/* The bar itself is a magnitude drawn on an axis, not prose: it always grows
                   rightward and only its trailing corner is rounded, so the track and its fill
                   stay an LTR island. The label, value and share around it mirror normally.

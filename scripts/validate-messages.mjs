@@ -35,7 +35,10 @@ export const APP_PROVIDED_KEYS = [
   // Token-usage operation types an app backend defines (operation-label.ts: the
   // app supplies this vocabulary, unknown types render raw). Only the types the
   // backend library emits, plus its customer/platform scopes, ship.
-  /^token_usage\.types\.(?!(?:analyser|communitySummariser|counterpartIdentificator|customer|embedding|ethicist|graphCreator|imageAnalysis|imageGeneration|operator|platform|responder|strategy|summariser|textGeneration|transcription)$)/,
+  /^token_usage\.types\.(?!(?:analyser|blogSummary|blogTranslation|communitySummariser|counterpartIdentificator|customer|embedding|ethicist|graphCreator|imageAnalysis|imageGeneration|operator|platform|responder|retrievalEval|strategy|summariser|textGeneration|transcription)$)/,
+  // Their optional explanations (operation-label.ts operationDescription): same
+  // rule, only the library-emitted types ship one.
+  /^token_usage\.type_descriptions\.(?!(?:analyser|blogSummary|blogTranslation|communitySummariser|counterpartIdentificator|embedding|ethicist|graphCreator|imageAnalysis|imageGeneration|operator|responder|retrievalEval|strategy|summariser|textGeneration|transcription)$)/,
 ];
 
 // Values the app-word rule would flag although the word is the library's own
