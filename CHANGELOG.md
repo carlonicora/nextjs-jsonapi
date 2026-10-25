@@ -1,3 +1,9 @@
+## [6.1.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.0.0...v6.1.0) (2026-10-25)
+
+### 🚀 Features
+
+* **tokenusage:** name every library operation type and explain it in a tooltip ([0c68f43](https://github.com/carlonicora/nextjs-jsonapi/commit/0c68f43b7d4aaede80e56347b8c163b9a927eee6))
+
 ## [6.0.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v5.7.3...v6.0.0) (2026-10-24)
 
 ### ⚠ BREAKING CHANGES
