@@ -38,3 +38,32 @@ describe("Company.aiEnabled", () => {
     expect(company.aiEnabled).toBe(true);
   });
 });
+
+describe("Company credit-warning fields", () => {
+  it("rehydrates credit-warning fields", () => {
+    const company = new Company().rehydrate({
+      jsonApi: {
+        attributes: {
+          creditsGrantedThisPeriod: 200,
+          creditWarningSentAt: "2026-10-25T10:00:00.000Z",
+          creditWarningOffer: "pack",
+        },
+      },
+    } as any);
+
+    expect(company.creditsGrantedThisPeriod).toBe(200);
+    expect(company.creditWarningSentAt).toBeInstanceOf(Date);
+    expect(company.creditWarningSentAt?.toISOString()).toBe("2026-10-25T10:00:00.000Z");
+    expect(company.creditWarningDismissedAt).toBeUndefined();
+    expect(company.creditWarningOffer).toBe("pack");
+  });
+
+  it("leaves every credit-warning getter undefined when the attributes are absent", () => {
+    const company = new Company().rehydrate({ jsonApi: { attributes: {} } } as any);
+
+    expect(company.creditsGrantedThisPeriod).toBeUndefined();
+    expect(company.creditWarningSentAt).toBeUndefined();
+    expect(company.creditWarningDismissedAt).toBeUndefined();
+    expect(company.creditWarningOffer).toBeUndefined();
+  });
+});

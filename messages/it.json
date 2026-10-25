@@ -628,6 +628,14 @@
         "subscribe": "Abbonati",
         "title": "Conferma il tuo abbonamento"
       },
+      "credit_warning": {
+        "title": "Hai usato l'{percent}% dei tuoi crediti IA.",
+        "body": "Quando finiscono, tutto continua a funzionare tranne l'IA.",
+        "subscribe": "Abbonati",
+        "upgrade": "Passa a un piano superiore",
+        "add_pack": "Aggiungi un pacchetto di crediti",
+        "dismiss": "Chiudi"
+      },
       "dashboard": {
         "errors": {
           "load_customer": "Impossibile caricare l'account di fatturazione",

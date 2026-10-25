@@ -1,6 +1,7 @@
 import { ApiDataInterface } from "../../../core";
 import { FeatureInterface } from "../../feature/data/feature.interface";
 import { ModuleInterface } from "../../module/data/module.interface";
+import type { CreditWarningOffer } from "../../billing/data/credit-warning";
 
 export type CompanyInput = {
   id: string;
@@ -44,6 +45,16 @@ export interface CompanyInterface extends ApiDataInterface {
    * defaults an absent attribute to `true`, so the getter always has a value.
    */
   get aiEnabled(): boolean;
+
+  /**
+   * Credit-warning state, written by the server only (never sent by
+   * `createJsonApi()`). All four are absent until the feature is on and the
+   * company has received a monthly grant.
+   */
+  get creditsGrantedThisPeriod(): number | undefined;
+  get creditWarningSentAt(): Date | undefined;
+  get creditWarningDismissedAt(): Date | undefined;
+  get creditWarningOffer(): CreditWarningOffer | undefined;
 
   get features(): FeatureInterface[];
   get modules(): ModuleInterface[];

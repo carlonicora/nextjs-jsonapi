@@ -1,4 +1,5 @@
 import { AbstractService, EndpointCreator, HttpMethod, Modules, NextRef } from "../../../core";
+import { CREDIT_WARNING_DISMISS_SEGMENT } from "../../billing/data/credit-warning";
 import { CompanyInput, CompanyInterface } from "./company.interface";
 
 export class CompanyService extends AbstractService {
@@ -80,6 +81,22 @@ export class CompanyService extends AbstractService {
       method: HttpMethod.PUT,
       endpoint: new EndpointCreator({ endpoint: Modules.Company, id: params.id, childEndpoint: "license" }).generate(),
       input: params,
+    });
+  }
+
+  /**
+   * Dismisses this period's credit warning for the company. The request has no
+   * body: the server stamps the dismissal itself and answers 204.
+   */
+  static async dismissCreditWarning(params: { companyId: string }): Promise<void> {
+    await this.callApi({
+      type: Modules.Company,
+      method: HttpMethod.POST,
+      endpoint: new EndpointCreator({
+        endpoint: Modules.Company,
+        id: params.companyId,
+        childEndpoint: CREDIT_WARNING_DISMISS_SEGMENT,
+      }).generate(),
     });
   }
 }

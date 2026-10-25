@@ -24,6 +24,11 @@ export * from "../features/auth/components";
 export * from "../features/administration";
 export * from "../features/ai-connection";
 // Billing components moved to separate entry point: @carlonicora/nextjs-jsonapi/billing
+// Exception: the credit warning banner mounts on every page, so it ships from this
+// Stripe-free entry. Its import chain must never reach `@stripe/*`.
+export { CreditWarningBanner } from "../features/billing/components/widgets/CreditWarningBanner";
+export type { CreditWarningBannerProps } from "../features/billing/components/widgets/CreditWarningBanner";
+export { isCreditWarningActive, CREDIT_WARNING_DISMISS_SEGMENT } from "../features/billing/data/credit-warning";
 export * from "../features/company/components";
 export * from "../features/content/components";
 export * from "../features/how-to/components";

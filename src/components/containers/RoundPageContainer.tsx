@@ -239,9 +239,14 @@ export function RoundPageContainer({
   // between the shell and the content is dropped so the document is the only
   // scroller; leaving a single `overflow-hidden` in that chain silently
   // truncates the page instead of letting it grow.
+  //
+  // `--app-banner-h` is the height of an app banner drawn above the header (a
+  // demo bar, a credit warning). Unset, it is 0 and the height is unchanged; an
+  // app that renders such a banner publishes its live height on <html>, or the
+  // banner pushes the page past the viewport and the document scrolls it away.
   const shellHeight = isFixed
-    ? `h-[calc(100svh-var(--app-header-h,3rem))]`
-    : `min-h-[calc(100svh-var(--app-header-h,3rem))]`;
+    ? `h-[calc(100svh-var(--app-header-h,3rem)-var(--app-banner-h,0px))]`
+    : `min-h-[calc(100svh-var(--app-header-h,3rem)-var(--app-banner-h,0px))]`;
   const clip = isFixed ? `overflow-hidden` : ``;
   const scrollY = isFixed ? `overflow-y-auto` : ``;
   // The bar is an in-flow sibling of the content (see MobileNavigationBar's own

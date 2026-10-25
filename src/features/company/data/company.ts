@@ -1,6 +1,7 @@
 import { AbstractApiData, JsonApiHydratedDataInterface, Modules } from "../../../core";
 import { FeatureInterface } from "../../feature";
 import { ModuleInterface } from "../../module";
+import type { CreditWarningOffer } from "../../billing/data/credit-warning";
 import { CompanyInput, CompanyInterface } from "./company.interface";
 
 export class Company extends AbstractApiData implements CompanyInterface {
@@ -15,6 +16,11 @@ export class Company extends AbstractApiData implements CompanyInterface {
   private _availableMonthlyCredits: number = 0;
   private _availableExtraCredits: number = 0;
   private _aiEnabled?: boolean;
+
+  private _creditsGrantedThisPeriod?: number;
+  private _creditWarningSentAt?: Date;
+  private _creditWarningDismissedAt?: Date;
+  private _creditWarningOffer?: CreditWarningOffer;
 
   private _features?: FeatureInterface[];
   private _modules?: ModuleInterface[];
@@ -61,6 +67,22 @@ export class Company extends AbstractApiData implements CompanyInterface {
 
   get aiEnabled(): boolean {
     return this._aiEnabled ?? true;
+  }
+
+  get creditsGrantedThisPeriod(): number | undefined {
+    return this._creditsGrantedThisPeriod;
+  }
+
+  get creditWarningSentAt(): Date | undefined {
+    return this._creditWarningSentAt;
+  }
+
+  get creditWarningDismissedAt(): Date | undefined {
+    return this._creditWarningDismissedAt;
+  }
+
+  get creditWarningOffer(): CreditWarningOffer | undefined {
+    return this._creditWarningOffer;
   }
 
   get features(): FeatureInterface[] {
@@ -129,6 +151,15 @@ export class Company extends AbstractApiData implements CompanyInterface {
     this._availableMonthlyCredits = data.jsonApi.attributes.availableMonthlyCredits ?? 0;
     this._availableExtraCredits = data.jsonApi.attributes.availableExtraCredits ?? 0;
     this._aiEnabled = data.jsonApi.attributes.aiEnabled ?? true;
+
+    this._creditsGrantedThisPeriod = data.jsonApi.attributes.creditsGrantedThisPeriod ?? undefined;
+    this._creditWarningSentAt = data.jsonApi.attributes.creditWarningSentAt
+      ? new Date(data.jsonApi.attributes.creditWarningSentAt)
+      : undefined;
+    this._creditWarningDismissedAt = data.jsonApi.attributes.creditWarningDismissedAt
+      ? new Date(data.jsonApi.attributes.creditWarningDismissedAt)
+      : undefined;
+    this._creditWarningOffer = data.jsonApi.attributes.creditWarningOffer ?? undefined;
 
     this._legal_address = data.jsonApi.attributes.legal_address;
     this._street_number = data.jsonApi.attributes.street_number;

@@ -14,6 +14,7 @@ import { SubscriptionsContainer } from "../../stripe-subscription/components";
 import { SubscriptionWizard } from "../../stripe-subscription/components/wizards";
 import { MeterInterface, MeterSummaryInterface, StripeUsageService } from "../../stripe-usage";
 import { UsageContainer } from "../../stripe-usage/components";
+import { resolveChangePlanTarget } from "../../data/credit-warning";
 import {
   BillingUsageSummaryCard,
   CustomerInfoCard,
@@ -88,6 +89,10 @@ export function BillingDashboardContainer() {
   // Wizard state - lifted from SubscriptionsContainer to avoid nested dialogs
   const [showWizard, setShowWizard] = useState(false);
   const [editingSubscription, setEditingSubscription] = useState<StripeSubscriptionInterface | null>(null);
+
+  // `?action=change-plan` needs the subscriptions to pick the wizard's target, so the
+  // URL effect only records the intent and a second effect acts on it once they load.
+  const [pendingChangePlan, setPendingChangePlan] = useState(false);
 
   // Check if company has metered subscriptions
   const hasMeteredSubscriptions = useCallback((): boolean => {
@@ -286,11 +291,13 @@ export function BillingDashboardContainer() {
   // Handle URL action parameter for deep linking. `?action=subscribe` records the
   // intent to subscribe; the wizard itself only renders once a customer exists, so a
   // company without one sees the setup card first and the wizard opens right after
-  // "Set Up Billing Account" succeeds.
+  // "Set Up Billing Account" succeeds. `?action=change-plan` records a pending intent
+  // that the effect below resolves once the subscriptions have loaded.
   useEffect(() => {
     const action = searchParams.get("action");
-    if (action === "subscribe") {
-      setShowWizard(true);
+    if (action === "subscribe" || action === "change-plan") {
+      if (action === "subscribe") setShowWizard(true);
+      else setPendingChangePlan(true);
       // Drop only `action`, so a refresh does not re-trigger it. Every other parameter
       // must survive: a host page (the settings hub) selects this dashboard through
       // `?section=`, and losing it switches the page away and unmounts this component.
@@ -306,6 +313,16 @@ export function BillingDashboardContainer() {
       );
     }
   }, [searchParams]);
+
+  // Act on a pending `?action=change-plan` once the subscriptions fetch has finished:
+  // open the wizard on the active or trialing recurring subscription, or the subscribe
+  // wizard when there is none. The intent is cleared in the same step, so the reload
+  // after the wizard closes does not open it again.
+  useEffect(() => {
+    if (!pendingChangePlan || loading.subscriptions) return;
+    setPendingChangePlan(false);
+    handleOpenWizard(resolveChangePlanTarget(data.subscriptions));
+  }, [pendingChangePlan, loading.subscriptions, data.subscriptions, handleOpenWizard]);
 
   // Detect critical subscriptions for alert banners
   const criticalSubscriptions = data.subscriptions.filter(

@@ -397,4 +397,10 @@ export const BILLING_UI_I18N_KEYS = [
   "billing.ui.wizard.review.use_another_card",
   "billing.ui.wizard.steps.select_plan",
   "billing.ui.wizard.subscribe_description",
+  "billing.ui.credit_warning.title",
+  "billing.ui.credit_warning.body",
+  "billing.ui.credit_warning.subscribe",
+  "billing.ui.credit_warning.upgrade",
+  "billing.ui.credit_warning.add_pack",
+  "billing.ui.credit_warning.dismiss",
 ] as const;

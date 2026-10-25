@@ -628,6 +628,14 @@
         "subscribe": "Subscribe",
         "title": "Confirm Your Subscription"
       },
+      "credit_warning": {
+        "title": "You've used {percent}% of your AI credits.",
+        "body": "Everything except AI keeps working when they run out.",
+        "subscribe": "Subscribe",
+        "upgrade": "Upgrade your plan",
+        "add_pack": "Add a credit pack",
+        "dismiss": "Dismiss"
+      },
       "dashboard": {
         "errors": {
           "load_customer": "Failed to load billing account",
