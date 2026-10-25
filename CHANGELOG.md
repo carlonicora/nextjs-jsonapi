@@ -1,3 +1,9 @@
+## [6.3.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.2.0...v6.3.0) (2026-10-25)
+
+### 🚀 Features
+
+* **billing:** credit warning banner and a change-plan deep link ([142765b](https://github.com/carlonicora/nextjs-jsonapi/commit/142765bc80dce2ab6b331234f9c11a6313e272fb))
+
 ## [6.2.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.1.0...v6.2.0) (2026-10-25)
 
 ### 🚀 Features
