@@ -1,3 +1,9 @@
+## [6.8.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.7.0...v6.8.0) (2026-10-26)
+
+### 🚀 Features
+
+* **company:** read the stored trial end in the subscription status ([cd02463](https://github.com/carlonicora/nextjs-jsonapi/commit/cd02463922e63bc29c8315723f31e3dccffcca4f))
+
 ## [6.7.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.6.0...v6.7.0) (2026-10-26)
 
 ### 🚀 Features
