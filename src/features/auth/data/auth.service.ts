@@ -11,6 +11,7 @@ import {
 import { JsonApiDelete, JsonApiGet, JsonApiPost } from "../../../unified";
 import { UserInterface } from "../../user";
 import { getTokenHandler } from "../config";
+import { PendingRegistrationInterface } from "./pending-registration.interface";
 import { TwoFactorChallengeInterface } from "./two-factor-challenge.interface";
 
 export class AuthService extends AbstractService {
@@ -170,6 +171,24 @@ export class AuthService extends AbstractService {
         })),
       });
     }
+  }
+
+  /**
+   * Reads an OAuth sign-up waiting for consent. Throws an Error carrying
+   * `status` (404 when the pending registration expired); callers catch it.
+   */
+  static async findPendingRegistration(params: { pendingId: string }): Promise<PendingRegistrationInterface> {
+    return this.callApi<PendingRegistrationInterface>({
+      type: Modules.PendingRegistration,
+      method: HttpMethod.GET,
+      endpoint: new EndpointCreator({
+        endpoint: Modules.Auth,
+        id: "oauth",
+        childEndpoint: Modules.PendingRegistration,
+        childId: params.pendingId,
+      }).generate(),
+      suppressGlobalError: true,
+    });
   }
 
   static async completeOAuthRegistration(params: {

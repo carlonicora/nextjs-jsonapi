@@ -45,6 +45,7 @@ export * from "../features/auth/two-factor-enable.module";
 export * from "../features/auth/two-factor-challenge.module";
 export * from "../features/auth/two-factor-status.module";
 export * from "../features/auth/backup-code-verify.module";
+export * from "../features/auth/pending-registration.module";
 export * from "../features/auth/data";
 export * from "../features/auth/enums";
 export * from "../features/billing/data";

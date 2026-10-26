@@ -73,6 +73,8 @@ export interface FoundationModuleDefinitions {
   TwoFactorChallenge: ModuleWithPermissions;
   TwoFactorStatus: ModuleWithPermissions;
   BackupCodeVerify: ModuleWithPermissions;
+  // OAuth sign-up awaiting consent
+  PendingRegistration: ModuleWithPermissions;
   // RBAC modules
   PermissionMapping: ModuleWithPermissions;
   ModulePaths: ModuleWithPermissions;

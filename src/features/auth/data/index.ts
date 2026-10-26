@@ -22,3 +22,5 @@ export * from "./passkey-verify-login";
 export * from "./two-factor-enable";
 export * from "./two-factor-challenge";
 export * from "./backup-code-verify";
+export * from "./pending-registration.interface";
+export * from "./pending-registration";
