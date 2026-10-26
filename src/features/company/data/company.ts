@@ -11,6 +11,7 @@ export class Company extends AbstractApiData implements CompanyInterface {
   private _configurations?: any;
 
   private _isActiveSubscription: boolean = false;
+  private _trialEndsAt?: Date;
 
   private _monthlyCredits: number = 0;
   private _availableMonthlyCredits: number = 0;
@@ -51,6 +52,10 @@ export class Company extends AbstractApiData implements CompanyInterface {
 
   get isActiveSubscription(): boolean {
     return this._isActiveSubscription ?? false;
+  }
+
+  get trialEndsAt(): Date | undefined {
+    return this._trialEndsAt;
   }
 
   get monthlyCredits(): number {
@@ -147,6 +152,7 @@ export class Company extends AbstractApiData implements CompanyInterface {
     this._logo = data.jsonApi.attributes.logo;
     this._logoUrl = data.jsonApi.attributes.logoUrl;
     this._isActiveSubscription = data.jsonApi.attributes.isActiveSubscription ?? false;
+    this._trialEndsAt = data.jsonApi.attributes.trialEndsAt ? new Date(data.jsonApi.attributes.trialEndsAt) : undefined;
     this._monthlyCredits = data.jsonApi.attributes.monthlyCredits ?? 0;
     this._availableMonthlyCredits = data.jsonApi.attributes.availableMonthlyCredits ?? 0;
     this._availableExtraCredits = data.jsonApi.attributes.availableExtraCredits ?? 0;

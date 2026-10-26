@@ -36,6 +36,13 @@ export interface CompanyInterface extends ApiDataInterface {
 
   get isActiveSubscription(): boolean;
 
+  /**
+   * When the company's trial ends, written by the server only (never sent by
+   * `createJsonApi()`). Absent for companies whose trial end was never stored;
+   * callers then derive it from `createdAt`.
+   */
+  get trialEndsAt(): Date | undefined;
+
   get monthlyCredits(): number;
   get availableMonthlyCredits(): number;
   get availableExtraCredits(): number;

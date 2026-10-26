@@ -193,4 +193,63 @@ describe("useSubscriptionStatus", () => {
     expect(after.result.current.isBlocked).toBe(true);
     expect(after.result.current.status).toBe("expired");
   });
+  describe("stored trialEndsAt", () => {
+    const NOW = new Date("2026-10-26T10:00:00.000Z");
+
+    beforeEach(() => {
+      vi.setSystemTime(NOW);
+      userMock.currentUser = { roles: [] };
+    });
+
+    it("not active, trialEndsAt in the future → trial, not blocked", () => {
+      const trialEndsAt = new Date("2026-11-05T10:00:00.000Z");
+      userMock.company = { isActiveSubscription: false, createdAt: daysAgo(60, NOW), trialEndsAt };
+
+      const { result } = renderHook(() => useSubscriptionStatus());
+
+      expect(result.current.status).toBe("trial");
+      expect(result.current.daysRemaining).toBe(10);
+      expect(result.current.isBlocked).toBe(false);
+      expect(result.current.trialEndsAt?.getTime()).toBe(trialEndsAt.getTime());
+    });
+
+    it("not active, trialEndsAt in the past → expired, blocked", () => {
+      userMock.company = {
+        isActiveSubscription: false,
+        createdAt: daysAgo(60, NOW),
+        trialEndsAt: new Date("2026-10-20T10:00:00.000Z"),
+      };
+
+      const { result } = renderHook(() => useSubscriptionStatus());
+
+      expect(result.current.status).toBe("expired");
+      expect(result.current.isBlocked).toBe(true);
+    });
+
+    it("not active, no trialEndsAt → createdAt + 14 days (unchanged)", () => {
+      const createdAt = daysAgo(4, NOW);
+      userMock.company = { isActiveSubscription: false, createdAt, trialEndsAt: undefined };
+
+      const { result } = renderHook(() => useSubscriptionStatus());
+
+      expect(result.current.status).toBe("trial");
+      expect(result.current.daysRemaining).toBe(10);
+      expect(result.current.isBlocked).toBe(false);
+      expect(result.current.trialEndsAt?.getTime()).toBe(createdAt.getTime() + 14 * DAY_MS);
+    });
+
+    it("active ignores trialEndsAt", () => {
+      userMock.company = {
+        isActiveSubscription: true,
+        createdAt: daysAgo(60, NOW),
+        trialEndsAt: new Date("2026-11-05T10:00:00.000Z"),
+      };
+
+      const { result } = renderHook(() => useSubscriptionStatus());
+
+      expect(result.current.status).toBe("active");
+      expect(result.current.trialEndsAt).toBeNull();
+      expect(result.current.isBlocked).toBe(false);
+    });
+  });
 });

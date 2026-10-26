@@ -86,8 +86,10 @@ export function useSubscriptionStatus(): TrialSubscriptionStatus {
 
     // No active subscription — but that alone is NOT a block. The trial window
     // has to have elapsed too, and this mirrors the server rule in
-    // apps/api .../campaign/entities/campaign-lock.cypher.ts. Keep the two in
-    // step: if TRIAL_DAYS changes here it must change there.
+    // apps/api/src/features/campaign/entities/campaign-lock.cypher.ts. Keep the
+    // two in step: the trial ends at the stored company.trialEndsAt when the
+    // server wrote one, otherwise at createdAt + TRIAL_DAYS. If either the
+    // fallback or TRIAL_DAYS changes here it must change there.
     //
     // Blocking on the flag alone is wrong in practice. isActiveSubscription is
     // only written true once a Stripe subscription actually reaches
@@ -100,7 +102,7 @@ export function useSubscriptionStatus(): TrialSubscriptionStatus {
     // viewer's local clock: across a DST change the window grows or shrinks by
     // an hour, and dividing that by a fixed 24h day then shows one day too many.
     const createdAt = new Date(company.createdAt);
-    const trialEndsAt = new Date(createdAt.getTime() + TRIAL_DAYS * DAY_MS);
+    const trialEndsAt = company.trialEndsAt ?? new Date(createdAt.getTime() + TRIAL_DAYS * DAY_MS);
 
     const now = new Date();
     const msRemaining = trialEndsAt.getTime() - now.getTime();

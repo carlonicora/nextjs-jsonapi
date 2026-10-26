@@ -67,3 +67,26 @@ describe("Company credit-warning fields", () => {
     expect(company.creditWarningOffer).toBeUndefined();
   });
 });
+
+describe("Company.trialEndsAt", () => {
+  it("rehydrates trialEndsAt as a Date", () => {
+    const company = new Company().rehydrate({
+      jsonApi: { attributes: { trialEndsAt: "2026-11-09T10:00:00.000Z" } },
+    } as any);
+
+    expect(company.trialEndsAt).toBeInstanceOf(Date);
+    expect(company.trialEndsAt?.toISOString()).toBe("2026-11-09T10:00:00.000Z");
+  });
+
+  it("is undefined when the attribute is absent", () => {
+    const company = new Company().rehydrate({ jsonApi: { attributes: {} } } as any);
+
+    expect(company.trialEndsAt).toBeUndefined();
+  });
+
+  it("is never sent by createJsonApi", () => {
+    const payload = new Company().createJsonApi({ id: "company_1", name: "Acme" });
+
+    expect(payload.data.attributes).not.toHaveProperty("trialEndsAt");
+  });
+});
