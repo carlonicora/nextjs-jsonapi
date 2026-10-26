@@ -1,4 +1,28 @@
 {
+  "accountDeletion": {
+    "admin": {
+      "body": "L'account sarà eliminato il {date}. L'utente riceve un'email con un link per mantenerlo, e anche accedere lo mantiene.",
+      "bodyNoEmail": "L'account sarà eliminato il {date}. Non abbiamo un indirizzo email per questo utente, quindi solo accedendo potrà mantenerlo.",
+      "confirm": "Elimina account",
+      "confirmLabel": "Scrivi {value} per confermare",
+      "confirmWord": "ELIMINA",
+      "pending": "Eliminazione prevista il {date}",
+      "subscription": "L'abbonamento viene annullato oggi, senza rimborso.",
+      "title": "Eliminare questo account?",
+      "trigger": "Elimina account"
+    },
+    "cancelled": {
+      "body": "Il tuo abbonamento è stato annullato quando lo hai chiesto.",
+      "choosePlan": "Scegli un piano",
+      "title": "Bentornato. Il tuo account non sarà eliminato."
+    },
+    "keep": {
+      "failure": "Questo link non funziona più. Se il tuo account esiste ancora, accedi per mantenerlo.",
+      "login": "Accedi",
+      "successBody": "Non lo elimineremo. L'abbonamento resta annullato: scegli di nuovo un piano da Fatturazione quando accedi.",
+      "successTitle": "Il tuo account è al sicuro"
+    }
+  },
   "administration": {
     "ai_connections": {
       "description": "Provider AI, modelli e catene di fallback"

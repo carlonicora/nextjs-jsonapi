@@ -96,6 +96,8 @@ export interface FoundationModuleDefinitions {
   AnalyticsBreakdown: ModuleWithPermissions;
   AnalyticsSession: ModuleWithPermissions;
   AnalyticsPageView: ModuleWithPermissions;
+  // Account deletion (opt-in: registered only by apps that enable it)
+  AccountDeletion: ModuleWithPermissions;
 }
 
 // App-specific modules - apps will augment this interface ONLY
@@ -148,6 +150,17 @@ class ModuleRegistryClass {
     }
 
     return module as ModuleDefinitions[K];
+  }
+
+  /**
+   * True when a module is registered under `name`. Never throws, so a component
+   * can check for an opt-in module the app may not have registered.
+   */
+  has(name: string): boolean {
+    // Bootstrap only an empty registry (as findByName does): an app that never
+    // registers `name` must not re-run its bootstrapper on every check.
+    if (this._modules.size === 0) tryBootstrap();
+    return this._modules.has(name);
   }
 
   findByName(moduleName: string): ModuleWithPermissions {

@@ -8,6 +8,10 @@ import { usePageUrlGenerator } from "../../../hooks";
 import { BreadcrumbItemData } from "../../../interfaces";
 import { Action } from "../../../permissions";
 import { getRoleId } from "../../../roles";
+import {
+  AccountDeletionAdminTrigger,
+  isAccountDeletionEnabled,
+} from "../../account-deletion/components/AccountDeletionAdminTrigger";
 import { UserDeleter, UserEditor, UserReactivator, UserResentInvitationEmail } from "../components/forms";
 import { UserInterface } from "../data";
 import { useCurrentUserContext } from "./CurrentUserContext";
@@ -83,6 +87,10 @@ export const UserProvider = ({ children, dehydratedUser }: UserProviderProps) =>
           functions.push(<UserResentInvitationEmail key={`UserResentInvitationEmail`} user={user} />);
 
         functions.push(<UserDeleter key={`UserDeleter`} user={user} />);
+
+        // Opt-in: only apps that registered AccountDeletionModule, platform administrators only.
+        if (hasRole(getRoleId().Administrator) && isAccountDeletionEnabled())
+          functions.push(<AccountDeletionAdminTrigger key={`AccountDeletionAdminTrigger`} user={user} />);
       }
 
       functions.push(<UserEditor key={`UserEditor`} user={user} propagateChanges={setUser} />);

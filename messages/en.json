@@ -1,4 +1,28 @@
 {
+  "accountDeletion": {
+    "admin": {
+      "body": "The account will be deleted on {date}. The user gets an email with a link to keep it, and logging in also keeps it.",
+      "bodyNoEmail": "The account will be deleted on {date}. We have no email address for this user, so only logging in keeps the account.",
+      "confirm": "Delete account",
+      "confirmLabel": "Type {value} to confirm",
+      "confirmWord": "DELETE",
+      "pending": "Deletion scheduled for {date}",
+      "subscription": "Their subscription is cancelled today, with no refund.",
+      "title": "Delete this account?",
+      "trigger": "Delete account"
+    },
+    "cancelled": {
+      "body": "Your subscription was cancelled when you asked.",
+      "choosePlan": "Choose a plan",
+      "title": "Welcome back. Your account will not be deleted."
+    },
+    "keep": {
+      "failure": "This link no longer works. If your account still exists, log in to keep it.",
+      "login": "Log in",
+      "successBody": "We will not delete it. Your subscription stays cancelled: pick a plan again from Billing when you log in.",
+      "successTitle": "Your account is safe"
+    }
+  },
   "administration": {
     "ai_connections": {
       "description": "AI providers, models and fallback chains"

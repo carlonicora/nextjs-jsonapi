@@ -18,6 +18,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "../../../../shadcnui";
+import { markAccountDeletionCancelled } from "../../../account-deletion/utils/account-deletion-notice";
 import { UserInterface } from "../../../user";
 import { useCurrentUserContext } from "../../../user/contexts";
 import { useAuthContext } from "../../contexts";
@@ -46,6 +47,7 @@ export function TwoFactorChallenge() {
   }
 
   const handleSuccess = (auth: AuthInterface) => {
+    if (auth.deletionCancelled) markAccountDeletionCancelled();
     setPendingTwoFactor(undefined);
     setUser(auth.user);
 

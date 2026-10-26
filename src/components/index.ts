@@ -20,6 +20,7 @@ export * from "./hero";
 export { parseFiscalData } from "../utils/fiscal-utils";
 
 // Feature components
+export * from "../features/account-deletion/components";
 export * from "../features/auth/components";
 export * from "../features/administration";
 export * from "../features/ai-connection";

@@ -9,6 +9,7 @@ import {
   rehydrate,
 } from "../../../core";
 import { JsonApiDelete, JsonApiGet, JsonApiPost } from "../../../unified";
+import { markAccountDeletionCancelled } from "../../account-deletion/utils/account-deletion-notice";
 import { UserInterface } from "../../user";
 import { getTokenHandler } from "../config";
 import { PendingRegistrationInterface } from "./pending-registration.interface";
@@ -44,6 +45,9 @@ export class AuthService extends AbstractService {
 
     // Normal auth response
     const auth = apiResponse.data as AuthInterface;
+
+    // Login returns only the user to Login.tsx, so the flag is read here.
+    if (auth.deletionCancelled) markAccountDeletionCancelled();
 
     // Use injected token handler if configured
     const handler = getTokenHandler();

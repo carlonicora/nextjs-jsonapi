@@ -30,6 +30,11 @@ export * from "../utils";
 export * from "../permissions";
 
 // Feature data classes, interfaces, and modules
+// Account deletion (opt-in): data, module and the login-notice flag helpers.
+// Server-safe; the client components ship from the components entry.
+export * from "../features/account-deletion/account-deletion.module";
+export * from "../features/account-deletion/data";
+export * from "../features/account-deletion/utils";
 export * from "../features/auth/auth.module";
 export * from "../features/auth/totp-authenticator.module";
 export * from "../features/auth/totp-setup.module";

@@ -35,4 +35,6 @@ export interface AuthInterface extends ApiDataInterface {
   get token(): string;
   get refreshToken(): string;
   get user(): UserInterface;
+  /** True on the session created by the login that cancelled a pending account deletion. */
+  get deletionCancelled(): boolean;
 }

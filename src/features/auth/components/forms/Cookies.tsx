@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { JsonApiHydratedDataInterface, Modules, rehydrate } from "../../../../core";
 import { useI18nRouter } from "../../../../i18n";
+import { markAccountDeletionCancelled } from "../../../account-deletion/utils/account-deletion-notice";
 import { UserInterface } from "../../../user";
 import { useCurrentUserContext } from "../../../user/contexts";
 import { AuthInterface } from "../../data";
@@ -18,6 +19,8 @@ export function Cookies({ dehydratedAuth, page }: { dehydratedAuth: JsonApiHydra
     async function saveTokenOnServer() {
       await AuthService.saveToken({ dehydratedAuth });
       const auth: AuthInterface = rehydrate(Modules.Auth, dehydratedAuth) as AuthInterface;
+      // Discord / Google path: the flag is on the Auth document from the code exchange.
+      if (auth.deletionCancelled) markAccountDeletionCancelled();
       setUser(auth.user as UserInterface);
       setHasSaved(true);
 

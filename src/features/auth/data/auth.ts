@@ -6,6 +6,12 @@ export class Auth extends AbstractApiData implements AuthInterface {
   private _token?: string;
   private _refreshToken?: string;
   private _user?: UserInterface;
+  private _deletionCancelled: boolean = false;
+
+  /** True on the session created by the login that cancelled a pending account deletion. */
+  get deletionCancelled(): boolean {
+    return this._deletionCancelled;
+  }
 
   get token(): string {
     if (!this._token) throw new Error("Token is not defined");
@@ -27,6 +33,7 @@ export class Auth extends AbstractApiData implements AuthInterface {
 
     this._token = data.jsonApi.attributes.token ?? undefined;
     this._refreshToken = data.jsonApi.attributes.refreshToken ?? undefined;
+    this._deletionCancelled = data.jsonApi.attributes.deletionCancelled === true;
 
     this._user = this._readIncluded(data, "user", Modules.User) as UserInterface;
 
