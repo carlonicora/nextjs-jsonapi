@@ -1,3 +1,9 @@
+## [6.7.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.6.0...v6.7.0) (2026-10-26)
+
+### 🚀 Features
+
+* **account-deletion:** add the account deletion client, notice, keep page and admin trigger ([a72bb11](https://github.com/carlonicora/nextjs-jsonapi/commit/a72bb110d517f3df1be7edf73f20e52818e4331b))
+
 ## [6.6.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.5.0...v6.6.0) (2026-10-26)
 
 ### 🚀 Features
