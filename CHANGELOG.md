@@ -1,3 +1,9 @@
+## [6.6.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.5.0...v6.6.0) (2026-10-26)
+
+### 🚀 Features
+
+* **auth:** read a pending OAuth sign-up for the consent page ([4435a2d](https://github.com/carlonicora/nextjs-jsonapi/commit/4435a2dc10fac86a56a803bed2e6ff8026b9ea09))
+
 ## [6.5.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.4.0...v6.5.0) (2026-10-25)
 
 ### 🚀 Features
