@@ -37,6 +37,12 @@ interface Props {
    * disable, never replacing it.
    */
   disabled?: boolean;
+  /**
+   * Rendered in place of the composer: the threads stay readable and no
+   * message can be sent — the suggested questions render disabled too (e.g.
+   * the consuming app's plan gate). Omitted, the composer renders as before.
+   */
+  composerNotice?: React.ReactNode;
 }
 
 /**
@@ -54,6 +60,7 @@ export function AssistantPageContainer({
   detailsTitle,
   detailsIcon,
   disabled,
+  composerNotice,
 }: Props) {
   const t = useTranslations();
   const ctx = useAssistantContext();
@@ -98,7 +105,7 @@ export function AssistantPageContainer({
               messages={ctx.messages}
               sending={ctx.sending}
               status={ctx.status}
-              onSelectFollowUp={ctx.sendMessage}
+              onSelectFollowUp={composerNotice ? undefined : ctx.sendMessage}
               failedMessageIds={ctx.failedMessageIds}
               onRetry={ctx.retrySend}
               renderApprovalAction={renderApprovalAction}
@@ -116,14 +123,18 @@ export function AssistantPageContainer({
             </div>
           </div>
         )}
-        <AssistantBlockNoteComposer
-          onSend={(content, opts) => ctx.sendMessage(content, { contentBlocks: opts.contentBlocks })}
-          disabled={ctx.sending || disabled}
-          mentionSearchFn={mentionSearchFn}
-          mentionSearchParams={mentionSearchParams}
-          mentionResolveFn={mentionResolveFn}
-          suggestionMenuComponent={suggestionMenuComponent}
-        />
+        {composerNotice ? (
+          <div className="border-t p-4">{composerNotice}</div>
+        ) : (
+          <AssistantBlockNoteComposer
+            onSend={(content, opts) => ctx.sendMessage(content, { contentBlocks: opts.contentBlocks })}
+            disabled={ctx.sending || disabled}
+            mentionSearchFn={mentionSearchFn}
+            mentionSearchParams={mentionSearchParams}
+            mentionResolveFn={mentionResolveFn}
+            suggestionMenuComponent={suggestionMenuComponent}
+          />
+        )}
       </div>
     </RoundPageContainer>
   );

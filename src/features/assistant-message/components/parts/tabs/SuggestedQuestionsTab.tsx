@@ -2,7 +2,8 @@
 
 interface Props {
   questions: string[];
-  onSelect: (question: string) => void;
+  /** Omitted, the questions render disabled (read-only thread, no sending). */
+  onSelect?: (question: string) => void;
 }
 
 export function SuggestedQuestionsTab({ questions, onSelect }: Props) {
@@ -13,8 +14,9 @@ export function SuggestedQuestionsTab({ questions, onSelect }: Props) {
         <button
           key={q}
           type="button"
-          onClick={() => onSelect(q)}
-          className="border-border bg-muted/30 hover:bg-muted rounded-md border px-3 py-1.5 text-start text-sm"
+          disabled={!onSelect}
+          onClick={() => onSelect?.(q)}
+          className="border-border bg-muted/30 hover:bg-muted disabled:hover:bg-muted/30 rounded-md border px-3 py-1.5 text-start text-sm disabled:cursor-not-allowed disabled:opacity-50"
         >
           {q}
         </button>

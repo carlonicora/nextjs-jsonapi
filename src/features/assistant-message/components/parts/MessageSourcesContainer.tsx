@@ -9,7 +9,7 @@ import { MessageSourcesPanel } from "./MessageSourcesPanel";
 interface Props {
   message: AssistantMessageInterface;
   isLatestAssistant: boolean;
-  onSelectFollowUp: (q: string) => void;
+  onSelectFollowUp?: (q: string) => void;
 }
 
 class SourcesFetcher extends ClientAbstractService {

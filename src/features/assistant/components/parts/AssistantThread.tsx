@@ -10,7 +10,8 @@ interface Props {
   messages: AssistantMessageInterface[];
   sending: boolean;
   status?: string;
-  onSelectFollowUp: (q: string) => void;
+  /** Omitted, the thread is read-only: suggested questions render disabled. */
+  onSelectFollowUp?: (q: string) => void;
   failedMessageIds?: Set<string>;
   onRetry?: (tempId: string) => void;
   renderApprovalAction?: ApprovalActionRenderer;

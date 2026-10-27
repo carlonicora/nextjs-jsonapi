@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { ModuleRegistry } from "../../../../../core/registry/ModuleRegistry";
 import { MessageSourcesPanel } from "../MessageSourcesPanel";
 
@@ -60,6 +60,22 @@ describe("MessageSourcesPanel", () => {
     // Base UI uses data-active on the active tab/panel; aria-selected reflects active state too.
     expect(tab.getAttribute("aria-selected")).toBe("true");
     expect(screen.getByText("Why?")).toBeInTheDocument();
+  });
+
+  it("suggested questions call onSelectFollowUp when it is given", () => {
+    const onSelectFollowUp = vi.fn();
+    const msg = { ...baseMessage, suggestedQuestions: ["Why?"] };
+    render(<MessageSourcesPanel message={msg} isLatestAssistant={true} onSelectFollowUp={onSelectFollowUp} />);
+    const button = screen.getByRole("button", { name: "Why?" });
+    expect(button).toBeEnabled();
+    fireEvent.click(button);
+    expect(onSelectFollowUp).toHaveBeenCalledWith("Why?");
+  });
+
+  it("suggested questions render disabled without onSelectFollowUp (read-only)", () => {
+    const msg = { ...baseMessage, suggestedQuestions: ["Why?"] };
+    render(<MessageSourcesPanel message={msg} isLatestAssistant={true} />);
+    expect(screen.getByRole("button", { name: "Why?" })).toBeDisabled();
   });
 
   it("does not show Suggested questions tab on non-latest message", () => {

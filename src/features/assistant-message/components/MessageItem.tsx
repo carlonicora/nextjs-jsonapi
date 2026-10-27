@@ -36,7 +36,7 @@ function mentionUrlTransform(url: string): string {
 interface Props {
   message: AssistantMessageInterface;
   isLatestAssistant: boolean;
-  onSelectFollowUp: (q: string) => void;
+  onSelectFollowUp?: (q: string) => void;
   failedMessageIds?: Set<string>;
   onRetry?: (tempId: string) => void;
   renderApprovalAction?: ApprovalActionRenderer;

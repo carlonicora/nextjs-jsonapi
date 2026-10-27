@@ -6,7 +6,7 @@ import { MessageItem, type ApprovalActionRenderer, type MentionRenderer } from "
 
 interface Props {
   messages: AssistantMessageInterface[];
-  onSelectFollowUp: (q: string) => void;
+  onSelectFollowUp?: (q: string) => void;
   failedMessageIds?: Set<string>;
   onRetry?: (tempId: string) => void;
   renderApprovalAction?: ApprovalActionRenderer;

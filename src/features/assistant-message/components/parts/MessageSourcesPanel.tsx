@@ -16,7 +16,7 @@ import { SuggestedQuestionsTab } from "./tabs/SuggestedQuestionsTab";
 interface Props {
   message: AssistantMessageInterface;
   isLatestAssistant: boolean;
-  onSelectFollowUp: (q: string) => void;
+  onSelectFollowUp?: (q: string) => void;
   /**
    * Map of resolved source entities keyed by `chunk.nodeId`. When provided, the
    * Contents and Citations tabs use these to render real entity names. The
