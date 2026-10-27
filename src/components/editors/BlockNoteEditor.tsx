@@ -106,8 +106,10 @@ export type BlockNoteEditorProps = {
   stretch?: boolean;
   // Gates AI on top of `aiConfig` (credit availability, etc.). Defaults to
   // true so existing callers that only pass `aiConfig` are unaffected. When
-  // false, no AI extension is created, the AI toolbar button and AI slash
-  // items are hidden, and the editor falls back to the plain slash menu.
+  // false, the AI toolbar button and AI slash items are hidden, the editor
+  // falls back to the plain slash menu, an open AI menu or run is closed, and
+  // no AI request is sent. The AI extension itself stays: toggling this never
+  // rebuilds the editor, so unsaved text survives credits running out.
   aiEnabled?: boolean;
   // Filled with a {@link BlockNoteAiHandle} while the editor is mounted and AI
   // is on, so a control outside the editor can run a whole-document AI action.
@@ -508,11 +510,22 @@ export default function BlockNoteEditor({
   // instance exists; reads the current BlockNote selection on every send.
   const selectionRef = useRef<{ getSelectedBlocks: () => any[] }>({ getSelectedBlocks: () => [] });
 
-  const companyId = company?.id;
+  // Callers pass `aiConfig` as an inline object, the company arrives after the
+  // first render and `aiEnabled` flips with credits, so none of them may key
+  // the AI extension: every new extension means a new editor, which restarts
+  // from `initialContent` and drops unsaved text. The transport and the outside
+  // handle read them through this ref at send time.
+  const aiRequestRef = useRef({ aiConfig, companyId: company?.id, aiEnabled });
+  useEffect(() => {
+    aiRequestRef.current = { aiConfig, companyId: company?.id, aiEnabled };
+  });
+
+  const hasAiConfig = !!aiConfig;
+  const aiEndpoint = aiConfig?.endpoint;
   const aiExtension = useMemo(() => {
-    if (!aiConfig || !aiEnabled) return undefined;
+    if (!hasAiConfig || !aiEndpoint) return undefined;
     const base = getPublicApiUrl();
-    const url = new URL(aiConfig.endpoint, base.endsWith("/") ? base : base + "/").toString();
+    const url = new URL(aiEndpoint, base.endsWith("/") ? base : base + "/").toString();
     return AIExtension({
       transport: new DefaultChatTransport({
         api: url,
@@ -521,10 +534,16 @@ export default function BlockNoteEditor({
           const headers: Record<string, string> = { "x-language": locale };
           const token = await getClientToken();
           if (token) headers["Authorization"] = `Bearer ${token}`;
+          const companyId = aiRequestRef.current.companyId;
           if (companyId) headers["x-companyid"] = companyId;
           return headers;
         },
         prepareSendMessagesRequest: ({ messages, body }: any) => {
+          // Last guard before the network: AI switched off while a request was
+          // being started never reaches the endpoint. Throwing here puts the
+          // AI menu in its error state instead of sending.
+          if (!aiRequestRef.current.aiEnabled) throw new Error("AI is disabled");
+          const latestAiConfig = aiRequestRef.current.aiConfig;
           let lastUserIdx = -1;
           for (let i = messages.length - 1; i >= 0; i--) {
             if (messages[i]?.role === "user") {
@@ -539,8 +558,8 @@ export default function BlockNoteEditor({
                   ...m,
                   metadata: {
                     ...(m.metadata ?? {}),
-                    entityType: aiConfig.entityType,
-                    entityId: aiConfig.entityId,
+                    entityType: latestAiConfig?.entityType,
+                    entityId: latestAiConfig?.entityId,
                     blocks: docRef.current.getDoc(),
                     selectionBlocks: selectedBlocks,
                   },
@@ -551,7 +570,7 @@ export default function BlockNoteEditor({
         },
       }),
     });
-  }, [aiConfig, aiEnabled, companyId, locale]);
+  }, [hasAiConfig, aiEndpoint, locale]);
 
   const uploadImage = useCallback(
     async (file: File): Promise<string> => {
@@ -697,7 +716,41 @@ export default function BlockNoteEditor({
       }),
       [placeholder, t, schema, validatedInitialContent, uploadImage, aiExtension, coreDictionary, aiDictionary],
     ),
+    // useCreateBlockNote memoises on THIS list, not on the options' identity
+    // (@blocknote/react: useMemo(() => BlockNoteEditor.create(options), deps),
+    // deps defaulting to []). Without it the editor keeps the extensions of its
+    // first render: AI config arriving later (user loaded after mount)
+    // rendered the AI UI over an editor with no AIExtension, and BlockNote's
+    // useExtension threw "Extension not found". The other options keep their
+    // first-render values, as before. `aiEnabled` is deliberately not here.
+    [aiExtension],
   );
+
+  // Every AI surface keys off the editor actually rendered, never off the
+  // props: those can disagree with the options that editor was created with.
+  // `aiEnabled` then hides that UI without touching the editor.
+  const hasAiExtension = !!editor.getExtension(AIExtension);
+  const aiActive = hasAiExtension && aiEnabled;
+
+  // AI switched off while its menu is open or a run is streaming: hiding the
+  // AIMenuController alone would leave the editor read-only (openAIMenuAtBlock
+  // sets isEditable = false) and the AI suggestions in the document. Stop the
+  // request, then reject the suggestions, or just close an idle prompt menu.
+  useEffect(() => {
+    if (aiEnabled || !hasAiExtension) return;
+    const ai = editor.getExtension(AIExtension);
+    if (!ai) return;
+    const dismiss = async () => {
+      const menu = ai.store.state.aiMenuState;
+      if (menu === "closed") return;
+      if (menu.status === "thinking" || menu.status === "ai-writing") await ai.abort("AI disabled");
+      const after = ai.store.state.aiMenuState;
+      if (after === "closed") return;
+      if (after.status === "user-input") ai.closeAIMenu();
+      else ai.rejectChanges();
+    };
+    dismiss().catch((error) => console.error("Closing the AI menu failed:", error));
+  }, [aiEnabled, hasAiExtension, editor]);
 
   // Publish the outside-the-editor AI trigger. `editor.getExtension(AIExtension)`
   // is BlockNote 0.54's documented lookup by extension factory (core's
@@ -709,12 +762,14 @@ export default function BlockNoteEditor({
   // the request runs but the accept / reject UI never appears.
   useEffect(() => {
     if (!aiHandleRef) return;
-    if (!aiConfig || !aiEnabled) {
+    if (!aiActive) {
       aiHandleRef.current = null;
       return;
     }
     aiHandleRef.current = {
       invokeAi: (type: BlockNoteAiGenerateAction) => {
+        // A caller may hold the handle across the render that turns AI off.
+        if (!aiRequestRef.current.aiEnabled) return;
         const ai = editor.getExtension(AIExtension);
         if (!ai) return;
         editor.focus();
@@ -731,7 +786,7 @@ export default function BlockNoteEditor({
     return () => {
       aiHandleRef.current = null;
     };
-  }, [aiHandleRef, aiConfig, aiEnabled, editor]);
+  }, [aiHandleRef, aiActive, editor]);
 
   // Tracks the hash of the document the editor itself just emitted via onChange.
   // The sync effect below uses it to skip replaceBlocks when the parent's
@@ -912,7 +967,7 @@ export default function BlockNoteEditor({
         onChange={handleChange}
         editable={onChange !== undefined}
         formattingToolbar={false}
-        slashMenu={!aiConfig || !aiEnabled}
+        slashMenu={!aiActive}
         // Follow the app theme: hardcoding "light" leaves dark (light-theme)
         // text on the dark card, which is nearly unreadable in dark mode.
         theme={resolvedTheme === "dark" ? "dark" : "light"}
@@ -939,7 +994,7 @@ export default function BlockNoteEditor({
           size === "sm" && "small",
         )}
       >
-        <BlockNoteEditorFormattingToolbar showAI={!!aiConfig && aiEnabled} />
+        <BlockNoteEditorFormattingToolbar showAI={aiActive} />
         {enableMentions && mentionSearchFn && (
           <BlockNoteEditorMentionSuggestionMenu
             editor={editor}
@@ -952,7 +1007,7 @@ export default function BlockNoteEditor({
         {enableMentions && mentionResolveFn && (
           <BlockNoteEditorMentionHoverCard containerRef={editorRef} mentionResolveFn={mentionResolveFn} />
         )}
-        {aiConfig && aiEnabled && (
+        {aiActive && (
           <SuggestionMenuController
             triggerCharacter="/"
             getItems={async (query: string) =>
@@ -960,7 +1015,7 @@ export default function BlockNoteEditor({
             }
           />
         )}
-        {aiConfig && aiEnabled && <AIMenuController aiMenu={() => <NarrAIMenu actions={aiConfig.actions} />} />}
+        {aiActive && <AIMenuController aiMenu={() => <NarrAIMenu actions={aiConfig?.actions} />} />}
       </BlockNoteView>
     </div>
   );
