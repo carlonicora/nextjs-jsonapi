@@ -85,6 +85,9 @@ export * from "../features/email-automation/EmailAutomationTriggerModule";
 // server page can wrap EmailAutomationService.findOne in cache(). The client-marked
 // ./email-automations entry carries only components, contexts and hooks.
 export * from "../features/email-automation/data";
+// Email blast modules and data: server-safe, same placement as email automation above.
+// The client components ship through the ./components entry.
+export * from "../features/email-blast";
 // Blog modules and data: server-safe, same placement as email automation above.
 // The client-marked ./blog entry carries only components, contexts and hooks.
 export * from "../features/blog/BlogModules";

@@ -1269,6 +1269,68 @@
       "title": "You are unsubscribed"
     }
   },
+  "emailBlasts": {
+    "admin": {
+      "title": "Email blasts",
+      "empty": "No blasts yet"
+    },
+    "list": {
+      "columns": {
+        "subject": "Subject",
+        "status": "Status",
+        "sentAt": "Sent",
+        "sent": "Sent to",
+        "failed": "Failed",
+        "unsubscribed": "Unsubscribed"
+      },
+      "status": {
+        "draft": "Draft",
+        "sending": "Sending",
+        "sent": "Sent"
+      }
+    },
+    "editor": {
+      "title": "Email blast",
+      "editTitle": "Edit email blast",
+      "fields": {
+        "subject": {
+          "label": "Subject",
+          "error": "Write a subject"
+        },
+        "body": {
+          "label": "Email (Markdown)",
+          "error": "Write the email"
+        },
+        "replyTo": {
+          "label": "Reply-to address",
+          "error": "Enter a valid email address"
+        }
+      },
+      "variablesHint": "You can use:",
+      "unsubscribeHint": "Every email ends with a link to stop all marketing emails."
+    },
+    "detail": {
+      "recipients": "Recipients",
+      "sentTo": "Sent to",
+      "failed": "Failed",
+      "unsubscribed": "Unsubscribed",
+      "sentAt": "Sent",
+      "replyTo": "Reply-to",
+      "body": "Email"
+    },
+    "test": {
+      "button": "Send test to me",
+      "sent": "Test sent to your email"
+    },
+    "send": {
+      "button": "Send",
+      "title": "Send this email blast?",
+      "confirm": "This goes to {count, plural, one {# person} other {# people}}. Send?",
+      "nobody": "Nobody can receive this blast right now.",
+      "action": "Send",
+      "cancel": "Cancel"
+    }
+  },
   "entities": {
     "assistants": "{count, plural, =1 {Assistant} other {Assistants}}",
     "companies": "{count, plural, =1 {Company} other {Companies}}",

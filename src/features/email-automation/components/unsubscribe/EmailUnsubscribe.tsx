@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Button } from "../../../../shadcnui";
 import { SectionHeader } from "../../../../components/typography";
+import { EmailBlastDeliveryService } from "../../../email-blast/data/EmailBlastDeliveryService";
 import { EmailAutomationEnrollmentService } from "../../data/EmailAutomationEnrollmentService";
 
 type UnsubscribeScope = "automation" | "all";
@@ -12,11 +13,16 @@ type UnsubscribeScope = "automation" | "all";
 interface Props {
   token: string;
   scope: UnsubscribeScope;
+  /**
+   * Which email the link came from. A blast link always stops every marketing
+   * email (the shared opt-out), so it lands straight on the "stopped all" state.
+   */
+  source?: "automation" | "blast";
 }
 
 type UnsubscribeState = "loading" | "success" | "error";
 
-export function EmailUnsubscribe({ token, scope }: Props) {
+export function EmailUnsubscribe({ token, scope, source = "automation" }: Props) {
   const t = useTranslations();
   const [state, setState] = useState<UnsubscribeState>("loading");
   const [stoppedScope, setStoppedScope] = useState<UnsubscribeScope>(scope);
@@ -26,6 +32,12 @@ export function EmailUnsubscribe({ token, scope }: Props) {
   useEffect(() => {
     async function unsubscribe() {
       try {
+        if (source === "blast") {
+          await EmailBlastDeliveryService.unsubscribe({ token });
+          setStoppedScope("all");
+          setState("success");
+          return;
+        }
         const enrollment = await EmailAutomationEnrollmentService.unsubscribe({ token, scope });
         setAutomationName(enrollment?.automation?.name ?? "");
         setStoppedScope(scope);
@@ -36,7 +48,7 @@ export function EmailUnsubscribe({ token, scope }: Props) {
     }
 
     unsubscribe();
-  }, [token, scope]);
+  }, [token, scope, source]);
 
   const stopAll = async () => {
     setIsStoppingAll(true);

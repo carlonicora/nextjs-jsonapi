@@ -1269,6 +1269,68 @@
       "title": "Disiscrizione completata"
     }
   },
+  "emailBlasts": {
+    "admin": {
+      "title": "Email massive",
+      "empty": "Nessuna email massiva"
+    },
+    "list": {
+      "columns": {
+        "subject": "Oggetto",
+        "status": "Stato",
+        "sentAt": "Inviata",
+        "sent": "Inviata a",
+        "failed": "Non riuscite",
+        "unsubscribed": "Disiscritti"
+      },
+      "status": {
+        "draft": "Bozza",
+        "sending": "In invio",
+        "sent": "Inviata"
+      }
+    },
+    "editor": {
+      "title": "Email massiva",
+      "editTitle": "Modifica email massiva",
+      "fields": {
+        "subject": {
+          "label": "Oggetto",
+          "error": "Scrivi un oggetto"
+        },
+        "body": {
+          "label": "Email (Markdown)",
+          "error": "Scrivi l'email"
+        },
+        "replyTo": {
+          "label": "Indirizzo di risposta",
+          "error": "Inserisci un indirizzo email valido"
+        }
+      },
+      "variablesHint": "Puoi usare:",
+      "unsubscribeHint": "Ogni email finisce con un link per non ricevere più email di marketing."
+    },
+    "detail": {
+      "recipients": "Destinatari",
+      "sentTo": "Inviata a",
+      "failed": "Non riuscite",
+      "unsubscribed": "Disiscritti",
+      "sentAt": "Inviata",
+      "replyTo": "Risposta a",
+      "body": "Email"
+    },
+    "test": {
+      "button": "Inviami una prova",
+      "sent": "Prova inviata alla tua email"
+    },
+    "send": {
+      "button": "Invia",
+      "title": "Inviare questa email massiva?",
+      "confirm": "Va a {count, plural, one {# persona} other {# persone}}. Inviare?",
+      "nobody": "Nessuno può ricevere questa email adesso.",
+      "action": "Invia",
+      "cancel": "Annulla"
+    }
+  },
   "entities": {
     "assistants": "{count, plural, =1 {Assistente} other {Assistenti}}",
     "companies": "{count, plural, =1 {Azienda} other {Aziende}}",

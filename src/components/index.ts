@@ -32,6 +32,7 @@ export type { CreditWarningBannerProps } from "../features/billing/components/wi
 export { isCreditWarningActive, CREDIT_WARNING_DISMISS_SEGMENT } from "../features/billing/data/credit-warning";
 export * from "../features/company/components";
 export * from "../features/content/components";
+export * from "../features/email-blast/components";
 export * from "../features/how-to/components";
 export * from "../features/handbook/components";
 export * from "../features/assistant/components";

@@ -12,6 +12,7 @@ export * from "./billing/stripe-usage";
 export * from "./billing/stripe-promotion-code";
 export * from "./company";
 export * from "./content";
+export * from "./email-blast";
 export * from "./feature";
 export * from "./module";
 export * from "./notification";
