@@ -1,3 +1,9 @@
+## [6.9.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.8.0...v6.9.0) (2026-10-27)
+
+### 🚀 Features
+
+* **email-blast:** admin pages to write, test and send an email blast, and its unsubscribe page ([461a37f](https://github.com/carlonicora/nextjs-jsonapi/commit/461a37fd03f80f4ea097c2b6052d0fae2e69e790))
+
 ## [6.8.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.7.0...v6.8.0) (2026-10-26)
 
 ### 🚀 Features
