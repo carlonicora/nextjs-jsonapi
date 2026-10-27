@@ -1,3 +1,13 @@
+## [6.10.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.9.0...v6.10.0) (2026-10-27)
+
+### 🚀 Features
+
+* **assistant:** a composer notice keeps threads readable and disables suggested questions ([ef662cd](https://github.com/carlonicora/nextjs-jsonapi/commit/ef662cd0abdb34c2ee8a619ff64aed56932121db))
+
+### 🐛 Bug Fixes
+
+* **editors:** the AI editor no longer crashes on load or rebuilds when AI is switched on or off ([28c6f25](https://github.com/carlonicora/nextjs-jsonapi/commit/28c6f25df46c2419580507474b4a740a4b3a93df))
+
 ## [6.9.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.8.0...v6.9.0) (2026-10-27)
 
 ### 🚀 Features
