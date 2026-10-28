@@ -1,3 +1,9 @@
+## [6.10.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.10.0...v6.10.1) (2026-10-28)
+
+### 🐛 Bug Fixes
+
+* plan change screens say the difference is charged today and show a credit as a credit ([546a719](https://github.com/carlonicora/nextjs-jsonapi/commit/546a719935ee70643feec1af324ceea5ad4ed2f2))
+
 ## [6.10.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.9.0...v6.10.0) (2026-10-27)
 
 ### 🚀 Features
