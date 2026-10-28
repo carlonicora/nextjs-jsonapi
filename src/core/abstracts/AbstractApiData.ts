@@ -227,7 +227,7 @@ export abstract class AbstractApiData implements ApiDataInterface {
 
         // Merge per-item meta from relationships[type].data[].meta
         if (item.meta) {
-          Object.assign(entity, item.meta);
+          AbstractApiData._mergeMeta(entity, item.meta);
         }
 
         result.push(entity as T & M);
@@ -256,7 +256,7 @@ export abstract class AbstractApiData implements ApiDataInterface {
           // Merge relationship-level meta for single relationships
           const relationshipMeta = data.jsonApi.relationships[type].meta;
           if (relationshipMeta) {
-            Object.assign(entity, relationshipMeta);
+            AbstractApiData._mergeMeta(entity, relationshipMeta);
           }
           return entity as T & M;
         }
@@ -272,10 +272,21 @@ export abstract class AbstractApiData implements ApiDataInterface {
     // Merge relationship-level meta for single relationships
     const relationshipMeta = data.jsonApi.relationships[type].meta;
     if (relationshipMeta) {
-      Object.assign(entity, relationshipMeta);
+      AbstractApiData._mergeMeta(entity, relationshipMeta);
     }
 
     return entity as T & M;
+  }
+
+  /**
+   * Copies relationship meta onto a rehydrated entity as own data properties. Object.assign throws
+   * when the model declares a getter-only accessor of the same name (an app's `Chunk` with
+   * `get relevance()`); an own property shadows that getter, so the model reads the meta value.
+   */
+  private static _mergeMeta(entity: object, meta: Record<string, any>): void {
+    for (const [key, value] of Object.entries(meta)) {
+      Object.defineProperty(entity, key, { value, writable: true, enumerable: true, configurable: true });
+    }
   }
 
   dehydrate(): JsonApiHydratedDataInterface {
