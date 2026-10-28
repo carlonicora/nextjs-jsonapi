@@ -782,7 +782,7 @@
       },
       "proration": {
         "net_due_today": "Net Due Today",
-        "next_invoice": "Next invoice on {date} for {amount}",
+        "next_invoice": "Charged today: {amount}",
         "title": "Proration Breakdown"
       },
       "subscription": {
@@ -859,6 +859,7 @@
           "amount_off": "{amount} off",
           "card_on_file": "{brand} ending in {last4}",
           "charge_now": "Amount to charge now:",
+          "credit_now": "Credit to your account:",
           "confirm_change": "Confirm Plan Change",
           "due_now": "Amount due now:",
           "interval_monthly": "monthly",
@@ -870,7 +871,8 @@
           "percent_off": "{value}% off",
           "processing": "Processing...",
           "promotion_code": "Promotion Code",
-          "proration_description": "Your next charge will be adjusted to account for the plan change.",
+          "proration_credit_description": "The unused time becomes account credit, used on your next invoices.",
+          "proration_description": "The difference is charged today on a new invoice.",
           "proration_summary": "Proration Summary",
           "selected_plan": "Selected Plan",
           "subscribe_now": "Subscribe Now",

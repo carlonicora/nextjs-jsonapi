@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { ProrationPreviewInterface } from "../../../stripe-invoice/data/stripe-invoice.interface";
-import { formatCurrency, formatDate, useBillingFormatOptions } from "../../../components/utils";
+import { formatCurrency, useBillingFormatOptions } from "../../../components/utils";
 
 type ProrationPreviewProps = {
   preview: ProrationPreviewInterface;
@@ -35,7 +35,6 @@ export function ProrationPreview({ preview }: ProrationPreviewProps) {
         {preview.lineItems.length > 0 && preview.lineItems[0].period && (
           <div className="text-muted-foreground mt-2 text-xs">
             {t("billing.ui.proration.next_invoice", {
-              date: formatDate(preview.lineItems[0].period.end, fmt),
               amount: formatCurrency(preview.amountDue, preview.currency, fmt),
             })}
           </div>

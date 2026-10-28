@@ -782,7 +782,7 @@
       },
       "proration": {
         "net_due_today": "Netto dovuto oggi",
-        "next_invoice": "Prossima fattura il {date} di {amount}",
+        "next_invoice": "Addebito oggi: {amount}",
         "title": "Dettaglio del conguaglio"
       },
       "subscription": {
@@ -859,6 +859,7 @@
           "amount_off": "{amount} di sconto",
           "card_on_file": "{brand} che termina con {last4}",
           "charge_now": "Importo da addebitare ora:",
+          "credit_now": "Credito sul tuo account:",
           "confirm_change": "Conferma il cambio di piano",
           "due_now": "Importo dovuto ora:",
           "interval_monthly": "mensile",
@@ -870,7 +871,8 @@
           "percent_off": "{value}% di sconto",
           "processing": "Elaborazione...",
           "promotion_code": "Codice promozionale",
-          "proration_description": "Il tuo prossimo addebito verrà adeguato per tenere conto del cambio di piano.",
+          "proration_credit_description": "Il tempo non usato diventa credito sul tuo account, usato nelle prossime fatture.",
+          "proration_description": "La differenza viene addebitata oggi con una nuova fattura.",
           "proration_summary": "Riepilogo del conguaglio",
           "selected_plan": "Piano selezionato",
           "subscribe_now": "Abbonati ora",

@@ -107,6 +107,11 @@ export function WizardStepReview({
   // Calculate discounted immediate charge for proration preview
   const discountedImmediateCharge = applyDiscount(prorationPreview?.immediateCharge, discount);
 
+  // A negative charge is a credit: Stripe keeps it on the account for the next invoices.
+  const isProrationCredit =
+    !isTrialUpgrade && (discountedImmediateCharge ?? prorationPreview?.immediateCharge ?? 0) < 0;
+  const prorationAmount = (amount: number) => (isProrationCredit ? Math.abs(amount) : amount);
+
   // Format the discount description
   const getDiscountDescription = (): string | null => {
     if (!discount) return null;
@@ -171,24 +176,30 @@ export function WizardStepReview({
               ? discountedImmediateCharge !== null
                 ? t("billing.ui.wizard.review.trial_upgrade_description_discounted")
                 : t("billing.ui.wizard.review.trial_upgrade_description")
-              : t("billing.ui.wizard.review.proration_description")}
+              : isProrationCredit
+                ? t("billing.ui.wizard.review.proration_credit_description")
+                : t("billing.ui.wizard.review.proration_description")}
           </p>
           <div className="flex justify-between text-sm">
             <span className={`${isTrialUpgrade ? "text-warning" : "text-muted-foreground"}`}>
-              {isTrialUpgrade ? t("billing.ui.wizard.review.charge_now") : t("billing.ui.wizard.review.due_now")}
+              {isTrialUpgrade
+                ? t("billing.ui.wizard.review.charge_now")
+                : isProrationCredit
+                  ? t("billing.ui.wizard.review.credit_now")
+                  : t("billing.ui.wizard.review.due_now")}
             </span>
             <span className={`font-medium ${isTrialUpgrade ? "text-warning" : "text-foreground"}`}>
               {discountedImmediateCharge !== null ? (
                 <>
                   <span className="line-through text-muted-foreground me-2">
-                    {formatCurrency(prorationPreview.immediateCharge, prorationPreview.currency, fmt)}
+                    {formatCurrency(prorationAmount(prorationPreview.immediateCharge), prorationPreview.currency, fmt)}
                   </span>
                   <span className="text-success">
-                    {formatCurrency(discountedImmediateCharge, prorationPreview.currency, fmt)}
+                    {formatCurrency(prorationAmount(discountedImmediateCharge), prorationPreview.currency, fmt)}
                   </span>
                 </>
               ) : (
-                formatCurrency(prorationPreview.immediateCharge, prorationPreview.currency, fmt)
+                formatCurrency(prorationAmount(prorationPreview.immediateCharge), prorationPreview.currency, fmt)
               )}
             </span>
           </div>
