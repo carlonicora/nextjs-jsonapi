@@ -1,3 +1,9 @@
+## [6.10.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.10.1...v6.10.2) (2026-10-28)
+
+### 🐛 Bug Fixes
+
+* **core:** relationship meta no longer throws on a model with a getter-only property ([efe8297](https://github.com/carlonicora/nextjs-jsonapi/commit/efe8297ea4032caa766cebdc1423ecf4cc0dbc6d))
+
 ## [6.10.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.10.0...v6.10.1) (2026-10-28)
 
 ### 🐛 Bug Fixes
