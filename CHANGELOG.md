@@ -1,3 +1,9 @@
+## [6.11.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.10.2...v6.11.0) (2026-10-30)
+
+### 🚀 Features
+
+* **referral:** administrator referrals page, link-visit counting and translated invite dialog ([a5cf51f](https://github.com/carlonicora/nextjs-jsonapi/commit/a5cf51f3724f5e7438571d2544f3a5abf945a95c))
+
 ## [6.10.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.10.1...v6.10.2) (2026-10-28)
 
 ### 🐛 Bug Fixes
