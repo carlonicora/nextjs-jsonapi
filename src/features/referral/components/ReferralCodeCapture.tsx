@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
 import { getReferralConfig, isReferralEnabled } from "../config";
+import { ReferralService } from "../data/ReferralService";
 import { getReferralCode, setReferralCode } from "../utils/referral-cookie";
 
 /**
@@ -34,6 +35,8 @@ export function ReferralCodeCapture(): null {
       // First referrer wins - only set if no existing cookie
       if (!existingCode) {
         setReferralCode(refCode);
+        // Counted once per browser; a failed call never reaches the visitor.
+        ReferralService.recordVisit({ referralCode: refCode }).catch(() => {});
       }
     }
   }, [searchParams]);

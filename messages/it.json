@@ -1785,7 +1785,84 @@
   "referral": {
     "description": "Invita i tuoi amici e guadagna ricompense",
     "title": "Invita e guadagna",
-    "yourLink": "Il tuo link di invito"
+    "yourLink": "Il tuo link di invito",
+    "copy": "Copia link",
+    "linkCopied": "Link copiato",
+    "completedLabel": "Inviti andati a buon fine",
+    "inviteTitle": "Invita via email",
+    "inviteDescription": "Il tuo nome e la tua email vengono condivisi con la persona che inviti.",
+    "emailPlaceholder": "amico@esempio.com",
+    "send": "Invia invito",
+    "sending": "Invio…",
+    "inviteSent": "Invito inviato",
+    "inviteFailed": "Impossibile inviare l'invito",
+    "copyFailed": "Impossibile copiare il link",
+    "invalidEmail": "Inserisci un indirizzo email valido",
+    "loadFailed": "Impossibile caricare il tuo link di invito",
+    "alreadyInvited": "Hai già invitato questa email di recente",
+    "alreadyRegistered": "Questa email ha già un account",
+    "admin": {
+      "title": "Referral",
+      "description": "Inviti, iscrizioni e referral paganti",
+      "period": {
+        "30d": "30 giorni",
+        "90d": "90 giorni",
+        "all": "Sempre"
+      },
+      "tiles": {
+        "sharing": "Condividono",
+        "sharingOf": "{count} su {total} account abbonati",
+        "visits": "Visite al link",
+        "invites": "Email di invito inviate",
+        "signups": "Iscritti",
+        "paying": "Paganti",
+        "credits": "Crediti assegnati",
+        "change": "{delta} rispetto al periodo precedente"
+      },
+      "funnel": {
+        "title": "Dalla visita al pagamento"
+      },
+      "referrers": {
+        "title": "Chi invita di più",
+        "sortBy": "Ordina per",
+        "copyAll": "Copia tutte le email",
+        "copied": "Email copiate",
+        "copyEmail": "Copia email",
+        "copyFailed": "Impossibile copiare le email",
+        "empty": "Nessuna attività di referral in questo periodo",
+        "split": "{link} via link, {direct} dirette",
+        "columns": {
+          "referrer": "Referente",
+          "visits": "Visite",
+          "invites": "Email inviate",
+          "signups": "Iscritti",
+          "paying": "Paganti",
+          "conversion": "Conversione",
+          "credits": "Crediti guadagnati",
+          "lastInvite": "Ultimo invito"
+        }
+      },
+      "referrals": {
+        "title": "Tutti i referral",
+        "empty": "Nessun referral in questo periodo",
+        "columns": {
+          "account": "Nuovo account",
+          "referrer": "Portato da",
+          "source": "Come",
+          "date": "Data",
+          "status": "Stato",
+          "credits": "Crediti assegnati"
+        }
+      },
+      "source": {
+        "link": "Link di invito",
+        "direct": "Diretto"
+      },
+      "status": {
+        "pending": "In attesa",
+        "completed": "Pagante"
+      }
+    }
   },
   "role": {
     "fields": {

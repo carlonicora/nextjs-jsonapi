@@ -1785,7 +1785,84 @@
   "referral": {
     "description": "Invite friends and earn rewards",
     "title": "Refer & Earn",
-    "yourLink": "Your referral link"
+    "yourLink": "Your referral link",
+    "copy": "Copy link",
+    "linkCopied": "Link copied",
+    "completedLabel": "Successful referrals",
+    "inviteTitle": "Invite by email",
+    "inviteDescription": "Your name and email are shared with the person you invite.",
+    "emailPlaceholder": "friend@example.com",
+    "send": "Send invitation",
+    "sending": "Sending…",
+    "inviteSent": "Invitation sent",
+    "inviteFailed": "Could not send the invitation",
+    "copyFailed": "Could not copy the link",
+    "invalidEmail": "Enter a valid email address",
+    "loadFailed": "Could not load your referral link",
+    "alreadyInvited": "You already invited this email recently",
+    "alreadyRegistered": "This email already has an account",
+    "admin": {
+      "title": "Referrals",
+      "description": "Invite activity, sign-ups and paying referrals",
+      "period": {
+        "30d": "30 days",
+        "90d": "90 days",
+        "all": "All time"
+      },
+      "tiles": {
+        "sharing": "Sharing",
+        "sharingOf": "{count} of {total} subscribed accounts",
+        "visits": "Link visits",
+        "invites": "Invite emails sent",
+        "signups": "Signed up",
+        "paying": "Now paying",
+        "credits": "Credits given",
+        "change": "{delta} vs previous period"
+      },
+      "funnel": {
+        "title": "From visit to paying"
+      },
+      "referrers": {
+        "title": "Top referrers",
+        "sortBy": "Sort by",
+        "copyAll": "Copy all emails",
+        "copied": "Emails copied",
+        "copyEmail": "Copy email",
+        "copyFailed": "Could not copy the emails",
+        "empty": "No referral activity in this period",
+        "split": "{link} via link, {direct} direct",
+        "columns": {
+          "referrer": "Referrer",
+          "visits": "Visits",
+          "invites": "Emails sent",
+          "signups": "Signed up",
+          "paying": "Paying",
+          "conversion": "Converted",
+          "credits": "Credits earned",
+          "lastInvite": "Last invite"
+        }
+      },
+      "referrals": {
+        "title": "Every referral",
+        "empty": "No referrals in this period",
+        "columns": {
+          "account": "New account",
+          "referrer": "Brought by",
+          "source": "How",
+          "date": "Date",
+          "status": "Status",
+          "credits": "Credits given"
+        }
+      },
+      "source": {
+        "link": "Invite link",
+        "direct": "Direct"
+      },
+      "status": {
+        "pending": "Pending",
+        "completed": "Paying"
+      }
+    }
   },
   "role": {
     "fields": {

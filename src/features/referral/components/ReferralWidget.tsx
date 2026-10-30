@@ -1,6 +1,7 @@
 "use client";
 
 import { Copy, Loader2, Mail, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useRef, useState } from "react";
 
 import { Button, Card, Input, Label } from "../../../shadcnui";
@@ -11,32 +12,9 @@ import { useReferralInvite } from "../hooks/useReferralInvite";
 import { useReferralStats } from "../hooks/useReferralStats";
 
 /**
- * Default translations for ReferralWidget.
- * These can be overridden via the translations prop.
- */
-const DEFAULT_TRANSLATIONS: Required<ReferralWidgetTranslations> = {
-  title: "Invite Friends",
-  description: "Share your referral link and earn rewards when your friends subscribe.",
-  yourLink: "Your referral link",
-  copyButton: "Copy",
-  copiedMessage: "Link copied to clipboard!",
-  statsLabel: "Your referral stats",
-  completedLabel: "Successful referrals",
-  tokensLabel: "Tokens earned",
-  inviteTitle: "Invite by email",
-  inviteDescription: "Send an invitation directly to a friend's email.",
-  emailPlaceholder: "friend@example.com",
-  sendButton: "Send",
-  sendingButton: "Sending...",
-  inviteSent: "Invitation sent successfully!",
-  inviteError: "Failed to send invitation",
-  copyError: "Failed to copy link",
-  invalidEmail: "Please enter a valid email address",
-};
-
-/**
  * Translation strings for the ReferralWidget component.
- * All strings are optional and have defaults.
+ * All strings are optional: each defaults to its `referral.*` key in the
+ * library's messages, which the app can also override in its own messages file.
  */
 export interface ReferralWidgetTranslations {
   /** Widget title */
@@ -73,6 +51,19 @@ export interface ReferralWidgetTranslations {
   copyError?: string;
   /** Error message for invalid email */
   invalidEmail?: string;
+  /** Error message when the referral link and stats cannot be loaded */
+  loadError?: string;
+  /** Error message when the email was already invited recently (API code REFERRAL_ALREADY_INVITED) */
+  alreadyInvited?: string;
+  /** Error message when the email already has an account (API code REFERRAL_ALREADY_REGISTERED) */
+  alreadyRegistered?: string;
+}
+
+/**
+ * The `code` the API puts on a refused invite's JSON:API error.
+ */
+function inviteErrorCode(err: unknown): string | undefined {
+  return (err as { body?: { errors?: { code?: string }[] } })?.body?.errors?.[0]?.code;
 }
 
 /**
@@ -162,7 +153,28 @@ export function ReferralWidget({
   onInviteSent,
   onInviteError,
 }: ReferralWidgetProps) {
-  const t = { ...DEFAULT_TRANSLATIONS, ...translations };
+  const t = useTranslations();
+  const text = {
+    title: t("referral.title"),
+    description: t("referral.description"),
+    yourLink: t("referral.yourLink"),
+    copyButton: t("referral.copy"),
+    copiedMessage: t("referral.linkCopied"),
+    completedLabel: t("referral.completedLabel"),
+    inviteTitle: t("referral.inviteTitle"),
+    inviteDescription: t("referral.inviteDescription"),
+    emailPlaceholder: t("referral.emailPlaceholder"),
+    sendButton: t("referral.send"),
+    sendingButton: t("referral.sending"),
+    inviteSent: t("referral.inviteSent"),
+    inviteError: t("referral.inviteFailed"),
+    copyError: t("referral.copyFailed"),
+    invalidEmail: t("referral.invalidEmail"),
+    loadError: t("referral.loadFailed"),
+    alreadyInvited: t("referral.alreadyInvited"),
+    alreadyRegistered: t("referral.alreadyRegistered"),
+    ...translations,
+  };
 
   // Call ALL hooks unconditionally at the top (React Rules of Hooks)
   const { stats, loading, error } = useReferralStats();
@@ -189,31 +201,49 @@ export function ReferralWidget({
     const success = await copyToClipboard(referralUrl);
     if (success) {
       setCopied(true);
-      showToast(t.copiedMessage);
+      showToast(text.copiedMessage);
       onLinkCopied?.();
       setTimeout(() => setCopied(false), 2000);
     } else {
-      showError(t.copyError);
+      showError(text.copyError);
     }
-  }, [referralUrl, t.copiedMessage, t.copyError, onLinkCopied]);
+  }, [referralUrl, text.copiedMessage, text.copyError, onLinkCopied]);
 
   const handleSendInvite = useCallback(async () => {
     if (!email || !email.includes("@")) {
-      showError(t.invalidEmail);
+      showError(text.invalidEmail);
       return;
     }
 
     try {
       await sendInvite(email);
-      showToast(t.inviteSent);
+      showToast(text.inviteSent);
       onInviteSent?.(email);
       setEmail("");
     } catch (err) {
-      const error = err instanceof Error ? err : new Error(t.inviteError);
-      showError(error.message);
-      onInviteError?.(error);
+      // The API's English text never reaches the user: a known refusal has its own
+      // translated message, anything else the generic one.
+      const code = inviteErrorCode(err);
+      showError(
+        code === "REFERRAL_ALREADY_INVITED"
+          ? text.alreadyInvited
+          : code === "REFERRAL_ALREADY_REGISTERED"
+            ? text.alreadyRegistered
+            : text.inviteError,
+      );
+      onInviteError?.(err instanceof Error ? err : new Error(text.inviteError));
     }
-  }, [email, sendInvite, t.inviteSent, t.inviteError, t.invalidEmail, onInviteSent, onInviteError]);
+  }, [
+    email,
+    sendInvite,
+    text.inviteSent,
+    text.inviteError,
+    text.invalidEmail,
+    text.alreadyInvited,
+    text.alreadyRegistered,
+    onInviteSent,
+    onInviteError,
+  ]);
 
   const handleEmailKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -245,7 +275,7 @@ export function ReferralWidget({
 
   // Error state
   if (error) {
-    const errorMessage = error instanceof Error ? error.message : "Failed to load referral data";
+    const errorMessage = text.loadError;
     if (isDialog) {
       return <div className="text-destructive text-center text-sm">{errorMessage}</div>;
     }
@@ -266,15 +296,15 @@ export function ReferralWidget({
             <Users className="text-primary h-5 w-5" />
           </div>
           <div className="flex flex-col gap-1">
-            <SectionHeader>{t.title}</SectionHeader>
-            <p className="text-muted-foreground text-sm">{t.description}</p>
+            <SectionHeader>{text.title}</SectionHeader>
+            <p className="text-muted-foreground text-sm">{text.description}</p>
           </div>
         </div>
       )}
 
       {/* Referral Link */}
       <div className="flex flex-col gap-2">
-        <Label>{t.yourLink}</Label>
+        <Label>{text.yourLink}</Label>
         <div className="flex gap-2">
           <Input ref={linkInputRef} value={referralUrl} readOnly className="tabular-nums text-sm" />
           <Button
@@ -283,7 +313,7 @@ export function ReferralWidget({
             size="icon"
             onClick={handleCopyLink}
             disabled={!referralUrl}
-            aria-label={t.copyButton}
+            aria-label={text.copyButton}
           >
             <Copy className={`h-4 w-4 ${copied ? "text-success" : ""}`} />
           </Button>
@@ -292,15 +322,15 @@ export function ReferralWidget({
 
       {/* Email Invite */}
       <div className="flex flex-col gap-2">
-        <Label>{t.inviteTitle}</Label>
-        <p className="text-muted-foreground text-xs/relaxed">{t.inviteDescription}</p>
+        <Label>{text.inviteTitle}</Label>
+        <p className="text-muted-foreground text-xs/relaxed">{text.inviteDescription}</p>
         <div className="flex gap-2">
           <Input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             onKeyDown={handleEmailKeyDown}
-            placeholder={t.emailPlaceholder}
+            placeholder={text.emailPlaceholder}
             disabled={sending}
           />
           <Button
@@ -309,7 +339,7 @@ export function ReferralWidget({
             size="icon"
             onClick={handleSendInvite}
             disabled={sending || !email}
-            aria-label={sending ? t.sendingButton : t.sendButton}
+            aria-label={sending ? text.sendingButton : text.sendButton}
           >
             {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
           </Button>
@@ -320,7 +350,7 @@ export function ReferralWidget({
       {stats && stats.completedReferrals > 0 && (
         <div className="border-border border-t pt-3">
           <p className="text-muted-foreground text-sm">
-            {t.completedLabel}: {stats.completedReferrals}
+            {text.completedLabel}: {stats.completedReferrals}
           </p>
         </div>
       )}

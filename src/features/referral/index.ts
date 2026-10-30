@@ -19,3 +19,4 @@ export * from "./components";
 // Modules
 export * from "./referral.module";
 export * from "./referral-stats.module";
+export * from "./referral-admin.modules";

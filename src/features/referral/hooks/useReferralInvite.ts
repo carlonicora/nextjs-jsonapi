@@ -23,6 +23,8 @@ export function useReferralInvite() {
       setSuccess(true);
     } catch (err) {
       setError(err as Error);
+      // Rethrown so the caller can tell a refused invite from a sent one.
+      throw err;
     } finally {
       setSending(false);
     }

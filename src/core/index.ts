@@ -129,6 +129,8 @@ export * from "../features/rbac/rbac.module";
 export * from "../features/referral/data";
 export * from "../features/referral/referral.module";
 export * from "../features/referral/referral-stats.module";
+export * from "../features/referral/referral-admin.modules";
+export * from "../features/referral/interfaces/referral-admin.interface";
 // Administrative token-usage reporting modules. Exported from core (not only
 // from the client-marked ./tokenusage barrel) so a consuming app can register
 // them in its bootstrapper without pulling the feature's client bundle —

@@ -62,6 +62,11 @@ export interface FoundationModuleDefinitions {
   // Referral modules
   Referral: ModuleWithPermissions;
   ReferralStats: ModuleWithPermissions;
+  // Referral link visits and the administrative referral report (opt-in: registered by apps that spread referralAdminModules)
+  ReferralVisit: ModuleWithPermissions;
+  ReferralAdminSummary: ModuleWithPermissions;
+  ReferralAdminReferrer: ModuleWithPermissions;
+  ReferralAdminReferral: ModuleWithPermissions;
   // Two-factor authentication modules
   TotpAuthenticator: ModuleWithPermissions;
   TotpSetup: ModuleWithPermissions;

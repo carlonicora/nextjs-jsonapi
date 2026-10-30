@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../../../shadcnui";
 import { isReferralEnabled } from "../config";
 import { ReferralWidget, ReferralWidgetProps, ReferralWidgetTranslations } from "./ReferralWidget";
@@ -9,19 +11,11 @@ import { ReferralWidget, ReferralWidgetProps, ReferralWidgetTranslations } from 
  * Extends ReferralWidgetTranslations with dialog-specific strings.
  */
 export interface ReferralDialogTranslations extends ReferralWidgetTranslations {
-  /** Dialog title */
+  /** Dialog title (default: `referral.title`) */
   dialogTitle?: string;
-  /** Dialog description */
+  /** Dialog description (default: `referral.description`) */
   dialogDescription?: string;
 }
-
-/**
- * Default translations for ReferralDialog.
- */
-const DEFAULT_DIALOG_TRANSLATIONS: Required<Pick<ReferralDialogTranslations, "dialogTitle" | "dialogDescription">> = {
-  dialogTitle: "Invite Friends",
-  dialogDescription: "Share your referral link and earn rewards when your friends subscribe.",
-};
 
 /**
  * Props for the ReferralDialog component.
@@ -73,19 +67,21 @@ export function ReferralDialog({
   dialogClassName,
   ...widgetProps
 }: ReferralDialogProps) {
+  const t = useTranslations();
+
   // Render nothing when disabled
   if (!isReferralEnabled()) {
     return null;
   }
 
-  const t = { ...DEFAULT_DIALOG_TRANSLATIONS, ...translations };
+  const text = { dialogTitle: t("referral.title"), dialogDescription: t("referral.description"), ...translations };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={dialogClassName ?? "max-w-md"}>
         <DialogHeader>
-          <DialogTitle>{t.dialogTitle}</DialogTitle>
-          <DialogDescription>{t.dialogDescription}</DialogDescription>
+          <DialogTitle>{text.dialogTitle}</DialogTitle>
+          <DialogDescription>{text.dialogDescription}</DialogDescription>
         </DialogHeader>
         <ReferralWidget {...widgetProps} translations={translations} isDialog />
       </DialogContent>
