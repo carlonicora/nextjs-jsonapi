@@ -10,7 +10,7 @@ import {
   ClientJsonApiDelete,
 } from "../../client/JsonApiClient";
 import { setLastApiResponse } from "./lastApiResponse";
-import { getI18nSupportedLocales } from "../../i18n/config";
+import { getI18nSupportedLocales, getI18nDefaultLocale } from "../../i18n/config";
 // Duplicated to avoid importing from AbstractService which pulls in server code
 // These are exported so client services can import them from here instead of core
 export enum ClientHttpMethod {
@@ -62,11 +62,11 @@ export abstract class ClientAbstractService {
   /**
    * Extract locale from client-side URL pathname
    * URL structure: /{locale}/route-path (e.g., /it/accounts)
-   * Fallback chain: URL locale → navigator.language → "en"
+   * Fallback chain: URL locale → the app's default locale (first supported locale)
    */
   private static getClientLocale(): string {
     if (typeof window === "undefined") {
-      return "en"; // Should not happen in client service
+      return getI18nDefaultLocale(); // Should not happen in client service
     }
 
     // Extract locale from URL pathname (first segment after leading slash)
@@ -79,14 +79,8 @@ export abstract class ClientAbstractService {
       return urlLocale;
     }
 
-    // Fallback to navigator language
-    const navigatorLocale = navigator.language.split("-")[0];
-    if (navigatorLocale && supportedLocales.includes(navigatorLocale)) {
-      return navigatorLocale;
-    }
-
-    // Final fallback
-    return "en";
+    // Fallback to the app's default locale, never the browser's language
+    return getI18nDefaultLocale();
   }
 
   /**

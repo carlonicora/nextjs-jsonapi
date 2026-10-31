@@ -102,3 +102,8 @@ export function getI18nSupportedLocales(): string[] {
   }
   return ["en"];
 }
+
+/** The app's default locale: the first supported locale (`"en"` when not configured). */
+export function getI18nDefaultLocale(): string {
+  return getI18nSupportedLocales()[0];
+}

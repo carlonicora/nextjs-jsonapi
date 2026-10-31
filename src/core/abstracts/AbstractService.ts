@@ -1,7 +1,7 @@
 import { ApiRequestDataTypeInterface } from "../interfaces/ApiRequestDataTypeInterface";
 import { ApiResponseInterface } from "../interfaces/ApiResponseInterface";
 import { setLastApiResponse } from "./lastApiResponse";
-import { getI18nServerLocale, getI18nSupportedLocales } from "../../i18n/config";
+import { getI18nServerLocale, getI18nSupportedLocales, getI18nDefaultLocale } from "../../i18n/config";
 
 export enum HttpMethod {
   GET = "GET",
@@ -57,11 +57,11 @@ export abstract class AbstractService {
   /**
    * Extract locale from client-side URL pathname
    * URL structure: /{locale}/route-path (e.g., /it/accounts)
-   * Fallback chain: URL locale → navigator.language → "en"
+   * Fallback chain: URL locale → the app's default locale (first supported locale)
    */
   private static getClientLocale(): string {
     if (typeof window === "undefined") {
-      return "en"; // Server-side fallback
+      return getI18nDefaultLocale(); // Server-side fallback
     }
 
     // Extract locale from URL pathname (first segment after leading slash)
@@ -74,14 +74,8 @@ export abstract class AbstractService {
       return urlLocale;
     }
 
-    // Fallback to navigator language
-    const navigatorLocale = navigator.language.split("-")[0];
-    if (navigatorLocale && supportedLocales.includes(navigatorLocale)) {
-      return navigatorLocale;
-    }
-
-    // Final fallback
-    return "en";
+    // Fallback to the app's default locale, never the browser's language
+    return getI18nDefaultLocale();
   }
 
   static async next<T>(params: {

@@ -1,5 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { configureI18n, getI18nServerLocale, getI18nSupportedLocales, type I18nConfig } from "../config";
+import {
+  configureI18n,
+  getI18nDefaultLocale,
+  getI18nServerLocale,
+  getI18nSupportedLocales,
+  type I18nConfig,
+} from "../config";
 
 function config(getLocale: I18nConfig["getLocale"]): I18nConfig {
   return {
@@ -43,5 +49,20 @@ describe("getI18nSupportedLocales", () => {
   it("returns the configured supported locales", () => {
     configureI18n({ ...config(async () => "en"), supportedLocales: ["en", "it"] });
     expect(getI18nSupportedLocales()).toEqual(["en", "it"]);
+  });
+});
+
+describe("getI18nDefaultLocale", () => {
+  afterEach(() => {
+    configureI18n(null as unknown as I18nConfig);
+  });
+
+  it('returns "en" when i18n is not configured', () => {
+    expect(getI18nDefaultLocale()).toBe("en");
+  });
+
+  it("returns the first configured supported locale", () => {
+    configureI18n({ ...config(async () => "en"), supportedLocales: ["it", "en"] });
+    expect(getI18nDefaultLocale()).toBe("it");
   });
 });

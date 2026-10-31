@@ -7,6 +7,7 @@ export {
   getI18nLink,
   getI18nServerLocale,
   getI18nSupportedLocales,
+  getI18nDefaultLocale,
 } from "./config";
 
 export type {
