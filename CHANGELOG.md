@@ -1,3 +1,9 @@
+## [6.12.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.12.0...v6.12.1) (2026-10-31)
+
+### 🐛 Bug Fixes
+
+* **i18n:** send the page's language to the API, falling back to the app's default locale instead of the browser's language ([dd035f8](https://github.com/carlonicora/nextjs-jsonapi/commit/dd035f8336e8ff65dc88776cb007e288a9c1d333))
+
 ## [6.12.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.11.0...v6.12.0) (2026-10-31)
 
 ### 🚀 Features
