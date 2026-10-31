@@ -1,3 +1,9 @@
+## [6.12.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.11.0...v6.12.0) (2026-10-31)
+
+### 🚀 Features
+
+* **editors:** live co-editing on the BlockNote editor, plus upload and read-only switches ([6ecf72c](https://github.com/carlonicora/nextjs-jsonapi/commit/6ecf72cc3d3efa728f73517ddbe64926c367d7ed))
+
 ## [6.11.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.10.2...v6.11.0) (2026-10-30)
 
 ### 🚀 Features
