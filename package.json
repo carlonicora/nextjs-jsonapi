@@ -143,7 +143,8 @@
     "next-intl": ">=4.0.0",
     "react": ">=19.3.0",
     "react-dom": ">=19.3.0",
-    "react-hook-form": ">=7.0.0"
+    "react-hook-form": ">=7.0.0",
+    "yjs": "^13.6.33"
   },
   "peerDependenciesMeta": {
     "@stripe/react-stripe-js": {
@@ -162,6 +163,9 @@
       "optional": true
     },
     "react-hook-form": {
+      "optional": true
+    },
+    "yjs": {
       "optional": true
     }
   },
@@ -264,7 +268,8 @@
     "tsup": "^8.5.1",
     "typescript": "^6.0.3",
     "vite": "^8.3.4",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.3",
+    "yjs": "^13.6.33"
   },
   "keywords": [
     "nextjs",

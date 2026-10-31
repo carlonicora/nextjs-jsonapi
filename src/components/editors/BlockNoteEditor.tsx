@@ -42,6 +42,7 @@ import { BlockNoteDiffUtil, BlockNoteWordDiffRendererUtil, cn } from "../../util
 import { errorToast } from "../errors";
 import { BlockNoteAiGenerateAction, generateActionItems } from "./BlockNoteEditorAiActions";
 import { BlockNoteEditorFormattingToolbar } from "./BlockNoteEditorFormattingToolbar";
+import { type BlockNoteCollaboration, buildBlockNoteEditorOptions, resolveEditable } from "./blockNoteEditorOptions";
 import { BlockNoteEditorMentionHoverCard } from "./BlockNoteEditorMentionHoverCard";
 import {
   createMentionInlineContentSpec,
@@ -115,6 +116,19 @@ export type BlockNoteEditorProps = {
   // is on, so a control outside the editor can run a whole-document AI action.
   // Cleared on unmount and whenever AI is unavailable.
   aiHandleRef?: React.MutableRefObject<BlockNoteAiHandle | null>;
+  /**
+   * Live co-editing (Yjs). When set, the Yjs document is the content: used
+   * instead of `initialContent`/`onChange`. Changing `collaboration.fragment`
+   * rebuilds the editor.
+   */
+  collaboration?: BlockNoteCollaboration;
+  /** true: image uploads are off (no paste/drop upload, no upload tab). */
+  disableUploads?: boolean;
+  /**
+   * Overrides the default `onChange !== undefined` editability, e.g. for a
+   * collaborative editor, which has no `onChange`.
+   */
+  editable?: boolean;
 };
 
 function isBlockEmpty(block: any): boolean {
@@ -429,7 +443,11 @@ export default function BlockNoteEditor({
   stretch,
   aiEnabled = true,
   aiHandleRef,
+  collaboration,
+  disableUploads,
+  editable,
 }: BlockNoteEditorProps): React.JSX.Element {
+  const isEditable = resolveEditable({ editable, onChange });
   const t = useTranslations();
   const locale = useI18nLocale();
   const { resolvedTheme } = useTheme();
@@ -700,21 +718,30 @@ export default function BlockNoteEditor({
 
   const editor = useCreateBlockNote(
     useMemo(
-      () => ({
-        placeholders: {
-          emptyDocument: placeholder || t(`common.blocknote.placeholder`),
-        },
+      () =>
+        buildBlockNoteEditorOptions({
+          placeholder: placeholder || t(`common.blocknote.placeholder`),
+          schema,
+          initialContent: validatedInitialContent,
+          uploadFile: uploadImage,
+          disableUploads,
+          aiExtension,
+          coreDictionary,
+          aiDictionary,
+          collaboration,
+        }),
+      [
+        placeholder,
+        t,
         schema,
-        initialContent: validatedInitialContent,
-        uploadFile: uploadImage,
-        extensions: aiExtension ? [aiExtension] : undefined,
-        dictionary: aiExtension
-          ? { ...coreDictionary, ai: aiDictionary }
-          : coreDictionary === coreLocales.en
-            ? undefined
-            : coreDictionary,
-      }),
-      [placeholder, t, schema, validatedInitialContent, uploadImage, aiExtension, coreDictionary, aiDictionary],
+        validatedInitialContent,
+        uploadImage,
+        disableUploads,
+        aiExtension,
+        coreDictionary,
+        aiDictionary,
+        collaboration,
+      ],
     ),
     // useCreateBlockNote memoises on THIS list, not on the options' identity
     // (@blocknote/react: useMemo(() => BlockNoteEditor.create(options), deps),
@@ -723,7 +750,8 @@ export default function BlockNoteEditor({
     // rendered the AI UI over an editor with no AIExtension, and BlockNote's
     // useExtension threw "Extension not found". The other options keep their
     // first-render values, as before. `aiEnabled` is deliberately not here.
-    [aiExtension],
+    // A new Yjs fragment (another document) needs a new editor bound to it.
+    [aiExtension, collaboration?.fragment],
   );
 
   // Every AI surface keys off the editor actually rendered, never off the
@@ -878,6 +906,10 @@ export default function BlockNoteEditor({
   const previousContentHashRef = useRef<string | null>(null);
   useEffect(() => {
     if (!processedContent || !editor) return;
+    // A collaborative editor's content IS the shared Yjs document: it has no initialContent,
+    // so processedContent is [] and replaceBlocks would wipe the document it just loaded,
+    // and that wipe would be synced to every other writer and stored.
+    if (collaboration) return;
     const hash = JSON.stringify(processedContent);
     if (previousContentHashRef.current === hash) return; // no changes
     // Skip replaceBlocks when the new initialContent is just an echo of what
@@ -896,7 +928,7 @@ export default function BlockNoteEditor({
     }
     editor.replaceBlocks(editor.document, processedContent as PartialBlock[]);
     previousContentHashRef.current = hash;
-  }, [processedContent, editor]);
+  }, [processedContent, editor, collaboration]);
 
   useEffect(() => {
     if (!onWarmMentions || !initialContent || !Array.isArray(initialContent) || initialContent.length === 0) return;
@@ -956,7 +988,7 @@ export default function BlockNoteEditor({
         // Phone: an editable field types at 16px, or iPhone Safari zooms the
         // page in on focus. The two ranges never overlap, so neither depends on
         // CSS source order to win.
-        onChange
+        isEditable
           ? "md:[&_.bn-default-styles]:!text-sm max-md:[&_.bn-default-styles]:!text-base"
           : "[&_.bn-default-styles]:!text-sm",
         className,
@@ -965,7 +997,7 @@ export default function BlockNoteEditor({
       <BlockNoteView
         editor={editor}
         onChange={handleChange}
-        editable={onChange !== undefined}
+        editable={isEditable}
         formattingToolbar={false}
         slashMenu={!aiActive}
         // Follow the app theme: hardcoding "light" leaves dark (light-theme)
@@ -977,13 +1009,13 @@ export default function BlockNoteEditor({
         // element and produce a phantom scrollbar on the wrapper.
         className={cn(
           "BlockNoteView flex-1",
-          onChange && "[&.bn-container]:p-4",
+          isEditable && "[&.bn-container]:p-4",
           // In stretch mode the parent chain caps our height via flex; without
           // these two classes the `.bn-container` keeps `min-height: auto`
           // (its content's intrinsic height) and pushes the bordered wrapper
           // — and the surrounding EditorSheet form — to scroll instead of
           // scrolling internally.
-          onChange && stretch && "[&.bn-container]:min-h-0 [&.bn-container]:overflow-y-auto",
+          isEditable && stretch && "[&.bn-container]:min-h-0 [&.bn-container]:overflow-y-auto",
           // Phone — these reach the floating menus because BlockNote puts this
           // className on its portal root too. The formatting toolbar (~450px)
           // scrolls sideways instead of losing alignment and link off-screen;
