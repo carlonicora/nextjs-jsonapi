@@ -1,3 +1,9 @@
+## [6.12.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.12.1...v6.12.2) (2026-11-01)
+
+### 🐛 Bug Fixes
+
+* **containers:** key RoundPageContainer tabs by their section value, so two tabs with the same label no longer collide ([c023634](https://github.com/carlonicora/nextjs-jsonapi/commit/c023634f35f8f383637119a428e53d7cb4582b7f))
+
 ## [6.12.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.12.0...v6.12.1) (2026-10-31)
 
 ### 🐛 Bug Fixes
