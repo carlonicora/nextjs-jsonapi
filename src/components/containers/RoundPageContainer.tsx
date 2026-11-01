@@ -486,7 +486,7 @@ export function RoundPageContainer({
                         of label length. */}
                     <TabsList className="flex h-auto w-full flex-col items-stretch gap-0.5 bg-transparent p-0">
                       {ungrouped.map((tab) => (
-                        <TabsTrigger key={tab.label} value={tabValue(tab)} className={railTriggerClass}>
+                        <TabsTrigger key={tabValue(tab)} value={tabValue(tab)} className={railTriggerClass}>
                           {tab.contentLabel ?? tab.label}
                         </TabsTrigger>
                       ))}
@@ -496,7 +496,7 @@ export function RoundPageContainer({
                             {group.label}
                           </MicroLabel>
                           {group.items.map((tab) => (
-                            <TabsTrigger key={tab.label} value={tabValue(tab)} className={railTriggerClass}>
+                            <TabsTrigger key={tabValue(tab)} value={tabValue(tab)} className={railTriggerClass}>
                               {tab.contentLabel ?? tab.label}
                             </TabsTrigger>
                           ))}
@@ -529,7 +529,7 @@ export function RoundPageContainer({
                         </SelectTrigger>
                         <SelectContent>
                           {ungrouped.map((tab) => (
-                            <SelectItem key={tab.label} value={tabValue(tab)}>
+                            <SelectItem key={tabValue(tab)} value={tabValue(tab)}>
                               {tab.contentLabel ?? tab.label}
                             </SelectItem>
                           ))}
@@ -537,7 +537,7 @@ export function RoundPageContainer({
                             <SelectGroup key={group.label}>
                               <SelectLabel>{group.label}</SelectLabel>
                               {group.items.map((tab) => (
-                                <SelectItem key={tab.label} value={tabValue(tab)}>
+                                <SelectItem key={tabValue(tab)} value={tabValue(tab)}>
                                   {tab.contentLabel ?? tab.label}
                                 </SelectItem>
                               ))}
@@ -565,7 +565,7 @@ export function RoundPageContainer({
                         {header}
                         {tabs.map((tab) => (
                           <TabsContent
-                            key={tab.label}
+                            key={tabValue(tab)}
                             value={tabValue(tab)}
                             className={tab.fillHeight ? `flex min-h-0 w-full flex-1 flex-col` : ``}
                           >
@@ -615,7 +615,7 @@ export function RoundPageContainer({
                                 </SelectTrigger>
                                 <SelectContent>
                                   {tabs.map((tab) => (
-                                    <SelectItem key={tab.label} value={tabValue(tab)}>
+                                    <SelectItem key={tabValue(tab)} value={tabValue(tab)}>
                                       {tab.contentLabel ?? tab.label}
                                     </SelectItem>
                                   ))}
@@ -626,7 +626,7 @@ export function RoundPageContainer({
                             <div className="p-4">
                               <TabsList data-help="page.tabs">
                                 {tabs.map((tab) => (
-                                  <TabsTrigger key={tab.label} value={tabValue(tab)} className="px-4">
+                                  <TabsTrigger key={tabValue(tab)} value={tabValue(tab)} className="px-4">
                                     {tab.contentLabel ?? tab.label}
                                   </TabsTrigger>
                                 ))}
@@ -642,7 +642,7 @@ export function RoundPageContainer({
                           >
                             {tabs.map((tab) => (
                               <TabsContent
-                                key={tab.label}
+                                key={tabValue(tab)}
                                 value={tabValue(tab)}
                                 className={tab.fillHeight ? `flex flex-1 min-h-0 w-full flex-col` : `pb-20`}
                               >
