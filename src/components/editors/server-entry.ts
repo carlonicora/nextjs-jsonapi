@@ -5,3 +5,4 @@
 // `serverExternalPackages` so Node loads it instead of the bundler.
 
 export { BlockNoteServerContent } from "./server/BlockNoteServerContent";
+export { renderBlockNoteMarkdown } from "./server/renderBlockNoteMarkdown";
