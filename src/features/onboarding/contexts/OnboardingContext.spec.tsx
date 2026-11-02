@@ -20,6 +20,7 @@ const driverMock = vi.hoisted(() => {
     movePrevious: vi.fn(),
     moveTo: vi.fn(),
     destroy: vi.fn(),
+    isActive: vi.fn(() => true),
   };
   const state: { config?: Hooks } = {};
   const driver = vi.fn((config: Hooks) => {
@@ -53,7 +54,8 @@ describe("OnboardingProvider on driver.js", () => {
     driverMock.driver.mockClear();
     driverMock.instance.drive.mockClear();
     driverMock.instance.destroy.mockClear();
-    driverMock.instance.moveNext.mockClear();
+    driverMock.instance.moveNext.mockReset();
+    driverMock.instance.isActive.mockImplementation(() => true);
     driverMock.state.config = undefined;
   });
 
@@ -165,6 +167,45 @@ describe("OnboardingProvider on driver.js", () => {
     // A late onDestroyed must not end the tour a second time.
     act(() => config.onDestroyed?.());
     expect(onTourEnd).toHaveBeenCalledTimes(1);
+  });
+
+  it("ends the tour when Next finds every remaining step's target missing", () => {
+    /* driver.js skips missing targets and, when none is left, destroys itself without
+       calling onDestroyed: without this the tour stayed "active" with no card on screen. */
+    const { wrapper, onTourEnd } = wrap();
+    const { result } = renderHook(() => useOnboarding(), { wrapper });
+    act(() => result.current.startTour("t", steps));
+    const config = driverMock.state.config!;
+    const popoverWrapper = document.createElement("div");
+    act(() => {
+      config.steps[0].onHighlightStarted?.();
+      config.steps[0].popover.onPopoverRender({ wrapper: popoverWrapper });
+    });
+    driverMock.instance.moveNext.mockImplementation(() => driverMock.instance.isActive.mockImplementation(() => false));
+
+    const next = Array.from(popoverWrapper.querySelectorAll("button")).find((b) => b.textContent === "Next")!;
+    act(() => next.click());
+
+    expect(driverMock.instance.moveNext).toHaveBeenCalled();
+    expect(result.current.isTourActive).toBe(false);
+    expect(result.current.activeTourId).toBeNull();
+    expect(onTourEnd).toHaveBeenCalledWith("t", "dismissed");
+  });
+
+  it("keeps the tour when Next moves to a step that is shown", () => {
+    const { wrapper, onTourEnd } = wrap();
+    const { result } = renderHook(() => useOnboarding(), { wrapper });
+    act(() => result.current.startTour("t", steps));
+    const config = driverMock.state.config!;
+    const popoverWrapper = document.createElement("div");
+    act(() => {
+      config.steps[0].onHighlightStarted?.();
+      config.steps[0].popover.onPopoverRender({ wrapper: popoverWrapper });
+    });
+    const next = Array.from(popoverWrapper.querySelectorAll("button")).find((b) => b.textContent === "Next")!;
+    act(() => next.click());
+    expect(result.current.isTourActive).toBe(true);
+    expect(onTourEnd).not.toHaveBeenCalled();
   });
 
   it("reports 'dismissed' when driver is destroyed without a card action", () => {

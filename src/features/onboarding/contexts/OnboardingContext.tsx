@@ -147,7 +147,17 @@ export function OnboardingProvider({
 
       const move = (direction: "next" | "previous", from: number) => {
         const target = tourSteps[direction === "next" ? from + 1 : from - 1];
-        const go = () => (direction === "next" ? driverRef.current?.moveNext() : driverRef.current?.movePrevious());
+        const go = () => {
+          const instance = driverRef.current;
+          if (!instance) return;
+          if (direction === "next") instance.moveNext();
+          else instance.movePrevious();
+          /* driver.js skips steps whose target is missing (skipMissingElement); when every
+             step left is missing it destroys itself without calling onDestroyed (it only
+             does once its 400ms transition has run). The tour is then over: tear it down, as
+             "dismissed" because the user saw none of the remaining steps. */
+          if (driverRef.current === instance && !instance.isActive()) teardown("dismissed");
+        };
         if (target?.showDelay) setTimeout(go, target.showDelay);
         else go();
       };
