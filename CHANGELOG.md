@@ -1,3 +1,13 @@
+## [6.13.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.12.2...v6.13.0) (2026-11-02)
+
+### 🚀 Features
+
+* **offline:** an opt-in offline mode: the app's root records are kept on the device, pages are answered from the device copy without a connection, changes made offline are sent on reconnect, and clashes come back for the user to merge ([1c6bf3a](https://github.com/carlonicora/nextjs-jsonapi/commit/1c6bf3a3398523d4b8c108a02792a6d53eaee20d))
+
+### ♻️ Chores
+
+* **deps:** bring pnpm-lock.yaml up to date with package.json, including [@sqlite](https://github.com/sqlite).org/sqlite-wasm ([2006efa](https://github.com/carlonicora/nextjs-jsonapi/commit/2006efa68cd1173c1decae57ddf96f6095436332))
+
 ## [6.12.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.12.1...v6.12.2) (2026-11-01)
 
 ### 🐛 Bug Fixes
