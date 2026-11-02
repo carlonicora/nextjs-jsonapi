@@ -1,3 +1,9 @@
+## [6.16.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.15.0...v6.16.0) (2026-11-02)
+
+### 🚀 Features
+
+* **email:** automations and blasts declare a purpose, Service or Marketing; the editors require it, the lists show it as a badge, and an administrator can add a user or waitlist entry to an automation from its Recipients tab through a paged search that flags who cannot be added and why (WYR-45) ([ed52397](https://github.com/carlonicora/nextjs-jsonapi/commit/ed52397971a0f65c286950a35c25174a7affc8bc))
+
 ## [6.15.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.14.1...v6.15.0) (2026-11-02)
 
 ### 🚀 Features
