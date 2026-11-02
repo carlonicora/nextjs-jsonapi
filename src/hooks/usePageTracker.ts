@@ -10,18 +10,28 @@ import { getTrackablePages } from "../client/config";
 const EXCLUDED_ROUTES = ["/", "/login", "/register", "/forgot-password", "/reset-password", "/activate"];
 
 /**
- * Detail pages title themselves `[Entity type] Entity name | App name`. Returns
- * the entity name, or null when the document title is not (yet) a detail-page
- * title — the normal state for the first tick after a client-side navigation,
- * before the route's streamed metadata replaces the <title>.
+ * Detail pages title themselves in one of two shapes:
+ *
+ *   `[Entity type] Entity name | App name`        (bracketed)
+ *   `Entity name · Entity type · Context | App name` (most-specific-first)
+ *
+ * Returns the entity name, or null when the document title carries no page
+ * name — just the bare app name. Whether the title belongs to THIS route (and
+ * not the page we left) is decided by the caller, not here.
  */
 function readEntityTitle(): string | null {
   if (typeof document === "undefined") return null;
 
-  const afterEntityType = document.title.split("]")[1];
-  if (!afterEntityType) return null;
+  const title = document.title;
 
-  return afterEntityType.split("|")[0]?.trim() || null;
+  if (title.includes("]")) {
+    const afterEntityType = title.split("]")[1];
+    return afterEntityType?.split("|")[0]?.trim() || null;
+  }
+
+  if (!title.includes("|")) return null;
+
+  return title.split("|")[0].split("·")[0]?.trim() || null;
 }
 
 export function usePageTracker() {

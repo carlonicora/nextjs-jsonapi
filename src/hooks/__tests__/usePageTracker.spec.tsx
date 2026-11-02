@@ -299,4 +299,65 @@ describe("usePageTracker", () => {
 
     await waitFor(() => expect(pages(store)[0]?.title).toBe("Venezia Obscura"));
   });
+
+  describe("most-specific-first titles (`Name · Type · Context | App`)", () => {
+    it("records the entity name on a hard load", async () => {
+      pathnameRef.current = "/npcs/npc-1";
+      document.title = "Charlie · NPC · Venezia Obscura | App";
+      const store = createStore();
+      store.set(recentPagesAtom, []);
+
+      mount(store);
+
+      await waitFor(() => expect(pages(store)).toHaveLength(1));
+      expect(pages(store)[0]).toMatchObject({ url: "/npcs/npc-1", title: "Charlie", moduleType: "npcs" });
+    });
+
+    it("records a single-part title such as a campaign's", async () => {
+      pathnameRef.current = "/campaigns/camp-1";
+      document.title = "Venezia Obscura | App";
+      const store = createStore();
+      store.set(recentPagesAtom, []);
+
+      mount(store);
+
+      await waitFor(() => expect(pages(store)[0]?.title).toBe("Venezia Obscura"));
+    });
+
+    it("never stamps an entity with the previous page's name, then upgrades when the title lands", async () => {
+      pathnameRef.current = "/campaigns/camp-1";
+      document.title = "Venezia Obscura | App";
+      const store = createStore();
+      store.set(recentPagesAtom, []);
+      const view = mount(store);
+      await waitFor(() => expect(pages(store)[0]?.title).toBe("Venezia Obscura"));
+
+      pathnameRef.current = "/npcs/npc-1";
+      view.rerender(
+        <Provider store={store}>
+          <Harness />
+        </Provider>,
+      );
+
+      await waitFor(() => expect(pages(store)[0]?.url).toBe("/npcs/npc-1"));
+      expect(pages(store)[0].title).toBe("npcs");
+
+      document.title = "Charlie · NPC · Venezia Obscura | App";
+
+      await waitFor(() => expect(pages(store)[0]?.title).toBe("Charlie"));
+      expect(pages(store).find((page) => page.url === "/campaigns/camp-1")?.title).toBe("Venezia Obscura");
+    });
+
+    it("keeps the module name when the title is only the app name", async () => {
+      pathnameRef.current = "/npcs/npc-1";
+      document.title = "App";
+      const store = createStore();
+      store.set(recentPagesAtom, []);
+
+      mount(store);
+
+      await waitFor(() => expect(pages(store)).toHaveLength(1));
+      expect(pages(store)[0].title).toBe("npcs");
+    });
+  });
 });
