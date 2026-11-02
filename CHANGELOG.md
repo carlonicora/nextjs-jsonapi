@@ -1,3 +1,9 @@
+## [6.15.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.14.1...v6.15.0) (2026-11-02)
+
+### 🚀 Features
+
+* **blocknote:** renderBlockNoteMarkdown turns stored BlockNote content into markdown on the server, through BlockNote's own converter; it shares one server editor and the one-at-a-time queue with renderBlockNoteHTML (WYR-38) ([da0190c](https://github.com/carlonicora/nextjs-jsonapi/commit/da0190cb10b7f57b44d43d05911696814226e72f))
+
 ## [6.14.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.14.0...v6.14.1) (2026-11-02)
 
 ### 🐛 Bug Fixes
