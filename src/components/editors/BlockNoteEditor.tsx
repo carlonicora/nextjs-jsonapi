@@ -821,11 +821,21 @@ export default function BlockNoteEditor({
   // initialContent is just an echo of our own emission (form-controlled flow).
   const lastEmittedHashRef = useRef<string | null>(null);
 
+  // Whether the parent's copy of the text is empty: the content it handed in, then each change
+  // reported to it. A change from empty to still empty is not reported: BlockNote emits one when an
+  // empty editor mounts (its trailing empty paragraph), and reported it became a save of nothing on
+  // every view of a page with an empty field.
+  const processedContentRef = useRef<any[]>([]);
+  const parentKnowsEmptyRef = useRef<boolean | null>(null);
+
   const handleChange = useCallback(async () => {
     if (!onChange) return;
     const newBlocks = editor.document;
     lastEmittedHashRef.current = JSON.stringify(newBlocks);
     const isEmpty = isDocumentEmpty(newBlocks);
+    const wasEmpty = parentKnowsEmptyRef.current ?? isDocumentEmpty(processedContentRef.current);
+    if (isEmpty && wasEmpty) return;
+    parentKnowsEmptyRef.current = isEmpty;
 
     function hasUnresolvedDiffsRecursive(block: any): boolean {
       if (!block || typeof block !== "object") return false;
@@ -880,6 +890,8 @@ export default function BlockNoteEditor({
     onChange(newBlocks, isEmpty, hasUnresolvedDiff);
   }, [editor, onChange, id, acceptedChanges, rejectedChanges]);
 
+  processedContentRef.current = processedContent as any[];
+
   // Utility: deep equality for arrays of blocks
   const areBlocksEqual = (a: any[], b: any[]): boolean => {
     return JSON.stringify(a) === JSON.stringify(b);
@@ -912,6 +924,8 @@ export default function BlockNoteEditor({
     if (collaboration) return;
     const hash = JSON.stringify(processedContent);
     if (previousContentHashRef.current === hash) return; // no changes
+    // New content from the parent: that is now the text it knows.
+    parentKnowsEmptyRef.current = isDocumentEmpty(processedContent as any[]);
     // Skip replaceBlocks when the new initialContent is just an echo of what
     // the editor itself emitted. Without this, a form-controlled parent
     // (FormBlockNote) round-trips field.value back as initialContent on every

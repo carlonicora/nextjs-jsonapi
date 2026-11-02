@@ -1,6 +1,9 @@
 "use client";
 
 import { ApiData } from "../core/interfaces/ApiData";
+import { isOfflineConfigured } from "../offline/config";
+import { getOfflineState, reachesNetworkWhileOffline, setOfflineState } from "../offline/state";
+import { OFFLINE_REPLAY_HEADER } from "../offline/types";
 
 export interface DirectFetchParams {
   method: string;
@@ -18,6 +21,39 @@ export interface DirectFetchParams {
  * Use this for client-side API calls.
  */
 export async function directFetch(params: DirectFetchParams): Promise<ApiData> {
+  // Offline mode is opt-in (`configureOffline`). Without it nothing below loads or runs. A request
+  // the server runs as an offline replay always goes to the network, and so do the reads and the
+  // change-set request of a reconnect attempt (the session stays offline until its sync succeeds).
+  const offline = isOfflineConfigured() && !hasReplayHeader(params.additionalHeaders);
+  if (offline && !getOfflineState().online && !reachesNetworkWhileOffline(params.method, params.url)) {
+    return answerLocally(params);
+  }
+
+  const response = await fetchFromApi(params);
+
+  if (offline && response.networkError) {
+    setOfflineState({ online: false });
+    return answerLocally(params);
+  }
+  if (offline && response.ok && params.method.toUpperCase() !== "GET") {
+    const { writeThrough } = await import("../offline/write-through");
+    await writeThrough({ method: params.method, url: params.url }, response);
+  }
+
+  return response;
+}
+
+function hasReplayHeader(headers?: Record<string, string>): boolean {
+  if (!headers) return false;
+  return Object.keys(headers).some((key) => key.toLowerCase() === OFFLINE_REPLAY_HEADER);
+}
+
+async function answerLocally(params: DirectFetchParams): Promise<ApiData> {
+  const { localTransport } = await import("../offline/local-transport");
+  return localTransport({ method: params.method, url: params.url, body: params.body, files: params.files });
+}
+
+async function fetchFromApi(params: DirectFetchParams): Promise<ApiData> {
   const response: ApiData = {
     data: undefined,
     ok: false,
@@ -95,6 +131,7 @@ export async function directFetch(params: DirectFetchParams): Promise<ApiData> {
     response.status = 503;
     response.statusText = "Service Unavailable";
     response.data = undefined;
+    response.networkError = true;
   }
 
   return response;

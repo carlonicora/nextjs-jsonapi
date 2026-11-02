@@ -149,4 +149,37 @@ describe("RehydrationFactory", () => {
       expect(results[0]).not.toBe(results[1]);
     });
   });
+
+  describe("circular included data", () => {
+    // A model that reads its "other" relationship from included, as AbstractApiData models do.
+    class Linked implements Partial<ApiDataInterface> {
+      id = "";
+      other?: Linked;
+      rehydrate(data: JsonApiHydratedDataInterface) {
+        this.id = data.jsonApi.id;
+        const ref = data.jsonApi.relationships?.other?.data;
+        const target = ref && data.included.find((item: any) => item.type === ref.type && item.id === ref.id);
+        if (target)
+          this.other = RehydrationFactory.rehydrate(linkedModule as any, { jsonApi: target, included: data.included });
+        return this;
+      }
+    }
+    const linkedModule = { name: "linked", model: Linked };
+
+    it("a relationship that leads back to a resource already being rehydrated is skipped, not followed forever", () => {
+      DataClassRegistry.registerObjectClass(linkedModule as any, Linked as any);
+      const a = { type: "linked", id: "a", relationships: { other: { data: { type: "linked", id: "b" } } } };
+      const b = { type: "linked", id: "b", relationships: { other: { data: { type: "linked", id: "a" } } } };
+
+      const result = RehydrationFactory.rehydrate<any>(linkedModule as any, { jsonApi: a, included: [a, b] });
+
+      expect(result.id).toBe("a");
+      expect(result.other.id).toBe("b");
+      expect(result.other.other).toBeUndefined();
+      // The guard is per chain: the same resource rehydrates again in a new call.
+      expect(RehydrationFactory.rehydrate<any>(linkedModule as any, { jsonApi: b, included: [a, b] }).other.id).toBe(
+        "a",
+      );
+    });
+  });
 });

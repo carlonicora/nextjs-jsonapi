@@ -12,7 +12,13 @@ const SW_SOURCE = readFileSync(SW_PATH, "utf8");
 
 const ORIGIN = "https://app.test";
 
-type SwConfig = { appId: string; offlineRevision: string; notificationIcon: string };
+type SwConfig = {
+  appId: string;
+  offlineRevision: string;
+  notificationIcon: string;
+  offlineShell?: { default: string; locales?: Record<string, string> };
+  offlineImageHosts?: string[];
+};
 type Listener = (event: any) => void;
 
 // A worker resolves relative Request URLs against its own location; Node's
@@ -43,6 +49,7 @@ function loadWorker(config: SwConfig = { appId: "test", offlineRevision: "abc123
     fetch: vi.fn(),
     Response: globalThis.Response,
     Request: WorkerRequest,
+    URL: globalThis.URL,
     location: { origin: ORIGIN },
     console,
   };
@@ -79,6 +86,23 @@ function makeCache(overrides: Record<string, any> = {}) {
     match: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   };
+}
+
+const SHELL_CONFIG: SwConfig = {
+  appId: "test",
+  offlineRevision: "abc12345",
+  notificationIcon: "/icon.png",
+  offlineShell: { default: "/offline-shell", locales: { it: "/it/offline-shell" } },
+  offlineImageHosts: ["api.app.test"],
+};
+
+/** The entry the worker writes last into a shell cache; a cache without it is incomplete. */
+const SHELL_COMPLETE_URL = "/__nja-offline-shell-complete__";
+
+const MANIFEST = { buildId: "build-2", assets: ["/_next/static/chunks/a.js", "/_next/static/css/b.css"] };
+
+function manifestResponse(manifest = MANIFEST) {
+  return new Response(JSON.stringify(manifest), { status: 200, headers: { "content-type": "application/json" } });
 }
 
 function navigation(init: Record<string, any> = {}) {
@@ -305,5 +329,338 @@ describe("pwa/sw.js", () => {
     expect(sandbox.registration.pushManager.subscribe).not.toHaveBeenCalled();
     expect(sandbox.clients.matchAll).not.toHaveBeenCalled();
     expect(client.postMessage).not.toHaveBeenCalled();
+  });
+
+  describe("offline shell (opt-in)", () => {
+    it("without offlineShell, install caches only /offline.html (unchanged)", async () => {
+      const { sandbox, dispatch } = loadWorker();
+      const cache = makeCache();
+      sandbox.caches.open.mockResolvedValue(cache);
+
+      const event = dispatch("install");
+      await event.waitUntilPromise;
+
+      expect(sandbox.fetch).not.toHaveBeenCalled();
+      expect(sandbox.caches.open).toHaveBeenCalledTimes(1);
+      expect(sandbox.caches.open).toHaveBeenCalledWith("test-offline-abc12345");
+      expect(cache.addAll).not.toHaveBeenCalled();
+    });
+
+    it("with offlineShell, install reads /offline-manifest.json and caches every asset plus each shell URL in <appId>-shell-<buildId>", async () => {
+      const { sandbox, dispatch } = loadWorker(SHELL_CONFIG);
+      const offlineCache = makeCache();
+      const shellCache = makeCache();
+      sandbox.caches.open.mockImplementation(async (name: string) =>
+        name === "test-shell-build-2" ? shellCache : offlineCache,
+      );
+      sandbox.fetch.mockResolvedValue(manifestResponse());
+
+      const event = dispatch("install");
+      await event.waitUntilPromise;
+
+      expect(sandbox.fetch).toHaveBeenCalledTimes(1);
+      const manifestRequest = sandbox.fetch.mock.calls[0][0];
+      expect(new URL(manifestRequest.url).pathname).toBe("/offline-manifest.json");
+      expect(manifestRequest.cache).toBe("no-store");
+      expect(offlineCache.add).toHaveBeenCalledTimes(1);
+      expect(sandbox.caches.open).toHaveBeenCalledWith("test-shell-build-2");
+      expect(shellCache.addAll).toHaveBeenCalledTimes(1);
+      const cached = shellCache.addAll.mock.calls[0][0].map((request: Request) => new URL(request.url).pathname);
+      expect(cached.sort()).toEqual(
+        ["/_next/static/chunks/a.js", "/_next/static/css/b.css", "/offline-shell", "/it/offline-shell"].sort(),
+      );
+      for (const request of shellCache.addAll.mock.calls[0][0]) expect(request.cache).toBe("reload");
+      // The completion marker is written last, after every file is in.
+      expect(shellCache.put).toHaveBeenCalledTimes(1);
+      expect(shellCache.put.mock.calls[0][0]).toBe(SHELL_COMPLETE_URL);
+      expect(shellCache.put.mock.invocationCallOrder[0]).toBeGreaterThan(shellCache.addAll.mock.invocationCallOrder[0]);
+    });
+
+    it("install fails, and the old worker stays, when any asset fails", async () => {
+      const { sandbox, dispatch } = loadWorker(SHELL_CONFIG);
+      const offlineCache = makeCache();
+      const shellCache = makeCache({ addAll: vi.fn().mockRejectedValue(new Error("Request failed")) });
+      sandbox.caches.open.mockImplementation(async (name: string) =>
+        name === "test-shell-build-2" ? shellCache : offlineCache,
+      );
+      sandbox.caches.delete.mockResolvedValue(true);
+      sandbox.fetch.mockResolvedValue(manifestResponse());
+
+      const event = dispatch("install");
+
+      await expect(event.waitUntilPromise).rejects.toThrow("Request failed");
+      // The half-filled shell cache is deleted, so no worker ever picks it.
+      expect(sandbox.caches.delete).toHaveBeenCalledWith("test-shell-build-2");
+      expect(shellCache.put).not.toHaveBeenCalled();
+    });
+
+    it("never answers from a shell cache that is not complete (no completion marker)", async () => {
+      const complete = new Response("build-2 shell");
+      const partial = new Response("build-3 shell");
+      const { sandbox, dispatch } = loadWorker(SHELL_CONFIG);
+      const caches: Record<string, ReturnType<typeof makeCache>> = {
+        "test-offline-abc12345": makeCache(),
+        "test-shell-build-2": makeCache({
+          match: vi.fn(async (url: string) =>
+            url === SHELL_COMPLETE_URL ? new Response("") : url === "/offline-shell" ? complete : undefined,
+          ),
+        }),
+        "test-shell-build-3": makeCache({
+          match: vi.fn(async (url: string) => (url === "/offline-shell" ? partial : undefined)),
+        }),
+      };
+      sandbox.caches.keys.mockResolvedValue(Object.keys(caches));
+      sandbox.caches.open.mockImplementation(async (name: string) => caches[name]);
+      sandbox.fetch.mockRejectedValue(new TypeError("Failed to fetch"));
+
+      const event = dispatch("fetch", navigation());
+
+      expect(await event.respondWithPromise).toBe(complete);
+    });
+
+    it("install fails when the manifest cannot be read", async () => {
+      const { sandbox, dispatch } = loadWorker(SHELL_CONFIG);
+      sandbox.caches.open.mockResolvedValue(makeCache());
+      sandbox.fetch.mockResolvedValue(new Response("nope", { status: 404 }));
+
+      const event = dispatch("install");
+
+      await expect(event.waitUntilPromise).rejects.toThrow();
+    });
+
+    it("activate deletes shell caches of other build ids and keeps <appId>-images", async () => {
+      const { sandbox, dispatch } = loadWorker(SHELL_CONFIG);
+      sandbox.caches.open.mockResolvedValue(makeCache());
+      sandbox.fetch.mockResolvedValue(manifestResponse());
+      await dispatch("install").waitUntilPromise;
+
+      sandbox.caches.keys.mockResolvedValue([
+        "test-offline-abc12345",
+        "test-shell-build-1",
+        "test-shell-build-2",
+        "test-images",
+        "serwist-precache",
+      ]);
+      sandbox.caches.delete.mockResolvedValue(true);
+      sandbox.registration.navigationPreload.enable.mockResolvedValue(undefined);
+      sandbox.clients.claim.mockResolvedValue(undefined);
+
+      await dispatch("activate").waitUntilPromise;
+
+      const deleted = sandbox.caches.delete.mock.calls.map((call: any[]) => call[0]).sort();
+      expect(deleted).toEqual(["serwist-precache", "test-shell-build-1"]);
+      expect(sandbox.clients.claim).toHaveBeenCalledTimes(1);
+    });
+
+    it("activate without offlineShell still deletes the images and shell caches (unchanged)", async () => {
+      const { sandbox, dispatch } = loadWorker();
+      sandbox.caches.keys.mockResolvedValue(["test-offline-abc12345", "test-shell-build-1", "test-images"]);
+      sandbox.caches.delete.mockResolvedValue(true);
+
+      await dispatch("activate").waitUntilPromise;
+
+      const deleted = sandbox.caches.delete.mock.calls.map((call: any[]) => call[0]).sort();
+      expect(deleted).toEqual(["test-images", "test-shell-build-1"]);
+    });
+
+    function shellWorker(shellEntries: Record<string, Response | undefined>, offlinePage?: Response) {
+      const worker = loadWorker(SHELL_CONFIG);
+      const entries: Record<string, Response | undefined> = { [SHELL_COMPLETE_URL]: new Response(""), ...shellEntries };
+      const shellCache = makeCache({ match: vi.fn(async (url: string) => entries[url]) });
+      const offlineCache = makeCache({ match: vi.fn().mockResolvedValue(offlinePage) });
+      worker.sandbox.caches.keys.mockResolvedValue(["test-offline-abc12345", "test-shell-build-2"]);
+      worker.sandbox.caches.open.mockImplementation(async (name: string) =>
+        name === "test-shell-build-2" ? shellCache : offlineCache,
+      );
+      worker.sandbox.fetch.mockRejectedValue(new TypeError("Failed to fetch"));
+      return { ...worker, shellCache, offlineCache };
+    }
+
+    it("a failed navigation to /it/... answers the it shell, any other path the default shell, and offline.html when no shell is cached", async () => {
+      const itShell = new Response("it shell");
+      const defaultShell = new Response("default shell");
+      const offline = new Response("offline page");
+
+      const withShell = shellWorker({ "/offline-shell": defaultShell, "/it/offline-shell": itShell });
+      const itNav = withShell.dispatch(
+        "fetch",
+        navigation({ request: { mode: "navigate", destination: "document", url: `${ORIGIN}/it/campaigns/c1/run` } }),
+      );
+      expect(await itNav.respondWithPromise).toBe(itShell);
+      const defaultNav = withShell.dispatch(
+        "fetch",
+        navigation({ request: { mode: "navigate", destination: "document", url: `${ORIGIN}/npcs/n1` } }),
+      );
+      expect(await defaultNav.respondWithPromise).toBe(defaultShell);
+
+      const noShell = shellWorker({}, offline);
+      const fallback = noShell.dispatch("fetch", navigation());
+      expect(await fallback.respondWithPromise).toBe(offline);
+      expect(noShell.offlineCache.match).toHaveBeenCalledWith("/offline.html");
+    });
+
+    it("after an online navigation, a new build in the manifest refreshes the shell in the background and drops the old one; the same build does nothing", async () => {
+      const { sandbox, dispatch } = loadWorker(SHELL_CONFIG);
+      // The worker runs on build-1; the server now serves build-2.
+      const caches = new Map<string, ReturnType<typeof makeCache>>();
+      const complete = makeCache({
+        match: vi.fn(async (url: string) => (url === SHELL_COMPLETE_URL ? new Response("") : undefined)),
+      });
+      caches.set("test-shell-build-1", complete);
+      sandbox.caches.keys.mockImplementation(async () => [...caches.keys()]);
+      sandbox.caches.open.mockImplementation(async (name: string) => {
+        if (!caches.has(name)) caches.set(name, makeCache());
+        return caches.get(name);
+      });
+      sandbox.caches.delete.mockImplementation(async (name: string) => caches.delete(name));
+      const page = new Response("page");
+      sandbox.fetch.mockImplementation(async (input: any) => {
+        const url = typeof input === "string" ? input : input.url;
+        if (url.endsWith("/offline-manifest.json")) return manifestResponse();
+        return page;
+      });
+
+      const event = dispatch("fetch", navigation());
+      expect(await event.respondWithPromise).toBe(page);
+      await event.waitUntilPromise;
+
+      const fresh = caches.get("test-shell-build-2");
+      expect(fresh?.addAll).toHaveBeenCalledTimes(1);
+      expect(fresh?.put).toHaveBeenCalledWith(SHELL_COMPLETE_URL, expect.anything());
+      expect(caches.has("test-shell-build-1")).toBe(false);
+
+      // Same build: no second precache.
+      fresh?.match.mockImplementation(async (url: string) =>
+        url === SHELL_COMPLETE_URL ? new Response("") : undefined,
+      );
+      const again = dispatch("fetch", navigation());
+      await again.respondWithPromise;
+      await again.waitUntilPromise;
+      expect(fresh?.addAll).toHaveBeenCalledTimes(1);
+    });
+
+    it("a GET under /_next/static/ is served cache-first from the shell cache", async () => {
+      const cachedChunk = new Response("cached chunk");
+      const { sandbox, dispatch } = shellWorker({ [`${ORIGIN}/_next/static/chunks/a.js`]: cachedChunk });
+
+      const hit = dispatch("fetch", {
+        request: { method: "GET", mode: "no-cors", destination: "script", url: `${ORIGIN}/_next/static/chunks/a.js` },
+      });
+      expect(hit.respondWith).toHaveBeenCalledTimes(1);
+      expect(await hit.respondWithPromise).toBe(cachedChunk);
+      expect(sandbox.fetch).not.toHaveBeenCalled();
+
+      const network = new Response("network chunk");
+      sandbox.fetch.mockResolvedValue(network);
+      const missRequest = {
+        method: "GET",
+        mode: "no-cors",
+        destination: "script",
+        url: `${ORIGIN}/_next/static/chunks/missing.js`,
+      };
+      const miss = dispatch("fetch", { request: missRequest });
+      expect(await miss.respondWithPromise).toBe(network);
+      expect(sandbox.fetch).toHaveBeenCalledWith(missRequest);
+    });
+
+    it("another same-origin GET in the shell cache (the device worker, SQLite) goes to the network first and is answered from the cache when the network fails", async () => {
+      const workerUrl = `${ORIGIN}/offline-sqlite/device-worker.mjs`;
+      const cachedWorker = new Response("cached worker");
+      const { sandbox, dispatch } = shellWorker({ [workerUrl]: cachedWorker });
+      const request = { method: "GET", mode: "same-origin", destination: "worker", url: workerUrl };
+
+      const online = new Response("network worker");
+      sandbox.fetch.mockResolvedValue(online);
+      const onlineEvent = dispatch("fetch", { request });
+      expect(onlineEvent.respondWith).toHaveBeenCalledTimes(1);
+      expect(await onlineEvent.respondWithPromise).toBe(online);
+
+      sandbox.fetch.mockRejectedValue(new TypeError("Failed to fetch"));
+      const offlineEvent = dispatch("fetch", { request });
+      expect(await offlineEvent.respondWithPromise).toBe(cachedWorker);
+
+      const notCached = dispatch("fetch", {
+        request: { method: "GET", mode: "cors", destination: "", url: `${ORIGIN}/campaigns?_rsc=1` },
+      });
+      // Not in the shell: a plain network error for the page, never an uncaught rejection in the worker.
+      expect(((await notCached.respondWithPromise) as Response).type).toBe("error");
+    });
+
+    it("a no-store GET (the session refresh of the shell) is never answered from the cache: it goes to the network untouched", async () => {
+      const cachedShell = new Response("cached shell");
+      const { sandbox, dispatch } = shellWorker({
+        "/offline-shell": cachedShell,
+        [`${ORIGIN}/offline-shell`]: cachedShell,
+      });
+
+      const event = dispatch("fetch", {
+        request: { method: "GET", mode: "cors", cache: "no-store", destination: "", url: `${ORIGIN}/offline-shell` },
+      });
+
+      expect(event.respondWith).not.toHaveBeenCalled();
+      expect(sandbox.fetch).not.toHaveBeenCalled();
+    });
+
+    it("a GET to an offlineImageHosts host for a URL in the images cache is answered from the cache when the network fails", async () => {
+      const { sandbox, dispatch } = loadWorker(SHELL_CONFIG);
+      const imageUrl = "https://api.app.test/s3/object?key=art.png&sig=1";
+      const cachedImage = new Response("image bytes");
+      const imagesCache = makeCache({
+        match: vi.fn(async (url: string) => (url === imageUrl ? cachedImage : undefined)),
+      });
+      sandbox.caches.open.mockImplementation(async (name: string) =>
+        name === "test-images" ? imagesCache : makeCache(),
+      );
+      sandbox.fetch.mockRejectedValue(new TypeError("Failed to fetch"));
+
+      const event = dispatch("fetch", {
+        request: { method: "GET", mode: "no-cors", destination: "image", url: imageUrl },
+      });
+
+      expect(event.respondWith).toHaveBeenCalledTimes(1);
+      expect(await event.respondWithPromise).toBe(cachedImage);
+      expect(sandbox.caches.open).toHaveBeenCalledWith("test-images");
+
+      const online = new Response("fresh bytes");
+      sandbox.fetch.mockResolvedValue(online);
+      const onlineEvent = dispatch("fetch", {
+        request: { method: "GET", mode: "no-cors", destination: "image", url: imageUrl },
+      });
+      expect(await onlineEvent.respondWithPromise).toBe(online);
+
+      const otherHost = dispatch("fetch", {
+        request: { method: "GET", mode: "no-cors", destination: "image", url: "https://cdn.other.test/a.png" },
+      });
+      expect(otherHost.respondWith).not.toHaveBeenCalled();
+    });
+
+    it("an offline image host's image through Next's optimizer (/_next/image) falls back to the downloaded original", async () => {
+      const { sandbox, dispatch } = loadWorker(SHELL_CONFIG);
+      const imageUrl = "https://api.app.test/s3/object?key=art.png&sig=1";
+      const cachedImage = new Response("image bytes");
+      const imagesCache = makeCache({
+        match: vi.fn(async (url: string) => (url === imageUrl ? cachedImage : undefined)),
+      });
+      sandbox.caches.open.mockImplementation(async (name: string) =>
+        name === "test-images" ? imagesCache : makeCache(),
+      );
+      sandbox.fetch.mockRejectedValue(new TypeError("Failed to fetch"));
+      const optimized = `${ORIGIN}/_next/image?url=${encodeURIComponent(imageUrl)}&w=256&q=75`;
+
+      const event = dispatch("fetch", {
+        request: { method: "GET", mode: "no-cors", destination: "image", url: optimized },
+      });
+      expect(await event.respondWithPromise).toBe(cachedImage);
+
+      const missing = dispatch("fetch", {
+        request: {
+          method: "GET",
+          mode: "no-cors",
+          destination: "image",
+          url: `${ORIGIN}/_next/image?url=${encodeURIComponent("https://api.app.test/s3/other")}&w=256&q=75`,
+        },
+      });
+      expect(((await missing.respondWithPromise) as Response).type).toBe("error");
+    });
   });
 });

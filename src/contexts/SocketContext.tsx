@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { NotificationInterface } from "../features/notification/data";
 import { useSocket } from "../hooks";
+import { isOfflineConfigured } from "../offline/config";
+import { useOfflineState } from "../offline/state-hooks";
 import type { SessionSnapshot } from "../server/ServerSession";
 
 interface SocketContextProps {
@@ -62,8 +64,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ token, session, 
   }, [session]);
 
   const resolvedToken = token ?? sessionToken;
+  // Offline mode (opt-in): the socket stops retrying while the session is offline and connects
+  // again once it is back online. Without offline mode the state stays online: never paused.
+  const offlineState = useOfflineState();
+  const paused = isOfflineConfigured() && !offlineState.online;
   // Called unconditionally: useSocket returns early while the token is falsy.
-  const socketHookData = useSocket({ token: resolvedToken as string });
+  const socketHookData = useSocket({ token: resolvedToken as string, paused });
 
   const sendMessage = (event: string, data: any) => {
     const currentSocket = socketHookData ? socketHookData.socket : defaultContextValue.socket;

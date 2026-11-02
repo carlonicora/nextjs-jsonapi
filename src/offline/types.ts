@@ -1,0 +1,115 @@
+import type { ApiRequestDataTypeInterface } from "../core/interfaces/ApiRequestDataTypeInterface";
+import type { DeviceStore } from "./store/DeviceStore";
+
+/** Header of a request the server runs as an offline replay. Never answered locally. */
+export const OFFLINE_REPLAY_HEADER = "x-offline-replay";
+
+export type OfflineMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+
+/** A Module (matched by its endpoint), a ":param" capture, or a literal segment ("playing", "merge"). */
+export type PatternSegment = ApiRequestDataTypeInterface | string;
+
+/** `url` (beyond the contract, optional): the absolute URL the request was made to, for the `links` of a list. */
+export type OfflineRequest = { method: OfflineMethod; path: string; query: URLSearchParams; body?: any; url?: string };
+
+/** `body` is a JSON:API document, `undefined` for a 204. */
+export type OfflineAnswer = { status: number; body: any };
+
+export type LocalAnswerContext = { request: OfflineRequest; params: Record<string, string>; store: DeviceStore };
+
+export type LocalAnswer = (ctx: LocalAnswerContext) => Promise<OfflineAnswer>;
+
+export type OfflineRoute = { method: OfflineMethod; pattern: PatternSegment[]; answer: LocalAnswer; queue: boolean };
+
+/**
+ * A type the API reads only as a list per target record: each changed record's target is the
+ * other end of its sync link of `linkKind` (from the record to the target), and `endpoint`
+ * builds that target's list path with `EndpointCreator`.
+ */
+export type OfflineLinkedListFetch = {
+  linkKind: string;
+  endpoint: (rootId: string, target: { type: string; id: string }) => string;
+};
+
+export type OfflineTypeConfig = {
+  module: ApiRequestDataTypeInterface;
+  /**
+   * How the sync fetches the type's changed records: the root record's list (`root-list`), one
+   * GET per record (`by-id`), or (`linked-list`) the list of each record's target, found through
+   * the sync answer's links of `linkedList.linkKind` (e.g. player notes, read per target only).
+   */
+  fetch: "root-list" | "by-id" | "linked-list";
+  /** Required with `fetch: "linked-list"`. */
+  linkedList?: OfflineLinkedListFetch;
+  readOnly: boolean;
+  serverOwnedFields: string[];
+  /**
+   * Relationship name → Neo4j relationship type (`faction` → `MEMBER_OF`). A link the device
+   * writes from a request's relationships carries the mapped type, the kind synced links carry;
+   * an unmapped name is stored as the name itself.
+   */
+  relationshipKinds?: Record<string, string>;
+  /** The string attributes the server's fulltext index covers (default: every string attribute). */
+  searchFields?: string[];
+  /** The server's order with no `orderBy` (default `updatedAt DESC`). */
+  defaultOrderBy?: string;
+};
+
+export type OfflineConfig = {
+  getUserId: () => string | undefined;
+  /**
+   * Offline mode is off on each device until the user turns it on (`turnOnOffline`), stored per
+   * user per device. Default (undefined/false): always on, every device keeps the copy.
+   */
+  requireOptIn?: boolean;
+  /** The module whose records own every other record (in Wyrdli, Modules.Campaign). */
+  rootModule: ApiRequestDataTypeInterface;
+  types: OfflineTypeConfig[];
+  routes: OfflineRoute[];
+  /** Ids of the root records to keep on the device. */
+  listSyncRoots: () => Promise<string[]>;
+  shellPath: (locale: string) => string;
+  syncIntervalMs: number;
+  /**
+   * Where the device worker loads SQLite from at run time (default `/offline-sqlite/index.mjs`).
+   * SQLite is never bundled: its own helper worker uses a computed URL that app bundlers refuse.
+   * The app serves the files of `dist/offline/sqlite/` at this URL's folder.
+   */
+  sqliteModuleUrl?: string;
+  /**
+   * Where the device-copy worker is started from (default `/offline-sqlite/device-worker.mjs`).
+   * It is a standalone file in `dist/offline/sqlite/`, never bundled by the app.
+   */
+  deviceWorkerUrl?: string;
+};
+
+export const DEFAULT_SQLITE_MODULE_URL = "/offline-sqlite/index.mjs";
+export const DEVICE_WORKER_FILE = "device-worker.mjs";
+export const DEFAULT_DEVICE_WORKER_URL = `/offline-sqlite/${DEVICE_WORKER_FILE}`;
+
+/**
+ * The files of `dist/offline/sqlite/` the app serves: the device worker and the SQLite files
+ * copied from @sqlite.org/sqlite-wasm.
+ */
+export const OFFLINE_SQLITE_FILES = [
+  DEVICE_WORKER_FILE,
+  "index.mjs",
+  "sqlite3.wasm",
+  "sqlite3-opfs-async-proxy.js",
+] as const;
+
+/** Thrown by a local answer for something that only the server can do. Answered as a 503 "needs-connection". */
+export class NeedsConnectionError extends Error {
+  readonly status = 503;
+  readonly code = "needs-connection";
+
+  constructor(message: string = "Needs a connection") {
+    super(message);
+    this.name = "NeedsConnectionError";
+  }
+}
+
+/** Segments joined with "/", modules by their endpoint. */
+export function patternToString(pattern: PatternSegment[]): string {
+  return pattern.map((segment) => (typeof segment === "string" ? segment : segment.name)).join("/");
+}

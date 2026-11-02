@@ -131,6 +131,9 @@ export * from "../features/referral/referral.module";
 export * from "../features/referral/referral-stats.module";
 export * from "../features/referral/referral-admin.modules";
 export * from "../features/referral/interfaces/referral-admin.interface";
+// Offline mode models and their module bundle (opt-in): exported from core so a
+// bootstrapper can spread offlineModules without loading the ./offline entry.
+export * from "../offline/sync/models";
 // Administrative token-usage reporting modules. Exported from core (not only
 // from the client-marked ./tokenusage barrel) so a consuming app can register
 // them in its bootstrapper without pulling the feature's client bundle —

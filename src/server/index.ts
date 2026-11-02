@@ -15,3 +15,8 @@ export { NotificationService as ServerNotificationService } from "../features/no
 export { FeatureService as ServerFeatureService } from "../features/feature/data/feature.service";
 export { PushService as ServerPushService } from "../features/push/data/push.service";
 export { S3Service as ServerS3Service } from "../features/s3/data/s3.service";
+
+// Offline mode: the build manifest the service worker precaches (/offline-manifest.json).
+export { buildOfflineManifest } from "../offline/server/build-offline-manifest";
+export type { OfflineManifest } from "../offline/server/build-offline-manifest";
+export { DEFAULT_SQLITE_MODULE_URL, OFFLINE_SQLITE_FILES } from "../offline/types";

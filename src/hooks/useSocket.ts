@@ -10,6 +10,8 @@ type Socket = ReturnType<typeof io>;
 
 interface UseSocketOptions {
   token: string;
+  /** While true the socket is disconnected (no reconnect attempts); false connects it again. */
+  paused?: boolean;
 }
 
 interface SocketLike {
@@ -31,7 +33,7 @@ interface UseSocketReturn {
   clearSocketNotifications: () => void;
 }
 
-export function useSocket({ token }: UseSocketOptions): UseSocketReturn {
+export function useSocket({ token, paused = false }: UseSocketOptions): UseSocketReturn {
   const _errorCount = useRef(0);
   const shouldConnect = useRef(true);
 
@@ -167,6 +169,23 @@ export function useSocket({ token }: UseSocketOptions): UseSocketReturn {
       }
     };
   }, [token]);
+
+  // Paused (offline mode, the session is offline): a manual disconnect stops socket.io retrying;
+  // resuming connects the same socket again.
+  const pausedSocket = useRef<Socket | null>(null);
+  useEffect(() => {
+    const current = socketRef.current;
+    if (!current) return;
+    if (paused) {
+      if (pausedSocket.current !== current) {
+        current.disconnect();
+        pausedSocket.current = current;
+      }
+    } else if (pausedSocket.current === current) {
+      pausedSocket.current = null;
+      current.connect();
+    }
+  }, [paused, socket]);
 
   const sendMessage = (event: string, data: any) => {
     if (socketRef.current && isConnected) {

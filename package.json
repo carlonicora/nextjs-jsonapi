@@ -38,6 +38,11 @@
       "import": "./dist/client/index.mjs",
       "require": "./dist/client/index.js"
     },
+    "./offline": {
+      "types": "./dist/offline/index.d.ts",
+      "import": "./dist/offline/index.mjs",
+      "require": "./dist/offline/index.js"
+    },
     "./components": {
       "types": "./dist/components/index.d.ts",
       "import": "./dist/components/index.mjs",
@@ -185,6 +190,7 @@
     "@radix-ui/react-label": "^2.1.16",
     "@radix-ui/react-slot": "^1.4.0",
     "@simplewebauthn/browser": "^13.3.0",
+    "@sqlite.org/sqlite-wasm": "3.53.4-build2",
     "ai": "^6.0.238",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

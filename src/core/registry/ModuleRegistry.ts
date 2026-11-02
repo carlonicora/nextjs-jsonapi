@@ -107,6 +107,9 @@ export interface FoundationModuleDefinitions {
   AnalyticsPageView: ModuleWithPermissions;
   // Account deletion (opt-in: registered only by apps that enable it)
   AccountDeletion: ModuleWithPermissions;
+  // Offline mode (opt-in: registered by apps that spread offlineModules)
+  OfflineChangeSet: ModuleWithPermissions;
+  RootSync: ModuleWithPermissions;
 }
 
 // App-specific modules - apps will augment this interface ONLY

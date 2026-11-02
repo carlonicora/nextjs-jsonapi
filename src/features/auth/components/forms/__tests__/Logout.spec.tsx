@@ -120,4 +120,66 @@ describe("Logout", () => {
       });
     });
   });
+
+  // Offline mode: the app may hold unsent changes on the device, so it gets a
+  // chance to warn (or cancel) before anything is cleared.
+  describe("Scenario: beforeLogout hook", () => {
+    it("awaits beforeLogout and stops when it returns false", async () => {
+      let resolveHook: (value: boolean) => void = () => {};
+      const beforeLogout = vi.fn(
+        () =>
+          new Promise<boolean>((resolve) => {
+            resolveHook = resolve;
+          }),
+      );
+
+      render(<Logout beforeLogout={beforeLogout} />);
+
+      await waitFor(() => {
+        expect(beforeLogout).toHaveBeenCalledTimes(1);
+      });
+      expect(clearClientStorage).not.toHaveBeenCalled();
+      expect(AuthService.logout).not.toHaveBeenCalled();
+
+      resolveHook(false);
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(clearClientStorage).not.toHaveBeenCalled();
+      expect(AuthService.logout).not.toHaveBeenCalled();
+      expect(windowLocationHref).toBe("");
+    });
+
+    it("clears storage and logs out when it returns true or is absent", async () => {
+      const callOrder: string[] = [];
+      const beforeLogout = vi.fn(async () => {
+        callOrder.push("beforeLogout");
+        return true;
+      });
+      vi.mocked(clearClientStorage).mockImplementation(() => {
+        callOrder.push("clearClientStorage");
+      });
+      vi.mocked(AuthService.logout).mockImplementation(async () => {
+        callOrder.push("AuthService.logout");
+      });
+
+      const { unmount } = render(<Logout beforeLogout={beforeLogout} storageKeys={["person"]} />);
+
+      await waitFor(() => {
+        expect(windowLocationHref).toBe("/");
+      });
+      expect(callOrder).toEqual(["beforeLogout", "clearClientStorage", "AuthService.logout"]);
+      expect(clearClientStorage).toHaveBeenCalledWith([CURRENT_USER_STORAGE_KEY, "person"]);
+      unmount();
+
+      vi.clearAllMocks();
+      windowLocationHref = "";
+      render(<Logout />);
+
+      await waitFor(() => {
+        expect(windowLocationHref).toBe("/");
+      });
+      expect(clearClientStorage).toHaveBeenCalledWith([CURRENT_USER_STORAGE_KEY]);
+      expect(AuthService.logout).toHaveBeenCalledTimes(1);
+    });
+  });
 });
