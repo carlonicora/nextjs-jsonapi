@@ -1,3 +1,9 @@
+## [6.13.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.13.0...v6.13.1) (2026-11-02)
+
+### 🐛 Bug Fixes
+
+* **onboarding:** a tour that driver.js ends because every remaining step's target is missing is now torn down, so the help bubble comes back instead of staying hidden with no card on screen ([d09fea3](https://github.com/carlonicora/nextjs-jsonapi/commit/d09fea3d8795e09822fa2cd6caac4bb39687e659))
+
 ## [6.13.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.12.2...v6.13.0) (2026-11-02)
 
 ### 🚀 Features
