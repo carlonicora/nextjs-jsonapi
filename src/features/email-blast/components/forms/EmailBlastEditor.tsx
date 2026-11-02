@@ -6,14 +6,17 @@ import { ReactNode, useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import { z } from "zod";
-import { EditorSheet, FormInput, FormTextarea } from "../../../../components";
+import { EditorSheet, FormInput, FormSelect, FormTextarea } from "../../../../components";
 import { Modules } from "../../../../core";
 import { useI18nRouter } from "../../../../i18n";
+import { EmailPurpose } from "../../../email-automation/data/EmailPurpose";
 import { EmailBlastInput, EmailBlastInterface } from "../../data/EmailBlastInterface";
 import { EmailBlastService } from "../../data/EmailBlastService";
 
 /** The fixed variable set the blast renderer fills. */
-const TEMPLATE_VARIABLES = ["{{name}}", "{{email}}", "{{url}}", "{{unsubscribeAllUrl}}"];
+const TEMPLATE_VARIABLES = ["{{name}}", "{{email}}", "{{url}}"];
+/** Only a Marketing blast fills it: a Service blast carries no unsubscribe link. */
+const MARKETING_ONLY_VARIABLES = ["{{unsubscribeAllUrl}}"];
 
 export type EmailBlastEditorProps = {
   blast?: EmailBlastInterface;
@@ -49,6 +52,7 @@ function EmailBlastEditorInternal({
         replyTo: z.string().refine((value) => value === "" || z.email().safeParse(value).success, {
           message: t("emailBlasts.editor.fields.replyTo.error"),
         }),
+        purpose: z.enum(["service", "marketing"], { message: t("emailPurpose.error") }),
       }),
     [t],
   );
@@ -59,6 +63,8 @@ function EmailBlastEditorInternal({
       subject: blast?.subject ?? "",
       body: blast?.body ?? "",
       replyTo: blast?.replyTo ?? "",
+      // No preselected value on create: the form refuses to save without a choice.
+      purpose: (blast?.purpose ?? "") as EmailPurpose,
     }),
     [blast],
   );
@@ -67,6 +73,17 @@ function EmailBlastEditorInternal({
     resolver: zodResolver(formSchema),
     defaultValues: getDefaultValues(),
   });
+
+  const purpose = form.watch("purpose");
+  const templateVariables =
+    purpose === "service" ? TEMPLATE_VARIABLES : [...TEMPLATE_VARIABLES, ...MARKETING_ONLY_VARIABLES];
+  const purposeValues = useMemo(
+    () => [
+      { id: "service", text: t("emailPurpose.service") },
+      { id: "marketing", text: t("emailPurpose.marketing") },
+    ],
+    [t],
+  );
 
   return (
     <EditorSheet
@@ -86,6 +103,7 @@ function EmailBlastEditorInternal({
           subject: values.subject,
           body: values.body,
           replyTo: values.replyTo || undefined,
+          purpose: values.purpose,
         };
         return isEdit ? await EmailBlastService.update(payload) : await EmailBlastService.create(payload);
       }}
@@ -98,6 +116,15 @@ function EmailBlastEditorInternal({
     >
       <div className="flex w-full flex-col gap-y-4">
         <FormInput form={form} id="subject" name={t("emailBlasts.editor.fields.subject.label")} isRequired />
+        <FormSelect
+          form={form}
+          id="purpose"
+          name={t("emailPurpose.label")}
+          placeholder={t("emailPurpose.placeholder")}
+          values={purposeValues}
+          description={purpose === "service" ? t("emailPurpose.serviceWarning") : undefined}
+          isRequired
+        />
         <FormInput form={form} id="replyTo" name={t("emailBlasts.editor.fields.replyTo.label")} />
         {/* FormTextarea has no `rows` prop; min-h-72 is the height of ~14 rows. */}
         <FormTextarea
@@ -110,13 +137,15 @@ function EmailBlastEditorInternal({
             <>
               <span className="block">
                 {t("emailBlasts.editor.variablesHint")}{" "}
-                {TEMPLATE_VARIABLES.map((variable) => (
+                {templateVariables.map((variable) => (
                   <span key={variable} className="me-2 text-foreground">
                     {variable}
                   </span>
                 ))}
               </span>
-              <span className="mt-1 block">{t("emailBlasts.editor.unsubscribeHint")}</span>
+              <span className="mt-1 block">
+                {purpose === "service" ? t("emailBlasts.editor.serviceHint") : t("emailBlasts.editor.unsubscribeHint")}
+              </span>
             </>
           }
         />

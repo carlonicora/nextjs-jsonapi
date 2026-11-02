@@ -1,11 +1,13 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { ModuleRegistry } from "../../../../core/registry/ModuleRegistry";
 import { ModuleFactory, ModuleWithPermissions } from "../../../../permissions/types";
+import { EmailAutomationCandidateModule } from "../../EmailAutomationCandidateModule";
 import { EmailAutomationEnrollmentModule } from "../../EmailAutomationEnrollmentModule";
 import { EmailAutomationModule } from "../../EmailAutomationModule";
 import { EmailAutomationStepModule } from "../../EmailAutomationStepModule";
 import { EmailAutomationTriggerModule } from "../../EmailAutomationTriggerModule";
 import { EmailAutomation } from "../EmailAutomation";
+import { EmailAutomationCandidate } from "../EmailAutomationCandidate";
 import { EMAIL_AUTOMATION_UNSUBSCRIBE_TYPE, EmailAutomationEnrollment } from "../EmailAutomationEnrollment";
 import { EmailAutomationStep } from "../EmailAutomationStep";
 
@@ -24,6 +26,7 @@ beforeAll(() => {
   ModuleRegistry.register("EmailAutomationStep", EmailAutomationStepModule(moduleFactory));
   ModuleRegistry.register("EmailAutomationEnrollment", EmailAutomationEnrollmentModule(moduleFactory));
   ModuleRegistry.register("EmailAutomationTrigger", EmailAutomationTriggerModule(moduleFactory));
+  ModuleRegistry.register("EmailAutomationCandidate", EmailAutomationCandidateModule(moduleFactory));
 });
 
 const hydrate = (attributes: Record<string, unknown>) =>
@@ -99,5 +102,72 @@ describe("email automation models", () => {
     expect(new EmailAutomationEnrollment().createUnsubscribeJsonApi({ scope: "all" })).toEqual({
       data: { type: EMAIL_AUTOMATION_UNSUBSCRIBE_TYPE, attributes: { scope: "all" } },
     });
+  });
+
+  it("EmailAutomationCandidate rehydrates kind, id, email, addable and reason", () => {
+    const blocked = new EmailAutomationCandidate().rehydrate(
+      hydrate({
+        recipientType: "waitlist",
+        recipientId: "w1",
+        email: "ada@example.com",
+        addable: false,
+        reason: "no_consent",
+      }),
+    );
+    expect(blocked.recipientType).toBe("waitlist");
+    expect(blocked.recipientId).toBe("w1");
+    expect(blocked.email).toBe("ada@example.com");
+    expect(blocked.name).toBeUndefined();
+    expect(blocked.addable).toBe(false);
+    expect(blocked.reason).toBe("no_consent");
+
+    const open = new EmailAutomationCandidate().rehydrate(
+      hydrate({
+        recipientType: "user",
+        recipientId: "u1",
+        email: "grace@example.com",
+        name: "Grace",
+        addable: true,
+        reason: null,
+      }),
+    );
+    expect(open.recipientType).toBe("user");
+    expect(open.name).toBe("Grace");
+    expect(open.addable).toBe(true);
+    expect(open.reason).toBeUndefined();
+  });
+
+  it("EmailAutomationCandidate createJsonApi returns type and id only", () => {
+    expect(new EmailAutomationCandidate().createJsonApi({ id: "u1" })).toEqual({
+      data: { type: "email-automation-candidates", id: "u1" },
+    });
+  });
+
+  it("EmailAutomationEnrollment.createJsonApi builds type, id, recipientType and recipientId", () => {
+    expect(
+      new EmailAutomationEnrollment().createJsonApi({ id: "e1", recipientType: "user", recipientId: "u1" }),
+    ).toEqual({
+      data: {
+        type: "email-automation-enrollments",
+        id: "e1",
+        attributes: { recipientType: "user", recipientId: "u1" },
+      },
+    });
+  });
+  it('EmailAutomation rehydrates purpose "service"', () => {
+    const m = new EmailAutomation().rehydrate(hydrate({ name: "Welcome", purpose: "service" }));
+    expect(m.purpose).toBe("service");
+  });
+
+  it("missing purpose rehydrates as marketing", () => {
+    expect(new EmailAutomation().rehydrate(hydrate({ name: "Welcome" })).purpose).toBe("marketing");
+    expect(new EmailAutomation().rehydrate(hydrate({ name: "Welcome", purpose: "other" })).purpose).toBe("marketing");
+  });
+
+  it("createJsonApi sends purpose when set", () => {
+    const body = new EmailAutomation().createJsonApi({ id: "a1", name: "Welcome", purpose: "service" });
+    expect(body.data.attributes.purpose).toBe("service");
+    const without = new EmailAutomation().createJsonApi({ id: "a1", name: "Welcome" });
+    expect("purpose" in without.data.attributes).toBe(false);
   });
 });

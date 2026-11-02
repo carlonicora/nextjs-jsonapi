@@ -49,6 +49,7 @@ export interface FoundationModuleDefinitions {
   EmailAutomationStep: ModuleWithPermissions;
   EmailAutomationEnrollment: ModuleWithPermissions;
   EmailAutomationTrigger: ModuleWithPermissions;
+  EmailAutomationCandidate: ModuleWithPermissions;
   // Email blast modules
   EmailBlast: ModuleWithPermissions;
   EmailBlastDelivery: ModuleWithPermissions;

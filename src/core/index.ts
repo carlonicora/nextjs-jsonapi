@@ -81,6 +81,7 @@ export * from "../features/email-automation/EmailAutomationModule";
 export * from "../features/email-automation/EmailAutomationStepModule";
 export * from "../features/email-automation/EmailAutomationEnrollmentModule";
 export * from "../features/email-automation/EmailAutomationTriggerModule";
+export * from "../features/email-automation/EmailAutomationCandidateModule";
 // Email automation data (models, services, interfaces, fields): server-safe, so a
 // server page can wrap EmailAutomationService.findOne in cache(). The client-marked
 // ./email-automations entry carries only components, contexts and hooks.

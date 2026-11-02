@@ -57,6 +57,21 @@ export const useEmailBlastTableStructure: UseTableStructureHook<EmailBlastInterf
       enableSorting: false,
       enableHiding: false,
     }),
+    [EmailBlastFields.purpose]: () => ({
+      id: "purpose",
+      accessorKey: "purpose",
+      header: t("emailBlasts.list.columns.purpose"),
+      cell: ({ row }: { row: TableContent<EmailBlastInterface> }) => {
+        const blast: EmailBlastInterface = row.original.jsonApiData;
+        return blast.purpose === "service" ? (
+          <Badge variant="softBlue">{t("emailPurpose.service")}</Badge>
+        ) : (
+          <Badge variant="softGray">{t("emailPurpose.marketing")}</Badge>
+        );
+      },
+      enableSorting: false,
+      enableHiding: false,
+    }),
     [EmailBlastFields.status]: () => ({
       id: "status",
       accessorKey: "status",

@@ -1,4 +1,5 @@
 import { ApiDataInterface } from "../../../core";
+import { EmailPurpose } from "./EmailPurpose";
 
 export type EmailAutomationInput = {
   id: string;
@@ -7,6 +8,7 @@ export type EmailAutomationInput = {
   exitTrigger?: string;
   replyTo?: string;
   isActive?: boolean;
+  purpose?: EmailPurpose;
 };
 
 export interface EmailAutomationInterface extends ApiDataInterface {
@@ -15,6 +17,7 @@ export interface EmailAutomationInterface extends ApiDataInterface {
   get exitTrigger(): string | undefined;
   get replyTo(): string | undefined;
   get isActive(): boolean;
+  get purpose(): EmailPurpose;
   get stepCount(): number;
   get activeCount(): number;
   get completedCount(): number;

@@ -1,5 +1,6 @@
 export enum EmailAutomationFields {
   name = "name",
+  purpose = "purpose",
   trigger = "trigger",
   status = "status",
   steps = "steps",

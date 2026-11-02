@@ -1,5 +1,9 @@
 import { AbstractService, EndpointCreator, HttpMethod, Modules, NextRef, PreviousRef } from "../../../core";
-import { EmailAutomationEnrollmentInterface } from "./EmailAutomationEnrollmentInterface";
+import { EmailAutomationCandidateInterface } from "./EmailAutomationCandidateInterface";
+import {
+  EmailAutomationEnrollmentInput,
+  EmailAutomationEnrollmentInterface,
+} from "./EmailAutomationEnrollmentInterface";
 import { EmailAutomationInput, EmailAutomationInterface } from "./EmailAutomationInterface";
 import { EmailAutomationTriggerInterface } from "./EmailAutomationTriggerInterface";
 
@@ -101,6 +105,54 @@ export class EmailAutomationService extends AbstractService {
       endpoint: endpoint.generate(),
       next: params.next,
       previous: params.previous,
+    });
+  }
+
+  /**
+   * GET email-automations/:id/email-automation-candidates: users and waitlist
+   * entries matching the search, each flagged addable or not by the API. Paged:
+   * read through useDataListRetriever, which passes the next/previous refs.
+   */
+  static async findCandidates(params: {
+    automationId: string;
+    search?: string;
+    next?: NextRef;
+    previous?: PreviousRef;
+  }): Promise<EmailAutomationCandidateInterface[]> {
+    const endpoint = new EndpointCreator({
+      endpoint: Modules.EmailAutomation,
+      id: params.automationId,
+      childEndpoint: Modules.EmailAutomationCandidate,
+    });
+
+    if (params.search) endpoint.addAdditionalParam("search", params.search);
+
+    return this.callApi<EmailAutomationCandidateInterface[]>({
+      type: Modules.EmailAutomationCandidate,
+      method: HttpMethod.GET,
+      endpoint: endpoint.generate(),
+      next: params.next,
+      previous: params.previous,
+    });
+  }
+
+  /**
+   * POST email-automations/:id/email-automation-enrollments: adds one person by
+   * hand. The API re-checks every rule and answers 400 with the reason.
+   */
+  static async addEnrollment(params: {
+    automationId: string;
+    input: EmailAutomationEnrollmentInput;
+  }): Promise<EmailAutomationEnrollmentInterface> {
+    return this.callApi<EmailAutomationEnrollmentInterface>({
+      type: Modules.EmailAutomationEnrollment,
+      method: HttpMethod.POST,
+      endpoint: new EndpointCreator({
+        endpoint: Modules.EmailAutomation,
+        id: params.automationId,
+        childEndpoint: Modules.EmailAutomationEnrollment,
+      }).generate(),
+      input: params.input,
     });
   }
 }

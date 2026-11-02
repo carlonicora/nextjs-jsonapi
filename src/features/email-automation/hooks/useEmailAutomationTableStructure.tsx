@@ -62,6 +62,25 @@ export const useEmailAutomationTableStructure: UseTableStructureHook<
       enableSorting: false,
       enableHiding: false,
     }),
+    [EmailAutomationFields.purpose]: () => ({
+      id: "purpose",
+      accessorKey: "purpose",
+      header: t("emailAutomations.list.columns.purpose"),
+      cell: ({ row }: { row: TableContent<EmailAutomationInterface> }) => {
+        const automation: EmailAutomationInterface = row.original.jsonApiData;
+        return automation.purpose === "service" ? (
+          <Badge variant="softBlue" data-testid="email-automation-purpose-badge">
+            {t("emailPurpose.service")}
+          </Badge>
+        ) : (
+          <Badge variant="softGray" data-testid="email-automation-purpose-badge">
+            {t("emailPurpose.marketing")}
+          </Badge>
+        );
+      },
+      enableSorting: false,
+      enableHiding: false,
+    }),
     [EmailAutomationFields.trigger]: () => ({
       id: "trigger",
       accessorKey: "trigger",

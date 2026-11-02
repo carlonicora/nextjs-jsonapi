@@ -4,6 +4,7 @@ export * from "./lists/EmailAutomationsList";
 export * from "./lists/EmailAutomationRecipientsList";
 export * from "./forms/EmailAutomationEditor";
 export * from "./forms/EmailStepEditor";
+export * from "./forms/EmailAutomationAddPersonDialog";
 export * from "./canvas/EmailAutomationActiveSwitch";
 export * from "./canvas/EmailAutomationCanvasTab";
 export * from "./canvas/EmailAutomationCanvas";

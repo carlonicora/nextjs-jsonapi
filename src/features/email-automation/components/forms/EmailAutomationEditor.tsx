@@ -12,6 +12,7 @@ import { useI18nRouter } from "../../../../i18n";
 import { EmailAutomationInput, EmailAutomationInterface } from "../../data/EmailAutomationInterface";
 import { EmailAutomationService } from "../../data/EmailAutomationService";
 import { EmailAutomationTriggerInterface } from "../../data/EmailAutomationTriggerInterface";
+import { EmailPurpose } from "../../data/EmailPurpose";
 
 export type EmailAutomationEditorProps = {
   automation?: EmailAutomationInterface;
@@ -65,6 +66,7 @@ function EmailAutomationEditorInternal({
           message: t("emailAutomations.fields.replyTo.error"),
         }),
         isActive: z.boolean(),
+        purpose: z.enum(["service", "marketing"], { message: t("emailPurpose.error") }),
       }),
     [t],
   );
@@ -77,6 +79,8 @@ function EmailAutomationEditorInternal({
       exitTrigger: automation?.exitTrigger ?? "",
       replyTo: automation?.replyTo ?? "",
       isActive: automation?.isActive ?? false,
+      // No preselected value on create: the form refuses to save without a choice.
+      purpose: (automation?.purpose ?? "") as EmailPurpose,
     }),
     [automation],
   );
@@ -85,6 +89,15 @@ function EmailAutomationEditorInternal({
     resolver: zodResolver(formSchema),
     defaultValues: getDefaultValues(),
   });
+
+  const purpose = form.watch("purpose");
+  const purposeValues = useMemo(
+    () => [
+      { id: "service", text: t("emailPurpose.service") },
+      { id: "marketing", text: t("emailPurpose.marketing") },
+    ],
+    [t],
+  );
 
   return (
     <EditorSheet
@@ -106,6 +119,7 @@ function EmailAutomationEditorInternal({
           exitTrigger: values.exitTrigger || undefined,
           replyTo: values.replyTo || undefined,
           isActive: values.isActive,
+          purpose: values.purpose,
         };
         return isEdit ? await EmailAutomationService.update(payload) : await EmailAutomationService.create(payload);
       }}
@@ -118,6 +132,15 @@ function EmailAutomationEditorInternal({
     >
       <div className="flex w-full flex-col gap-y-4">
         <FormInput form={form} id="name" name={t("emailAutomations.fields.name.label")} isRequired />
+        <FormSelect
+          form={form}
+          id="purpose"
+          name={t("emailPurpose.label")}
+          placeholder={t("emailPurpose.placeholder")}
+          values={purposeValues}
+          description={purpose === "service" ? t("emailPurpose.serviceWarning") : undefined}
+          isRequired
+        />
         <FormSelect
           form={form}
           id="trigger"

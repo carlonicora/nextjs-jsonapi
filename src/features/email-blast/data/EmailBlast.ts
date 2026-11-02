@@ -1,10 +1,12 @@
 import { AbstractApiData, JsonApiHydratedDataInterface, Modules } from "../../../core";
+import { EmailPurpose } from "../../email-automation/data/EmailPurpose";
 import { EmailBlastInput, EmailBlastInterface, EmailBlastStatus } from "./EmailBlastInterface";
 
 export class EmailBlast extends AbstractApiData implements EmailBlastInterface {
   private _subject?: string;
   private _body?: string;
   private _replyTo?: string;
+  private _purpose: EmailPurpose = "marketing";
   private _status: EmailBlastStatus = "draft";
   private _sentAt?: Date;
   private _recipientCount?: number;
@@ -22,6 +24,10 @@ export class EmailBlast extends AbstractApiData implements EmailBlastInterface {
 
   get replyTo(): string | undefined {
     return this._replyTo;
+  }
+
+  get purpose(): EmailPurpose {
+    return this._purpose;
   }
 
   get status(): EmailBlastStatus {
@@ -55,6 +61,8 @@ export class EmailBlast extends AbstractApiData implements EmailBlastInterface {
     this._subject = attributes.subject;
     this._body = attributes.body;
     this._replyTo = attributes.replyTo ?? undefined;
+    // A record saved before purpose existed counts as Marketing.
+    this._purpose = attributes.purpose === "service" ? "service" : "marketing";
     this._status = attributes.status ?? "draft";
     this._sentAt = attributes.sentAt ? new Date(attributes.sentAt) : undefined;
     this._recipientCount = attributes.recipientCount ?? undefined;
@@ -66,7 +74,7 @@ export class EmailBlast extends AbstractApiData implements EmailBlastInterface {
   }
 
   /**
-   * Only the editable text travels: status, counters and sentAt are set by the API.
+   * Only the editable text and the purpose travel: status, counters and sentAt are set by the API.
    */
   createJsonApi(data: EmailBlastInput) {
     const response: any = {
@@ -83,6 +91,7 @@ export class EmailBlast extends AbstractApiData implements EmailBlastInterface {
     if (data.subject !== undefined) response.data.attributes.subject = data.subject;
     if (data.body !== undefined) response.data.attributes.body = data.body;
     if (data.replyTo !== undefined) response.data.attributes.replyTo = data.replyTo;
+    if (data.purpose !== undefined) response.data.attributes.purpose = data.purpose;
 
     return response;
   }

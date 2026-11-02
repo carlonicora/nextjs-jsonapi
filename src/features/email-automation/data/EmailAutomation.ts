@@ -1,5 +1,6 @@
 import { AbstractApiData, JsonApiHydratedDataInterface, Modules } from "../../../core";
 import { EmailAutomationInput, EmailAutomationInterface } from "./EmailAutomationInterface";
+import { EmailPurpose } from "./EmailPurpose";
 
 export class EmailAutomation extends AbstractApiData implements EmailAutomationInterface {
   private _name?: string;
@@ -7,6 +8,7 @@ export class EmailAutomation extends AbstractApiData implements EmailAutomationI
   private _exitTrigger?: string;
   private _replyTo?: string;
   private _isActive: boolean = false;
+  private _purpose: EmailPurpose = "marketing";
   private _stepCount?: number;
   private _activeCount?: number;
   private _completedCount?: number;
@@ -30,6 +32,10 @@ export class EmailAutomation extends AbstractApiData implements EmailAutomationI
 
   get isActive(): boolean {
     return this._isActive;
+  }
+
+  get purpose(): EmailPurpose {
+    return this._purpose;
   }
 
   get stepCount(): number {
@@ -56,6 +62,8 @@ export class EmailAutomation extends AbstractApiData implements EmailAutomationI
     this._exitTrigger = data.jsonApi.attributes.exitTrigger ?? undefined;
     this._replyTo = data.jsonApi.attributes.replyTo ?? undefined;
     this._isActive = data.jsonApi.attributes.isActive === true;
+    // A record saved before purpose existed counts as Marketing.
+    this._purpose = data.jsonApi.attributes.purpose === "service" ? "service" : "marketing";
     this._stepCount = data.jsonApi.attributes.stepCount;
     this._activeCount = data.jsonApi.attributes.activeCount;
     this._completedCount = data.jsonApi.attributes.completedCount;
@@ -81,6 +89,7 @@ export class EmailAutomation extends AbstractApiData implements EmailAutomationI
     if (data.exitTrigger !== undefined) response.data.attributes.exitTrigger = data.exitTrigger;
     if (data.replyTo !== undefined) response.data.attributes.replyTo = data.replyTo;
     if (data.isActive !== undefined) response.data.attributes.isActive = data.isActive;
+    if (data.purpose !== undefined) response.data.attributes.purpose = data.purpose;
 
     return response;
   }

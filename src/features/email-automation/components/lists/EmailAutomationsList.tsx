@@ -58,6 +58,7 @@ export function EmailAutomationsList({ fullWidth }: EmailAutomationsListProps = 
       data={data}
       fields={[
         EmailAutomationFields.name,
+        EmailAutomationFields.purpose,
         EmailAutomationFields.trigger,
         EmailAutomationFields.status,
         EmailAutomationFields.steps,

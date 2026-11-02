@@ -3,6 +3,13 @@ import { EmailAutomationInterface } from "./EmailAutomationInterface";
 
 export type EmailAutomationEnrollmentStatus = "active" | "completed" | "unsubscribed" | "exited" | "failed";
 
+/** Body of POST email-automations/:id/email-automation-enrollments (manual add). */
+export type EmailAutomationEnrollmentInput = {
+  id: string;
+  recipientType: "user" | "waitlist";
+  recipientId: string;
+};
+
 export interface EmailAutomationEnrollmentInterface extends ApiDataInterface {
   get email(): string;
   get name(): string | undefined;

@@ -41,6 +41,7 @@ export function EmailBlastsList({ fullWidth }: EmailBlastsListProps = {}) {
       data={data}
       fields={[
         EmailBlastFields.subject,
+        EmailBlastFields.purpose,
         EmailBlastFields.status,
         EmailBlastFields.sentAt,
         EmailBlastFields.sent,

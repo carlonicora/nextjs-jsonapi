@@ -1212,7 +1212,8 @@
         "status": "Stato",
         "steps": "Email",
         "trigger": "Evento",
-        "unsubscribed": "Disiscritti"
+        "unsubscribed": "Disiscritti",
+        "purpose": "Scopo"
       },
       "status": {
         "off": "Spenta",
@@ -1236,6 +1237,27 @@
         "exited": "Usciti",
         "failed": "Non riusciti",
         "unsubscribed": "Disiscritti"
+      },
+      "addPerson": "Aggiungi persona",
+      "addPersonNoSteps": "Aggiungi prima un'email.",
+      "addDialog": {
+        "title": "Aggiungi una persona",
+        "search": "Cerca per nome o email",
+        "empty": "Nessuno trovato.",
+        "kind": {
+          "user": "Utente",
+          "waitlist": "Lista d'attesa"
+        },
+        "reason": {
+          "already_enrolled": "Già in questa automazione",
+          "opted_out": "Disiscritto dal marketing",
+          "no_consent": "Nessun consenso marketing"
+        },
+        "added": "{email} aggiunto",
+        "groups": {
+          "addable": "Possono essere aggiunti",
+          "blocked": "Non possono essere aggiunti"
+        }
       }
     },
     "step": {
@@ -1283,7 +1305,8 @@
         "sentAt": "Inviata",
         "sent": "Inviata a",
         "failed": "Non riuscite",
-        "unsubscribed": "Disiscritti"
+        "unsubscribed": "Disiscritti",
+        "purpose": "Scopo"
       },
       "status": {
         "draft": "Bozza",
@@ -1309,7 +1332,8 @@
         }
       },
       "variablesHint": "Puoi usare:",
-      "unsubscribeHint": "Ogni email finisce con un link per non ricevere più email di marketing."
+      "unsubscribeHint": "Ogni email finisce con un link per non ricevere più email di marketing.",
+      "serviceHint": "Le email di servizio arrivano a tutti gli utenti e non hanno il link di disiscrizione."
     },
     "detail": {
       "recipients": "Destinatari",
@@ -2190,5 +2214,13 @@
       "hint": "Non hai ricevuto l'email? Controlla lo spam o riprova più tardi.",
       "title": "Sei in lista!"
     }
+  },
+  "emailPurpose": {
+    "label": "Scopo",
+    "placeholder": "Scegli lo scopo",
+    "error": "Scegli lo scopo",
+    "service": "Servizio",
+    "marketing": "Marketing",
+    "serviceWarning": "Solo informazioni sul loro posto in lista d'attesa o sul loro account. Tutto ciò che promuove il prodotto è Marketing."
   }
 }

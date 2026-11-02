@@ -13,7 +13,9 @@ import { EmailAutomationStepInput, EmailAutomationStepInterface } from "../../da
 import { EmailAutomationStepService } from "../../data/EmailAutomationStepService";
 
 /** The fixed variable set the renderer fills (spec § "Rendering"). */
-const TEMPLATE_VARIABLES = ["{{name}}", "{{email}}", "{{url}}", "{{unsubscribeUrl}}", "{{unsubscribeAllUrl}}"];
+const TEMPLATE_VARIABLES = ["{{name}}", "{{email}}", "{{url}}", "{{unsubscribeUrl}}"];
+/** Only a Marketing automation fills it: a Service email has no "stop all marketing emails" link. */
+const MARKETING_ONLY_VARIABLES = ["{{unsubscribeAllUrl}}"];
 
 export type EmailStepEditorProps = {
   step?: EmailAutomationStepInterface;
@@ -43,8 +45,10 @@ function EmailStepEditorInternal({
   onSuccess,
 }: EmailStepEditorProps) {
   const t = useTranslations();
-  const { reload } = useEmailAutomation();
+  const { automation, reload } = useEmailAutomation();
   const isEdit = !!step;
+  const templateVariables =
+    automation?.purpose === "service" ? TEMPLATE_VARIABLES : [...TEMPLATE_VARIABLES, ...MARKETING_ONLY_VARIABLES];
 
   const formSchema = useMemo(
     () =>
@@ -129,7 +133,7 @@ function EmailStepEditorInternal({
             <>
               <span className="block">
                 {t("emailAutomations.step.variablesHint")}{" "}
-                {TEMPLATE_VARIABLES.map((variable) => (
+                {templateVariables.map((variable) => (
                   <span key={variable} className="me-2 text-foreground">
                     {variable}
                   </span>

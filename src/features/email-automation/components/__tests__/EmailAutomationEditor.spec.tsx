@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { ModuleRegistry } from "../../../../core/registry/ModuleRegistry";
 import { configureI18n } from "../../../../i18n";
@@ -22,30 +22,50 @@ vi.mock("../../data/EmailAutomationService", () => ({
 
 // Base UI renders a closed Select's options nowhere in the DOM, so FormSelect
 // is replaced by a stub that prints its label, its empty option and its
-// values. Everything else in the barrel stays real.
+// values. The stub keeps the real FormFieldWrapper (so the description and the
+// validation error render as in production) and turns each value into a
+// button that sets the field. Everything else in the barrel stays real.
 vi.mock("../../../../components", async () => {
   const actual = await vi.importActual<typeof import("../../../../components")>("../../../../components");
   return {
     ...actual,
     FormSelect: (props: {
+      form: any;
       id: string;
       name?: string;
+      description?: string;
       placeholder?: string;
       allowEmpty?: boolean;
+      isRequired?: boolean;
       values: { id: string; text: string }[];
     }) => (
       <div data-testid={`form-select-${props.id}`}>
-        <span>{props.name}</span>
-        {props.allowEmpty && <span data-value="">{props.placeholder}</span>}
-        {props.values.map((value) => (
-          <span key={value.id} data-value={value.id}>
-            {value.text}
-          </span>
-        ))}
+        <actual.FormFieldWrapper
+          form={props.form}
+          name={props.id}
+          label={props.name}
+          description={props.description}
+          isRequired={props.isRequired}
+        >
+          {(field: any) => (
+            <>
+              {props.allowEmpty && <span data-value="">{props.placeholder}</span>}
+              {props.values.map((value) => (
+                <button key={value.id} type="button" data-value={value.id} onClick={() => field.onChange(value.id)}>
+                  {value.text}
+                </button>
+              ))}
+            </>
+          )}
+        </actual.FormFieldWrapper>
       </div>
     ),
   };
 });
+
+// The sheet is portaled into document.body and its label is not tied to the
+// input, so the name field is found by the field name react-hook-form sets.
+const nameInput = () => document.querySelector<HTMLInputElement>('input[name="name"]')!;
 
 const TRIGGERS = [
   { id: "waitlist-confirmed", key: "waitlist-confirmed", label: "Waitlist confirmed" },
@@ -100,5 +120,50 @@ describe("EmailAutomationEditor", () => {
     expect(within(triggerSelect).getByText("Registration completed")).toBeInTheDocument();
     // The option values are the trigger keys, the visible text the plain label.
     expect(within(triggerSelect).getByText("Waitlist confirmed")).toHaveAttribute("data-value", "waitlist-confirmed");
+  });
+  it("purpose select is required on create", async () => {
+    render(<EmailAutomationEditor forceShow dialogOpen />);
+
+    const purposeSelect = await screen.findByTestId("form-select-purpose");
+    expect(within(purposeSelect).getByText("emailPurpose.service")).toHaveAttribute("data-value", "service");
+    expect(within(purposeSelect).getByText("emailPurpose.marketing")).toHaveAttribute("data-value", "marketing");
+
+    fireEvent.change(nameInput(), {
+      target: { value: "Welcome" },
+    });
+    fireEvent.click(screen.getByTestId("modal-button-create"));
+
+    expect(await within(purposeSelect).findByText("emailPurpose.error")).toBeInTheDocument();
+    expect(mocks.create).not.toHaveBeenCalled();
+  });
+
+  it("service purpose shows the warning", async () => {
+    render(<EmailAutomationEditor forceShow dialogOpen />);
+
+    const purposeSelect = await screen.findByTestId("form-select-purpose");
+    expect(within(purposeSelect).queryByText("emailPurpose.serviceWarning")).not.toBeInTheDocument();
+
+    fireEvent.click(within(purposeSelect).getByText("emailPurpose.service"));
+    expect(await within(purposeSelect).findByText("emailPurpose.serviceWarning")).toBeInTheDocument();
+
+    fireEvent.click(within(purposeSelect).getByText("emailPurpose.marketing"));
+    await waitFor(() =>
+      expect(within(purposeSelect).queryByText("emailPurpose.serviceWarning")).not.toBeInTheDocument(),
+    );
+  });
+
+  it("payload carries purpose", async () => {
+    mocks.create.mockResolvedValue({ id: "a1" });
+    render(<EmailAutomationEditor forceShow dialogOpen />);
+
+    const purposeSelect = await screen.findByTestId("form-select-purpose");
+    fireEvent.change(nameInput(), {
+      target: { value: "Welcome" },
+    });
+    fireEvent.click(within(purposeSelect).getByText("emailPurpose.service"));
+    fireEvent.click(screen.getByTestId("modal-button-create"));
+
+    await waitFor(() => expect(mocks.create).toHaveBeenCalled());
+    expect(mocks.create.mock.calls[0][0]).toMatchObject({ name: "Welcome", purpose: "service" });
   });
 });

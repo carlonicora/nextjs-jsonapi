@@ -70,4 +70,22 @@ describe("email blast models", () => {
     expect(audience.recipientCount).toBe(42);
     expect(new EmailBlastAudience().rehydrate(hydrate({})).recipientCount).toBe(0);
   });
+  it('EmailBlast rehydrates purpose "service"', () => {
+    const blast = new EmailBlast().rehydrate(hydrate({ subject: "News", body: "Hello", purpose: "service" }));
+    expect(blast.purpose).toBe("service");
+  });
+
+  it("missing purpose rehydrates as marketing", () => {
+    expect(new EmailBlast().rehydrate(hydrate({ subject: "News", body: "Hello" })).purpose).toBe("marketing");
+    expect(new EmailBlast().rehydrate(hydrate({ subject: "News", body: "Hello", purpose: "x" })).purpose).toBe(
+      "marketing",
+    );
+  });
+
+  it("createJsonApi sends purpose when set", () => {
+    const body = new EmailBlast().createJsonApi({ id: "b1", subject: "News", body: "Hello", purpose: "service" });
+    expect(body.data.attributes.purpose).toBe("service");
+    const without = new EmailBlast().createJsonApi({ id: "b1", subject: "News", body: "Hello" });
+    expect("purpose" in without.data.attributes).toBe(false);
+  });
 });

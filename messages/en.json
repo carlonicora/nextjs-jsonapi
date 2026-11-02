@@ -1212,7 +1212,8 @@
         "status": "Status",
         "steps": "Emails",
         "trigger": "Trigger",
-        "unsubscribed": "Left"
+        "unsubscribed": "Left",
+        "purpose": "Purpose"
       },
       "status": {
         "off": "Off",
@@ -1236,6 +1237,27 @@
         "exited": "Exited",
         "failed": "Failed",
         "unsubscribed": "Unsubscribed"
+      },
+      "addPerson": "Add person",
+      "addPersonNoSteps": "Add an email first.",
+      "addDialog": {
+        "title": "Add a person",
+        "search": "Search by name or email",
+        "empty": "Nobody found.",
+        "kind": {
+          "user": "User",
+          "waitlist": "Waitlist"
+        },
+        "reason": {
+          "already_enrolled": "Already in this automation",
+          "opted_out": "Unsubscribed from marketing",
+          "no_consent": "No marketing consent"
+        },
+        "added": "{email} added",
+        "groups": {
+          "addable": "Can be added",
+          "blocked": "Can't be added"
+        }
       }
     },
     "step": {
@@ -1283,7 +1305,8 @@
         "sentAt": "Sent",
         "sent": "Sent to",
         "failed": "Failed",
-        "unsubscribed": "Unsubscribed"
+        "unsubscribed": "Unsubscribed",
+        "purpose": "Purpose"
       },
       "status": {
         "draft": "Draft",
@@ -1309,7 +1332,8 @@
         }
       },
       "variablesHint": "You can use:",
-      "unsubscribeHint": "Every email ends with a link to stop all marketing emails."
+      "unsubscribeHint": "Every email ends with a link to stop all marketing emails.",
+      "serviceHint": "Service emails go to every user and carry no unsubscribe link."
     },
     "detail": {
       "recipients": "Recipients",
@@ -2190,5 +2214,13 @@
       "hint": "Did not receive the email? Check your spam folder or try again later.",
       "title": "You are on the list!"
     }
+  },
+  "emailPurpose": {
+    "label": "Purpose",
+    "placeholder": "Choose a purpose",
+    "error": "Choose a purpose",
+    "service": "Service",
+    "marketing": "Marketing",
+    "serviceWarning": "Only information about their waitlist spot or account. Anything that promotes the product is Marketing."
   }
 }

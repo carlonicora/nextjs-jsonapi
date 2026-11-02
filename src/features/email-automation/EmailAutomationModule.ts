@@ -15,6 +15,7 @@ export const EmailAutomationModule = (factory: ModuleFactory) =>
         fields: [
           createJsonApiInclusion("email-automations", [
             "name",
+            "purpose",
             "trigger",
             "exitTrigger",
             "replyTo",

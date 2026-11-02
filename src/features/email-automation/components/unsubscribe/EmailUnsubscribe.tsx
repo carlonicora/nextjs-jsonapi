@@ -27,6 +27,8 @@ export function EmailUnsubscribe({ token, scope, source = "automation" }: Props)
   const [state, setState] = useState<UnsubscribeState>("loading");
   const [stoppedScope, setStoppedScope] = useState<UnsubscribeScope>(scope);
   const [automationName, setAutomationName] = useState<string>("");
+  // A Service automation is not a marketing email: its page offers only "Stop these emails".
+  const [isServiceAutomation, setIsServiceAutomation] = useState<boolean>(false);
   const [isStoppingAll, setIsStoppingAll] = useState<boolean>(false);
 
   useEffect(() => {
@@ -40,6 +42,7 @@ export function EmailUnsubscribe({ token, scope, source = "automation" }: Props)
         }
         const enrollment = await EmailAutomationEnrollmentService.unsubscribe({ token, scope });
         setAutomationName(enrollment?.automation?.name ?? "");
+        setIsServiceAutomation(enrollment?.automation?.purpose === "service");
         setStoppedScope(scope);
         setState("success");
       } catch {
@@ -100,10 +103,12 @@ export function EmailUnsubscribe({ token, scope, source = "automation" }: Props)
           <p className="text-muted-foreground max-w-md text-sm leading-relaxed">
             {t("emailAutomations.unsubscribe.stoppedAutomation", { name: automationName })}
           </p>
-          <Button variant="secondary" onClick={stopAll} disabled={isStoppingAll}>
-            {isStoppingAll && <Loader2 className="h-4 w-4 animate-spin" />}
-            {t("emailAutomations.unsubscribe.alsoStopAll")}
-          </Button>
+          {!isServiceAutomation && (
+            <Button variant="secondary" onClick={stopAll} disabled={isStoppingAll}>
+              {isStoppingAll && <Loader2 className="h-4 w-4 animate-spin" />}
+              {t("emailAutomations.unsubscribe.alsoStopAll")}
+            </Button>
+          )}
         </>
       )}
     </div>

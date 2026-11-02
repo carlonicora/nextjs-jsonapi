@@ -9,5 +9,7 @@ export * from "./EmailAutomationEnrollment";
 export * from "./EmailAutomationEnrollmentService";
 export * from "./EmailAutomationTriggerInterface";
 export * from "./EmailAutomationTrigger";
+export * from "./EmailAutomationCandidateInterface";
+export * from "./EmailAutomationCandidate";
 export * from "./email-automation.fields";
 export * from "./email-automation-enrollment.fields";

@@ -1,5 +1,6 @@
 import { AbstractApiData, JsonApiHydratedDataInterface, Modules } from "../../../core";
 import {
+  EmailAutomationEnrollmentInput,
   EmailAutomationEnrollmentInterface,
   EmailAutomationEnrollmentStatus,
 } from "./EmailAutomationEnrollmentInterface";
@@ -85,8 +86,21 @@ export class EmailAutomationEnrollment extends AbstractApiData implements EmailA
     return this;
   }
 
-  createJsonApi(_data?: any): any {
-    throw new Error("EmailAutomationEnrollment is created by the API and cannot be created from the client");
+  /**
+   * Body of POST email-automations/:id/email-automation-enrollments: an
+   * administrator adds a person by hand. The API enrols them at the first step.
+   */
+  createJsonApi(data: EmailAutomationEnrollmentInput) {
+    return {
+      data: {
+        type: Modules.EmailAutomationEnrollment.name,
+        id: data.id,
+        attributes: {
+          recipientType: data.recipientType,
+          recipientId: data.recipientId,
+        },
+      },
+    };
   }
 
   /**

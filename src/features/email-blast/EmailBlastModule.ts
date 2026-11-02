@@ -15,6 +15,7 @@ export const EmailBlastModule = (factory: ModuleFactory) =>
         fields: [
           createJsonApiInclusion("email-blasts", [
             "subject",
+            "purpose",
             "status",
             "sentAt",
             "recipientCount",
