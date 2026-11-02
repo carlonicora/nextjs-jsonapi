@@ -1,3 +1,9 @@
+## [6.14.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.14.0...v6.14.1) (2026-11-02)
+
+### 🐛 Bug Fixes
+
+* Recent Pages shows the entity's name again for apps whose page titles read "Name · Type · Context | App"; the "[Type] Name | App" titles keep working (WYR-46) ([65d2c5c](https://github.com/carlonicora/nextjs-jsonapi/commit/65d2c5c410e23702912f19fc0e29463cf23913e7))
+
 ## [6.14.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.13.1...v6.14.0) (2026-11-02)
 
 ### 🚀 Features
