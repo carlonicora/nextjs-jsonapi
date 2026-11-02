@@ -14,7 +14,7 @@ import { getOfflineState, isReconnecting, setOfflineState, setReconnecting, subs
 import { OFFLINE_REPLAY_HEADER } from "../types";
 import { refreshOfflineCounts } from "./counts";
 import { drainQueue } from "./drain-queue";
-import { knownRootIds, refreshLockedRoots } from "./known-roots";
+import { knownPrimaryRootIds, refreshLockedRoots } from "./known-roots";
 import { ROOT_SYNC_ENDPOINT } from "./models/RootSync";
 import { currentLocale } from "./session-refresh";
 import { syncAll } from "./sync-root";
@@ -32,7 +32,8 @@ const PROBE_INTERVAL_MS = 30_000;
 async function probeApi(): Promise<boolean> {
   const config = getOfflineConfig();
   const store = await getOfflineStore();
-  const [rootId] = await knownRootIds(store);
+  // A root record of the primary kind only (the extra kinds' roots answer elsewhere).
+  const [rootId] = await knownPrimaryRootIds(store);
   const endpoint = rootId
     ? new EndpointCreator({ endpoint: config.rootModule, id: rootId, childEndpoint: ROOT_SYNC_ENDPOINT })
     : new EndpointCreator({ endpoint: config.rootModule }).addAdditionalParam("page[size]", "1");

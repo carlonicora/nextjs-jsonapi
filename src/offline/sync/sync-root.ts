@@ -2,9 +2,10 @@ import { EndpointCreator } from "../../core/endpoint/EndpointCreator";
 import { ApiRequestDataTypeInterface } from "../../core/interfaces/ApiRequestDataTypeInterface";
 import { Modules } from "../../core/registry/ModuleRegistry";
 import { JsonApiGet } from "../../unified/JsonApiRequest";
-import { getOfflineConfig, getOfflineStore, isOfflineConfigured, writeOfflineLastSync } from "../config";
+import { getOfflineConfig, getOfflineStore, isOfflineConfigured, rootKinds, writeOfflineLastSync } from "../config";
 import { canReachApi, setOfflineState } from "../state";
 import type { DeviceStore, SkippedRecord, StoredRecord } from "../store/DeviceStore";
+import type { OfflineRootKind } from "../types";
 import { cacheArtworkImage, imageUrlOf, removeArtworkImage } from "./artwork-cache";
 import { knownRootIds, refreshLockedRoots, rememberSyncRoots } from "./known-roots";
 import { ROOT_SYNC_ENDPOINT, RootSync } from "./models/RootSync";
@@ -75,18 +76,19 @@ async function removeRootIfIdle(store: DeviceStore, rootId: string): Promise<voi
  * are replaced, and artwork images are downloaded. The sync state is stored only once every
  * fetch succeeded (or answered 403/404). A record with a waiting change is never overwritten.
  */
-export async function syncRoot(rootId: string): Promise<void> {
+export async function syncRoot(rootId: string, kind?: OfflineRootKind): Promise<void> {
   const config = getOfflineConfig();
+  const rootKind = kind ?? rootKinds(config)[0];
   const store = await getOfflineStore();
   const previous = await store.getSyncState(rootId);
 
   const syncEndpoint = new EndpointCreator({
-    endpoint: config.rootModule,
+    endpoint: rootKind.module,
     id: rootId,
     childEndpoint: ROOT_SYNC_ENDPOINT,
   }).generate();
   const syncResponse = await JsonApiGet({
-    classKey: Modules.RootSync,
+    classKey: rootKind.syncModule ?? Modules.RootSync,
     endpoint: syncEndpoint,
     language: currentLocale(),
   });
@@ -146,16 +148,35 @@ export async function syncRoot(rootId: string): Promise<void> {
   // Records the answers include whose type the device does not sync itself (the root record's
   // owner): kept for display only, so a local answer can include them as the server does.
   const included: any[] = [];
-  for (const typeConfig of config.types) {
+  // The root record of the kind is fetched before the other types: a kind's `typeEndpoints` are
+  // built from it.
+  const rootTypeName = rootKind.module.name;
+  const orderedTypes = [
+    ...config.types.filter((typeConfig) => typeConfig.module.name === rootTypeName),
+    ...config.types.filter((typeConfig) => typeConfig.module.name !== rootTypeName),
+  ];
+  const rootResource = async (): Promise<StoredRecord["resource"]> => {
+    const fresh = fetched.find((resource) => resource?.type === rootTypeName && resource?.id === rootId);
+    if (fresh) return fresh;
+    const storedRoot = await store.getRecord(rootTypeName, rootId);
+    if (storedRoot) return storedRoot.resource;
+    throw new Error(`[offline] ${rootTypeName} ${rootId}: the root record is needed to build the type endpoints`);
+  };
+  for (const typeConfig of orderedTypes) {
     const changedOfType = changed.filter((entry) => entry.type === typeConfig.module.name);
     if (changedOfType.length === 0) continue;
 
-    if (typeConfig.fetch === "root-list") {
+    const typeEndpoint = rootKind.typeEndpoints?.find((candidate) => candidate.module.name === typeConfig.module.name);
+    if (typeEndpoint) {
+      // One full list read under this kind, never with `updatedSince`.
+      const endpoint = typeEndpoint.endpoint({ id: rootId, resource: await rootResource() });
+      fetched.push(...(await fetchResources(typeConfig.module, endpoint, skipped, included)));
+    } else if (typeConfig.fetch === "root-list") {
       // One list read per type. With `updatedSince` when every changed record is inside the
       // window; without it when a record older than the window is missing or stale on the
       // device, so the whole list comes in the same single request (never one read per record).
       const endpoint = new EndpointCreator({
-        endpoint: config.rootModule,
+        endpoint: rootKind.module,
         id: rootId,
         childEndpoint: typeConfig.module,
       }).addAdditionalParam("fetchAll", "true");
@@ -284,31 +305,61 @@ export async function syncRoot(rootId: string): Promise<void> {
 }
 
 /**
- * Syncs every root record `listSyncRoots()` returns, then removes from the device the root records
- * that are no longer roots (unless they still have waiting changes). Does nothing offline.
+ * Syncs every root record of every kind (`listSyncRoots()` of the primary kind and of each
+ * `extraRootKinds` entry), then removes from the device the known root records no kind lists
+ * (unless they still have waiting changes). A kind whose list throws keeps its device copy
+ * unchanged; the primary kind's list throwing stops the sync. Does nothing offline.
  */
 export async function syncAll(): Promise<void> {
   if (!isOfflineConfigured()) return;
   const config = getOfflineConfig();
   if (!config.getUserId() || !canReachApi()) return;
 
-  let roots: string[];
+  const [primaryKind, ...extraKinds] = rootKinds(config);
+  let primaryRoots: string[];
   try {
-    roots = await config.listSyncRoots();
+    primaryRoots = await primaryKind.listSyncRoots();
   } catch (error) {
     console.warn("[offline] could not list the root records to sync", error);
     return;
   }
+  const work: { rootId: string; kind: OfflineRootKind }[] = primaryRoots.map((rootId) => ({
+    rootId,
+    kind: primaryKind,
+  }));
+  const extraRoots: string[] = [];
+  // Kinds whose list failed: their stored roots are kept as they are.
+  const unlistedKinds: OfflineRootKind[] = [];
+  for (const kind of extraKinds) {
+    try {
+      const ids = await kind.listSyncRoots();
+      extraRoots.push(...ids);
+      work.push(...ids.map((rootId) => ({ rootId, kind })));
+    } catch (error) {
+      console.warn(`[offline] could not list the ${kind.module.name} root records to sync`, error);
+      unlistedKinds.push(kind);
+    }
+  }
   if (!canReachApi()) return;
-  rememberSyncRoots(roots);
+  const kept = new Set(work.map((item) => item.rootId));
+  if (unlistedKinds.length > 0) {
+    const store = await getOfflineStore();
+    for (const kind of unlistedKinds) {
+      for (const record of await store.listRecords({ type: kind.module.name })) {
+        kept.add(record.id);
+        extraRoots.push(record.id);
+      }
+    }
+  }
+  rememberSyncRoots([...kept], extraRoots);
 
-  const total = roots.length;
+  const total = work.length;
   setOfflineState({ syncProgress: { done: 0, total } });
   try {
     let done = 0;
-    for (const rootId of roots) {
+    for (const { rootId, kind } of work) {
       try {
-        await syncRoot(rootId);
+        await syncRoot(rootId, kind);
       } catch (error) {
         console.warn(`[offline] sync of root record ${rootId} failed`, error);
         if (!canReachApi()) return;
@@ -318,16 +369,16 @@ export async function syncAll(): Promise<void> {
       }
     }
 
-    // Every root record was tried: this counts as the device's last sync.
+    // Every root record was tried: this counts as the device's last sync. The root count is the
+    // primary kind's (shown as the number of root records, e.g. campaigns).
     const finishedAt = Date.now();
     const userId = config.getUserId();
     if (userId) writeOfflineLastSync(userId, finishedAt);
-    setOfflineState({ lastSyncedAt: finishedAt, rootCount: total });
+    setOfflineState({ lastSyncedAt: finishedAt, rootCount: primaryRoots.length });
 
     const store = await getOfflineStore();
-    const rootSet = new Set(roots);
     for (const rootId of await knownRootIds(store)) {
-      if (!rootSet.has(rootId)) await removeRootIfIdle(store, rootId);
+      if (!kept.has(rootId)) await removeRootIfIdle(store, rootId);
     }
     await refreshLockedRoots();
   } finally {

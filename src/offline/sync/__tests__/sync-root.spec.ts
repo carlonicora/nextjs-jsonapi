@@ -1,7 +1,19 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { DeviceStore } from "../../store/DeviceStore";
 import { RootSync } from "../models/RootSync";
-import { artwork, fakeCacheStorage, npc, setUpSync, syncTestConfig, tearDownSync, TestModel } from "./sync-fixtures";
+import {
+  artwork,
+  book,
+  bookTypes,
+  Books,
+  fakeCacheStorage,
+  npc,
+  page,
+  setUpSync,
+  syncTestConfig,
+  tearDownSync,
+  TestModel,
+} from "./sync-fixtures";
 
 const { JsonApiGet } = vi.hoisted(() => ({ JsonApiGet: vi.fn() }));
 vi.mock("../../../unified/JsonApiRequest", () => ({
@@ -723,5 +735,176 @@ describe("syncAll", () => {
     expect(localStorage.getItem("nja-offline-last-sync:u1")).toBe("1761990000000");
     now.mockRestore();
     localStorage.clear();
+  });
+
+  describe("extra root kinds", () => {
+    const bookSetUp = (
+      kind: Partial<{ listSyncRoots: () => Promise<string[]>; typeEndpoints: any; syncModule: any }> = {},
+      primaryRoots: () => Promise<string[]> = async () => [],
+    ) =>
+      setUpSync({
+        listSyncRoots: primaryRoots,
+        types: [...syncTestConfig().types, ...bookTypes],
+        extraRootKinds: [{ module: Books, listSyncRoots: async () => ["b1"], ...kind }],
+      });
+
+    it("syncAll syncs extra-kind roots from {module}/:rootId/sync", async () => {
+      tearDownSync();
+      store = await bookSetUp();
+      serve({
+        "books/b1/sync": syncAnswer({ entries: [entry("books", "b1"), entry("pages", "p1")] }, "b1"),
+        "books/b1": oneAnswer(book("b1")),
+        "books/b1/pages?fetchAll=true": listAnswer([page("p1", "First")]),
+      });
+
+      await syncAll();
+
+      expect(JsonApiGet.mock.calls.map((call) => call[0].endpoint)).toEqual([
+        "books/b1/sync",
+        "books/b1",
+        "books/b1/pages?fetchAll=true",
+      ]);
+      expect(await store.getRecord("pages", "p1")).toMatchObject({ rootId: "b1" });
+      expect(await store.getRecord("books", "b1")).toMatchObject({ rootId: "b1" });
+    });
+
+    it("syncAll keeps an extra-kind root when a campaign root is removed", async () => {
+      tearDownSync();
+      let primary = ["C"];
+      store = await bookSetUp({}, async () => primary);
+      const at = new Date("2026-10-31T10:00:00.000Z");
+      await store.putRecord({
+        type: "roots",
+        id: "C",
+        rootId: "C",
+        resource: { type: "roots", id: "C" },
+        updatedAt: at,
+      });
+      await store.putRecord({ type: "npcs", id: "n1", rootId: "C", resource: npc("n1", "N"), updatedAt: at });
+      await store.putRecord({ type: "books", id: "b1", rootId: "b1", resource: book("b1"), updatedAt: at });
+      await store.putRecord({ type: "pages", id: "p1", rootId: "b1", resource: page("p1", "P"), updatedAt: at });
+      await store.setSyncState("b1", {
+        serverTime: new Date("2026-11-01T00:00:00.000Z"),
+        locked: false,
+        lockedFrom: null,
+      });
+      serve({
+        "books/b1/sync": syncAnswer({ entries: [entry("books", "b1"), entry("pages", "p1")] }, "b1"),
+      });
+
+      primary = [];
+      await syncAll();
+
+      expect(await store.getRecord("roots", "C")).toBeUndefined();
+      expect(await store.getRecord("npcs", "n1")).toBeUndefined();
+      expect(await store.getRecord("books", "b1")).toBeDefined();
+      expect(await store.getRecord("pages", "p1")).toBeDefined();
+    });
+
+    it("typeEndpoints replace the type's fetch under that kind and get the stored root record", async () => {
+      tearDownSync();
+      store = await bookSetUp({
+        typeEndpoints: [
+          {
+            module: { name: "npcs", model: TestModel },
+            endpoint: (root: { id: string; resource: any }) =>
+              `roots/${root.resource.attributes.parent}/npcs/as-participant`,
+          },
+        ],
+      });
+      await store.setSyncState("b1", {
+        serverTime: new Date("2026-10-30T00:00:00.000Z"),
+        locked: false,
+        lockedFrom: null,
+      });
+      serve({
+        "books/b1/sync": syncAnswer({ entries: [entry("books", "b1"), entry("npcs", "n1")] }, "b1"),
+        "books/b1": oneAnswer(book("b1", { parent: "R9" })),
+        "roots/R9/npcs/as-participant": listAnswer([npc("n1", "Alda", "R9"), npc("other", "Other", "R9")]),
+      });
+
+      await syncAll();
+
+      expect(JsonApiGet.mock.calls.map((call) => call[0].endpoint)).toEqual([
+        "books/b1/sync",
+        "books/b1",
+        "roots/R9/npcs/as-participant",
+      ]);
+      expect(await store.getRecord("npcs", "n1")).toMatchObject({ rootId: "b1" });
+      expect(await store.getRecord("npcs", "other")).toBeUndefined();
+    });
+
+    it("typeEndpoints build from the stored root record when the root record did not change", async () => {
+      tearDownSync();
+      store = await bookSetUp({
+        typeEndpoints: [
+          {
+            module: { name: "npcs", model: TestModel },
+            endpoint: (root: { id: string; resource: any }) =>
+              `roots/${root.resource.attributes.parent}/npcs/as-participant`,
+          },
+        ],
+      });
+      await store.putRecord({
+        type: "books",
+        id: "b1",
+        rootId: "b1",
+        resource: book("b1", { parent: "R7" }),
+        updatedAt: new Date("2026-10-20T00:00:00.000Z"),
+      });
+      await store.setSyncState("b1", {
+        serverTime: new Date("2026-10-30T00:00:00.000Z"),
+        locked: false,
+        lockedFrom: null,
+      });
+      serve({
+        "books/b1/sync": syncAnswer(
+          { entries: [entry("books", "b1", "2026-10-20T00:00:00.000Z"), entry("npcs", "n1")] },
+          "b1",
+        ),
+        "roots/R7/npcs/as-participant": listAnswer([npc("n1", "Alda", "R7")]),
+      });
+
+      await syncAll();
+
+      expect(JsonApiGet.mock.calls.map((call) => call[0].endpoint)).toEqual([
+        "books/b1/sync",
+        "roots/R7/npcs/as-participant",
+      ]);
+      expect(await store.getRecord("npcs", "n1")).toMatchObject({ rootId: "b1" });
+    });
+
+    it("rootCount counts primary roots only; progress total counts all", async () => {
+      tearDownSync();
+      store = await bookSetUp({ listSyncRoots: async () => ["b1", "b2"] }, async () => ["C"]);
+      serve({
+        "roots/C/sync": syncAnswer({ entries: [] }),
+        "books/b1/sync": syncAnswer({ entries: [] }, "b1"),
+        "books/b2/sync": syncAnswer({ entries: [] }, "b2"),
+      });
+      const totals = new Set<number>();
+      const unsubscribe = subscribeOfflineState((state) => {
+        if (state.syncProgress) totals.add(state.syncProgress.total);
+      });
+
+      await syncAll();
+      unsubscribe();
+
+      expect([...totals]).toEqual([3]);
+      expect(getOfflineState().rootCount).toBe(1);
+      localStorage.clear();
+    });
+
+    it("an extra kind with syncModule reads its sync answer through that module", async () => {
+      tearDownSync();
+      const BookSyncs = { name: "book-syncs", model: RootSync };
+      store = await bookSetUp({ syncModule: BookSyncs });
+      serve({ "books/b1/sync": syncAnswer({ entries: [] }, "b1") });
+
+      await syncAll();
+
+      expect(JsonApiGet.mock.calls[0][0]).toMatchObject({ endpoint: "books/b1/sync", classKey: BookSyncs });
+      localStorage.clear();
+    });
   });
 });

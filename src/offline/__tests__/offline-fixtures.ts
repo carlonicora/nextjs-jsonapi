@@ -18,6 +18,16 @@ export const Roots = { name: "roots", model: TestModel };
 export const Npcs = { name: "npcs", model: TestModel };
 export const Factions = { name: "factions", model: TestModel };
 export const Characters = { name: "characters", model: TestModel };
+/** A second kind of root record (`extraRootKinds`) and its child type. */
+export const Books = { name: "books", model: TestModel };
+export const Pages = { name: "pages", model: TestModel };
+
+export const page = (id: string, name: string, bookId: string) => ({
+  type: "pages",
+  id,
+  attributes: { name },
+  relationships: { book: { data: { type: "books", id: bookId } } },
+});
 
 export const npc = (id: string, name: string, rootId: string) => ({
   type: "npcs",
@@ -40,6 +50,20 @@ export function offlineConfig(routes: OfflineRoute[] = []): OfflineConfig {
     listSyncRoots: async () => ["C", "D"],
     shellPath: () => "/offline-shell",
     syncIntervalMs: 300000,
+  };
+}
+
+/** `offlineConfig` with the books root kind and its types. */
+export function bookConfig(routes: OfflineRoute[] = []): OfflineConfig {
+  const config = offlineConfig(routes);
+  return {
+    ...config,
+    types: [
+      ...config.types,
+      { module: Books, fetch: "by-id", readOnly: false, serverOwnedFields: [] },
+      { module: Pages, fetch: "root-list", readOnly: false, serverOwnedFields: [] },
+    ],
+    extraRootKinds: [{ module: Books, listSyncRoots: async () => ["b1"] }],
   };
 }
 
@@ -74,11 +98,14 @@ export async function seededStore(): Promise<DeviceStore> {
   return store;
 }
 
-export async function setUpOffline(routes: OfflineRoute[] = []): Promise<DeviceStore> {
+export async function setUpOffline(
+  routes: OfflineRoute[] = [],
+  buildConfig: (routes: OfflineRoute[]) => OfflineConfig = offlineConfig,
+): Promise<DeviceStore> {
   resetOfflineState();
   resetOfflineConfig();
   const store = await seededStore();
-  configureOffline(offlineConfig(routes));
+  configureOffline(buildConfig(routes));
   setDeviceStoreOpener(async () => store);
   return store;
 }

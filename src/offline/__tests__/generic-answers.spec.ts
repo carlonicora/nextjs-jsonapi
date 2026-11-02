@@ -1,10 +1,10 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { buildGenericRoutes, linksOfKind, listAnswer } from "../generic-answers";
 import { matchRoute } from "../router";
 import { setOfflineState } from "../state";
 import type { DeviceStore } from "../store/DeviceStore";
-import type { OfflineAnswer, OfflineConfig, OfflineMethod } from "../types";
-import { npc, offlineConfig, seededStore } from "./offline-fixtures";
+import type { OfflineAnswer, OfflineConfig, OfflineLocalWriteContext, OfflineMethod } from "../types";
+import { bookConfig, npc, offlineConfig, page, seededStore } from "./offline-fixtures";
 
 const API = "http://api.test/";
 
@@ -376,5 +376,148 @@ describe("generic answers", () => {
     expect(patch.body.errors[0].code).toBe("needs-connection");
     expect(post.status).toBe(503);
     expect(await store.queue()).toEqual([]);
+  });
+
+  describe("extra root kinds", () => {
+    it("POST of an extra-kind root type roots the record at its own id", async () => {
+      const body = { data: { type: "books", id: "b9", attributes: { name: "Book" } } };
+
+      const result = await answer(store, "POST", "books", body, bookConfig());
+
+      expect(result.status).toBe(201);
+      expect(await store.getRecord("books", "b9")).toMatchObject({ rootId: "b9", localOnly: true });
+      const [entry] = await store.queue();
+      expect(entry).toMatchObject({ rootId: "b9", method: "POST", path: "books" });
+    });
+
+    it("POST of a child with a relationship to an extra-kind root roots it there", async () => {
+      const body = { data: page("p9", "Page", "b9") };
+
+      const result = await answer(store, "POST", "pages", body, bookConfig());
+
+      expect(result.status).toBe(201);
+      expect(await store.getRecord("pages", "p9")).toMatchObject({ rootId: "b9" });
+      const [entry] = await store.queue();
+      expect(entry).toMatchObject({ rootId: "b9", method: "POST", path: "pages" });
+    });
+
+    it("GET {extraModule}/:rootId/{type} lists the root's records", async () => {
+      await store.putRecord({
+        type: "books",
+        id: "b1",
+        rootId: "b1",
+        resource: { type: "books", id: "b1", attributes: { name: "Book" } },
+        updatedAt: null,
+      });
+      await store.putRecord({
+        type: "pages",
+        id: "p1",
+        rootId: "b1",
+        resource: page("p1", "One", "b1"),
+        updatedAt: null,
+      });
+      await store.putRecord({
+        type: "pages",
+        id: "p2",
+        rootId: "b2",
+        resource: page("p2", "Two", "b2"),
+        updatedAt: null,
+      });
+
+      const result = await answer(store, "GET", "books/b1/pages?fetchAll=true", undefined, bookConfig());
+      const missing = await answer(store, "GET", "books/b2/pages", undefined, bookConfig());
+
+      expect(result.status).toBe(200);
+      expect(result.body.data.map((resource: any) => resource.id)).toEqual(["p1"]);
+      expect(missing.status).toBe(503);
+    });
+  });
+
+  describe("afterLocalWrite", () => {
+    const hookConfig = (hook: (ctx: OfflineLocalWriteContext) => Promise<void>): OfflineConfig => {
+      const config = offlineConfig();
+      return {
+        ...config,
+        types: config.types.map((typeConfig) =>
+          typeConfig.module.name === "npcs" ? { ...typeConfig, afterLocalWrite: hook } : typeConfig,
+        ),
+      };
+    };
+
+    it("afterLocalWrite runs in the write's transaction with method, resource and previous", async () => {
+      const seen: any[] = [];
+      const hook = vi.fn(async (ctx: OfflineLocalWriteContext) => {
+        seen.push({
+          method: ctx.method,
+          module: ctx.module.name,
+          id: ctx.id,
+          resource: ctx.resource,
+          previous: ctx.previous,
+          stored: (await ctx.store.getRecord("npcs", ctx.id))?.resource ?? null,
+          queued: (await ctx.store.queue()).length,
+        });
+      });
+      const config = hookConfig(hook);
+
+      await answer(store, "POST", "npcs", { data: npc("n9", "New", "C") }, config);
+      await answer(
+        store,
+        "PUT",
+        "npcs/n1",
+        { data: { type: "npcs", id: "n1", attributes: { name: "Alda II" } } },
+        config,
+      );
+      await answer(store, "DELETE", "npcs/n2", undefined, config);
+
+      const alda2 = { ...npc("n1", "Alda", "C"), attributes: { name: "Alda II", description: "Alda text" } };
+      expect(seen).toEqual([
+        {
+          method: "POST",
+          module: "npcs",
+          id: "n9",
+          resource: npc("n9", "New", "C"),
+          previous: null,
+          stored: npc("n9", "New", "C"),
+          queued: 1,
+        },
+        {
+          method: "PUT",
+          module: "npcs",
+          id: "n1",
+          resource: alda2,
+          previous: npc("n1", "Alda", "C"),
+          stored: alda2,
+          queued: 2,
+        },
+        {
+          method: "DELETE",
+          module: "npcs",
+          id: "n2",
+          resource: null,
+          previous: npc("n2", "brom", "C"),
+          stored: null,
+          queued: 3,
+        },
+      ]);
+    });
+
+    it("a hook that throws rolls back the write and the enqueue", async () => {
+      const config = hookConfig(async () => {
+        throw new Error("hook failed");
+      });
+
+      await expect(answer(store, "POST", "npcs", { data: npc("n9", "New", "C") }, config)).rejects.toThrow(
+        "hook failed",
+      );
+      await expect(
+        answer(store, "PUT", "npcs/n1", { data: { type: "npcs", id: "n1", attributes: { name: "X" } } }, config),
+      ).rejects.toThrow("hook failed");
+      await expect(answer(store, "DELETE", "npcs/n2", undefined, config)).rejects.toThrow("hook failed");
+
+      expect(await store.getRecord("npcs", "n9")).toBeUndefined();
+      expect((await store.getRecord("npcs", "n1"))?.resource).toEqual(npc("n1", "Alda", "C"));
+      expect(await store.getRecord("npcs", "n2")).toBeDefined();
+      expect(await store.queue()).toEqual([]);
+    });
   });
 });

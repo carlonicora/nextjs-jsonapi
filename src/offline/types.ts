@@ -1,5 +1,5 @@
 import type { ApiRequestDataTypeInterface } from "../core/interfaces/ApiRequestDataTypeInterface";
-import type { DeviceStore } from "./store/DeviceStore";
+import type { DeviceStore, StoredRecord } from "./store/DeviceStore";
 
 /** Header of a request the server runs as an offline replay. Never answered locally. */
 export const OFFLINE_REPLAY_HEADER = "x-offline-replay";
@@ -31,6 +31,37 @@ export type OfflineLinkedListFetch = {
   endpoint: (rootId: string, target: { type: string; id: string }) => string;
 };
 
+/** One more kind of root record beside `rootModule` (e.g. a notebook). Optional. */
+export type OfflineRootKind = {
+  /** The module of the root records of this kind. Sync reads `{module}/:rootId/sync`. */
+  module: ApiRequestDataTypeInterface;
+  /** The ids of the roots of this kind to keep on the device. Throw to keep the device copy unchanged. */
+  listSyncRoots: () => Promise<string[]>;
+  /**
+   * Per record type, the full list endpoint (query string included) that downloads every record of
+   * that type under one root of this kind, built from the stored root record. Replaces the type's
+   * `fetch` mode under this kind only. Never given `updatedSince`.
+   */
+  typeEndpoints?: {
+    module: ApiRequestDataTypeInterface;
+    endpoint: (root: { id: string; resource: StoredRecord["resource"] }) => string;
+  }[];
+  /** The module whose model reads this kind's sync answer. Default: the library's `RootSync` module (`root-syncs`). */
+  syncModule?: ApiRequestDataTypeInterface;
+};
+
+type LocalWriteBase = { store: DeviceStore; module: ApiRequestDataTypeInterface; id: string }; // store = the write's transaction
+
+/** What a generic local write (`afterLocalWrite`) did, inside its transaction. */
+export type OfflineLocalWriteContext =
+  | (LocalWriteBase & { method: "POST"; resource: StoredRecord["resource"]; previous: null })
+  | (LocalWriteBase & {
+      method: "PUT" | "PATCH";
+      resource: StoredRecord["resource"];
+      previous: StoredRecord["resource"];
+    })
+  | (LocalWriteBase & { method: "DELETE"; resource: null; previous: StoredRecord["resource"] });
+
 export type OfflineTypeConfig = {
   module: ApiRequestDataTypeInterface;
   /**
@@ -53,6 +84,11 @@ export type OfflineTypeConfig = {
   searchFields?: string[];
   /** The server's order with no `orderBy` (default `updatedAt DESC`). */
   defaultOrderBy?: string;
+  /**
+   * Called by the generic POST/PUT/PATCH/DELETE local answers inside the same transaction as the
+   * write and the enqueue (a throw rolls both back). Never called by sync or write-through.
+   */
+  afterLocalWrite?: (ctx: OfflineLocalWriteContext) => Promise<void>;
 };
 
 export type OfflineConfig = {
@@ -68,6 +104,8 @@ export type OfflineConfig = {
   routes: OfflineRoute[];
   /** Ids of the root records to keep on the device. */
   listSyncRoots: () => Promise<string[]>;
+  /** More kinds of root records beside `rootModule`, each synced and kept on its own (optional). */
+  extraRootKinds?: OfflineRootKind[];
   shellPath: (locale: string) => string;
   syncIntervalMs: number;
   /**

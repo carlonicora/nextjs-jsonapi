@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getOfflineState, isReconnecting, setOfflineState } from "../../state";
 import { markOfflineUnavailable, OfflineUnavailableError } from "../../config";
 import type { DeviceStore } from "../../store/DeviceStore";
-import { setUpSync, tearDownSync } from "./sync-fixtures";
+import { book, bookTypes, Books, setUpSync, syncTestConfig, tearDownSync } from "./sync-fixtures";
 
 const { drainQueue, syncAll } = vi.hoisted(() => ({ drainQueue: vi.fn(), syncAll: vi.fn() }));
 vi.mock("../drain-queue", () => ({ drainQueue }));
@@ -165,6 +165,35 @@ describe("startOfflineRuntime", () => {
     // Going online after the sync does not run the drain and the sync a second time.
     expect(drainQueue).toHaveBeenCalledTimes(1);
     expect(syncAll).toHaveBeenCalledTimes(1);
+    vi.unstubAllGlobals();
+  });
+
+  it("probeApi ignores extra-kind roots", async () => {
+    tearDownSync();
+    store = await setUpSync({
+      syncIntervalMs: 300000,
+      types: [...syncTestConfig().types, ...bookTypes],
+      extraRootKinds: [{ module: Books, listSyncRoots: async () => ["A1"] }],
+    });
+    await store.putRecord({ type: "books", id: "A1", rootId: "A1", resource: book("A1"), updatedAt: null });
+    await store.enqueue({ rootId: "A1", method: "PATCH", path: "books/A1", body: { data: book("A1") }, base: null });
+    await store.putRecord({
+      type: "roots",
+      id: "C",
+      rootId: "C",
+      resource: { type: "roots", id: "C" },
+      updatedAt: null,
+    });
+    setOfflineState({ online: false });
+    vi.stubGlobal("navigator", { ...navigator, onLine: true });
+    directFetch.mockResolvedValue({ ok: false, status: 503, statusText: "", data: undefined, networkError: true });
+
+    stop = startOfflineRuntime();
+    await vi.advanceTimersByTimeAsync(30000);
+    await flush();
+
+    expect(directFetch).toHaveBeenCalledTimes(1);
+    expect(directFetch.mock.calls[0][0].url).toBe("http://api.test/roots/C/sync");
     vi.unstubAllGlobals();
   });
 

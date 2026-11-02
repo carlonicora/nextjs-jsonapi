@@ -5,7 +5,7 @@ import { getOfflineState, setOfflineState } from "../state";
 import type { DeviceStore } from "../store/DeviceStore";
 import { NeedsConnectionError, type OfflineRoute } from "../types";
 import { setDeviceStoreOpener } from "../config";
-import { Roots, Npcs, setUpOffline, tearDownOffline } from "./offline-fixtures";
+import { bookConfig, Books, Roots, Npcs, setUpOffline, tearDownOffline } from "./offline-fixtures";
 
 const API = "http://api.test/";
 
@@ -146,5 +146,19 @@ describe("localTransport", () => {
     const response = await localTransport({ method: "POST", url: `${API}npcs`, body: {}, files: new Blob(["x"]) });
 
     expect(response.data.errors[0].code).toBe("needs-connection");
+  });
+
+  it("a queued custom write under an extra-kind module segment takes that root", async () => {
+    const answer = vi.fn(async () => ({ status: 200, body: { data: { type: "books", id: "b7" } } }));
+    store = await setUpOffline(
+      [{ method: "POST", pattern: [Books, ":bookId", "reorder"], answer, queue: true }],
+      bookConfig,
+    );
+
+    const response = await localTransport({ method: "POST", url: `${API}books/b7/reorder`, body: {} });
+
+    expect(response.status).toBe(200);
+    const [entry] = await store.queue();
+    expect(entry).toMatchObject({ rootId: "b7", method: "POST", path: "books/b7/reorder" });
   });
 });

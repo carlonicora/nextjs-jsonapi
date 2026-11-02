@@ -19,6 +19,28 @@ export const Roots = { name: "roots", model: TestModel };
 export const Npcs = { name: "npcs", model: TestModel };
 export const Artworks = { name: "artworks", model: TestModel };
 export const Templates = { name: "templates", model: TestModel };
+/** A second kind of root record (`extraRootKinds`) and its child type. */
+export const Books = { name: "books", model: TestModel };
+export const Pages = { name: "pages", model: TestModel };
+
+/** The types of the second root kind, appended to `syncTestConfig().types` by the specs that use it. */
+export const bookTypes: OfflineConfig["types"] = [
+  { module: Books, fetch: "by-id", readOnly: false, serverOwnedFields: [] },
+  { module: Pages, fetch: "root-list", readOnly: false, serverOwnedFields: [] },
+];
+
+export const book = (id: string, attributes: Record<string, unknown> = {}) => ({
+  type: "books",
+  id,
+  attributes: { name: id, ...attributes },
+});
+
+export const page = (id: string, name: string, bookId = "b1") => ({
+  type: "pages",
+  id,
+  attributes: { name },
+  relationships: { book: { data: { type: "books", id: bookId } } },
+});
 
 const moduleFactory: ModuleFactory = (params) =>
   ({ pageUrl: params.pageUrl, name: params.name, model: params.model }) as ModuleWithPermissions;

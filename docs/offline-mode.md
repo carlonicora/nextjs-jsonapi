@@ -30,6 +30,30 @@ the client, with:
 - `requireOptIn` (optional): offline mode stays off on each device until the user
   turns it on (see "Turning offline mode on per device" below). Without it,
   offline mode is always on, as before.
+- `extraRootKinds` (optional): more kinds of root records, see below.
+- `afterLocalWrite` (optional, per `OfflineTypeConfig`): a hook on local writes,
+  see below.
+
+`extraRootKinds` lists more kinds of root records beside `rootModule` (in Wyrdli,
+a notebook beside the campaign). Each `OfflineRootKind` has its `module`, its own
+`listSyncRoots`, and optionally `syncModule` (the module whose model reads its
+sync answer, default `root-syncs`; register one with the exported `RootSync`
+model) and `typeEndpoints` (per type, a full list endpoint built from the stored
+root record, read in one request without `updatedSince`, replacing that type's
+`fetch` under this kind only). The sync reads `{module}/:rootId/sync` for each
+root, fetches the root record before its other types, and removes only roots no
+kind lists; a kind whose `listSyncRoots` throws keeps its device copy unchanged.
+`syncProgress.total` counts every root, `rootCount` only the `rootModule` ones.
+A new record belongs to a root of any kind (its own type, or a relationship to
+one), and the generic `GET {module}/:rootId/{type}` is answered for every kind.
+
+`afterLocalWrite(ctx)` on a type runs after each generic `POST`/`PUT`/`PATCH`/
+`DELETE` the device answers for that type, inside the same transaction as the
+write and its queue entry, so a throw rolls both back. `ctx` carries the
+transaction `store`, `module`, `id`, `method`, the stored `resource` (null for a
+`DELETE`) and the `previous` one (null for a `POST`). Use it to keep derived
+device records in line (links rebuilt from content, children removed with their
+parent). It never runs for sync or write-through.
 
 Mount `startOfflineRuntime()` once in the signed-in layout (it returns its
 cleanup). It listens to online/offline, runs the sync on its interval and, on

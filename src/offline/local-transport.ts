@@ -1,7 +1,7 @@
 import { getClientApiUrl } from "../client/JsonApiClient";
 import type { ApiData } from "../core/interfaces/ApiData";
 import { getApiUrl } from "../unified/JsonApiRequest";
-import { getOfflineConfig, getOfflineStore } from "./config";
+import { getOfflineConfig, getOfflineStore, rootKinds } from "./config";
 import {
   buildGenericRoutes,
   rootIdForResource,
@@ -132,10 +132,12 @@ export async function localTransport(request: LocalTransportRequest): Promise<Ap
     }
     const ctx = { request: offlineRequest, params: match.params, store };
 
-    // The root record of a custom write (a `<root>/:param` capture, a stored record, or the body).
+    // The root record of a custom write (a `<root>/:param` capture of any root kind's module, a
+    // stored record, or the body).
+    const rootTypes = new Set(rootKinds(config).map((kind) => kind.module.name));
     const customRootId = async (route: OfflineRoute): Promise<string | undefined> => {
       const rootIndex = route.pattern.findIndex(
-        (segment) => typeof segment !== "string" && segment.name === config.rootModule.name,
+        (segment) => typeof segment !== "string" && rootTypes.has(segment.name),
       );
       const next = rootIndex >= 0 ? route.pattern[rootIndex + 1] : undefined;
       const rootParam = typeof next === "string" && next.startsWith(":") ? next.slice(1) : undefined;

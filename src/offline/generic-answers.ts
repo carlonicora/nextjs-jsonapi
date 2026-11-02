@@ -1,5 +1,5 @@
 import { CURRENT_USER_STORAGE_KEY } from "../features/user/data/user.storage";
-import { getOfflineConfig } from "./config";
+import { getOfflineConfig, rootKinds } from "./config";
 import { getOfflineState } from "./state";
 import type { DeviceStore, StoredLink, StoredRecord } from "./store/DeviceStore";
 import type {
@@ -7,6 +7,7 @@ import type {
   OfflineAnswer,
   OfflineConfig,
   OfflineMethod,
+  OfflineRootKind,
   OfflineRoute,
   OfflineTypeConfig,
 } from "./types";
@@ -402,10 +403,10 @@ async function getOne(ctx: LocalAnswerContext, type: string): Promise<OfflineAns
 
 async function rootList(
   ctx: LocalAnswerContext,
-  config: OfflineConfig,
+  kind: OfflineRootKind,
   typeConfig: OfflineTypeConfig,
 ): Promise<OfflineAnswer> {
-  const rootType = config.rootModule.name;
+  const rootType = kind.module.name;
   const rootId = ctx.params.rootId;
   if (!(await ctx.store.getRecord(rootType, rootId))) return notOnDeviceAnswer(rootType, rootId);
   const records = await ctx.store.listRecords({ type: typeConfig.module.name, rootId });
@@ -463,17 +464,20 @@ async function relatedList(
 // Writes
 // ---------------------------------------------------------------------------------------------
 
-/** The root record a record belongs to: itself (root type), a relationship to the root, or a related stored record. */
+/**
+ * The root record a record belongs to: itself (the type of any root kind), a relationship to a
+ * root of any kind, or a related stored record.
+ */
 export async function rootIdForResource(
   store: DeviceStore,
   config: OfflineConfig,
   resource: any,
 ): Promise<string | undefined> {
-  const rootType = config.rootModule.name;
-  if (resource?.type === rootType && resource.id) return resource.id;
+  const rootTypes = new Set(rootKinds(config).map((kind) => kind.module.name));
+  if (rootTypes.has(resource?.type) && resource.id) return resource.id;
 
   const identifiers = Object.values(resource?.relationships ?? {}).flatMap(identifiersOf);
-  const root = identifiers.find((identifier) => identifier.type === rootType);
+  const root = identifiers.find((identifier) => rootTypes.has(identifier.type));
   if (root) return root.id;
 
   for (const identifier of identifiers) {
@@ -582,6 +586,17 @@ async function create(ctx: LocalAnswerContext, config: OfflineConfig, type: stri
       body: ctx.request.body,
       base: null,
     });
+    // The type's hook, inside the write's transaction: a throw rolls the write and the enqueue back.
+    if (typeConfig?.afterLocalWrite) {
+      await typeConfig.afterLocalWrite({
+        store,
+        module: typeConfig.module,
+        id,
+        method: "POST",
+        resource,
+        previous: null,
+      });
+    }
   });
 
   return singleAnswer(ctx.store, record, 201);
@@ -599,16 +614,12 @@ async function update(ctx: LocalAnswerContext, config: OfflineConfig, type: stri
   // A record created on this device has no server version to merge against.
   const base = existing.localOnly ? null : (existing.base ?? before);
 
+  const typeConfig = typeConfigOf(config, type);
+  const method = ctx.request.method === "PATCH" ? "PATCH" : "PUT";
   const record: StoredRecord = { ...existing, resource, base, localOnly: existing.localOnly };
   await ctx.store.transaction(async (store) => {
     await store.putRecord(record);
-    await linkRelationships(
-      store,
-      typeConfigOf(config, type),
-      { type, id },
-      before.relationships ?? {},
-      data.relationships ?? {},
-    );
+    await linkRelationships(store, typeConfig, { type, id }, before.relationships ?? {}, data.relationships ?? {});
     await store.enqueue({
       rootId: existing.rootId,
       method: ctx.request.method,
@@ -618,12 +629,15 @@ async function update(ctx: LocalAnswerContext, config: OfflineConfig, type: stri
       recordId: id,
       base,
     });
+    if (typeConfig?.afterLocalWrite) {
+      await typeConfig.afterLocalWrite({ store, module: typeConfig.module, id, method, resource, previous: before });
+    }
   });
 
   return singleAnswer(ctx.store, record);
 }
 
-async function remove(ctx: LocalAnswerContext, type: string): Promise<OfflineAnswer> {
+async function remove(ctx: LocalAnswerContext, config: OfflineConfig, type: string): Promise<OfflineAnswer> {
   const id = ctx.params.id;
   const existing = await ctx.store.getRecord(type, id);
   if (!existing) return notOnDeviceAnswer(type, id);
@@ -643,6 +657,17 @@ async function remove(ctx: LocalAnswerContext, type: string): Promise<OfflineAns
       recordId: id,
       base,
     });
+    const typeConfig = typeConfigOf(config, type);
+    if (typeConfig?.afterLocalWrite) {
+      await typeConfig.afterLocalWrite({
+        store,
+        module: typeConfig.module,
+        id,
+        method: "DELETE",
+        resource: null,
+        previous: existing.resource,
+      });
+    }
   });
 
   return { status: 204, body: undefined };
@@ -676,7 +701,9 @@ export function buildGenericRoutes(config: OfflineConfig): OfflineRoute[] {
   for (const typeConfig of config.types) {
     const type = typeConfig.module.name;
     route("GET", [typeConfig.module, ":id"], (ctx) => getOne(ctx, type));
-    route("GET", [config.rootModule, ":rootId", typeConfig.module], (ctx) => rootList(ctx, config, typeConfig));
+    for (const kind of rootKinds(config)) {
+      route("GET", [kind.module, ":rootId", typeConfig.module], (ctx) => rootList(ctx, kind, typeConfig));
+    }
     route(
       "POST",
       [typeConfig.module],
@@ -695,7 +722,7 @@ export function buildGenericRoutes(config: OfflineConfig): OfflineRoute[] {
     route(
       "DELETE",
       [typeConfig.module, ":id"],
-      readOnlyGuard(typeConfig, (ctx) => remove(ctx, type)),
+      readOnlyGuard(typeConfig, (ctx) => remove(ctx, config, type)),
     );
   }
   for (const typeConfig of config.types) {

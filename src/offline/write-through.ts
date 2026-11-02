@@ -1,5 +1,5 @@
 import type { ApiData } from "../core/interfaces/ApiData";
-import { getOfflineConfig, getOfflineStore, OfflineUnavailableError } from "./config";
+import { getOfflineConfig, getOfflineStore, OfflineUnavailableError, rootKinds } from "./config";
 import { rootIdForResource, linkKindFor, linkKindsOf, linksOfKind } from "./generic-answers";
 import { splitApiUrl } from "./local-transport";
 import { matchPattern } from "./router";
@@ -158,8 +158,11 @@ export async function writeThrough(request: WriteThroughRequest, response: ApiDa
       return;
     }
 
-    const rootParams = matchPattern([config.rootModule, ":rootId"], path.split("/").slice(0, 2).join("/"));
-    const pathRootId = rootParams?.rootId;
+    // A path under a root record of any kind (`<root module>/:rootId/...`).
+    const rootSegments = path.split("/").slice(0, 2).join("/");
+    const pathRootId = rootKinds(config)
+      .map((kind) => matchPattern([kind.module, ":rootId"], rootSegments)?.rootId)
+      .find((rootId) => rootId !== undefined);
 
     const document = response.data;
     const primary = Array.isArray(document?.data) ? document.data : document?.data ? [document.data] : [];

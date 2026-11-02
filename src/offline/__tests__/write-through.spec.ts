@@ -1,6 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { DeviceStore } from "../store/DeviceStore";
-import { artwork, fakeCacheStorage, npc, setUpSync, tearDownSync } from "../sync/__tests__/sync-fixtures";
+import {
+  artwork,
+  book,
+  bookTypes,
+  Books,
+  fakeCacheStorage,
+  npc,
+  setUpSync,
+  syncTestConfig,
+  tearDownSync,
+} from "../sync/__tests__/sync-fixtures";
 import { markOfflineUnavailable, OfflineUnavailableError } from "../config";
 import { writeThrough } from "../write-through";
 
@@ -133,5 +143,21 @@ describe("writeThrough", () => {
     );
 
     expect(images.has("http://api.test/artworks/a1/image?v=1")).toBe(false);
+  });
+
+  it("an online write under an extra-kind root is stored", async () => {
+    tearDownSync();
+    store = await setUpSync({
+      types: [...syncTestConfig().types, ...bookTypes],
+      extraRootKinds: [{ module: Books, listSyncRoots: async () => ["b1"] }],
+    });
+    await store.putRecord({ type: "books", id: "b1", rootId: "b1", resource: book("b1"), updatedAt: null });
+
+    await writeThrough(
+      { method: "POST", url: "http://api.test/books/b1/pages" },
+      ok({ data: { type: "pages", id: "p5", attributes: { name: "No relationship" } } }),
+    );
+
+    expect(await store.getRecord("pages", "p5")).toMatchObject({ rootId: "b1" });
   });
 });

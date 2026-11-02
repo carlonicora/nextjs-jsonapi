@@ -42,6 +42,8 @@ export {
   type ResourceDocumentData,
 } from "./generic-answers";
 export type { OfflineChangeResolution } from "./sync/models/OfflineChangeSetInterface";
+// The sync answer's model: an app reads an extra root kind's sync answer (`OfflineRootKind.syncModule`) with it.
+export { RootSync } from "./sync/models/RootSync";
 
 // Device store (Task 5)
 export type * from "./store/DeviceStore";

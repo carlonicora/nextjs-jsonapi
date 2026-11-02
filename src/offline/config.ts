@@ -5,6 +5,7 @@ import {
   DEFAULT_SQLITE_MODULE_URL,
   NeedsConnectionError,
   type OfflineConfig,
+  type OfflineRootKind,
 } from "./types";
 
 // Kept free of store, worker and React imports: `directFetch` reads `isOfflineConfigured()` on
@@ -157,6 +158,14 @@ export function refreshOfflineDeviceState(): void {
     enabled: isOfflineEnabledOnDevice(userId),
     lastSyncedAt: userId ? readOfflineLastSync(userId) : null,
   });
+}
+
+/**
+ * Every kind of root record: the primary one (`rootModule` + `listSyncRoots`) first, then
+ * `extraRootKinds`. Library-internal (not exported from the entry).
+ */
+export function rootKinds(config: OfflineConfig): OfflineRootKind[] {
+  return [{ module: config.rootModule, listSyncRoots: config.listSyncRoots }, ...(config.extraRootKinds ?? [])];
 }
 
 export function getOfflineConfig(): OfflineConfig {
