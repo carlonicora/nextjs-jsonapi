@@ -1,3 +1,9 @@
+## [6.14.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.13.1...v6.14.0) (2026-11-02)
+
+### 🚀 Features
+
+* **offline:** an app can keep more than one kind of record on the device (extraRootKinds), each synced, kept and removed on its own, and can run its own step inside every offline write (afterLocalWrite); apps that set neither behave as before ([7c1dc8f](https://github.com/carlonicora/nextjs-jsonapi/commit/7c1dc8f5ed6cc6ce6f8a513183dbc83bf7bf444f))
+
 ## [6.13.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.13.0...v6.13.1) (2026-11-02)
 
 ### 🐛 Bug Fixes
