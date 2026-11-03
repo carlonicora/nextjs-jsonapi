@@ -88,6 +88,11 @@ const sizeClasses: Record<EditorSheetSize, string> = {
 export type EditorSheetProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
   onSubmit: (values: T) => Promise<{ id: string } | void>;
+  /** Runs after validation and before `onSubmit`. Return `false` (or a promise
+   *  resolving to `false`) to abort the submit: `onSubmit` is not called and the
+   *  sheet stays open with the form unchanged. Use it for a last confirmation
+   *  (e.g. "this information will be deleted") that must not close the sheet. */
+  onBeforeSubmit?: (values: T) => Promise<boolean> | boolean;
   onReset: () => T;
   isFormDirty?: () => boolean;
 
@@ -144,6 +149,7 @@ export type EditorSheetProps<T extends FieldValues> = {
 export function EditorSheet<T extends FieldValues>({
   form,
   onSubmit,
+  onBeforeSubmit,
   onReset,
   isFormDirty: isFormDirtyProp,
   entityType,
@@ -222,6 +228,7 @@ export function EditorSheet<T extends FieldValues>({
   const wrappedOnSubmit = useCallback(
     async (values: T) => {
       try {
+        if (onBeforeSubmit && !(await onBeforeSubmit(values))) return;
         const result = await onSubmit(values);
         setOpen(false);
         if (result && onSaved) {
@@ -249,7 +256,20 @@ export function EditorSheet<T extends FieldValues>({
         });
       }
     },
-    [onSubmit, setOpen, onSuccess, onSaved, onRevalidate, onNavigate, generateUrl, module, isEdit, propagateChanges, t],
+    [
+      onSubmit,
+      onBeforeSubmit,
+      setOpen,
+      onSuccess,
+      onSaved,
+      onRevalidate,
+      onNavigate,
+      generateUrl,
+      module,
+      isEdit,
+      propagateChanges,
+      t,
+    ],
   );
 
   const headerTitle =

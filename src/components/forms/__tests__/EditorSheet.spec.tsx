@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { Activity } from "react";
 import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
@@ -231,6 +231,45 @@ describe("EditorSheet", () => {
         title: "generic.errors.create",
         error,
       });
+    });
+  });
+
+  describe("onBeforeSubmit", () => {
+    it("does not call onSubmit and keeps the sheet open when it returns false", async () => {
+      const onSubmit = vi.fn().mockResolvedValue({ id: "abc" });
+      const onBeforeSubmit = vi.fn().mockResolvedValue(false);
+      render(<TestEditor onSubmit={onSubmit} onBeforeSubmit={onBeforeSubmit} />);
+
+      await userEvent.click(screen.getByText("ui.buttons.create"));
+      await userEvent.type(screen.getByTestId("name-input"), "Test Name");
+      await userEvent.click(screen.getByTestId("modal-button-create"));
+
+      expect(onBeforeSubmit).toHaveBeenCalledWith(expect.objectContaining({ name: "Test Name" }));
+      expect(onSubmit).not.toHaveBeenCalled();
+      expect(screen.getByTestId("name-input")).toHaveValue("Test Name");
+    });
+
+    it("calls onSubmit and closes the sheet when it returns true", async () => {
+      const onSubmit = vi.fn().mockResolvedValue({ id: "abc" });
+      const onBeforeSubmit = vi.fn().mockReturnValue(true);
+      render(<TestEditor onSubmit={onSubmit} onBeforeSubmit={onBeforeSubmit} />);
+
+      await userEvent.click(screen.getByText("ui.buttons.create"));
+      await userEvent.type(screen.getByTestId("name-input"), "Test Name");
+      await userEvent.click(screen.getByTestId("modal-button-create"));
+
+      expect(onBeforeSubmit).toHaveBeenCalledTimes(1);
+      expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ name: "Test Name" }));
+      await waitFor(() => expect(screen.queryByTestId("name-input")).toBeNull());
+    });
+
+    it("is not called when validation fails", async () => {
+      const onBeforeSubmit = vi.fn().mockReturnValue(true);
+      render(<TestEditor dialogOpen={true} onBeforeSubmit={onBeforeSubmit} />);
+
+      await userEvent.click(screen.getByTestId("modal-button-create"));
+
+      expect(onBeforeSubmit).not.toHaveBeenCalled();
     });
   });
 
