@@ -40,6 +40,17 @@ describe("PushNotificationProvider", () => {
     expect(mocks.hook).toHaveBeenCalledWith({ currentUser: { id: "u1" }, canSubscribe: false });
   });
 
+  it("passes canSubscribe=false for a user holding an excluded role", () => {
+    mocks.context.hasRole = (roleId: string) => roleId === "viewer";
+    render(<PushNotificationProvider excludedRoleIds={["viewer"]}>child</PushNotificationProvider>);
+    expect(mocks.hook).toHaveBeenCalledWith({ currentUser: { id: "u1" }, canSubscribe: false });
+  });
+
+  it("passes canSubscribe=true when the user holds none of the excluded roles", () => {
+    render(<PushNotificationProvider excludedRoleIds={["viewer"]}>child</PushNotificationProvider>);
+    expect(mocks.hook).toHaveBeenCalledWith({ currentUser: { id: "u1" }, canSubscribe: true });
+  });
+
   it("renders its children", () => {
     render(
       <PushNotificationProvider>

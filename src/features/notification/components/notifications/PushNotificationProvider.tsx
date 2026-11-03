@@ -6,8 +6,20 @@ import usePushNotifications from "../../../../hooks/usePushNotifications";
 import { getRoleId } from "../../../../roles";
 import { UserInterface } from "../../../user/data";
 
-export function PushNotificationProvider({ children }: { children: ReactNode }): JSX.Element {
+/**
+ * Registers the service worker and the push subscription for the current user.
+ * Administrators never subscribe; `excludedRoleIds` adds app roles that never do
+ * either (for example a read-only demo account, which must not install a worker).
+ */
+export function PushNotificationProvider({
+  children,
+  excludedRoleIds = [],
+}: {
+  children: ReactNode;
+  excludedRoleIds?: string[];
+}): JSX.Element {
   const { currentUser, hasRole } = useCurrentUserContext<UserInterface>();
-  usePushNotifications({ currentUser: currentUser ?? undefined, canSubscribe: !hasRole(getRoleId().Administrator) });
+  const canSubscribe = !hasRole(getRoleId().Administrator) && !excludedRoleIds.some((roleId) => hasRole(roleId));
+  usePushNotifications({ currentUser: currentUser ?? undefined, canSubscribe });
   return <>{children}</>;
 }
