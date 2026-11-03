@@ -19,6 +19,13 @@ import {
 import { cn } from "../../utils";
 import { FormFieldWrapper } from "./FormFieldWrapper";
 
+// Unwrapped rounding: setMinutes(60) carries into the hour, so 10:58 becomes 11:00
+function snapToFiveMinutes(date: Date): Date {
+  const snapped = new Date(date);
+  snapped.setMinutes(Math.round(snapped.getMinutes() / 5) * 5, 0, 0);
+  return snapped;
+}
+
 export function FormDateTime({
   form,
   id,
@@ -30,6 +37,8 @@ export function FormDateTime({
   placeholder,
   isRequired,
   description,
+  reference,
+  markedDate,
 }: {
   form: any;
   id: string;
@@ -41,6 +50,10 @@ export function FormDateTime({
   defaultMonth?: Date;
   isRequired?: boolean;
   description?: string;
+  // `date` alone: ring on the day, month fallback, empty-field initial time; no row.
+  // `label` renders the "label: date" row; `actionLabel` adds the button inside that row (ignored without `label`).
+  reference?: { date: Date; label?: string; actionLabel?: string };
+  markedDate?: Date;
 }) {
   const [open, setOpen] = useState<boolean>(false);
   const t = useI18nTranslations();
@@ -49,7 +62,7 @@ export function FormDateTime({
 
   const [displayMonth, setDisplayMonth] = useState<Date>(() => {
     const currentValue = form.getValues(id);
-    return currentValue || defaultMonth || new Date();
+    return currentValue || defaultMonth || reference?.date || new Date();
   });
 
   // Locale-aware date-time formatter
@@ -69,8 +82,23 @@ export function FormDateTime({
   // Format date-time for display
   const formatDateTime = (date: Date): string => dateTimeFormatter.format(date);
 
-  const [selectedHours, setSelectedHours] = useState<number>(new Date().getHours());
-  const [selectedMinutes, setSelectedMinutes] = useState<number>(roundToNearestFiveMinutes(new Date().getMinutes()));
+  // An empty field starts its time selects at the reference "now" when one is given
+  // Snapped as an instant (not by wrapping minutes) so 10:58 starts at 11:00
+  const initialTime = reference ? snapToFiveMinutes(reference.date) : new Date();
+  const [selectedHours, setSelectedHours] = useState<number>(initialTime.getHours());
+  const [selectedMinutes, setSelectedMinutes] = useState<number>(roundToNearestFiveMinutes(initialTime.getMinutes()));
+
+  const dayModifiers = {
+    ...(reference ? { reference: reference.date } : {}),
+    ...(markedDate ? { marked: markedDate } : {}),
+  };
+
+  // Reference = outlined ring (offset so it stays visible around the selected fill);
+  // marked = underline on the day number. Both differ from today's bg-muted.
+  const dayModifiersClassNames = {
+    reference: "rounded-(--cell-radius) ring-1 ring-primary ring-offset-1 ring-offset-background",
+    marked: "[&>button]:underline [&>button]:decoration-2 [&>button]:underline-offset-4",
+  };
 
   const hoursOptions = Array.from({ length: 24 }, (_, i) => {
     const hour = i;
@@ -94,6 +122,16 @@ export function FormDateTime({
   function roundToNearestFiveMinutes(minutes: number): number {
     return (Math.round(minutes / 5) * 5) % 60;
   }
+
+  const handleUseReference = () => {
+    if (!reference) return;
+    const referenceDate = snapToFiveMinutes(reference.date);
+    form.setValue(id, referenceDate);
+    if (onChange) onChange(referenceDate);
+    setDisplayMonth(referenceDate);
+    setSelectedHours(referenceDate.getHours());
+    setSelectedMinutes(referenceDate.getMinutes());
+  };
 
   const handleTimeChange = (hours: number, minutes: number) => {
     const currentDate = form.getValues(id);
@@ -170,7 +208,21 @@ export function FormDateTime({
                     weekStartsOn={1}
                     startMonth={new Date(1900, 0)}
                     endMonth={new Date(new Date().getFullYear() + 10, 11)}
+                    modifiers={dayModifiers}
+                    modifiersClassNames={dayModifiersClassNames}
                   />
+                  {reference?.label && (
+                    <div className="flex flex-row items-center justify-between gap-x-4 border-t pt-4">
+                      <span className="text-muted-foreground text-sm">
+                        {reference.label}: {formatDateTime(reference.date)}
+                      </span>
+                      {reference.actionLabel && (
+                        <Button type="button" variant="outline" size="sm" onClick={handleUseReference}>
+                          {reference.actionLabel}
+                        </Button>
+                      )}
+                    </div>
+                  )}
                   <div className="flex flex-row items-end justify-center space-x-4">
                     <div className="flex flex-col space-y-2">
                       <Label htmlFor="hours-select">{t(`common.hours`)}</Label>
