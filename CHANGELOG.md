@@ -1,3 +1,9 @@
+## [6.19.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.18.0...v6.19.0) (2026-11-03)
+
+### 🚀 Features
+
+* **form-date-time:** FormDateTime takes an optional reference date, ringed in the calendar, used as the starting month and as an empty field's starting time; with a label it shows a row with that date, and with an action label a button in that row sets the value to it, rounded to the nearest five minutes; it also takes an optional markedDate, underlined in the calendar, for a related day such as a start date ([348b360](https://github.com/carlonicora/nextjs-jsonapi/commit/348b3607a660446bb1680cd00349b56594ca70a6))
+
 ## [6.18.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.17.0...v6.18.0) (2026-11-03)
 
 ### 🚀 Features
