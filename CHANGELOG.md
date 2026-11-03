@@ -1,3 +1,9 @@
+## [6.18.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.17.0...v6.18.0) (2026-11-03)
+
+### 🚀 Features
+
+* **editor-sheet:** EditorSheet takes onBeforeSubmit, a check that runs after validation and before saving; returning false keeps the sheet open with the form unchanged and saves nothing, so an editor can ask for confirmation first (WYR-50) ([1354394](https://github.com/carlonicora/nextjs-jsonapi/commit/1354394717b810ac03577b75d6aaf3a91e78bc74))
+
 ## [6.17.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.16.0...v6.17.0) (2026-11-03)
 
 ### 🚀 Features
