@@ -1,3 +1,9 @@
+## [6.17.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.16.0...v6.17.0) (2026-11-03)
+
+### 🚀 Features
+
+* **notification:** PushNotificationProvider takes excludedRoleIds, roles that never register the service worker or subscribe to push, so an app can keep a read-only demo account from installing a worker ([5aac783](https://github.com/carlonicora/nextjs-jsonapi/commit/5aac783ea03ac93b1e63a3a03ef57e497e376e47))
+
 ## [6.16.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.15.0...v6.16.0) (2026-11-02)
 
 ### 🚀 Features
