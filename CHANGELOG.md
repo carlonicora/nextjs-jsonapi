@@ -1,3 +1,9 @@
+## [6.20.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.20.1...v6.20.2) (2026-11-04)
+
+### 💎 Styles
+
+* **tests:** format the rehydration and offline sync specs ([132cf15](https://github.com/carlonicora/nextjs-jsonapi/commit/132cf15c1844579474ab484dfe235f4e068174bd))
+
 ## [6.20.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.20.0...v6.20.1) (2026-11-04)
 
 ### 🐛 Bug Fixes
