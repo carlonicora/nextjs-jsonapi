@@ -182,4 +182,82 @@ describe("RehydrationFactory", () => {
       );
     });
   });
+
+  describe("a resource reached through several relationships", () => {
+    // A model that reads every resource its "links" relationship points to from included.
+    let calls = 0;
+    class Node implements Partial<ApiDataInterface> {
+      id = "";
+      links: Node[] = [];
+      rehydrate(data: JsonApiHydratedDataInterface) {
+        calls++;
+        this.id = data.jsonApi.id;
+        for (const ref of data.jsonApi.relationships?.links?.data ?? []) {
+          const target = data.included.find((item: any) => item.type === ref.type && item.id === ref.id);
+          if (!target) continue;
+          const node = RehydrationFactory.rehydrate<any>(nodeModule as any, { jsonApi: target, included: data.included });
+          if (node) this.links.push(node);
+        }
+        return this;
+      }
+    }
+    const nodeModule = { name: "nodes", model: Node };
+    const node = (id: string, links: string[]) => ({
+      type: "nodes",
+      id,
+      relationships: { links: { data: links.map((link) => ({ type: "nodes", id: link })) } },
+    });
+
+    beforeEach(() => {
+      calls = 0;
+      DataClassRegistry.registerObjectClass(nodeModule as any, Node as any);
+    });
+
+    it("is rehydrated once and the same model is reused", () => {
+      // root -> left, right; left -> shared; right -> shared
+      const included = [node("left", ["shared"]), node("right", ["shared"]), node("shared", [])];
+      const result = RehydrationFactory.rehydrate<any>(nodeModule as any, {
+        jsonApi: node("root", ["left", "right"]),
+        included,
+      });
+
+      expect(result.links[0].links[0].id).toBe("shared");
+      expect(result.links[0].links[0]).toBe(result.links[1].links[0]);
+      expect(calls).toBe(4);
+    });
+
+    it("densely linked included data is rehydrated in linear, not exponential, work", () => {
+      // Twelve resources, each linked to every other one: every path through them would be 11! chains.
+      const ids = Array.from({ length: 12 }, (_, index) => `n${index}`);
+      const included = ids.map((id) => node(id, ids.filter((other) => other !== id)));
+
+      const result = RehydrationFactory.rehydrate<any>(nodeModule as any, { jsonApi: included[0], included });
+
+      expect(result.links).toHaveLength(11);
+      expect(calls).toBe(12);
+    });
+
+    it("every top-level resource of a list is rehydrated whole, even one already reached as a relationship", () => {
+      // a -> b, b -> a: inside a, b's link back to a is skipped; b as its own list entry has it.
+      const a = node("a", ["b"]);
+      const b = node("b", ["a"]);
+      const [first, second] = RehydrationFactory.rehydrateList<any>(nodeModule as any, [
+        { jsonApi: a, included: [a, b] },
+        { jsonApi: b, included: [a, b] },
+      ]);
+
+      expect(first.links[0].id).toBe("b");
+      expect(first.links[0].links).toHaveLength(0);
+      expect(second.links[0].id).toBe("a");
+      expect(second).not.toBe(first.links[0]);
+    });
+
+    it("nothing is reused across separate calls", () => {
+      const included = [node("shared", [])];
+      const one = RehydrationFactory.rehydrate<any>(nodeModule as any, { jsonApi: node("x", ["shared"]), included });
+      const two = RehydrationFactory.rehydrate<any>(nodeModule as any, { jsonApi: node("y", ["shared"]), included });
+
+      expect(one.links[0]).not.toBe(two.links[0]);
+    });
+  });
 });
