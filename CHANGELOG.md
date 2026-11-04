@@ -1,3 +1,9 @@
+## [6.20.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.19.0...v6.20.0) (2026-11-04)
+
+### 🚀 Features
+
+* **analytics:** Admin › Analytics shows two line charts below Over time, unique visitors per day and unique users per day, one point per day of the picked range whatever the section or Day / Week / Month filter says; today's segment is dotted and its point hollow while the day is still counting, and a day with no data is a gap with No data in the tooltip (WYR-53) ([d45503d](https://github.com/carlonicora/nextjs-jsonapi/commit/d45503d9185ef28f188f9f83e538bec23d237bbc))
+
 ## [6.19.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.18.0...v6.19.0) (2026-11-03)
 
 ### 🚀 Features
