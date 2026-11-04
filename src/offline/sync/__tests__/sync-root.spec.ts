@@ -23,7 +23,7 @@ vi.mock("../../../unified/JsonApiRequest", () => ({
   buildUrl: (endpoint: string) => `http://api.test/${endpoint}`,
 }));
 
-import { syncAll, syncRoot } from "../sync-root";
+import { SYNC_FETCH_CONCURRENCY, syncAll, syncRoot } from "../sync-root";
 import { getOfflineState, subscribeOfflineState } from "../../state";
 
 type Answer = { ok: boolean; response: number; raw?: any; data?: any };
@@ -169,9 +169,9 @@ describe("syncRoot", () => {
     await syncRoot("C");
 
     const endpoints = JsonApiGet.mock.calls.map((call) => call[0].endpoint);
-    expect(endpoints).toEqual([
-      "roots/C/sync",
-      "roots/C",
+    // The sync answer, then the root record; the other reads run concurrently, in any order.
+    expect(endpoints.slice(0, 2)).toEqual(["roots/C/sync", "roots/C"]);
+    expect([...endpoints.slice(2)].sort()).toEqual([
       "roots/C/npcs?fetchAll=true&updatedSince=2026-10-31T00:00:00.000Z",
       "templates/t1",
     ]);
@@ -612,18 +612,98 @@ describe("syncRoot", () => {
     await syncRoot("C");
 
     const calls = JsonApiGet.mock.calls.map((call) => call[0]);
-    expect(calls.map((call) => call.endpoint)).toEqual([
-      "roots/C/sync",
-      "roots/C/sessions/s1/player-notes",
+    // The target reads run concurrently, in any order.
+    expect(calls[0].endpoint).toBe("roots/C/sync");
+    expect(calls.slice(1).map((call) => call.endpoint).sort()).toEqual([
       "roots/C/clues/k1/player-notes",
+      "roots/C/sessions/s1/player-notes",
     ]);
-    expect(calls[1].classKey).toBe(PlayerNotes);
+    expect(calls.slice(1).every((call) => call.classKey === PlayerNotes)).toBe(true);
     expect((await store.getRecord("player-notes", "p1"))?.updatedAt).toEqual(new Date("2026-10-31T10:00:00.000Z"));
     expect(await store.getRecord("player-notes", "p3")).toBeDefined();
     expect(await store.getRecord("player-notes", "p2")).toBeUndefined();
     expect(await store.getRecord("player-notes", "other")).toBeUndefined();
     expect((await store.getSyncState("C")).serverTime).toEqual(new Date("2026-11-01T10:00:00.000Z"));
     warn.mockRestore();
+  });
+
+  it(`keeps at most SYNC_FETCH_CONCURRENCY (${SYNC_FETCH_CONCURRENCY}) record reads in flight at once`, async () => {
+    const ids = ["t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"];
+    const pending: (() => void)[] = [];
+    let inFlight = 0;
+    let maxInFlight = 0;
+    JsonApiGet.mockImplementation(async ({ endpoint }: { endpoint: string }) => {
+      if (endpoint === "roots/C/sync") return syncAnswer({ entries: ids.map((id) => entry("templates", id)) });
+      inFlight += 1;
+      maxInFlight = Math.max(maxInFlight, inFlight);
+      await new Promise<void>((resolve) => pending.push(resolve));
+      inFlight -= 1;
+      const id = endpoint.split("/")[1];
+      return oneAnswer({ type: "templates", id, attributes: { name: id } });
+    });
+
+    const running = syncRoot("C");
+    await vi.waitFor(() => expect(pending).toHaveLength(SYNC_FETCH_CONCURRENCY));
+    for (let released = 0; released < ids.length; released += 1) {
+      await vi.waitFor(() => expect(pending.length).toBeGreaterThan(0));
+      pending.shift()!();
+    }
+    await running;
+
+    expect(maxInFlight).toBe(SYNC_FETCH_CONCURRENCY);
+    expect(JsonApiGet).toHaveBeenCalledTimes(1 + ids.length);
+    for (const id of ids) expect((await store.getRecord("templates", id))?.resource.attributes.name).toBe(id);
+  });
+
+  it("finishes the root record's read before any other type's read starts", async () => {
+    const events: string[] = [];
+    JsonApiGet.mockImplementation(async ({ endpoint }: { endpoint: string }) => {
+      if (endpoint === "roots/C/sync") {
+        return syncAnswer({ entries: [entry("roots", "C"), entry("npcs", "n1"), entry("templates", "t1")] });
+      }
+      events.push(`start ${endpoint}`);
+      if (endpoint === "roots/C") {
+        await new Promise((resolve) => setTimeout(resolve, 5));
+        events.push(`end ${endpoint}`);
+        return oneAnswer({ type: "roots", id: "C", attributes: { name: "Camp" } });
+      }
+      events.push(`end ${endpoint}`);
+      if (endpoint === "roots/C/npcs?fetchAll=true") return listAnswer([npc("n1", "Alda")]);
+      if (endpoint === "templates/t1") return oneAnswer({ type: "templates", id: "t1", attributes: { name: "T" } });
+      throw new Error(`unexpected GET ${endpoint}`);
+    });
+
+    await syncRoot("C");
+
+    expect(events.slice(0, 2)).toEqual(["start roots/C", "end roots/C"]);
+    expect(events).toHaveLength(6);
+    expect(await store.getRecord("npcs", "n1")).toBeDefined();
+    expect(await store.getRecord("templates", "t1")).toBeDefined();
+  });
+
+  it("a failing read (not 403/404) stops the sync: no new read starts and nothing is written", async () => {
+    const ids = ["t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"];
+    const pending: (() => void)[] = [];
+    JsonApiGet.mockImplementation(async ({ endpoint }: { endpoint: string }) => {
+      if (endpoint === "roots/C/sync") {
+        return syncAnswer({ entries: [entry("npcs", "n1"), ...ids.map((id) => entry("templates", id))] });
+      }
+      if (endpoint === "templates/t1") return statusAnswer(500);
+      await new Promise<void>((resolve) => pending.push(resolve));
+      if (endpoint === "roots/C/npcs?fetchAll=true") return listAnswer([npc("n1", "Alda")]);
+      const id = endpoint.split("/")[1];
+      return oneAnswer({ type: "templates", id, attributes: { name: id } });
+    });
+
+    await expect(syncRoot("C")).rejects.toThrow("templates/t1 answered 500");
+
+    // The reads already in flight finish; their results are discarded and nothing more is asked.
+    for (const release of pending.splice(0)) release();
+    await new Promise((resolve) => setTimeout(resolve, 5));
+    expect(JsonApiGet).toHaveBeenCalledTimes(1 + SYNC_FETCH_CONCURRENCY);
+    expect((await store.getSyncState("C")).serverTime).toBeNull();
+    expect(await store.getRecord("npcs", "n1")).toBeUndefined();
+    for (const id of ids) expect(await store.getRecord("templates", id)).toBeUndefined();
   });
 
   it("a locked answer stores locked and downloads nothing", async () => {

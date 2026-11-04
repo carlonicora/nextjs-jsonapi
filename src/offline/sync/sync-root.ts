@@ -46,6 +46,49 @@ async function fetchResources(
   return Array.isArray(data) ? data : [data];
 }
 
+/** How many record reads one root record's sync keeps in flight at once (after the root record). */
+export const SYNC_FETCH_CONCURRENCY = 4;
+
+type FetchTask = () => Promise<void>;
+
+/**
+ * Runs the tasks with at most `limit` in flight, starting them in list order. After the first
+ * rejection no new task starts and the returned promise rejects with that error; tasks already in
+ * flight may still finish, their outcome is ignored.
+ */
+async function runWithConcurrency(tasks: FetchTask[], limit: number): Promise<void> {
+  if (tasks.length === 0) return;
+  await new Promise<void>((resolve, reject) => {
+    let next = 0;
+    let active = 0;
+    let failed = false;
+    const launch = (): void => {
+      if (failed) return;
+      if (next >= tasks.length && active === 0) {
+        resolve();
+        return;
+      }
+      while (active < limit && next < tasks.length) {
+        const task = tasks[next++];
+        active += 1;
+        new Promise<void>((done) => done(task())).then(
+          () => {
+            active -= 1;
+            launch();
+          },
+          (error) => {
+            active -= 1;
+            if (failed) return;
+            failed = true;
+            reject(error);
+          },
+        );
+      }
+    };
+    launch();
+  });
+}
+
 async function imagesOfRoot(store: DeviceStore, rootId: string): Promise<{ type: string; id: string; url: string }[]> {
   const images: { type: string; id: string; url: string }[] = [];
   for (const typeConfig of getOfflineConfig().types) {
@@ -73,8 +116,10 @@ async function removeRootIfIdle(store: DeviceStore, rootId: string): Promise<voi
 /**
  * Brings one root record's device copy up to date with the sync answer (C2): records changed since
  * the stored server time are fetched (C3), records gone from the root record are deleted, the links
- * are replaced, and artwork images are downloaded. The sync state is stored only once every
- * fetch succeeded (or answered 403/404). A record with a waiting change is never overwritten.
+ * are replaced, and artwork images are downloaded. The root record is fetched first; the other
+ * reads then run up to SYNC_FETCH_CONCURRENCY at a time. The sync state is stored only once every
+ * fetch succeeded (or answered 403/404); the first failure stops the sync before anything is
+ * written. A record with a waiting change is never overwritten.
  */
 export async function syncRoot(rootId: string, kind?: OfflineRootKind): Promise<void> {
   const config = getOfflineConfig();
@@ -148,13 +193,10 @@ export async function syncRoot(rootId: string, kind?: OfflineRootKind): Promise<
   // Records the answers include whose type the device does not sync itself (the root record's
   // owner): kept for display only, so a local answer can include them as the server does.
   const included: any[] = [];
-  // The root record of the kind is fetched before the other types: a kind's `typeEndpoints` are
-  // built from it.
+  // The root record of the kind is fetched first and alone: a kind's `typeEndpoints` are built
+  // from it. Every other read (each type's list, each by-id record, each linked-list target) then
+  // runs as one flat task list, at most SYNC_FETCH_CONCURRENCY in flight.
   const rootTypeName = rootKind.module.name;
-  const orderedTypes = [
-    ...config.types.filter((typeConfig) => typeConfig.module.name === rootTypeName),
-    ...config.types.filter((typeConfig) => typeConfig.module.name !== rootTypeName),
-  ];
   const rootResource = async (): Promise<StoredRecord["resource"]> => {
     const fresh = fetched.find((resource) => resource?.type === rootTypeName && resource?.id === rootId);
     if (fresh) return fresh;
@@ -162,16 +204,21 @@ export async function syncRoot(rootId: string, kind?: OfflineRootKind): Promise<
     if (storedRoot) return storedRoot.resource;
     throw new Error(`[offline] ${rootTypeName} ${rootId}: the root record is needed to build the type endpoints`);
   };
-  for (const typeConfig of orderedTypes) {
+  const fetchTasksOf = (typeConfig: (typeof config.types)[number]): FetchTask[] => {
     const changedOfType = changed.filter((entry) => entry.type === typeConfig.module.name);
-    if (changedOfType.length === 0) continue;
+    if (changedOfType.length === 0) return [];
 
     const typeEndpoint = rootKind.typeEndpoints?.find((candidate) => candidate.module.name === typeConfig.module.name);
     if (typeEndpoint) {
       // One full list read under this kind, never with `updatedSince`.
-      const endpoint = typeEndpoint.endpoint({ id: rootId, resource: await rootResource() });
-      fetched.push(...(await fetchResources(typeConfig.module, endpoint, skipped, included)));
-    } else if (typeConfig.fetch === "root-list") {
+      return [
+        async () => {
+          const endpoint = typeEndpoint.endpoint({ id: rootId, resource: await rootResource() });
+          fetched.push(...(await fetchResources(typeConfig.module, endpoint, skipped, included)));
+        },
+      ];
+    }
+    if (typeConfig.fetch === "root-list") {
       // One list read per type. With `updatedSince` when every changed record is inside the
       // window; without it when a record older than the window is missing or stale on the
       // device, so the whole list comes in the same single request (never one read per record).
@@ -181,8 +228,14 @@ export async function syncRoot(rootId: string, kind?: OfflineRootKind): Promise<
         childEndpoint: typeConfig.module,
       }).addAdditionalParam("fetchAll", "true");
       if (since && changedOfType.every(inWindow)) endpoint.addAdditionalParam("updatedSince", since.toISOString());
-      fetched.push(...(await fetchResources(typeConfig.module, endpoint.generate(), skipped, included)));
-    } else if (typeConfig.fetch === "linked-list") {
+      const generated = endpoint.generate();
+      return [
+        async () => {
+          fetched.push(...(await fetchResources(typeConfig.module, generated, skipped, included)));
+        },
+      ];
+    }
+    if (typeConfig.fetch === "linked-list") {
       // Read only as a list per target: the targets are the other ends of the changed records'
       // sync links of `linkKind`; each target's list is read once, and only the type's entries kept.
       if (!typeConfig.linkedList) throw new Error(`[offline] ${typeConfig.module.name}: linked-list needs linkedList`);
@@ -194,19 +247,22 @@ export async function syncRoot(rootId: string, kind?: OfflineRootKind): Promise<
           continue;
         targets.set(keyOf(link.toType, link.toId), { type: link.toType, id: link.toId });
       }
-      for (const target of targets.values()) {
+      return [...targets.values()].map((target) => async () => {
         const resources = await fetchResources(typeConfig.module, endpoint(rootId, target), skipped, included);
         fetched.push(
           ...resources.filter((resource) => resource?.type === typeConfig.module.name && changedIds.has(resource.id)),
         );
-      }
-    } else {
-      for (const entry of changedOfType) {
-        const endpoint = new EndpointCreator({ endpoint: typeConfig.module, id: entry.id }).generate();
-        fetched.push(...(await fetchResources(typeConfig.module, endpoint, skipped, included)));
-      }
+      });
     }
-  }
+    return changedOfType.map((entry) => async () => {
+      const endpoint = new EndpointCreator({ endpoint: typeConfig.module, id: entry.id }).generate();
+      fetched.push(...(await fetchResources(typeConfig.module, endpoint, skipped, included)));
+    });
+  };
+  const rootTypes = config.types.filter((typeConfig) => typeConfig.module.name === rootTypeName);
+  const otherTypes = config.types.filter((typeConfig) => typeConfig.module.name !== rootTypeName);
+  await runWithConcurrency(rootTypes.flatMap(fetchTasksOf), SYNC_FETCH_CONCURRENCY);
+  await runWithConcurrency(otherTypes.flatMap(fetchTasksOf), SYNC_FETCH_CONCURRENCY);
 
   const fetchedKeys = new Set(fetched.map((resource) => keyOf(resource?.type, resource?.id)));
   const previousImageUrls = new Map<string, string>();
