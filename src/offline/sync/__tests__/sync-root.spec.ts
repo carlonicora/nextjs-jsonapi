@@ -614,10 +614,12 @@ describe("syncRoot", () => {
     const calls = JsonApiGet.mock.calls.map((call) => call[0]);
     // The target reads run concurrently, in any order.
     expect(calls[0].endpoint).toBe("roots/C/sync");
-    expect(calls.slice(1).map((call) => call.endpoint).sort()).toEqual([
-      "roots/C/clues/k1/player-notes",
-      "roots/C/sessions/s1/player-notes",
-    ]);
+    expect(
+      calls
+        .slice(1)
+        .map((call) => call.endpoint)
+        .sort(),
+    ).toEqual(["roots/C/clues/k1/player-notes", "roots/C/sessions/s1/player-notes"]);
     expect(calls.slice(1).every((call) => call.classKey === PlayerNotes)).toBe(true);
     expect((await store.getRecord("player-notes", "p1"))?.updatedAt).toEqual(new Date("2026-10-31T10:00:00.000Z"));
     expect(await store.getRecord("player-notes", "p3")).toBeDefined();

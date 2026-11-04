@@ -195,7 +195,10 @@ describe("RehydrationFactory", () => {
         for (const ref of data.jsonApi.relationships?.links?.data ?? []) {
           const target = data.included.find((item: any) => item.type === ref.type && item.id === ref.id);
           if (!target) continue;
-          const node = RehydrationFactory.rehydrate<any>(nodeModule as any, { jsonApi: target, included: data.included });
+          const node = RehydrationFactory.rehydrate<any>(nodeModule as any, {
+            jsonApi: target,
+            included: data.included,
+          });
           if (node) this.links.push(node);
         }
         return this;
@@ -229,7 +232,12 @@ describe("RehydrationFactory", () => {
     it("densely linked included data is rehydrated in linear, not exponential, work", () => {
       // Twelve resources, each linked to every other one: every path through them would be 11! chains.
       const ids = Array.from({ length: 12 }, (_, index) => `n${index}`);
-      const included = ids.map((id) => node(id, ids.filter((other) => other !== id)));
+      const included = ids.map((id) =>
+        node(
+          id,
+          ids.filter((other) => other !== id),
+        ),
+      );
 
       const result = RehydrationFactory.rehydrate<any>(nodeModule as any, { jsonApi: included[0], included });
 
