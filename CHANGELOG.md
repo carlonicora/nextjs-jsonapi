@@ -1,3 +1,14 @@
+## [6.20.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.20.0...v6.20.1) (2026-11-04)
+
+### 🐛 Bug Fixes
+
+* **pwa:** under next dev the service worker fetches /_next/static/ from the network first and refreshes its cache, falling back to the cache only offline, because dev chunks keep their file names when their content changes and a cache-first copy served an earlier build's code ([c01dc32](https://github.com/carlonicora/nextjs-jsonapi/commit/c01dc3246c0d266a04ec1bb93bec71b2a542328a))
+* **rehydration:** a resource reached again through another relationship in the same response reuses the model already built instead of being rebuilt along every path, so a densely linked included (an offline answer's campaign, PCs, locations, scenes...) no longer grows memory exponentially and crashes the tab; the top-level resources are still built whole, and a reused model keeps the relationships it read the first time ([32cfea2](https://github.com/carlonicora/nextjs-jsonapi/commit/32cfea2b19a257c115cbb3f198a5e66f370b24f9))
+
+### ⚡ Performance Improvements
+
+* **offline:** a root record's sync fetches its records four requests at a time after the root record itself, instead of one after another; the number of requests is unchanged, a 403 or 404 still skips only that read, and any other failure still stops the sync with nothing written ([15569f6](https://github.com/carlonicora/nextjs-jsonapi/commit/15569f6392096a94adf453a92c59174eb271a9de))
+
 ## [6.20.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.19.0...v6.20.0) (2026-11-04)
 
 ### 🚀 Features
