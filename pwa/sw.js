@@ -16,7 +16,8 @@
 //   answers from a cache without the marker. A
 //   failed navigation answers the shell of its locale (the first path segment
 //   matched against `locales`, otherwise `default`), then offline.html. GETs
-//   under /_next/static/ are served cache-first from the shell cache; after an
+//   under /_next/static/ are served cache-first from the shell cache (network
+//   first under next dev, whose "dev-" build keeps chunk names across edits); after an
 //   online navigation the worker re-reads the manifest (at most every few
 //   minutes) and precaches a new build's shell in the background, so a deploy
 //   refreshes the shell without a new worker; any other
@@ -250,6 +251,21 @@ self.addEventListener("fetch", function (event) {
       event.respondWith(
         (async function () {
           const name = await currentShellCacheName();
+          // Under next dev (the manifest's "dev-" build id) a chunk keeps its file name when its
+          // content changes, so a cached copy can belong to an earlier build: the page would run
+          // it next to the server's current chunks and fail to find the modules it asks for.
+          // Network first there, refreshing the cache, which still answers when offline.
+          if (name && name.startsWith(`${SHELL_CACHE_PREFIX}dev-`)) {
+            const cache = await caches.open(name);
+            try {
+              const response = await fetch(event.request);
+              if (response.ok) await cache.put(event.request.url, response.clone());
+              return response;
+            } catch {
+              const cached = await cache.match(event.request.url);
+              return cached || Response.error();
+            }
+          }
           if (name) {
             const cache = await caches.open(name);
             const cached = await cache.match(event.request.url);

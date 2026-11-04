@@ -463,14 +463,18 @@ describe("pwa/sw.js", () => {
       expect(deleted).toEqual(["test-images", "test-shell-build-1"]);
     });
 
-    function shellWorker(shellEntries: Record<string, Response | undefined>, offlinePage?: Response) {
+    function shellWorker(
+      shellEntries: Record<string, Response | undefined>,
+      offlinePage?: Response,
+      buildId: string = "build-2",
+    ) {
       const worker = loadWorker(SHELL_CONFIG);
       const entries: Record<string, Response | undefined> = { [SHELL_COMPLETE_URL]: new Response(""), ...shellEntries };
       const shellCache = makeCache({ match: vi.fn(async (url: string) => entries[url]) });
       const offlineCache = makeCache({ match: vi.fn().mockResolvedValue(offlinePage) });
-      worker.sandbox.caches.keys.mockResolvedValue(["test-offline-abc12345", "test-shell-build-2"]);
+      worker.sandbox.caches.keys.mockResolvedValue(["test-offline-abc12345", `test-shell-${buildId}`]);
       worker.sandbox.caches.open.mockImplementation(async (name: string) =>
-        name === "test-shell-build-2" ? shellCache : offlineCache,
+        name === `test-shell-${buildId}` ? shellCache : offlineCache,
       );
       worker.sandbox.fetch.mockRejectedValue(new TypeError("Failed to fetch"));
       return { ...worker, shellCache, offlineCache };
@@ -561,6 +565,32 @@ describe("pwa/sw.js", () => {
       const miss = dispatch("fetch", { request: missRequest });
       expect(await miss.respondWithPromise).toBe(network);
       expect(sandbox.fetch).toHaveBeenCalledWith(missRequest);
+    });
+
+    it("under next dev (a dev- build id) a GET under /_next/static/ goes to the network first, keeps the cache current, and falls back to the cache offline", async () => {
+      // next dev keeps a chunk's file name when its content changes: answering from the cache
+      // would hand the page a chunk of an earlier build next to the server's current ones.
+      const url = `${ORIGIN}/_next/static/chunks/a.js`;
+      const cachedChunk = new Response("cached chunk");
+      const { sandbox, dispatch, shellCache } = shellWorker({ [url]: cachedChunk }, undefined, "dev-0123456789abcdef");
+      const request = { method: "GET", mode: "no-cors", destination: "script", url };
+
+      const network = new Response("network chunk");
+      sandbox.fetch.mockResolvedValue(network);
+      const online = dispatch("fetch", { request });
+      expect(online.respondWith).toHaveBeenCalledTimes(1);
+      expect(await online.respondWithPromise).toBe(network);
+      expect(sandbox.fetch).toHaveBeenCalledWith(request);
+      expect(shellCache.put).toHaveBeenCalledTimes(1);
+      expect(shellCache.put.mock.calls[0][0]).toBe(url);
+      expect(await (shellCache.put.mock.calls[0][1] as Response).text()).toBe("network chunk");
+
+      sandbox.fetch.mockRejectedValue(new TypeError("Failed to fetch"));
+      const offline = dispatch("fetch", { request });
+      expect(await offline.respondWithPromise).toBe(cachedChunk);
+
+      const missing = dispatch("fetch", { request: { ...request, url: `${ORIGIN}/_next/static/chunks/missing.js` } });
+      expect(((await missing.respondWithPromise) as Response).type).toBe("error");
     });
 
     it("another same-origin GET in the shell cache (the device worker, SQLite) goes to the network first and is answered from the cache when the network fails", async () => {

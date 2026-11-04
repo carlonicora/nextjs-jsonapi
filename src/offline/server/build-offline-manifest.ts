@@ -19,9 +19,10 @@ async function listFiles(dir: string): Promise<string[]> {
  * Describes the running build for the service worker's offline shell precache
  * (`/offline-manifest.json`): the build id from `<distDir>/BUILD_ID` and every
  * file under `<distDir>/static`, as the `/_next/static/...` URL Next serves it at.
- * `next dev` writes no BUILD_ID (its folder is `.next/dev`): the id is then derived from the
- * asset list, whose chunk names carry content hashes, so an edit gives a new id and the
- * service worker refreshes the shell.
+ * `next dev` writes no BUILD_ID (its folder is `.next/dev`): the id is then `dev-` plus a hash
+ * of the asset list. Dev chunk names do NOT carry content hashes (an edit rewrites a chunk under
+ * the same name), so the id changes only when files appear or disappear; the service worker
+ * therefore serves `/_next/static/` network first for a `dev-` build (pwa/sw.js).
  * `distDir` must be the value the app's next.config uses. `extraAssets` are further same-origin
  * URLs the shell needs with no network (the SQLite files the device worker loads).
  */
