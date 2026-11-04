@@ -114,4 +114,19 @@ describe("AnalyticsAdminService", () => {
     expect(call.method).toBe("GET");
     expect(call.endpoint).toBe("analytics/administration/sessions/s1/pageviews");
   });
+  it("getDailyUniques sends only fromDate and toDate to the daily-uniques endpoint, never the section filters", async () => {
+    const spy = callApi();
+
+    await AnalyticsAdminService.getDailyUniques({ fromDate: "2026-10-05", toDate: "2026-11-04" });
+
+    const call = firstCall(spy);
+    expect(call.type).toBe(ModuleRegistry.get("AnalyticsDailyUniqueTimeline" as any));
+    expect(call.method).toBe("GET");
+    expect(call.endpoint).toContain("analytics/administration/daily-uniques");
+    expect(call.endpoint).toContain("fromDate=2026-10-05");
+    expect(call.endpoint).toContain("toDate=2026-11-04");
+    expect(call.endpoint).not.toContain("section");
+    expect(call.endpoint).not.toMatch(/[?&]from=/);
+    expect(call.endpoint).not.toMatch(/[?&]to=/);
+  });
 });

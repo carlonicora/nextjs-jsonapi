@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../../shadcnui";
 import { useAnalyticsAdmin } from "../contexts/AnalyticsAdminContext";
 import { AnalyticsAdminTiles } from "./AnalyticsAdminTiles";
 import { AnalyticsBreakdownTable } from "./AnalyticsBreakdownTable";
+import { AnalyticsDailyUniquesChart } from "./AnalyticsDailyUniquesChart";
 import { AnalyticsSessionsTable } from "./AnalyticsSessionsTable";
 import { AnalyticsTimelineChart } from "./AnalyticsTimelineChart";
 
@@ -25,6 +26,7 @@ export function AnalyticsAdminContainer() {
     timeline,
     breakdowns,
     sessions,
+    dailyUniques,
     loadMoreSessions,
     hasMoreSessions,
     sessionPageUrl,
@@ -67,6 +69,24 @@ export function AnalyticsAdminContainer() {
           </CardHeader>
           <CardContent>
             <AnalyticsTimelineChart rows={timeline} />
+          </CardContent>
+        </Card>
+
+        <Card data-testid="analytics-daily-visitors-card">
+          <CardHeader>
+            <CardTitle>{t("analytics.admin.panels.daily_visitors")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <AnalyticsDailyUniquesChart rows={dailyUniques} metric="visitors" />
+          </CardContent>
+        </Card>
+
+        <Card data-testid="analytics-daily-users-card">
+          <CardHeader>
+            <CardTitle>{t("analytics.admin.panels.daily_users")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <AnalyticsDailyUniquesChart rows={dailyUniques} metric="users" />
           </CardContent>
         </Card>
 

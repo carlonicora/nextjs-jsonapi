@@ -1,6 +1,7 @@
 import { ChartNoAxesCombinedIcon } from "lucide-react";
 import { ModuleFactory, ModuleWithPermissions } from "../../permissions";
 import { AnalyticsBreakdown } from "./data/analytics-breakdown";
+import { AnalyticsDailyUniqueTimeline } from "./data/analytics-daily-unique-timeline";
 import { AnalyticsEvent } from "./data/analytics-event";
 import { AnalyticsPageView } from "./data/analytics-page-view";
 import { AnalyticsSession } from "./data/analytics-session";
@@ -31,6 +32,11 @@ export const analyticsModules = (factory: ModuleFactory) =>
     AnalyticsTimeline: factory({
       name: "analytics/administration/timeline",
       model: AnalyticsTimeline,
+      icon: ChartNoAxesCombinedIcon,
+    }),
+    AnalyticsDailyUniqueTimeline: factory({
+      name: "analytics/administration/daily-uniques",
+      model: AnalyticsDailyUniqueTimeline,
       icon: ChartNoAxesCombinedIcon,
     }),
     AnalyticsBreakdown: factory({

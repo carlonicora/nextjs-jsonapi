@@ -59,6 +59,16 @@ export type AnalyticsTimelineInput = {
   pageViews: number;
 };
 
+export type AnalyticsDailyUniqueTimelineInput = {
+  id: string;
+  /** Backend field type is "date" — emitted via formatLocalDate, never raw. */
+  day?: Date;
+  /** null = unknown for that day. */
+  visitors?: number | null;
+  /** null = unknown for that day. */
+  users?: number | null;
+};
+
 export type AnalyticsBreakdownInput = {
   id: string;
   dimension: string;

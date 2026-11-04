@@ -18,6 +18,7 @@ export { AnalyticsAdminContainer } from "./components/AnalyticsAdminContainer";
 export { AnalyticsAdminFilterBar } from "./components/AnalyticsAdminFilterBar";
 export { AnalyticsAdminTiles } from "./components/AnalyticsAdminTiles";
 export { AnalyticsTimelineChart } from "./components/AnalyticsTimelineChart";
+export { AnalyticsDailyUniquesChart } from "./components/AnalyticsDailyUniquesChart";
 export { AnalyticsBreakdownTable } from "./components/AnalyticsBreakdownTable";
 export { AnalyticsSessionsTable } from "./components/AnalyticsSessionsTable";
 export { AnalyticsJourneyContainer } from "./components/AnalyticsJourneyContainer";

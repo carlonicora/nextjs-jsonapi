@@ -11,6 +11,7 @@ vi.mock("../../data/AnalyticsAdminService", () => ({
     getTimeline: vi.fn(),
     getBreakdown: vi.fn(),
     getSessions: vi.fn(),
+    getDailyUniques: vi.fn(),
     getSession: vi.fn(),
     getSessionPageViews: vi.fn(),
     next: vi.fn(),
@@ -89,6 +90,27 @@ describe("AnalyticsAdminPageContainer", () => {
     vi.mocked(AnalyticsAdminService.getTimeline).mockResolvedValue([]);
     vi.mocked(AnalyticsAdminService.getBreakdown).mockResolvedValue([]);
     vi.mocked(AnalyticsAdminService.getSessions).mockResolvedValue([session("s1", "2026-10-01T10:00:00.000Z")]);
+    vi.mocked(AnalyticsAdminService.getDailyUniques).mockResolvedValue([]);
+  });
+
+  it("renders the daily visitors and users cards between Over time and Breakdown", async () => {
+    render(<AnalyticsAdminPageContainer />);
+
+    const visitorsCard = await screen.findByTestId("analytics-daily-visitors-card");
+    const usersCard = screen.getByTestId("analytics-daily-users-card");
+    expect(visitorsCard).toHaveTextContent("analytics.admin.panels.daily_visitors");
+    expect(usersCard).toHaveTextContent("analytics.admin.panels.daily_users");
+
+    const overTime = screen.getByText("analytics.admin.panels.over_time");
+    const breakdown = screen.getByText("analytics.admin.panels.breakdown");
+    const follows = (a: Node, b: Node) => Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+
+    expect(follows(overTime, visitorsCard)).toBe(true);
+    expect(follows(visitorsCard, usersCard)).toBe(true);
+    expect(follows(usersCard, breakdown)).toBe(true);
+    expect(overTime.closest('[data-slot="card"]')?.nextElementSibling).toBe(visitorsCard);
+    expect(visitorsCard.nextElementSibling).toBe(usersCard);
+    expect(usersCard.nextElementSibling).toBe(breakdown.closest('[data-slot="card"]'));
   });
 
   it("loads the dashboard and links each session under the given sessionPageUrl", async () => {

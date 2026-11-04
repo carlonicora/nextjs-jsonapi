@@ -1,5 +1,6 @@
 import { AbstractService, EndpointCreator, HttpMethod, Modules, NextRef } from "../../../core";
 import { AnalyticsBreakdownInterface } from "./analytics-breakdown.interface";
+import { AnalyticsDailyUniqueTimelineInterface } from "./analytics-daily-unique-timeline.interface";
 import { AnalyticsPageViewInterface } from "./analytics-page-view.interface";
 import { AnalyticsSessionInterface } from "./analytics-session.interface";
 import { AnalyticsSummaryInterface } from "./analytics-summary.interface";
@@ -33,6 +34,25 @@ export class AnalyticsAdminService extends AbstractService {
 
     return this.callApi<AnalyticsTimelineInterface[]>({
       type: Modules.AnalyticsTimeline,
+      method: HttpMethod.GET,
+      endpoint: endpoint.generate(),
+    });
+  }
+
+  /**
+   * One row per calendar day from fromDate to toDate (YYYY-MM-DD, local dates).
+   * Always daily and never filtered by section, so it skips withFilters.
+   */
+  static async getDailyUniques(params: {
+    fromDate: string;
+    toDate: string;
+  }): Promise<AnalyticsDailyUniqueTimelineInterface[]> {
+    const endpoint = new EndpointCreator({ endpoint: Modules.AnalyticsDailyUniqueTimeline });
+    endpoint.addAdditionalParam("fromDate", params.fromDate);
+    endpoint.addAdditionalParam("toDate", params.toDate);
+
+    return this.callApi<AnalyticsDailyUniqueTimelineInterface[]>({
+      type: Modules.AnalyticsDailyUniqueTimeline,
       method: HttpMethod.GET,
       endpoint: endpoint.generate(),
     });

@@ -38,6 +38,8 @@ export const ANALYTICS_ADMIN_I18N_KEYS = [
   "analytics.admin.panels.sessions",
   "analytics.admin.panels.journey",
   "analytics.admin.panels.other_sessions",
+  "analytics.admin.panels.daily_visitors",
+  "analytics.admin.panels.daily_users",
 
   // Breakdown tabs
   "analytics.admin.dimensions.source",
@@ -73,4 +75,10 @@ export const ANALYTICS_ADMIN_I18N_KEYS = [
   // Timeline chart series
   "analytics.admin.series.visitors",
   "analytics.admin.series.page_views",
+
+  // Daily uniques charts
+  "analytics.admin.daily_uniques.visitors",
+  "analytics.admin.daily_uniques.users",
+  "analytics.admin.daily_uniques.today",
+  "analytics.admin.daily_uniques.no_data",
 ] as const;

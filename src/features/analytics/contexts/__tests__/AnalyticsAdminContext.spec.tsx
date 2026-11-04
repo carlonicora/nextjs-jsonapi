@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useSharedContext } from "../../../../contexts/SharedContext";
+import { formatLocalDate } from "../../../../core";
 import { AnalyticsAdminService } from "../../data/AnalyticsAdminService";
 import { AnalyticsAdminProvider, useAnalyticsAdmin } from "../AnalyticsAdminContext";
 
@@ -10,6 +11,7 @@ vi.mock("../../data/AnalyticsAdminService", () => ({
     getTimeline: vi.fn(async () => []),
     getBreakdown: vi.fn(async () => []),
     getSessions: vi.fn(async () => []),
+    getDailyUniques: vi.fn(async () => []),
     next: vi.fn(async () => []),
   },
 }));
@@ -31,6 +33,8 @@ function Probe() {
       <span data-testid="sessions">{ctx.sessions.map((s) => s.id).join(",")}</span>
       <span data-testid="has-more">{String(ctx.hasMoreSessions)}</span>
       <span data-testid="section">{ctx.filters.section}</span>
+      <span data-testid="daily-uniques">{ctx.dailyUniques.map((d) => d.id).join(",")}</span>
+      <span data-testid="error">{ctx.error ?? ""}</span>
       <button type="button" onClick={() => ctx.setFilters({ section: "app" })}>
         app
       </button>
@@ -84,6 +88,40 @@ describe("AnalyticsAdminContext", () => {
       ]),
     );
     expect(breakdowns).toHaveLength(6);
+  });
+
+  it("requests the daily uniques once with the local calendar dates of the range and exposes them", async () => {
+    vi.mocked(AnalyticsAdminService.getDailyUniques).mockResolvedValueOnce([
+      { id: "2026-11-03" },
+      { id: "2026-11-04" },
+    ] as any);
+
+    render(
+      <AnalyticsAdminProvider>
+        <Probe />
+      </AnalyticsAdminProvider>,
+    );
+
+    await waitFor(() => expect(screen.getByTestId("daily-uniques")).toHaveTextContent("2026-11-03,2026-11-04"));
+
+    expect(AnalyticsAdminService.getDailyUniques).toHaveBeenCalledTimes(1);
+    const { from, to } = vi.mocked(AnalyticsAdminService.getSummary).mock.calls[0][0];
+    expect(AnalyticsAdminService.getDailyUniques).toHaveBeenCalledWith({
+      fromDate: formatLocalDate(new Date(from)),
+      toDate: formatLocalDate(new Date(to)),
+    });
+  });
+
+  it("sets the page error when the daily uniques request fails", async () => {
+    vi.mocked(AnalyticsAdminService.getDailyUniques).mockRejectedValueOnce(new Error("daily uniques failed"));
+
+    render(
+      <AnalyticsAdminProvider>
+        <Probe />
+      </AnalyticsAdminProvider>,
+    );
+
+    await waitFor(() => expect(screen.getByTestId("error")).toHaveTextContent("daily uniques failed"));
   });
 
   it("defaults to the last 30 days", async () => {

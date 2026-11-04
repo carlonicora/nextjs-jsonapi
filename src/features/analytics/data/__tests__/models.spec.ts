@@ -7,6 +7,7 @@ import { AbstractApiData } from "../../../../core/abstracts/AbstractApiData";
 import { JsonApiHydratedDataInterface } from "../../../../core/interfaces/JsonApiHydratedDataInterface";
 import { analyticsModules } from "../../analytics.modules";
 import { AnalyticsBreakdown } from "../analytics-breakdown";
+import { AnalyticsDailyUniqueTimeline } from "../analytics-daily-unique-timeline";
 import { AnalyticsEvent } from "../analytics-event";
 import { AnalyticsPageView } from "../analytics-page-view";
 import { AnalyticsSession } from "../analytics-session";
@@ -87,6 +88,26 @@ describe("analytics models — rehydrate", () => {
     expect(m.visitors).toBe(1);
     expect(m.sessions).toBe(2);
     expect(m.pageViews).toBe(3);
+  });
+
+  it("rehydrates a daily-unique row: the day into a UTC-midnight Date and both counts", () => {
+    const m = new AnalyticsDailyUniqueTimeline().rehydrate(hydrate({ day: "2026-11-03", visitors: 3, users: 1 }));
+    expect(m.day).toBeInstanceOf(Date);
+    expect(m.day.getTime()).toBe(new Date("2026-11-03").getTime());
+    expect(m.visitors).toBe(3);
+    expect(m.users).toBe(1);
+  });
+
+  it("rehydrates an unknown daily-unique count to null, whether sent as null or missing", () => {
+    const m = new AnalyticsDailyUniqueTimeline().rehydrate(hydrate({ day: "2026-11-03", visitors: null }));
+    expect(m.visitors).toBeNull();
+    expect(m.users).toBeNull();
+  });
+
+  it("keeps a zero daily-unique count as 0, not null", () => {
+    const m = new AnalyticsDailyUniqueTimeline().rehydrate(hydrate({ day: "2026-11-03", visitors: 0, users: 0 }));
+    expect(m.visitors).toBe(0);
+    expect(m.users).toBe(0);
   });
 
   it("rehydrates every breakdown attribute", () => {
@@ -252,6 +273,14 @@ describe("analytics models — createJsonApi", () => {
     });
     expect(doc.data.attributes.bucket).toBe("2026-09-01");
     expect(JSON.parse(JSON.stringify(doc)).data.attributes.bucket).toBe("2026-09-01");
+  });
+
+  it("emits the daily-unique day as YYYY-MM-DD via formatLocalDate, never a raw Date", () => {
+    const doc = new AnalyticsDailyUniqueTimeline().createJsonApi({ id: "2026-11-03", day: new Date(2026, 10, 3) });
+    expect(doc.data.type).toBe("analytics/administration/daily-uniques");
+    expect(doc.data.id).toBe("2026-11-03");
+    expect(doc.data.attributes.day).toBe("2026-11-03");
+    expect(JSON.parse(JSON.stringify(doc)).data.attributes.day).toBe("2026-11-03");
   });
 
   it("serialises a breakdown row", () => {

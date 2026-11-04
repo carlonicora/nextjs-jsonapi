@@ -5,6 +5,8 @@ export { AnalyticsSummary } from "./analytics-summary";
 export type { AnalyticsSummaryInterface } from "./analytics-summary.interface";
 export { AnalyticsTimeline } from "./analytics-timeline";
 export type { AnalyticsTimelineInterface } from "./analytics-timeline.interface";
+export { AnalyticsDailyUniqueTimeline } from "./analytics-daily-unique-timeline";
+export type { AnalyticsDailyUniqueTimelineInterface } from "./analytics-daily-unique-timeline.interface";
 export { AnalyticsBreakdown } from "./analytics-breakdown";
 export type { AnalyticsBreakdownInterface } from "./analytics-breakdown.interface";
 export { AnalyticsSession } from "./analytics-session";

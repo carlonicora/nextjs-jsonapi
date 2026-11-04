@@ -2,11 +2,12 @@
 
 import { useTranslations } from "next-intl";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { Modules, NextRef } from "../../../core";
+import { formatLocalDate, Modules, NextRef } from "../../../core";
 import { SharedProvider } from "../../../contexts";
 import { BreadcrumbItemData } from "../../../interfaces";
 import { AnalyticsAdminFilterBar } from "../components/AnalyticsAdminFilterBar";
 import type { AnalyticsBreakdownInterface } from "../data/analytics-breakdown.interface";
+import type { AnalyticsDailyUniqueTimelineInterface } from "../data/analytics-daily-unique-timeline.interface";
 import type { AnalyticsSessionInterface } from "../data/analytics-session.interface";
 import type { AnalyticsSummaryInterface } from "../data/analytics-summary.interface";
 import type { AnalyticsTimelineInterface } from "../data/analytics-timeline.interface";
@@ -51,6 +52,8 @@ export interface AnalyticsAdminContextType {
   timeline: AnalyticsTimelineInterface[];
   breakdowns: Record<AnalyticsDimension, AnalyticsBreakdownInterface[]>;
   sessions: AnalyticsSessionInterface[];
+  /** One row per day of the range: unique visitors and users, never filtered by section. */
+  dailyUniques: AnalyticsDailyUniqueTimelineInterface[];
   filters: AnalyticsAdminFilterState;
   /** Merges a partial patch into the current filters; every key is optional. */
   setFilters: (next: Partial<AnalyticsAdminFilterState>) => void;
@@ -120,6 +123,7 @@ export const AnalyticsAdminProvider = ({
   const [breakdowns, setBreakdowns] =
     useState<Record<AnalyticsDimension, AnalyticsBreakdownInterface[]>>(EMPTY_BREAKDOWNS);
   const [sessions, setSessions] = useState<AnalyticsSessionInterface[]>([]);
+  const [dailyUniques, setDailyUniques] = useState<AnalyticsDailyUniqueTimelineInterface[]>([]);
   /** The cursor URL of the next sessions page, as the API returned it. */
   const [sessionsNextPage, setSessionsNextPage] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
@@ -149,8 +153,14 @@ export const AnalyticsAdminProvider = ({
         ),
       ),
       AnalyticsAdminService.getSessions({ ...base, next: sessionsNext }),
+      // The local calendar days the admin picked: the picker emits local-midnight
+      // instants, so slicing the UTC instant would shift the range a day east of UTC.
+      AnalyticsAdminService.getDailyUniques({
+        fromDate: formatLocalDate(new Date(from)),
+        toDate: formatLocalDate(new Date(to)),
+      }),
     ])
-      .then(([nextSummary, nextTimeline, nextBreakdowns, nextSessions]) => {
+      .then(([nextSummary, nextTimeline, nextBreakdowns, nextSessions, nextDailyUniques]) => {
         if (cancelled) return;
         setSummary(nextSummary ?? []);
         setTimeline(nextTimeline ?? []);
@@ -161,6 +171,7 @@ export const AnalyticsAdminProvider = ({
         );
         setSessions(nextSessions ?? []);
         setSessionsNextPage(sessionsNext.next);
+        setDailyUniques(nextDailyUniques ?? []);
       })
       .catch((err) => {
         if (cancelled) return;
@@ -225,6 +236,7 @@ export const AnalyticsAdminProvider = ({
       timeline,
       breakdowns,
       sessions,
+      dailyUniques,
       filters,
       setFilters,
       loadMoreSessions,
@@ -238,6 +250,7 @@ export const AnalyticsAdminProvider = ({
       timeline,
       breakdowns,
       sessions,
+      dailyUniques,
       filters,
       setFilters,
       loadMoreSessions,

@@ -151,6 +151,12 @@
         "visitors": "Visitatori"
       },
       "consented": "Consenso dato",
+      "daily_uniques": {
+        "no_data": "Nessun dato",
+        "today": "Oggi, conteggio in corso",
+        "users": "Utenti unici",
+        "visitors": "Visitatori unici"
+      },
       "description": "Visitatori, sessioni e visualizzazioni di pagina su sito e applicazione.",
       "dimensions": {
         "campaign": "Campagna",
@@ -176,6 +182,8 @@
       "other": "Altro",
       "panels": {
         "breakdown": "Ripartizione",
+        "daily_users": "Utenti unici al giorno",
+        "daily_visitors": "Visitatori unici al giorno",
         "journey": "Percorso",
         "other_sessions": "Altre sessioni di questo visitatore",
         "over_time": "Nel tempo",
