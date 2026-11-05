@@ -1,3 +1,9 @@
+## [6.20.6](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.20.5...v6.20.6) (2026-11-05)
+
+### 🐛 Bug Fixes
+
+* **build:** type declarations are now written by tsc, one file per source file, instead of tsup's bundled pass, so the build needs about 1 GB of memory instead of running out at 8 GB and takes seconds instead of minutes; the four server entries now point their types at server-entry.d.ts ([44963ac](https://github.com/carlonicora/nextjs-jsonapi/commit/44963aceb13ee539983c67539f22c00a03d54eda))
+
 ## [6.20.5](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.20.4...v6.20.5) (2026-11-05)
 
 ### 🐛 Bug Fixes
