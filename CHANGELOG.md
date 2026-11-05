@@ -1,3 +1,9 @@
+## [6.20.5](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.20.4...v6.20.5) (2026-11-05)
+
+### 🐛 Bug Fixes
+
+* **analytics:** the tracker now posts page views to /wayfinding instead of /analytics/events, because the EasyPrivacy rule /analytics/event (on by default in uBlock Origin) blocked them; needs the matching nestjs-neo4jsonapi release ([c8b8482](https://github.com/carlonicora/nextjs-jsonapi/commit/c8b848293382e0d2c6c0ab8d72b19e31d15afb5c))
+
 ## [6.20.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.20.3...v6.20.4) (2026-11-05)
 
 ### 🐛 Bug Fixes
