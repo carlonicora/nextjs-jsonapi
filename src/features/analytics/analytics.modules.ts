@@ -23,7 +23,10 @@ import { AnalyticsTimeline } from "./data/analytics-timeline";
  */
 export const analyticsModules = (factory: ModuleFactory) =>
   ({
-    AnalyticsEvent: factory({ name: "analytics/events", model: AnalyticsEvent }),
+    // Never put words ad/tracking blocklists match in this path (analytics, event,
+    // track, collect, beacon, pageview, stats, metrics, telemetry): EasyPrivacy's
+    // "/analytics/event" rule silently dropped every page view from uBlock Origin users.
+    AnalyticsEvent: factory({ name: "wayfinding", model: AnalyticsEvent }),
     AnalyticsSummary: factory({
       name: "analytics/administration/summary",
       model: AnalyticsSummary,

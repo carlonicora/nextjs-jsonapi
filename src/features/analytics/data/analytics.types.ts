@@ -18,7 +18,7 @@ export type AnalyticsFilters = {
   section: AnalyticsSection;
 };
 
-/** One page view, as the tracker posts it to `analytics/events`. */
+/** One page view, as the tracker posts it to `wayfinding`. */
 export type AnalyticsEventInput = {
   id: string;
   path: string;

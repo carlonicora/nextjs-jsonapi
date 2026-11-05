@@ -43,7 +43,7 @@ describe("AnalyticsService.track", () => {
     const call = spy.mock.calls[0][0] as CallApiParams;
     expect(call.type).toBe(ModuleRegistry.get("AnalyticsEvent" as any));
     expect(call.method).toBe("POST");
-    expect(call.endpoint).toBe("analytics/events");
+    expect(call.endpoint).toBe("wayfinding");
     expect(call.input).toBe(input);
     expect(call.suppressGlobalError).toBe(true);
   });

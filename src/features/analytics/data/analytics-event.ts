@@ -5,7 +5,7 @@ import { AnalyticsEventInput } from "./analytics.types";
 /**
  * JSON:API resource type of a posted event. It must match `analyticsEventMeta.type`
  * in the API, whose DTO rejects any other value. It is not `Modules.AnalyticsEvent.name`:
- * that is the endpoint path ("analytics/events"), the same split the auth models
+ * that is the endpoint path ("wayfinding"), the same split the auth models
  * make (e.g. backup-code-verify.ts posts type "backup-codes").
  */
 const ANALYTICS_EVENT_TYPE = "analytics-events";
