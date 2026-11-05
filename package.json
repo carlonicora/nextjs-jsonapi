@@ -55,7 +55,7 @@
     },
     "./contexts/styles.css": "./dist/contexts/index.css",
     "./blocknote/server": {
-      "types": "./dist/components/editors/server.d.ts",
+      "types": "./dist/components/editors/server-entry.d.ts",
       "import": "./dist/components/editors/server.mjs",
       "require": "./dist/components/editors/server.js"
     },
@@ -80,7 +80,7 @@
       "require": "./dist/features/help/index.js"
     },
     "./help/server": {
-      "types": "./dist/features/help/server.d.ts",
+      "types": "./dist/features/help/server-entry.d.ts",
       "import": "./dist/features/help/server.mjs",
       "require": "./dist/features/help/server.js"
     },
@@ -90,7 +90,7 @@
       "require": "./dist/features/blog/index.js"
     },
     "./blog/server": {
-      "types": "./dist/features/blog/server.d.ts",
+      "types": "./dist/features/blog/server-entry.d.ts",
       "import": "./dist/features/blog/server.mjs",
       "require": "./dist/features/blog/server.js"
     },
@@ -105,7 +105,7 @@
       "require": "./dist/features/analytics/index.js"
     },
     "./analytics/server": {
-      "types": "./dist/features/analytics/server.d.ts",
+      "types": "./dist/features/analytics/server-entry.d.ts",
       "import": "./dist/features/analytics/server.mjs",
       "require": "./dist/features/analytics/server.js"
     },
@@ -118,7 +118,7 @@
     "./messages/*": "./messages/*"
   },
   "scripts": {
-    "build": "rm -rf dist && NODE_OPTIONS='--max-old-space-size=8192' tsup && tsc -p scripts/generate-web-module/tsconfig.json",
+    "build": "rm -rf dist && tsup && node scripts/build-types.mjs && tsc -p scripts/generate-web-module/tsconfig.json",
     "dev": "node scripts/dev-watch.mjs",
     "clean": "rm -rf dist",
     "lint": "eslint \"src/**/*.ts\" \"src/**/*.tsx\" --fix && node scripts/check-rtl-classes.mjs && node scripts/validate-messages.mjs",

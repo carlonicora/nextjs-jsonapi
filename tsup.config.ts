@@ -55,10 +55,6 @@ const entries: Record<string, string> = {
     "next-config/index": "src/next-config/index.ts",
 };
 
-// Declarations of the main pass: every entry except offline/index, declared by its own
-// pass below (offlineDeclarations).
-const { "offline/index": _offlineEntry, ...declarationEntries } = entries;
-
 const mainConfig: Options = {
   entry: entries,
   format: ["cjs", "esm"],
@@ -73,20 +69,10 @@ const mainConfig: Options = {
   // With clean:false the watch never wipes dist/, so the apps (which wait only
   // on `build`) always see a valid dist/. See turbo.json (dev dependsOn build).
   clean: false,
-  // Bundle type generation with resolution
-  // `ignoreDeprecations` is tsup's, not ours: its dts build sets
-  // `baseUrl: compilerOptions.baseUrl || "."` unconditionally
-  // (tsup/dist/rollup.js), and TypeScript 6 makes `baseUrl` a hard error
-  // (TS5101). tsconfig.json no longer sets baseUrl, so the suppression is
-  // scoped to the tool that reintroduces it. tsup must be replaced before
-  // TypeScript 7 regardless — 7 deleted the JavaScript compiler API its dts
-  // build depends on.
-  // TSUP_NO_DTS is set only by the dev watcher (scripts/dev-watch.mjs), which
-  // emits per-file declarations with tsc instead: the bundled dts pass peaks near
-  // 7 GB on every save. The release build always bundles the types.
-  dts: process.env.TSUP_NO_DTS
-    ? false
-    : { entry: declarationEntries, resolve: true, compilerOptions: { ignoreDeprecations: "6.0" } },
+  // Declarations are emitted by tsc, one .d.ts per source file
+  // (scripts/build-types.mjs). tsup's bundled dts pass needed an 8 GB heap and
+  // still ran out; tsc needs about 1 GB.
+  dts: false,
   external: [
     "@tanstack/react-table",
     "@stripe/react-stripe-js",
@@ -150,20 +136,6 @@ const mainConfig: Options = {
   },
 };
 
-// The bundled declaration pass of the main config already peaks near 7.6 GB of
-// its 8 GB heap (see the build script). The offline entry's declarations need
-// about 0.5 GB on their own but push the shared pass past the limit, so they are
-// bundled in a second, separate pass. It inlines its own copy of the library
-// types it uses (resolve: true), which the main pass would otherwise share.
-const offlineDeclarations: Options = {
-  entry: { "offline/index": entries["offline/index"] },
-  format: mainConfig.format,
-  clean: false,
-  dts: { only: true, resolve: true, compilerOptions: { ignoreDeprecations: "6.0" } },
-  external: mainConfig.external,
-  esbuildOptions: mainConfig.esbuildOptions,
-};
-
 // The device worker loads SQLite at run time instead of bundling it (OfflineConfig.sqliteModuleUrl):
 // these files ship in dist/offline/sqlite/ for the app to serve, at the version this package pins.
 // The device worker itself lands in the same folder (deviceWorker config below).
@@ -195,6 +167,4 @@ const deviceWorker: Options = {
   esbuildOptions: mainConfig.esbuildOptions,
 };
 
-export default defineConfig(
-  process.env.TSUP_NO_DTS ? [mainConfig, deviceWorker] : [mainConfig, offlineDeclarations, deviceWorker],
-);
+export default defineConfig([mainConfig, deviceWorker]);
