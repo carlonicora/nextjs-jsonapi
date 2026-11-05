@@ -42,7 +42,13 @@ import { BlockNoteDiffUtil, BlockNoteWordDiffRendererUtil, cn } from "../../util
 import { errorToast } from "../errors";
 import { BlockNoteAiGenerateAction, generateActionItems } from "./BlockNoteEditorAiActions";
 import { BlockNoteEditorFormattingToolbar } from "./BlockNoteEditorFormattingToolbar";
-import { type BlockNoteCollaboration, buildBlockNoteEditorOptions, resolveEditable } from "./blockNoteEditorOptions";
+import {
+  type BlockNoteCollaboration,
+  buildBlockNoteEditorOptions,
+  isDocumentEmpty,
+  removeTrailingEmptyBlocks as trimTrailingEmptyBlocks,
+  resolveEditable,
+} from "./blockNoteEditorOptions";
 import { BlockNoteEditorMentionHoverCard } from "./BlockNoteEditorMentionHoverCard";
 import {
   createMentionInlineContentSpec,
@@ -130,32 +136,6 @@ export type BlockNoteEditorProps = {
    */
   editable?: boolean;
 };
-
-function isBlockEmpty(block: any): boolean {
-  if (!block || typeof block !== "object") return true;
-  if (block.type !== "paragraph") return false;
-  if (Array.isArray(block.children) && block.children.length > 0 && !isDocumentEmpty(block.children)) {
-    return false;
-  }
-  if (Array.isArray(block.content)) {
-    for (const inline of block.content) {
-      if (typeof inline === "string") {
-        if (inline.trim()) return false;
-      } else if (inline && typeof inline === "object") {
-        if (inline.type !== "text") return false;
-        if (typeof inline.text === "string" && inline.text.trim()) return false;
-      }
-    }
-  } else if (typeof block.content === "string" && block.content.trim()) {
-    return false;
-  }
-  return true;
-}
-
-function isDocumentEmpty(blocks: any[]): boolean {
-  if (!Array.isArray(blocks) || blocks.length === 0) return true;
-  return blocks.every(isBlockEmpty);
-}
 
 const createDiffActionsInlineContentSpec = (
   handleAcceptChange: (diffId: string) => void,
@@ -635,27 +615,7 @@ export default function BlockNoteEditor({
       // Only remove trailing empty blocks in read-only mode
       if (onChange !== undefined) return blocks;
 
-      const result = [...blocks];
-
-      // Remove trailing empty paragraph blocks, but keep at least one block
-      while (result.length > 1) {
-        const lastBlock = result[result.length - 1];
-
-        // Check if it's an empty paragraph
-        const isEmptyParagraph =
-          lastBlock.type === "paragraph" &&
-          (!lastBlock.content ||
-            lastBlock.content.length === 0 ||
-            (Array.isArray(lastBlock.content) && lastBlock.content.every((c: any) => !c.text || c.text.trim() === "")));
-
-        if (isEmptyParagraph) {
-          result.pop();
-        } else {
-          break;
-        }
-      }
-
-      return result;
+      return trimTrailingEmptyBlocks(blocks);
     },
     [onChange],
   );
