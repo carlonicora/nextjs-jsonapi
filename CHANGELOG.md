@@ -1,3 +1,9 @@
+## [6.20.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.20.2...v6.20.3) (2026-11-05)
+
+### 🐛 Bug Fixes
+
+* **editor:** loading the parent's text no longer reports a change, so a page whose text is stored in a shorter block shape no longer saves on every view (and offline no longer queues a change); suggested changes in diff mode are still reported, with whether any are unresolved ([9eeb304](https://github.com/carlonicora/nextjs-jsonapi/commit/9eeb304914ad387902d2864919f0ffa73e1d2e96))
+
 ## [6.20.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.20.1...v6.20.2) (2026-11-04)
 
 ### 💎 Styles
