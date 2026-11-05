@@ -1,3 +1,9 @@
+## [6.20.4](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.20.3...v6.20.4) (2026-11-05)
+
+### 🐛 Bug Fixes
+
+* **editor:** a read-only editor no longer drops a last paragraph that holds only a mention, a link or nested blocks; it still trims trailing paragraphs that are empty or only spaces, and removeTrailingEmptyBlocks and isDocumentEmpty are now exported from the editor options ([4c8a4ac](https://github.com/carlonicora/nextjs-jsonapi/commit/4c8a4accaf3ee6783e82ef384319c3ae86319978))
+
 ## [6.20.3](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.20.2...v6.20.3) (2026-11-05)
 
 ### 🐛 Bug Fixes
