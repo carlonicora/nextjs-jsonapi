@@ -828,10 +828,31 @@ export default function BlockNoteEditor({
   const processedContentRef = useRef<any[]>([]);
   const parentKnowsEmptyRef = useRef<boolean | null>(null);
 
+  // The document the editor holds right after loading the parent's text, until the first change
+  // that differs from it. Loading text BlockNote stores in a fuller shape (block ids, default props,
+  // children: text written by the server, an import, the API) emits a change of the same text.
+  // Reported, it became a save on every view of such a page, and offline a queued change.
+  const loadedHashRef = useRef<string | null>(null);
+  // True while replaceBlocks loads the parent's text: BlockNote fires onChange synchronously
+  // inside it, before loadedHashRef can be set.
+  const loadingFromParentRef = useRef(false);
+
   const handleChange = useCallback(async () => {
     if (!onChange) return;
     const newBlocks = editor.document;
-    lastEmittedHashRef.current = JSON.stringify(newBlocks);
+    const newHash = JSON.stringify(newBlocks);
+    if (loadingFromParentRef.current) {
+      lastEmittedHashRef.current = newHash;
+      return;
+    }
+    if (loadedHashRef.current !== null) {
+      if (newHash === loadedHashRef.current) {
+        lastEmittedHashRef.current = newHash;
+        return;
+      }
+      loadedHashRef.current = null;
+    }
+    lastEmittedHashRef.current = newHash;
     const isEmpty = isDocumentEmpty(newBlocks);
     const wasEmpty = parentKnowsEmptyRef.current ?? isDocumentEmpty(processedContentRef.current);
     if (isEmpty && wasEmpty) return;
@@ -891,6 +912,11 @@ export default function BlockNoteEditor({
   }, [editor, onChange, id, acceptedChanges, rejectedChanges]);
 
   processedContentRef.current = processedContent as any[];
+  // A diff render (the suggested changes, or the text after an accept or a reject) is not the
+  // parent's text: the parent learns it, and whether changes are unresolved, from the change
+  // BlockNote emits when it loads it.
+  const rendersDiffRef = useRef(false);
+  rendersDiffRef.current = !!(diffContent && initialContent);
 
   // Utility: deep equality for arrays of blocks
   const areBlocksEqual = (a: any[], b: any[]): boolean => {
@@ -940,7 +966,21 @@ export default function BlockNoteEditor({
       previousContentHashRef.current = hash;
       return; // already in sync
     }
-    editor.replaceBlocks(editor.document, processedContent as PartialBlock[]);
+    if (rendersDiffRef.current) {
+      loadedHashRef.current = null;
+      editor.replaceBlocks(editor.document, processedContent as PartialBlock[]);
+      previousContentHashRef.current = hash;
+      return;
+    }
+    loadingFromParentRef.current = true;
+    try {
+      editor.replaceBlocks(editor.document, processedContent as PartialBlock[]);
+    } finally {
+      loadingFromParentRef.current = false;
+    }
+    // The parent's text, as BlockNote now holds it: a change of the same text emitted after the
+    // load is not an edit either.
+    loadedHashRef.current = JSON.stringify(editor.document);
     previousContentHashRef.current = hash;
   }, [processedContent, editor, collaboration]);
 

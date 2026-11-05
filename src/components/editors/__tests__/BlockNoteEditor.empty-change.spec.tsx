@@ -77,8 +77,18 @@ vi.mock("@blocknote/react", async () => {
         const hasAI = extensions.some((e) => e?.aiFactory);
         const editor = {
           document: [] as any[],
+          // As BlockNote does: the blocks it holds carry an id, every default prop and children,
+          // whatever shape the caller handed in, and the view's onChange fires synchronously,
+          // inside replaceBlocks.
           replaceBlocks: (_old: unknown, blocks: any[]) => {
-            editor.document = blocks;
+            editor.document = blocks.map((block: any, index: number) => ({
+              id: block.id ?? `generated-${index}`,
+              type: block.type,
+              props: { textColor: "default", ...(block.props ?? {}) },
+              content: block.content ?? [],
+              children: block.children ?? [],
+            }));
+            h.viewOnChange?.();
           },
           focus: () => undefined,
           getSelection: () => undefined,
@@ -194,6 +204,45 @@ describe("BlockNoteEditor change reports", () => {
     await emit(emptyParagraph());
     expect(onChange).toHaveBeenLastCalledWith(emptyParagraph(), true, false);
     expect(onChange).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not report the change BlockNote emits when it loads the parent's text in its own block shape", async () => {
+    // Stored text without block ids or default props (written by the server, an import, the API).
+    const stored = [{ type: "paragraph", content: [{ type: "text", text: "Stored", styles: {} }] }];
+    render(<BlockNoteEditor id="npc-1" type="npcs" initialContent={stored as any} onChange={onChange} />);
+    // The sync loaded `stored`; BlockNote reports the document it now holds, filled in.
+    await emit(h.editor.document);
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("after loading, reports an edit and an undo back to the loaded text", async () => {
+    const stored = [{ type: "paragraph", content: [{ type: "text", text: "Stored", styles: {} }] }];
+    render(<BlockNoteEditor id="npc-1" type="npcs" initialContent={stored as any} onChange={onChange} />);
+    const loaded = h.editor.document;
+    await emit(loaded);
+    await emit(textParagraph("Edited"));
+    expect(onChange).toHaveBeenLastCalledWith(textParagraph("Edited"), false, false);
+    await emit(loaded);
+    expect(onChange).toHaveBeenLastCalledWith(loaded, false, false);
+    expect(onChange).toHaveBeenCalledTimes(2);
+  });
+
+  it("reports the suggested changes it loads in diff mode, with unresolved changes, to the parent", async () => {
+    // a360ai's judicial acts learn the text, and that changes are unresolved, from this change.
+    render(
+      <BlockNoteEditor
+        id="act-1"
+        type="judicial-act"
+        initialContent={textParagraph("Old text") as any}
+        diffContent={textParagraph("New text") as any}
+        onChange={onChange}
+      />,
+    );
+    await act(async () => {
+      await flush();
+    });
+    expect(onChange).toHaveBeenCalled();
+    expect(onChange.mock.lastCall?.[2]).toBe(true);
   });
 
   it("reports clearing an editor that started with text, even as its first change", async () => {
