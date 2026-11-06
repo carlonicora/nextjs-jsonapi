@@ -1,3 +1,9 @@
+## [6.21.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.20.6...v6.21.0) (2026-11-06)
+
+### 🚀 Features
+
+* **layout:** RoundPageContainer reads a new --app-footer-h value, so a page stays above a panel fixed to the bottom of the screen; a full-height page shrinks by it and a page that grows with its content gets it as bottom margin; PopoverContent takes a container, so a popover opened inside a drawer or dialog that traps focus can be typed in ([3452886](https://github.com/carlonicora/nextjs-jsonapi/commit/34528861588ba248f0043bc489e16705a5269f01))
+
 ## [6.20.6](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.20.5...v6.20.6) (2026-11-05)
 
 ### 🐛 Bug Fixes
