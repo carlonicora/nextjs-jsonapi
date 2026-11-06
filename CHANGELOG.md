@@ -1,3 +1,9 @@
+## [6.22.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.21.0...v6.22.0) (2026-11-06)
+
+### 🚀 Features
+
+* **editor:** the Edit button in a page's action bar is now a primary button, as is the Edit button on the OAuth client page; the user page shows Delete and Edit in the action bar with their labels instead of as icons in the title row ([bace359](https://github.com/carlonicora/nextjs-jsonapi/commit/bace3593a9353fe75a898bbb3f1fedf3e7bd6cc8))
+
 ## [6.21.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.20.6...v6.21.0) (2026-11-06)
 
 ### 🚀 Features
