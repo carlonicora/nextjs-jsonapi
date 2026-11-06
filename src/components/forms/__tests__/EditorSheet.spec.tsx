@@ -77,6 +77,22 @@ describe("EditorSheet", () => {
       expect(screen.getByText("Custom")).toBeTruthy();
     });
 
+    it("should render a labelled edit trigger as a primary button", () => {
+      render(<TestEditor isEdit={true} showLabel={true} />);
+      const trigger = document.querySelector('[data-help="editor.edit"]');
+      expect(trigger?.textContent).toContain("ui.buttons.edit");
+      expect(trigger?.className).toContain("bg-primary");
+      expect(trigger?.className).not.toContain("text-muted-foreground");
+    });
+
+    it("should render an unlabelled edit trigger as a muted glyph", () => {
+      render(<TestEditor isEdit={true} showLabel={false} />);
+      const trigger = document.querySelector('[data-help="editor.edit"]');
+      expect(trigger?.textContent).not.toContain("ui.buttons.edit");
+      expect(trigger?.className).not.toContain("bg-primary");
+      expect(trigger?.className).toContain("text-muted-foreground");
+    });
+
     it("should not render trigger when dialogOpen is controlled", () => {
       render(<TestEditor dialogOpen={false} />);
       expect(screen.queryByText("ui.buttons.create")).toBeNull();

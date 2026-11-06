@@ -76,6 +76,7 @@ export const UserProvider = ({ children, dehydratedUser }: UserProviderProps) =>
     };
 
     const functions: ReactNode[] = [];
+    const actionBar: ReactNode[] = [];
 
     if (user) {
       response.element = `${user.name}${user.isDeleted ? ` (${t(`user.deleted`)})` : ""}`;
@@ -86,17 +87,20 @@ export const UserProvider = ({ children, dehydratedUser }: UserProviderProps) =>
         if (!user.isActivated)
           functions.push(<UserResentInvitationEmail key={`UserResentInvitationEmail`} user={user} />);
 
-        functions.push(<UserDeleter key={`UserDeleter`} user={user} />);
+        actionBar.push(<UserDeleter key={`UserDeleter`} user={user} />);
 
         // Opt-in: only apps that registered AccountDeletionModule, platform administrators only.
         if (hasRole(getRoleId().Administrator) && isAccountDeletionEnabled())
           functions.push(<AccountDeletionAdminTrigger key={`AccountDeletionAdminTrigger`} user={user} />);
       }
 
-      functions.push(<UserEditor key={`UserEditor`} user={user} propagateChanges={setUser} />);
+      // Delete and Edit live in the secondary header (action bar), where they
+      // render as labelled buttons, like every other entity page.
+      actionBar.push(<UserEditor key={`UserEditor`} user={user} propagateChanges={setUser} />);
     }
 
     if (functions.length > 0) response.functions = functions;
+    if (actionBar.length > 0) response.actionBar = actionBar;
 
     return response;
   };

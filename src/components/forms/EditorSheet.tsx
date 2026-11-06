@@ -320,8 +320,8 @@ export function EditorSheet<T extends FieldValues>({
                     render={<div />}
                     nativeButton={false}
                     size="sm"
-                    variant={isLabelled ? "outline" : "ghost"}
-                    className="text-muted-foreground"
+                    variant={isLabelled ? "default" : "ghost"}
+                    className={isLabelled ? undefined : "text-muted-foreground"}
                   >
                     <PencilIcon />
                     {isLabelled && t("ui.buttons.edit")}

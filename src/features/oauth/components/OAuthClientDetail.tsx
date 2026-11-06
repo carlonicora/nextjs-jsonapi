@@ -201,7 +201,7 @@ export function OAuthClientDetail({
           {/* Actions */}
           <div className="flex gap-3 pt-4">
             {onEdit && (
-              <Button variant="outline" onClick={onEdit} disabled={isLoading}>
+              <Button onClick={onEdit} disabled={isLoading}>
                 <Pencil className="h-4 w-4 me-2" />
                 {t("ui.buttons.edit")}
               </Button>
