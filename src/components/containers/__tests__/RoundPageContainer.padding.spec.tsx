@@ -61,4 +61,25 @@ describe("RoundPageContainer shell padding", () => {
     expect(shell.classList.contains("p-2")).toBe(true);
     expect(shell.classList.contains("ps-0")).toBe(false);
   });
+
+  it("keeps the page above a bottom panel: the height also subtracts --app-footer-h", async () => {
+    render(withShared(<RoundPageContainer testId="shell">content</RoundPageContainer>));
+    const shell = await screen.findByTestId("shell");
+    expect(shell.className).toContain("-var(--app-footer-h,0px))]");
+  });
+
+  it("a page that grows with its content gets the bottom panel's height as margin; a full-height one does not", async () => {
+    const { unmount } = render(
+      withShared(
+        <RoundPageContainer testId="doc" scroll="document">
+          content
+        </RoundPageContainer>,
+      ),
+    );
+    expect((await screen.findByTestId("doc")).classList.contains("mb-[var(--app-footer-h,0px)]")).toBe(true);
+    unmount();
+
+    render(withShared(<RoundPageContainer testId="fixed">content</RoundPageContainer>));
+    expect((await screen.findByTestId("fixed")).classList.contains("mb-[var(--app-footer-h,0px)]")).toBe(false);
+  });
 });

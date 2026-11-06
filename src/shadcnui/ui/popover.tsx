@@ -20,15 +20,20 @@ function PopoverContent({
   side = "bottom",
   sideOffset = 4,
   anchor,
+  container,
   ...props
 }: PopoverPrimitive.Popup.Props &
-  Pick<PopoverPrimitive.Positioner.Props, "align" | "alignOffset" | "side" | "sideOffset" | "anchor">) {
+  Pick<PopoverPrimitive.Positioner.Props, "align" | "alignOffset" | "side" | "sideOffset" | "anchor"> &
+  // Where the popup is portalled (default: <body>). A popover opened from inside a
+  // focus-trapping surface (a modal dialog or drawer) passes that surface here, or
+  // the trap pulls focus back out of the popup and its inputs cannot be typed in.
+  Pick<PopoverPrimitive.Portal.Props, "container">) {
   // Pickers size themselves to their field (`w-(--anchor-width)`). In a narrow
   // field on a phone that leaves a ~100px list where every name wraps, so on a
   // phone they get a usable minimum width (capped to the screen).
   const matchesAnchorWidth = typeof className === "string" && className.includes("--anchor-width");
   return (
-    <PopoverPrimitive.Portal>
+    <PopoverPrimitive.Portal container={container}>
       <PopoverPrimitive.Positioner
         align={align}
         alignOffset={alignOffset}

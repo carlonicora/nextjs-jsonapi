@@ -244,9 +244,16 @@ export function RoundPageContainer({
   // demo bar, a credit warning). Unset, it is 0 and the height is unchanged; an
   // app that renders such a banner publishes its live height on <html>, or the
   // banner pushes the page past the viewport and the document scrolls it away.
+  // `--app-footer-h` is the same for a panel fixed to the bottom of the viewport
+  // (a drawer over the page): published while it is shown, it keeps the bottom
+  // of a full-height page above the panel instead of under it.
   const shellHeight = isFixed
-    ? `h-[calc(100svh-var(--app-header-h,3rem)-var(--app-banner-h,0px))]`
-    : `min-h-[calc(100svh-var(--app-header-h,3rem)-var(--app-banner-h,0px))]`;
+    ? `h-[calc(100svh-var(--app-header-h,3rem)-var(--app-banner-h,0px)-var(--app-footer-h,0px))]`
+    : `min-h-[calc(100svh-var(--app-header-h,3rem)-var(--app-banner-h,0px)-var(--app-footer-h,0px))]`;
+  // A page that grows with its content scrolls the document instead, so it gets the
+  // panel's height as bottom margin: its last lines can scroll above the panel. A
+  // full-height page already subtracts it from its height above, so it gets none.
+  const footerSpace = isFixed ? `` : `mb-[var(--app-footer-h,0px)]`;
   const clip = isFixed ? `overflow-hidden` : ``;
   const scrollY = isFixed ? `overflow-y-auto` : ``;
   // The bar is an in-flow sibling of the content (see MobileNavigationBar's own
@@ -364,6 +371,7 @@ export function RoundPageContainer({
           className={cn(
             "flex w-full flex-col",
             shellHeight,
+            footerSpace,
             // Deliberately NO bottom safe-area inset, here or in
             // MobileNavigationBar. iOS still reports 34px of bottom inset
             // (measured in an installed PWA), but nothing is drawn in that strip
@@ -409,6 +417,7 @@ export function RoundPageContainer({
         className={cn(
           `flex w-full flex-col`,
           shellHeight,
+          footerSpace,
           // Deliberately NO bottom safe-area inset, here or in
           // MobileNavigationBar. iOS still reports 34px of bottom inset
           // (measured in an installed PWA), but nothing is drawn in that strip
