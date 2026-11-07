@@ -1,3 +1,9 @@
+## [6.25.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.24.0...v6.25.0) (2026-11-07)
+
+### 🚀 Features
+
+* **dates:** dates and times follow the browser's regional format when its language matches the app language; ServerSession.read() now returns the Accept-Language header, DateLocaleProvider (exported from contexts and from the new date-locale entry) resolves the locale, and useDateFormatter formats every library date with named styles; FormDateTime shows a 12-hour clock with an AM/PM select where the locale uses one, the date pickers start the week on the locale's first day, dateFormatLocale returns the app language instead of forcing en-GB, NotificationToast takes the date-locale source as its fifth argument, and "x ago" text is worded by Intl in every language ([1582acf](https://github.com/carlonicora/nextjs-jsonapi/commit/1582acff8e3ae2b795680869eb5da0112d4895c0))
+
 ## [6.24.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.23.0...v6.24.0) (2026-11-07)
 
 ### 🚀 Features
