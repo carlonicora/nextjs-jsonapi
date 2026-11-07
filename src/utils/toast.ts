@@ -7,6 +7,8 @@ export type ToastOptions = {
   id?: string;
   onDismiss?: () => void;
   action?: ExternalToast["action"];
+  /** sonner's second button, shown beside `action`. */
+  cancel?: ExternalToast["cancel"];
   dismissible?: boolean;
 };
 
