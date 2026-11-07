@@ -143,6 +143,11 @@ export abstract class AbstractService {
      * fully backward compatible. Ignored when `endpoint` starts with "http" (passthrough).
      */
     baseUrl?: string;
+    /**
+     * Optional browser `fetch` credentials mode, e.g. "include" so the browser stores a
+     * cookie the API sets. Omitted => no `credentials` option is passed (unchanged).
+     */
+    credentials?: RequestCredentials;
   }): Promise<T> {
     // Dynamic import to avoid bundling issues
     const { JsonApiGet, JsonApiPost, JsonApiPut, JsonApiPatch, JsonApiDelete } =
@@ -168,6 +173,7 @@ export abstract class AbstractService {
           language: language,
           token: params.token,
           baseUrl: params.baseUrl,
+          credentials: params.credentials,
         });
         break;
       case HttpMethod.POST:
@@ -182,6 +188,7 @@ export abstract class AbstractService {
           files: params.files,
           token: params.token,
           baseUrl: params.baseUrl,
+          credentials: params.credentials,
         });
         break;
       case HttpMethod.PUT:
@@ -195,6 +202,7 @@ export abstract class AbstractService {
           files: params.files,
           token: params.token,
           baseUrl: params.baseUrl,
+          credentials: params.credentials,
         });
         break;
       case HttpMethod.PATCH:
@@ -209,6 +217,7 @@ export abstract class AbstractService {
           files: params.files,
           token: params.token,
           baseUrl: params.baseUrl,
+          credentials: params.credentials,
         });
         break;
       case HttpMethod.DELETE:
@@ -220,6 +229,7 @@ export abstract class AbstractService {
           responseType: params.responseType,
           token: params.token,
           baseUrl: params.baseUrl,
+          credentials: params.credentials,
         });
         break;
       default:

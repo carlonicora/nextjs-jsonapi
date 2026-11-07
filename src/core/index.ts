@@ -35,6 +35,9 @@ export * from "../permissions";
 export * from "../features/account-deletion/account-deletion.module";
 export * from "../features/account-deletion/data";
 export * from "../features/account-deletion/utils";
+// Discord connect (opt-in): data and modules. No components ship from the library.
+export * from "../features/discord-connection/discord-connection.module";
+export * from "../features/discord-connection/data";
 export * from "../features/auth/auth.module";
 export * from "../features/auth/totp-authenticator.module";
 export * from "../features/auth/totp-setup.module";

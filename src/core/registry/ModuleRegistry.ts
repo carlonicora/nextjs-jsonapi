@@ -109,6 +109,10 @@ export interface FoundationModuleDefinitions {
   AnalyticsPageView: ModuleWithPermissions;
   // Account deletion (opt-in: registered only by apps that enable it)
   AccountDeletion: ModuleWithPermissions;
+  // Discord connect (registered by apps that offer it)
+  DiscordConnection: ModuleWithPermissions;
+  DiscordConnectIntent: ModuleWithPermissions;
+  DiscordConnectConfirmation: ModuleWithPermissions;
   // Offline mode (opt-in: registered by apps that spread offlineModules)
   OfflineChangeSet: ModuleWithPermissions;
   RootSync: ModuleWithPermissions;

@@ -93,6 +93,7 @@ export async function ClientJsonApiGet(params: {
   companyId?: string;
   language: string;
   baseUrl?: string;
+  credentials?: RequestCredentials;
 }): Promise<ApiResponseInterface> {
   runClientBootstrapper();
   const token = await getClientToken();
@@ -104,6 +105,7 @@ export async function ClientJsonApiGet(params: {
     companyId: params.companyId,
     language: params.language,
     additionalHeaders: _clientConfig?.additionalHeaders,
+    credentials: params.credentials,
   });
 
   return translateResponse({
@@ -132,6 +134,7 @@ export async function ClientJsonApiPost(params: {
   language: string;
   responseType?: ApiRequestDataTypeInterface;
   baseUrl?: string;
+  credentials?: RequestCredentials;
 }): Promise<ApiResponseInterface> {
   runClientBootstrapper();
   const token = await getClientToken();
@@ -152,6 +155,7 @@ export async function ClientJsonApiPost(params: {
     companyId: params.companyId,
     language: params.language,
     additionalHeaders: _clientConfig?.additionalHeaders,
+    credentials: params.credentials,
   });
 
   return translateResponse({
@@ -171,6 +175,7 @@ export async function ClientJsonApiPut(params: {
   language: string;
   responseType?: ApiRequestDataTypeInterface;
   baseUrl?: string;
+  credentials?: RequestCredentials;
 }): Promise<ApiResponseInterface> {
   runClientBootstrapper();
   const token = await getClientToken();
@@ -191,6 +196,7 @@ export async function ClientJsonApiPut(params: {
     companyId: params.companyId,
     language: params.language,
     additionalHeaders: _clientConfig?.additionalHeaders,
+    credentials: params.credentials,
   });
 
   return translateResponse({
@@ -211,6 +217,7 @@ export async function ClientJsonApiPatch(params: {
   responseType?: ApiRequestDataTypeInterface;
   language: string;
   baseUrl?: string;
+  credentials?: RequestCredentials;
 }): Promise<ApiResponseInterface> {
   runClientBootstrapper();
   const token = await getClientToken();
@@ -231,6 +238,7 @@ export async function ClientJsonApiPatch(params: {
     companyId: params.companyId,
     language: params.language,
     additionalHeaders: _clientConfig?.additionalHeaders,
+    credentials: params.credentials,
   });
 
   return translateResponse({
@@ -248,6 +256,7 @@ export async function ClientJsonApiDelete(params: {
   language: string;
   responseType?: ApiRequestDataTypeInterface;
   baseUrl?: string;
+  credentials?: RequestCredentials;
 }): Promise<ApiResponseInterface> {
   runClientBootstrapper();
   const token = await getClientToken();
@@ -259,6 +268,7 @@ export async function ClientJsonApiDelete(params: {
     companyId: params.companyId,
     language: params.language,
     additionalHeaders: _clientConfig?.additionalHeaders,
+    credentials: params.credentials,
   });
 
   return translateResponse({

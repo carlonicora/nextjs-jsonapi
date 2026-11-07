@@ -17,6 +17,7 @@ type DirectFetchFn = (params: {
   companyId?: string;
   language: string;
   additionalHeaders?: Record<string, string>;
+  credentials?: RequestCredentials;
 }) => Promise<ApiData>;
 
 type ServerRequestFn = (params: {
@@ -95,6 +96,8 @@ async function makeRequest(params: {
   companyId?: string;
   language: string;
   additionalHeaders?: Record<string, string>;
+  /** Client-side only: forwarded to the browser `fetch`. Ignored on the server. */
+  credentials?: RequestCredentials;
 }): Promise<ApiData> {
   if (typeof window !== "undefined") {
     // Client-side: use direct fetch
@@ -111,6 +114,7 @@ async function makeRequest(params: {
       companyId: params.companyId,
       language: params.language,
       additionalHeaders: params.additionalHeaders,
+      credentials: params.credentials,
     });
   } else {
     // Server-side: use server request with caching
@@ -188,6 +192,7 @@ export async function JsonApiGet(params: {
   language: string;
   token?: string;
   baseUrl?: string;
+  credentials?: RequestCredentials;
 }): Promise<ApiResponseInterface> {
   runBootstrapper();
   // A cached server GET never sends the token, so it must not read the cookie either:
@@ -203,6 +208,7 @@ export async function JsonApiGet(params: {
     companyId: params.companyId,
     language: params.language,
     additionalHeaders: _staticConfig?.additionalHeaders,
+    credentials: params.credentials,
   });
 
   return translateResponse({
@@ -233,6 +239,7 @@ export async function JsonApiPost(params: {
   responseType?: ApiRequestDataTypeInterface;
   token?: string;
   baseUrl?: string;
+  credentials?: RequestCredentials;
 }): Promise<ApiResponseInterface> {
   runBootstrapper();
   const token = params.token ?? (await getToken());
@@ -253,6 +260,7 @@ export async function JsonApiPost(params: {
     companyId: params.companyId,
     language: params.language,
     additionalHeaders: _staticConfig?.additionalHeaders,
+    credentials: params.credentials,
   });
 
   return translateResponse({
@@ -273,6 +281,7 @@ export async function JsonApiPut(params: {
   responseType?: ApiRequestDataTypeInterface;
   token?: string;
   baseUrl?: string;
+  credentials?: RequestCredentials;
 }): Promise<ApiResponseInterface> {
   runBootstrapper();
   const token = params.token ?? (await getToken());
@@ -293,6 +302,7 @@ export async function JsonApiPut(params: {
     companyId: params.companyId,
     language: params.language,
     additionalHeaders: _staticConfig?.additionalHeaders,
+    credentials: params.credentials,
   });
 
   return translateResponse({
@@ -314,6 +324,7 @@ export async function JsonApiPatch(params: {
   language: string;
   token?: string;
   baseUrl?: string;
+  credentials?: RequestCredentials;
 }): Promise<ApiResponseInterface> {
   runBootstrapper();
   const token = params.token ?? (await getToken());
@@ -334,6 +345,7 @@ export async function JsonApiPatch(params: {
     companyId: params.companyId,
     language: params.language,
     additionalHeaders: _staticConfig?.additionalHeaders,
+    credentials: params.credentials,
   });
 
   return translateResponse({
@@ -352,6 +364,7 @@ export async function JsonApiDelete(params: {
   responseType?: ApiRequestDataTypeInterface;
   token?: string;
   baseUrl?: string;
+  credentials?: RequestCredentials;
 }): Promise<ApiResponseInterface> {
   runBootstrapper();
   const token = params.token ?? (await getToken());
@@ -363,6 +376,7 @@ export async function JsonApiDelete(params: {
     companyId: params.companyId,
     language: params.language,
     additionalHeaders: _staticConfig?.additionalHeaders,
+    credentials: params.credentials,
   });
 
   return translateResponse({

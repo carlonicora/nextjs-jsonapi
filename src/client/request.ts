@@ -14,6 +14,11 @@ export interface DirectFetchParams {
   companyId?: string;
   language: string;
   additionalHeaders?: Record<string, string>;
+  /**
+   * Optional `fetch` credentials mode (e.g. "include" so the browser stores a cookie the API sets).
+   * Omitted => no `credentials` option is passed, unchanged behaviour.
+   */
+  credentials?: RequestCredentials;
 }
 
 /**
@@ -106,6 +111,10 @@ async function fetchFromApi(params: DirectFetchParams): Promise<ApiData> {
 
   if (requestBody !== undefined) {
     options.body = requestBody;
+  }
+
+  if (params.credentials) {
+    options.credentials = params.credentials;
   }
 
   if (params.token) {
