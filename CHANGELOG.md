@@ -1,3 +1,9 @@
+## [6.27.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.26.0...v6.27.0) (2026-11-07)
+
+### 🚀 Features
+
+* **containers:** RoundPageContainer opens the Details panel by default when the page card is wide enough to show it beside the content column at full width; the measurement uses the card's real width, so it counts the left sidebar whether open, collapsed to icons or absent, and adds the section list on rail pages; a stored open or closed choice still wins, and the default is decided once on load ([39361d9](https://github.com/carlonicora/nextjs-jsonapi/commit/39361d90790f882d6785b5cabbcefec117dc151b))
+
 ## [6.26.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.25.0...v6.26.0) (2026-11-07)
 
 ### 🚀 Features
