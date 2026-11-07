@@ -1,3 +1,9 @@
+## [6.23.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.22.0...v6.23.0) (2026-11-07)
+
+### 🚀 Features
+
+* **discord-connection:** models and services for discord-connections, discord-connect-intents and discord-connect-confirmations, registered under the DiscordConnection, DiscordConnectIntent and DiscordConnectConfirmation keys; callApi takes an optional credentials value that reaches fetch, so a request can store a cookie the API sets; isDiscordAuthEnabled is now exported from the package root ([332dec5](https://github.com/carlonicora/nextjs-jsonapi/commit/332dec5b02a02cf85eb0ce6e9244c2645a1726eb))
+
 ## [6.22.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.21.0...v6.22.0) (2026-11-06)
 
 ### 🚀 Features
