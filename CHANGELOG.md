@@ -1,3 +1,9 @@
+## [6.26.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.25.0...v6.26.0) (2026-11-07)
+
+### 🚀 Features
+
+* **toast:** showToast and showError take an optional cancel button, sonner's second button shown beside the action, so a toast can offer two choices such as "Add note" and "Undo"; existing calls are unchanged ([ba27c90](https://github.com/carlonicora/nextjs-jsonapi/commit/ba27c90a0a2bd4a11cb9417bc8d7c55bf2607b32))
+
 ## [6.25.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.24.0...v6.25.0) (2026-11-07)
 
 ### 🚀 Features
