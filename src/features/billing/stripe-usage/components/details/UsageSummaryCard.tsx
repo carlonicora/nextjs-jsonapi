@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Activity } from "lucide-react";
 import { Card, CardContent, CardHeader } from "../../../../../shadcnui";
-import { dateFormatLocale } from "../../../../../utils";
+import { formatDateStyle } from "../../../../../utils";
 import { type BillingFormatOptions, formatFixed, useBillingFormatOptions } from "../../../components/utils";
 import { MeterInterface, MeterSummaryInterface } from "../../data/stripe-usage.interface";
 
@@ -23,19 +23,11 @@ function getProgressColor(percentage: number | null): string {
 }
 
 /**
- * Format a Unix timestamp to readable date
+ * Format a period boundary in the resolved date locale
  */
-function formatDate(date: Date | undefined, { locale, t }: Required<BillingFormatOptions>): string {
+function formatDate(date: Date | undefined, { dateLocale, t }: Required<BillingFormatOptions>): string {
   if (!date) return t("billing.ui.not_available");
-
-  try {
-    return new Intl.DateTimeFormat(dateFormatLocale(locale), {
-      month: "short",
-      day: "numeric",
-    }).format(new Date(date));
-  } catch (_error) {
-    return t("billing.ui.invalid_date");
-  }
+  return formatDateStyle({ date, style: "dateMedium", locale: dateLocale }) || t("billing.ui.invalid_date");
 }
 
 export function UsageSummaryCard({ meter, summary }: UsageSummaryCardProps) {

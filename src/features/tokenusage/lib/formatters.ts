@@ -2,6 +2,7 @@
 
 import { useLocale } from "next-intl";
 import { useMemo } from "react";
+import { useDateFormatter } from "../../../contexts/DateLocaleContext";
 import type { Metric } from "../data/tokenusage-admin.types";
 import { getTokenUsageCurrency } from "./config";
 
@@ -38,8 +39,11 @@ export type UsageFormatters = {
  * `bucketDate` formats in UTC, always. The wire value is a `type: "date"` — a
  * calendar day — parsed to UTC midnight; reading it back with local getters
  * would shift the label a day early west of UTC.
+ *
+ * `dateLocale` formats the bucket dates only (the browser's regional order);
+ * numbers, currency and collation keep `locale`. It defaults to `locale`.
  */
-export function createUsageFormatters(locale: string, currency: string): UsageFormatters {
+export function createUsageFormatters(locale: string, currency: string, dateLocale: string = locale): UsageFormatters {
   const symbol =
     new Intl.NumberFormat(locale, { style: "currency", currency, currencyDisplay: "narrowSymbol" })
       .formatToParts(0)
@@ -48,8 +52,8 @@ export function createUsageFormatters(locale: string, currency: string): UsageFo
   const decimal = (value: number, decimals: number): string =>
     value.toLocaleString(locale, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
 
-  const dayFormat = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", timeZone: "UTC" });
-  const monthFormat = new Intl.DateTimeFormat(locale, { month: "short", year: "numeric", timeZone: "UTC" });
+  const dayFormat = new Intl.DateTimeFormat(dateLocale, { day: "numeric", month: "short", timeZone: "UTC" });
+  const monthFormat = new Intl.DateTimeFormat(dateLocale, { month: "short", year: "numeric", timeZone: "UTC" });
   // Axis ticks step by 1, 2, 2.5 or 5 times a power of ten, so a tick never needs
   // more than three significant digits. A fixed one-decimal cap rounded a 0.05
   // step into repeated labels (0.1, 0.1, 0.2, 0.2); significant digits keep every
@@ -94,11 +98,12 @@ export function createUsageFormatters(locale: string, currency: string): UsageFo
 
 /**
  * The formatter set for the current request's locale and the app's configured
- * currency. Memoised on both, so the Intl objects are built once per locale
- * rather than on every render.
+ * currency, with bucket dates in the resolved date locale. Memoised on all
+ * three, so the Intl objects are built once per locale rather than on every render.
  */
 export function useUsageFormatters(): UsageFormatters {
   const locale = useLocale();
+  const { locale: dateLocale } = useDateFormatter();
   const currency = getTokenUsageCurrency();
-  return useMemo(() => createUsageFormatters(locale, currency), [locale, currency]);
+  return useMemo(() => createUsageFormatters(locale, currency, dateLocale), [locale, currency, dateLocale]);
 }

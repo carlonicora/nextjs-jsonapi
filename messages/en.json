@@ -1102,6 +1102,7 @@
     },
     "hide_password": "Hide Password",
     "home": "Home",
+    "dayPeriod": "AM/PM",
     "hours": "Hours",
     "loading": "Loading...",
     "minutes": "Minutes",

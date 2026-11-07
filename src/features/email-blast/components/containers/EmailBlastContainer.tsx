@@ -6,10 +6,10 @@ import { ReactNode, useCallback, useEffect, useState } from "react";
 import { CommonDeleter, RoundPageContainer } from "../../../../components";
 import { errorToast } from "../../../../components/errors/errorToast";
 import { DetailField } from "../../../../components/typography";
+import { useDateFormatter } from "../../../../contexts/DateLocaleContext";
 import { SharedProvider } from "../../../../contexts/SharedContext";
 import { Modules } from "../../../../core";
 import { usePageUrlGenerator } from "../../../../hooks";
-import { useI18nLocale } from "../../../../i18n";
 import { BreadcrumbItemData } from "../../../../interfaces";
 import { Badge, Button } from "../../../../shadcnui";
 import { showToast } from "../../../../utils/toast";
@@ -54,7 +54,7 @@ function EmailBlastSendTestButton({ blast }: { blast: EmailBlastInterface }) {
 
 export function EmailBlastContainer({ blastId }: EmailBlastContainerProps) {
   const t = useTranslations();
-  const locale = useI18nLocale();
+  const dates = useDateFormatter();
   const generateUrl = usePageUrlGenerator();
   const [blast, setBlast] = useState<EmailBlastInterface | undefined>(undefined);
 
@@ -130,7 +130,7 @@ export function EmailBlastContainer({ blastId }: EmailBlastContainerProps) {
           </div>
           <DetailField
             label={t("emailBlasts.detail.sentAt")}
-            value={blast.sentAt ? blast.sentAt.toLocaleString(locale) : "—"}
+            value={blast.sentAt ? dates.format(blast.sentAt, "dateTimeMedium") : "—"}
           />
           <DetailField label={t("emailBlasts.list.columns.subject")} value={blast.subject} />
           <DetailField label={t("emailBlasts.detail.replyTo")} value={blast.replyTo ?? "—"} />

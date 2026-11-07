@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { errorToast } from "../../../components/errors/errorToast";
 import { ModuleRegistry } from "../../../core/registry/ModuleRegistry";
-import { useI18nLocale } from "../../../i18n";
+import { useDateFormatter } from "../../../contexts/DateLocaleContext";
 import { getRoleId } from "../../../roles";
 import {
   AlertDialog,
@@ -47,7 +47,7 @@ function matchesConfirmation(status: AccountDeletionInterface, email: string, va
 
 function AccountDeletionAdminTriggerInternal({ user }: AccountDeletionAdminTriggerProps) {
   const t = useTranslations();
-  const locale = useI18nLocale();
+  const dates = useDateFormatter();
   const [status, setStatus] = useState<AccountDeletionInterface | undefined>();
   const [open, setOpen] = useState<boolean>(false);
   const [confirmation, setConfirmation] = useState<string>("");
@@ -69,8 +69,7 @@ function AccountDeletionAdminTriggerInternal({ user }: AccountDeletionAdminTrigg
 
   if (!status) return null;
 
-  const formatDate = (date: Date) =>
-    date.toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric" });
+  const formatDate = (date: Date) => dates.format(date, "dateLong");
 
   if (status.scheduledAt) {
     return (

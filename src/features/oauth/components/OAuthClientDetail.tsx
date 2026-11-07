@@ -23,8 +23,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../../../shadcnui";
-import { useI18nLocale } from "../../../i18n";
-import { dateFormatLocale } from "../../../utils";
+import { useDateFormatter } from "../../../contexts/DateLocaleContext";
 import { useOAuthScopeText } from "../hooks/useOAuthScopeText";
 import { OAuthClientInterface } from "../interfaces/oauth.interface";
 
@@ -52,7 +51,7 @@ export function OAuthClientDetail({
   onRegenerateSecret,
 }: OAuthClientDetailProps) {
   const t = useTranslations();
-  const locale = useI18nLocale();
+  const { format } = useDateFormatter();
   const scopeText = useOAuthScopeText();
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -92,9 +91,7 @@ export function OAuthClientDetail({
     }
   }, [onRegenerateSecret]);
 
-  const createdDate = client.createdAt
-    ? new Date(client.createdAt).toLocaleDateString(dateFormatLocale(locale), { dateStyle: "long" })
-    : t("oauth.ui.card.unknown");
+  const createdDate = client.createdAt ? format(new Date(client.createdAt), "dateLong") : t("oauth.ui.card.unknown");
 
   return (
     <>

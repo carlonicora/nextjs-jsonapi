@@ -2,8 +2,9 @@
 
 import { ReactNode } from "react";
 import Link from "next/link";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { usePageUrlGenerator } from "../../../client";
+import { useDateFormatter } from "../../../contexts/DateLocaleContext";
 
 type Sibling = { howToType: string; slug: string; title: string };
 
@@ -17,7 +18,7 @@ export function HelpArticleBody(props: {
   children: ReactNode;
 }) {
   const t = useTranslations();
-  const format = useFormatter();
+  const dates = useDateFormatter();
   const generateUrl = usePageUrlGenerator();
   const { howToType, title, summary, updatedAt, prev, next, children } = props;
 
@@ -36,7 +37,7 @@ export function HelpArticleBody(props: {
         <div className="text-muted-foreground text-xs">
           <span>
             {t("help.article.lastUpdated", {
-              date: format.dateTime(new Date(updatedAt), { dateStyle: "short" }),
+              date: dates.format(updatedAt, "date"),
             })}
           </span>
         </div>

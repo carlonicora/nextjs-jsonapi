@@ -10,6 +10,7 @@ export * from "../features/assistant/contexts/AssistantContext";
 export * from "./ActionBarContext";
 export * from "./BreadcrumbRootContext";
 export * from "./CommonContext";
+export * from "./DateLocaleContext";
 export * from "./DirectionContext";
 export * from "./HeaderChildrenContext";
 export * from "./HeaderLeftContentContext";

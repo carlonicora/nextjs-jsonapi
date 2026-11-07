@@ -1,11 +1,16 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { ReactElement, useEffect, useState } from "react";
+import { ReactElement, Suspense, useEffect, useState } from "react";
 import { usePageUrlGenerator } from "../../../../hooks";
 import { Link } from "../../../../shadcnui";
-import { useI18nLocale } from "../../../../i18n";
-import { dateFormatLocale, formatDate } from "../../../../utils";
+import {
+  DateLocaleSource,
+  DateLocaleSourceProvider,
+  useDateFormatter,
+  useMountedNow,
+} from "../../../../contexts/DateLocaleContext";
+import { formatDate } from "../../../../utils";
 import { UserInterface } from "../../../user";
 import { UserAvatar } from "../../../user/components";
 import { NotificationInterface } from "../../data";
@@ -32,12 +37,22 @@ export const generateNotificationData = (params: {
   return response;
 };
 
+/**
+ * The toast's time. Sonner draws the toast outside the session providers, so the toast
+ * re-provides the captured date-locale source around this leaf, which suspends behind its
+ * own boundary.
+ */
+function NotificationToastTime({ date }: { date: Date }) {
+  const { format } = useDateFormatter();
+  return <>{format(new Date(date), "dateTime")}</>;
+}
+
 export function NotificationToast(
   notification: NotificationInterface,
   t: any,
   generateUrl: any,
   reouter: any,
-  locale?: string,
+  dateLocaleSource: DateLocaleSource | null = null,
 ): {
   title: string;
   description: string | ReactElement<any>;
@@ -69,7 +84,11 @@ export function NotificationToast(
             })}
           </p>
           <div className="text-muted-foreground mt-1 w-full text-xs">
-            {formatDate(new Date(notification.createdAt), "dateTime", dateFormatLocale(locale))}
+            <DateLocaleSourceProvider value={dateLocaleSource}>
+              <Suspense fallback={null}>
+                <NotificationToastTime date={notification.createdAt} />
+              </Suspense>
+            </DateLocaleSourceProvider>
           </div>
         </div>
       </div>
@@ -85,11 +104,21 @@ export function NotificationToast(
   };
 }
 
+/**
+ * The popover row's time ("3 hours ago", else the date and time). A leaf behind its own
+ * boundary: the popover lives in the shell, and this read suspends on the session. The
+ * relative text renders only after mount, so the clock is never read during render.
+ */
+function NotificationMenuItemTime({ date }: { date: Date }) {
+  const { locale } = useDateFormatter();
+  const now = useMountedNow();
+  return <>{now ? formatDate(new Date(date), "default", locale, now) : ""}</>;
+}
+
 export function NotificationMenuItem({ notification, closePopover }: TaskCommentedOnProps) {
   const generateUrl = usePageUrlGenerator();
   const [isRead, setIsRead] = useState<boolean>(false);
   const t = useTranslations();
-  const dateLocale = dateFormatLocale(useI18nLocale());
 
   useEffect(() => {
     setIsRead(notification.isRead);
@@ -115,7 +144,9 @@ export function NotificationMenuItem({ notification, closePopover }: TaskComment
           })}
         </p>
         <div className="text-muted-foreground mt-0.5 text-xs">
-          {formatDate(new Date(notification.createdAt), "default", dateLocale)}
+          <Suspense fallback={null}>
+            <NotificationMenuItemTime date={notification.createdAt} />
+          </Suspense>
         </div>
       </div>
       {!isRead && <span className="bg-primary mt-1.5 size-2 shrink-0 rounded-full" aria-hidden />}

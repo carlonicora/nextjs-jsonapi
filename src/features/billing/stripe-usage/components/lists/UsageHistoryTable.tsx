@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../shadcnui";
 import { SectionHeader } from "../../../../../components/typography";
-import { dateFormatLocale } from "../../../../../utils";
+import { formatDateStyle } from "../../../../../utils";
 import { type BillingFormatOptions, useBillingFormatOptions } from "../../../components/utils";
 import { StripeUsageInterface } from "../../data/stripe-usage.interface";
 
@@ -12,24 +12,11 @@ type UsageHistoryTableProps = {
 };
 
 /**
- * Format a date with time for usage history
+ * Format a date with time for usage history, in the resolved date locale
  */
-function formatDateTime(date: Date | string | undefined, { locale, t }: Required<BillingFormatOptions>): string {
+function formatDateTime(date: Date | string | undefined, { dateLocale, t }: Required<BillingFormatOptions>): string {
   if (!date) return t("billing.ui.not_available");
-
-  const dateObj = typeof date === "string" ? new Date(date) : date;
-
-  try {
-    return new Intl.DateTimeFormat(dateFormatLocale(locale), {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-    }).format(dateObj);
-  } catch (_error) {
-    return t("billing.ui.invalid_date");
-  }
+  return formatDateStyle({ date, style: "dateTimeMedium", locale: dateLocale }) || t("billing.ui.invalid_date");
 }
 
 export function UsageHistoryTable({ usageRecords }: UsageHistoryTableProps) {

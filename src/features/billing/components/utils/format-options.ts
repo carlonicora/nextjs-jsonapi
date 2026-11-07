@@ -6,14 +6,16 @@ export type BillingTranslator = (key: string, values?: Record<string, any>) => s
  * formatters are plain functions and cannot call hooks, so a component reads
  * `useI18nLocale()` and `useTranslations()` and passes both here.
  *
- * Both are optional so existing callers keep their output: without a `locale`
- * the number formatters use "en-US" and `formatDate` uses "en-GB" (via
- * `dateFormatLocale`), without `t` they return the English literals they always
- * returned.
+ * All are optional so existing callers keep their output: without a `locale`
+ * the number formatters use "en-US"; `formatDate` uses `dateLocale`, else
+ * `dateFormatLocale(locale)` (the app language, "en" without one); without `t`
+ * they return the English literals they always returned.
  */
 export type BillingFormatOptions = {
   /** BCP 47 locale for `Intl` (the app's active locale, from `useI18nLocale()`). */
   locale?: string;
+  /** BCP 47 locale for dates only (the resolved regional locale, from `useDateFormatter().locale`). Numbers keep `locale`. */
+  dateLocale?: string;
   /** Translator for the words the formatters emit. */
   t?: BillingTranslator;
 };

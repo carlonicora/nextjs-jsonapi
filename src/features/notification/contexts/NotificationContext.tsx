@@ -3,8 +3,9 @@
 import { useTranslations } from "next-intl";
 import React, { createContext, ReactElement, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { SharedProvider } from "../../../contexts";
+import { useDateLocaleSource } from "../../../contexts/DateLocaleContext";
 import { Modules } from "../../../core";
-import { useI18nLocale, useI18nRouter } from "../../../i18n";
+import { useI18nRouter } from "../../../i18n";
 import { BreadcrumbItemData } from "../../../interfaces";
 import { NotificationMenuItem, NotificationToast } from "../components/notifications/Notification";
 import { getRoleId, isRolesConfigured } from "../../../roles";
@@ -47,7 +48,9 @@ type NotificationContextProviderProps = {
 
 export const NotificationContextProvider = ({ children }: NotificationContextProviderProps) => {
   const t = useTranslations();
-  const locale = useI18nLocale();
+  // Non-suspending: the raw date-locale source, re-provided around the toast time (sonner
+  // renders the toast outside the session providers).
+  const dateLocaleSource = useDateLocaleSource();
   // A ref, not a dependency: the translator only words the fallback errors and must
   // not re-create loadNotifications, whose identity drives the initial-load effect.
   const tRef = useRef(t);
@@ -181,7 +184,7 @@ export const NotificationContextProvider = ({ children }: NotificationContextPro
       onClick: () => void;
     };
   } => {
-    return NotificationToast(notification, t, generateUrl, router, locale);
+    return NotificationToast(notification, t, generateUrl, router, dateLocaleSource);
   };
 
   const generateNotification = (notification: NotificationInterface, closePopover: () => void) => {

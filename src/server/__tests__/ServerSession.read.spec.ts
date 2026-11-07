@@ -4,13 +4,14 @@ const mocks = vi.hoisted(() => {
   const state = {
     cookies: {} as Record<string, string>,
     deviceType: undefined as string | undefined,
+    headers: {} as Record<string, string>,
   };
   return {
     state,
     cookies: vi.fn(async () => ({
       get: (name: string) => (name in state.cookies ? { name, value: state.cookies[name] } : undefined),
     })),
-    headers: vi.fn(async () => new Headers()),
+    headers: vi.fn(async () => new Headers(state.headers)),
     userAgent: vi.fn(() => ({ device: { type: state.deviceType } })),
   };
 });
@@ -27,6 +28,7 @@ describe("ServerSession.read", () => {
     configureRoles({ Administrator: "role-admin", CompanyAdministrator: "role-company-admin" });
     mocks.state.cookies = {};
     mocks.state.deviceType = undefined;
+    mocks.state.headers = {};
   });
 
   it("reads a logged-in administrator on a desktop with the sidebar closed", async () => {
@@ -63,5 +65,20 @@ describe("ServerSession.read", () => {
       sidebarOpen: true,
       isMobile: false,
     });
+  });
+
+  it("carries the Accept-Language header", async () => {
+    mocks.state.headers = { "accept-language": "en-GB,en;q=0.9" };
+
+    const snapshot = await ServerSession.read();
+
+    expect(snapshot.acceptLanguage).toBe("en-GB,en;q=0.9");
+  });
+
+  it("leaves acceptLanguage undefined when the header is absent", async () => {
+    const snapshot = await ServerSession.read();
+
+    expect(snapshot).toHaveProperty("acceptLanguage", undefined);
+    expect(snapshot.acceptLanguage).toBeUndefined();
   });
 });

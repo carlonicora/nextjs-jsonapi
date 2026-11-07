@@ -1,10 +1,10 @@
 "use client";
 
-import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
+import { useDateFormatter } from "../../contexts/DateLocaleContext";
 import { useI18nDateFnsLocale } from "../../i18n";
 import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from "../../shadcnui";
 import { cn } from "../../utils";
@@ -50,7 +50,9 @@ type DateRangeSelectorProps = {
 
 export function DateRangeSelector({ onDateChange, avoidSettingDates, showPreviousMonth }: DateRangeSelectorProps) {
   const t = useTranslations();
+  const { format } = useDateFormatter();
   const dateFnsLocale = useI18nDateFnsLocale();
+  const weekStartsOn = (dateFnsLocale?.options?.weekStartsOn ?? 1) as 0 | 1 | 2 | 3 | 4 | 5 | 6;
   const [date, setDate] = useState<DateRange | undefined>(
     avoidSettingDates
       ? undefined
@@ -100,11 +102,10 @@ export function DateRangeSelector({ onDateChange, avoidSettingDates, showPreviou
           {date?.from ? (
             date.to ? (
               <>
-                {format(date.from, "d MMM yyyy", { locale: dateFnsLocale })} -{" "}
-                {format(date.to, "d MMM yyyy", { locale: dateFnsLocale })}
+                {format(date.from, "dateMedium")} - {format(date.to, "dateMedium")}
               </>
             ) : (
-              format(date.from, "d MMM yyyy", { locale: dateFnsLocale })
+              format(date.from, "dateMedium")
             )
           ) : (
             <span>{t("ui.labels.pick_a_date")}</span>
@@ -130,11 +131,10 @@ export function DateRangeSelector({ onDateChange, avoidSettingDates, showPreviou
           {date?.from ? (
             date.to ? (
               <>
-                {format(date.from, "d MMM yyyy", { locale: dateFnsLocale })} -{" "}
-                {format(date.to, "d MMM yyyy", { locale: dateFnsLocale })}
+                {format(date.from, "dateMedium")} - {format(date.to, "dateMedium")}
               </>
             ) : (
-              format(date.from, "d MMM yyyy", { locale: dateFnsLocale })
+              format(date.from, "dateMedium")
             )
           ) : (
             <span>{t("ui.labels.pick_a_date")}</span>
@@ -151,6 +151,8 @@ export function DateRangeSelector({ onDateChange, avoidSettingDates, showPreviou
               selected={date}
               onSelect={handleSelect}
               numberOfMonths={2}
+              locale={dateFnsLocale}
+              weekStartsOn={weekStartsOn}
             />
             <Button
               variant="secondary"

@@ -19,3 +19,22 @@ describe("createUsageFormatters.compact", () => {
     expect(compact(1500000)).toBe("1.5M");
   });
 });
+
+describe("createUsageFormatters.bucketDate dateLocale", () => {
+  it("formats day buckets with the date locale", () => {
+    expect(createUsageFormatters("en", "EUR", "en-GB").bucketDate("2026-04-25", "day")).toBe("25 Apr");
+  });
+
+  it("defaults the date locale to the number locale", () => {
+    expect(createUsageFormatters("en", "EUR").bucketDate("2026-04-25", "day")).toBe("Apr 25");
+  });
+
+  it("keeps number output identical between the two", () => {
+    const withDateLocale = createUsageFormatters("en", "EUR", "en-GB");
+    const withoutDateLocale = createUsageFormatters("en", "EUR");
+    for (const value of [0, 0.05, 1250, 1500000]) {
+      expect(withDateLocale.compact(value)).toBe(withoutDateLocale.compact(value));
+      expect(withDateLocale.decimal(value, 2)).toBe(withoutDateLocale.decimal(value, 2));
+    }
+  });
+});

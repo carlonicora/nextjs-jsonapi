@@ -12,6 +12,8 @@ export interface SessionSnapshot {
   token?: string;
   sidebarOpen: boolean;
   isMobile: boolean;
+  /** The request's raw `Accept-Language` header; the date locale is resolved from it on the client. */
+  acceptLanguage?: string;
 }
 
 export class ServerSession {
@@ -29,6 +31,7 @@ export class ServerSession {
       token,
       sidebarOpen: cookieStore.get("sidebar_state")?.value !== "false",
       isMobile: viewportCookie ? viewportCookie === "1" : userAgent({ headers: headerStore }).device.type === "mobile",
+      acceptLanguage: headerStore.get("accept-language") ?? undefined,
     };
   }
 

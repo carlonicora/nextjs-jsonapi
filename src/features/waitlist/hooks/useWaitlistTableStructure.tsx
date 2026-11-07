@@ -5,7 +5,7 @@ import { Send } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { TableContent, UseTableStructureHook } from "../../../hooks";
-import { useI18nLocale } from "../../../i18n";
+import { useDateFormatter } from "../../../contexts/DateLocaleContext";
 import { Badge, Button } from "../../../shadcnui";
 import { WaitlistFields } from "../data/waitlist.fields";
 import { WaitlistInterface, WaitlistStatus } from "../data/WaitlistInterface";
@@ -19,7 +19,7 @@ import { formatSignupSource } from "./formatSignupSource";
  */
 export const useWaitlistTableStructure: UseTableStructureHook<WaitlistInterface, WaitlistFields> = (params) => {
   const t = useTranslations();
-  const locale = useI18nLocale();
+  const dates = useDateFormatter();
   const onInvite: ((entry: WaitlistInterface) => void) | undefined = params.context?.onInvite;
 
   const tableData = useMemo(() => {
@@ -71,7 +71,7 @@ export const useWaitlistTableStructure: UseTableStructureHook<WaitlistInterface,
       cell: ({ row }: { row: TableContent<WaitlistInterface> }) => {
         const entry: WaitlistInterface = row.original.jsonApiData;
         if (!entry.createdAt) return "-";
-        return new Date(entry.createdAt).toLocaleDateString(locale);
+        return dates.format(entry.createdAt, "date");
       },
       enableSorting: false,
       enableHiding: false,
@@ -146,7 +146,7 @@ export const useWaitlistTableStructure: UseTableStructureHook<WaitlistInterface,
         if (entry.status === "invited" && entry.invitedAt) {
           return (
             <span className="text-muted-foreground text-xs">
-              {t("waitlist.admin.actions.invited_on", { date: new Date(entry.invitedAt).toLocaleDateString(locale) })}
+              {t("waitlist.admin.actions.invited_on", { date: dates.format(entry.invitedAt, "dateMedium") })}
             </span>
           );
         }
@@ -168,7 +168,7 @@ export const useWaitlistTableStructure: UseTableStructureHook<WaitlistInterface,
     return params.fields.map((field) => fieldColumnMap[field]?.()).filter((col) => col !== undefined) as ColumnDef<
       TableContent<WaitlistInterface>
     >[];
-  }, [params.fields, fieldColumnMap, t, locale]);
+  }, [params.fields, fieldColumnMap, t, dates]);
 
   return useMemo(() => ({ data: tableData, columns: columns }), [tableData, columns]);
 };

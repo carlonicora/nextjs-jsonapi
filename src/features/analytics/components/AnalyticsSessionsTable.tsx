@@ -1,7 +1,7 @@
 "use client";
 
-import { useLocale, useTranslations } from "next-intl";
-import { useMemo } from "react";
+import { useTranslations } from "next-intl";
+import { useDateFormatter } from "../../../contexts/DateLocaleContext";
 import { usePageUrlGenerator } from "../../../hooks";
 import { Badge, Button, Link, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../shadcnui";
 import { useUsageFormatters } from "../../tokenusage/lib/formatters";
@@ -28,11 +28,9 @@ const VISITOR_SUFFIX_LENGTH = 6;
  */
 export function AnalyticsSessionsTable({ rows, sessionPageUrl, onLoadMore, hasMore }: Props) {
   const t = useTranslations();
-  const locale = useLocale();
+  const dates = useDateFormatter();
   const generateUrl = usePageUrlGenerator();
   const { decimal } = useUsageFormatters();
-
-  const dateTime = useMemo(() => new Intl.DateTimeFormat(locale, { dateStyle: "short", timeStyle: "short" }), [locale]);
 
   if (rows.length === 0) {
     return <p className="text-muted-foreground text-sm">{t("analytics.admin.no_data")}</p>;
@@ -66,7 +64,7 @@ export function AnalyticsSessionsTable({ rows, sessionPageUrl, onLoadMore, hasMo
                       href={generateUrl({ page: sessionPageUrl, id: row.id })}
                       data-testid={`analytics-session-link-${row.id}`}
                     >
-                      {dateTime.format(row.startedAt)}
+                      {dates.format(row.startedAt, "dateTime")}
                     </Link>
                   </TableCell>
                   <TableCell className="text-xs">

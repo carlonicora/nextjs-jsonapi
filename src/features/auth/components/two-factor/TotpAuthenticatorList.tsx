@@ -4,7 +4,7 @@ import { Smartphone, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { errorToast } from "../../../../components/errors/errorToast";
-import { useI18nLocale } from "../../../../i18n";
+import { useDateFormatter } from "../../../../contexts/DateLocaleContext";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,7 +30,7 @@ interface TotpAuthenticatorListProps {
 
 export function TotpAuthenticatorList({ authenticators, onDelete }: TotpAuthenticatorListProps) {
   const t = useTranslations();
-  const locale = useI18nLocale();
+  const dates = useDateFormatter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleDelete = async (id: string) => {
@@ -64,7 +64,7 @@ export function TotpAuthenticatorList({ authenticators, onDelete }: TotpAuthenti
                 <p className="font-medium">{auth.name}</p>
                 {auth.lastUsedAt && (
                   <p className="text-xs text-muted-foreground">
-                    {t("auth.two_factor.last_used")}: {auth.lastUsedAt.toLocaleDateString(locale)}
+                    {t("auth.two_factor.last_used")}: {dates.format(auth.lastUsedAt, "dateMedium")}
                   </p>
                 )}
               </div>

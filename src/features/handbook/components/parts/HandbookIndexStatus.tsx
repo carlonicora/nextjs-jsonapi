@@ -1,7 +1,8 @@
 "use client";
 
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
+import { useDateFormatter } from "../../../../contexts/DateLocaleContext";
 
 import { HandbookPageInterface } from "../../data/HandbookPageInterface";
 
@@ -27,7 +28,7 @@ const FAILURE_STATUSES = new Set(["failed", "error"]);
  */
 export function HandbookIndexStatus({ pages }: HandbookIndexStatusProps) {
   const t = useTranslations();
-  const format = useFormatter();
+  const dates = useDateFormatter();
 
   const lastSynced = useMemo(() => {
     let latest: Date | undefined = undefined;
@@ -50,7 +51,7 @@ export function HandbookIndexStatus({ pages }: HandbookIndexStatusProps) {
     <span className="text-muted-foreground text-xs tabular-nums">
       {t("handbook.contents.status", {
         count: pages.length,
-        date: lastSynced ? format.dateTime(lastSynced, { dateStyle: "medium" }) : "",
+        date: lastSynced ? dates.format(lastSynced, "dateMedium") : "",
       })}
       {failures > 0 ? (
         <span className="text-destructive ms-2 tabular-nums">

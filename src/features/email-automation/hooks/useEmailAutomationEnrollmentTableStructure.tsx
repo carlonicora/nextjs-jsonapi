@@ -1,11 +1,12 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { Badge } from "../../../shadcnui";
 import { registerTableGenerator, TableContent, UseTableStructureHook } from "../../../hooks";
-import { dateFormatLocale, formatDate } from "../../../utils/date-formatter";
+import { useDateFormatter, useMountedNow } from "../../../contexts/DateLocaleContext";
+import { formatDate } from "../../../utils/date-formatter";
 import { EmailAutomationEnrollmentFields } from "../data/email-automation-enrollment.fields";
 import { EmailAutomationEnrollmentInterface } from "../data/EmailAutomationEnrollmentInterface";
 
@@ -22,7 +23,8 @@ export const useEmailAutomationEnrollmentTableStructure: UseTableStructureHook<
   EmailAutomationEnrollmentFields
 > = (params) => {
   const t = useTranslations();
-  const locale = dateFormatLocale(useLocale());
+  const { locale } = useDateFormatter();
+  const now = useMountedNow();
 
   const tableData = useMemo(() => {
     return params.data.map((enrollment: EmailAutomationEnrollmentInterface) => {
@@ -95,7 +97,11 @@ export const useEmailAutomationEnrollmentTableStructure: UseTableStructureHook<
       cell: ({ row }: { row: TableContent<EmailAutomationEnrollmentInterface> }) => {
         const enrollment: EmailAutomationEnrollmentInterface = row.original.jsonApiData;
         if (!enrollment.nextSendAt) return empty;
-        return <span className="text-xs tabular-nums">{formatDate(enrollment.nextSendAt, "dateTime", locale)}</span>;
+        return (
+          <span className="text-xs tabular-nums">
+            {now ? formatDate(enrollment.nextSendAt, "dateTime", locale, now) : ""}
+          </span>
+        );
       },
       enableSorting: false,
       enableHiding: false,
@@ -118,7 +124,7 @@ export const useEmailAutomationEnrollmentTableStructure: UseTableStructureHook<
     return params.fields.map((field) => fieldColumnMap[field]?.()).filter((col) => col !== undefined) as ColumnDef<
       TableContent<EmailAutomationEnrollmentInterface>
     >[];
-  }, [params.fields, fieldColumnMap, t, locale]);
+  }, [params.fields, fieldColumnMap, t, locale, now]);
 
   return useMemo(() => ({ data: tableData, columns: columns }), [tableData, columns]);
 };

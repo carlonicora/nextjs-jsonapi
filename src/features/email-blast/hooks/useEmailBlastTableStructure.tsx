@@ -6,7 +6,7 @@ import { useMemo } from "react";
 import { Badge, Link } from "../../../shadcnui";
 import { Modules } from "../../../core";
 import { registerTableGenerator, TableContent, usePageUrlGenerator, UseTableStructureHook } from "../../../hooks";
-import { useI18nLocale } from "../../../i18n";
+import { useDateFormatter } from "../../../contexts/DateLocaleContext";
 import { EmailBlastFields } from "../data/email-blast.fields";
 import { EmailBlastInterface, EmailBlastStatus } from "../data/EmailBlastInterface";
 
@@ -18,7 +18,7 @@ const STATUS_VARIANTS: Record<EmailBlastStatus, "softGray" | "softAmber" | "soft
 
 export const useEmailBlastTableStructure: UseTableStructureHook<EmailBlastInterface, EmailBlastFields> = (params) => {
   const t = useTranslations();
-  const locale = useI18nLocale();
+  const dates = useDateFormatter();
   const generateUrl = usePageUrlGenerator();
 
   const tableData = useMemo(() => {
@@ -90,7 +90,7 @@ export const useEmailBlastTableStructure: UseTableStructureHook<EmailBlastInterf
       cell: ({ row }: { row: TableContent<EmailBlastInterface> }) => {
         const blast: EmailBlastInterface = row.original.jsonApiData;
         if (!blast.sentAt) return <span className="text-muted-foreground text-xs">—</span>;
-        return <span className="text-sm">{blast.sentAt.toLocaleDateString(locale)}</span>;
+        return <span className="text-sm">{dates.format(blast.sentAt, "date")}</span>;
       },
       enableSorting: false,
       enableHiding: false,
@@ -111,7 +111,7 @@ export const useEmailBlastTableStructure: UseTableStructureHook<EmailBlastInterf
     return params.fields.map((field) => fieldColumnMap[field]?.()).filter((col) => col !== undefined) as ColumnDef<
       TableContent<EmailBlastInterface>
     >[];
-  }, [params.fields, fieldColumnMap, t, generateUrl, locale]);
+  }, [params.fields, fieldColumnMap, t, generateUrl, dates]);
 
   return useMemo(() => ({ data: tableData, columns: columns }), [tableData, columns]);
 };

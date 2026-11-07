@@ -4,7 +4,17 @@ export { composeRefs, useComposedRefs } from "./compose-refs";
 export { useIsMobile, MOBILE_BREAKPOINT, VIEWPORT_COOKIE_NAME } from "./use-mobile";
 
 // New utilities
-export { dateFormatLocale, formatDate, formatLocalDate, type FormatOption } from "./date-formatter";
+export {
+  dateFormatLocale,
+  formatDate,
+  formatDateStyle,
+  formatLocalDate,
+  formatRelativeDate,
+  resolveDateLocale,
+  usesTwelveHourClock,
+  type DateFormatStyle,
+  type FormatOption,
+} from "./date-formatter";
 export { exists } from "./exists";
 export { getTableComponents, getTableOptions, TableOptions } from "./table-options";
 

@@ -4,6 +4,7 @@ import { LoaderCircleIcon, RotateCcwIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useMemo, useState } from "react";
 import { errorToast } from "../../../../components";
+import { useDateFormatter } from "../../../../contexts/DateLocaleContext";
 import { useI18nLocale } from "../../../../i18n";
 import { Badge, Button } from "../../../../shadcnui";
 import { BlogCategoryInterface } from "../../data";
@@ -47,8 +48,8 @@ export function useBlogLanguageName(): (language: string) => string {
 
 /** Formats a date for the admin pages in the viewer's locale. */
 export function useBlogDateFormatter(): (date?: Date) => string {
-  const locale = useI18nLocale();
-  return useCallback((date?: Date) => (date ? date.toLocaleDateString(locale, { dateStyle: "medium" }) : ""), [locale]);
+  const dates = useDateFormatter();
+  return useCallback((date?: Date) => dates.format(date, "dateMedium"), [dates]);
 }
 
 type BlogTranslationStatusProps = {

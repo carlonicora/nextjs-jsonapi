@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { Modules } from "../../../core";
 import { registerTableGenerator, TableContent, usePageUrlGenerator, UseTableStructureHook } from "../../../hooks";
-import { useI18nLocale } from "../../../i18n";
+import { useDateFormatter } from "../../../contexts/DateLocaleContext";
 import { Badge, Link } from "../../../shadcnui";
 import { BLOG_STATUS_BADGE } from "../components/admin/BlogTranslationStatus";
 import { useBlogCategoryNames } from "./useBlogCategoryNames";
@@ -19,7 +19,7 @@ import { BlogPostFields, BlogPostInterface } from "../data";
  */
 export const useBlogPostTableStructure: UseTableStructureHook<BlogPostInterface, BlogPostFields> = (params) => {
   const t = useTranslations();
-  const locale = useI18nLocale();
+  const dates = useDateFormatter();
   const generateUrl = usePageUrlGenerator();
   const categoryName = useBlogCategoryNames();
 
@@ -85,11 +85,7 @@ export const useBlogPostTableStructure: UseTableStructureHook<BlogPostInterface,
       cell: ({ row }: { row: TableContent<BlogPostInterface> }) => {
         const post: BlogPostInterface = row.original.jsonApiData;
         if (!post.publishedAt) return <span className="text-muted-foreground text-xs">—</span>;
-        return (
-          <span className="text-xs tabular-nums">
-            {post.publishedAt.toLocaleDateString(locale, { dateStyle: "medium" })}
-          </span>
-        );
+        return <span className="text-xs tabular-nums">{dates.format(post.publishedAt, "dateMedium")}</span>;
       },
       enableSorting: false,
       enableHiding: false,
@@ -118,7 +114,7 @@ export const useBlogPostTableStructure: UseTableStructureHook<BlogPostInterface,
     return params.fields.map((field) => fieldColumnMap[field]?.()).filter((col) => col !== undefined) as ColumnDef<
       TableContent<BlogPostInterface>
     >[];
-  }, [params.fields, fieldColumnMap, t, generateUrl, locale, categoryName]);
+  }, [params.fields, fieldColumnMap, t, generateUrl, dates, categoryName]);
 
   return useMemo(() => ({ data: tableData, columns: columns }), [tableData, columns]);
 };

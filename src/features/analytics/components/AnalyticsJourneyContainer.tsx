@@ -1,9 +1,10 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { DetailField, RoundPageContainer } from "../../../components";
 import { SharedProvider } from "../../../contexts";
+import { useDateFormatter } from "../../../contexts/DateLocaleContext";
 import { Modules } from "../../../core";
 import { usePageUrlGenerator } from "../../../hooks";
 import { BreadcrumbItemData } from "../../../interfaces";
@@ -52,6 +53,7 @@ type Props = {
 export function AnalyticsJourneyContainer({ sessionId, pageUrl = ANALYTICS_ADMIN_PAGE_URL }: Props) {
   const t = useTranslations();
   const locale = useLocale();
+  const dates = useDateFormatter();
   const generateUrl = usePageUrlGenerator();
 
   const [session, setSession] = useState<AnalyticsSessionInterface | undefined>(undefined);
@@ -102,11 +104,6 @@ export function AnalyticsJourneyContainer({ sessionId, pageUrl = ANALYTICS_ADMIN
       cancelled = true;
     };
   }, [sessionId]);
-
-  const dateTime = useMemo(
-    () => new Intl.DateTimeFormat(locale, { dateStyle: "short", timeStyle: "medium" }),
-    [locale],
-  );
 
   /** Time since the previous page view, in the largest whole unit that fits. */
   const formatGap = (milliseconds: number): string => {
@@ -166,7 +163,10 @@ export function AnalyticsJourneyContainer({ sessionId, pageUrl = ANALYTICS_ADMIN
                 )}
               </div>
               <div className="grid gap-3 sm:grid-cols-3">
-                <DetailField label={t("analytics.admin.columns.started")} value={dateTime.format(session.startedAt)} />
+                <DetailField
+                  label={t("analytics.admin.columns.started")}
+                  value={dates.format(session.startedAt, "dateTimeSeconds")}
+                />
                 <DetailField label={t("analytics.admin.columns.source")} value={source} />
                 <DetailField label={t("analytics.admin.columns.landing")} value={session.landingRoute} />
                 <DetailField label={t("analytics.admin.columns.device")} value={session.deviceType} />
@@ -205,7 +205,7 @@ export function AnalyticsJourneyContainer({ sessionId, pageUrl = ANALYTICS_ADMIN
                         return (
                           <TableRow key={pageView.id} data-testid={`analytics-pageview-row-${pageView.id}`}>
                             <TableCell className="text-xs tabular-nums">
-                              {dateTime.format(pageView.createdAt)}
+                              {dates.format(pageView.createdAt, "dateTimeSeconds")}
                             </TableCell>
                             <TableCell className="text-end text-xs tabular-nums">
                               {previous ? formatGap(pageView.createdAt.getTime() - previous.createdAt.getTime()) : "—"}

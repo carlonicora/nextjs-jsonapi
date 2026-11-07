@@ -1,8 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { formatDistanceToNow } from "date-fns";
-import { useI18nDateFnsLocale } from "../../../i18n";
+import { useDateFormatter, useMountedNow } from "../../../contexts/DateLocaleContext";
 import { Key, MoreVertical, Pencil, Trash2 } from "lucide-react";
 import {
   Badge,
@@ -35,13 +34,17 @@ export interface OAuthClientCardProps {
  */
 export function OAuthClientCard({ client, onClick, onEdit, onDelete }: OAuthClientCardProps) {
   const t = useTranslations();
-  const dateFnsLocale = useI18nDateFnsLocale();
+  const { relative } = useDateFormatter();
+  const now = useMountedNow();
   // Truncate client ID for display
   const truncatedId =
     client.clientId.length > 12 ? `${client.clientId.slice(0, 8)}...${client.clientId.slice(-4)}` : client.clientId;
 
+  // The relative text renders only after mount: `now` is never read during render.
   const createdAgo = client.createdAt
-    ? formatDistanceToNow(new Date(client.createdAt), { addSuffix: true, locale: dateFnsLocale })
+    ? now
+      ? relative(new Date(client.createdAt), { now })
+      : undefined
     : t("oauth.ui.card.unknown");
 
   return (
@@ -100,7 +103,7 @@ export function OAuthClientCard({ client, onClick, onEdit, onDelete }: OAuthClie
       <CardContent>
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
           <span className="tabular-nums">{truncatedId}</span>
-          <span>{t("oauth.ui.card.created", { ago: createdAgo })}</span>
+          {createdAgo !== undefined && <span>{t("oauth.ui.card.created", { ago: createdAgo })}</span>}
           <span>{client.isConfidential ? t("oauth.ui.card.confidential") : t("oauth.ui.card.public")}</span>
         </div>
       </CardContent>

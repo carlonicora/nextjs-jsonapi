@@ -53,6 +53,11 @@
       "import": "./dist/contexts/index.mjs",
       "require": "./dist/contexts/index.js"
     },
+    "./date-locale": {
+      "types": "./dist/date-locale/index.d.ts",
+      "import": "./dist/date-locale/index.mjs",
+      "require": "./dist/date-locale/index.js"
+    },
     "./contexts/styles.css": "./dist/contexts/index.css",
     "./blocknote/server": {
       "types": "./dist/components/editors/server-entry.d.ts",

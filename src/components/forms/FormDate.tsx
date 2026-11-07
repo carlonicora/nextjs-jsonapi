@@ -3,7 +3,8 @@
 import { isValid, parse } from "date-fns";
 import { Calendar as CalendarIcon, CircleXIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useI18nDateFnsLocale, useI18nLocale, useI18nTranslations } from "../../i18n";
+import { useDateLocale } from "../../contexts/DateLocaleContext";
+import { useI18nDateFnsLocale, useI18nTranslations } from "../../i18n";
 import {
   Button,
   Calendar,
@@ -42,8 +43,9 @@ export function FormDate({
   futureYears?: number;
 }) {
   const t = useI18nTranslations();
-  const locale = useI18nLocale();
+  const { locale } = useDateLocale();
   const dateFnsLocale = useI18nDateFnsLocale();
+  const weekStartsOn = (dateFnsLocale?.options?.weekStartsOn ?? 1) as 0 | 1 | 2 | 3 | 4 | 5 | 6;
   const [open, setOpen] = useState<boolean>(false);
   const [displayMonth, setDisplayMonth] = useState<Date>(() => {
     const currentValue = form.getValues(id);
@@ -162,7 +164,7 @@ export function FormDate({
                 }}
                 disabled={(date) => (minDate && date < minDate ? true : false)}
                 locale={dateFnsLocale}
-                weekStartsOn={1}
+                weekStartsOn={weekStartsOn}
                 month={displayMonth}
                 onMonthChange={setDisplayMonth}
                 startMonth={new Date(1900, 0)}

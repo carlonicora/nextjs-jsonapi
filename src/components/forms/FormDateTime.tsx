@@ -2,7 +2,8 @@
 
 import { Calendar as CalendarIcon, CircleXIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useI18nDateFnsLocale, useI18nLocale, useI18nTranslations } from "../../i18n";
+import { useDateFormatter } from "../../contexts/DateLocaleContext";
+import { useI18nDateFnsLocale, useI18nTranslations } from "../../i18n";
 import {
   Button,
   Calendar,
@@ -18,6 +19,7 @@ import {
 } from "../../shadcnui";
 import { cn } from "../../utils";
 import { FormFieldWrapper } from "./FormFieldWrapper";
+import { DayPeriod, dayPeriodLabels, from24Hour, to24Hour } from "./time-cycle";
 
 // Unwrapped rounding: setMinutes(60) carries into the hour, so 10:58 becomes 11:00
 function snapToFiveMinutes(date: Date): Date {
@@ -57,30 +59,20 @@ export function FormDateTime({
 }) {
   const [open, setOpen] = useState<boolean>(false);
   const t = useI18nTranslations();
-  const locale = useI18nLocale();
+  const { format, locale, twelveHourClock } = useDateFormatter();
   const dateFnsLocale = useI18nDateFnsLocale();
+  const weekStartsOn = (dateFnsLocale?.options?.weekStartsOn ?? 1) as 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
   const [displayMonth, setDisplayMonth] = useState<Date>(() => {
     const currentValue = form.getValues(id);
     return currentValue || defaultMonth || reference?.date || new Date();
   });
 
-  // Locale-aware date-time formatter
-  const dateTimeFormatter = useMemo(
-    () =>
-      new Intl.DateTimeFormat(locale, {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      }),
-    [locale],
-  );
+  // Format date-time for display; the clock (12/24-hour) follows the resolved locale
+  const formatDateTime = (date: Date): string => format(date, "dateTimeLong");
 
-  // Format date-time for display
-  const formatDateTime = (date: Date): string => dateTimeFormatter.format(date);
+  // AM/PM labels from Intl, only needed on a 12-hour locale
+  const periodLabels = useMemo(() => dayPeriodLabels(locale), [locale]);
 
   // An empty field starts its time selects at the reference "now" when one is given
   // Snapped as an instant (not by wrapping minutes) so 10:58 starts at 11:00
@@ -100,13 +92,27 @@ export function FormDateTime({
     marked: "[&>button]:underline [&>button]:decoration-2 [&>button]:underline-offset-4",
   };
 
-  const hoursOptions = Array.from({ length: 24 }, (_, i) => {
-    const hour = i;
-    return {
-      value: hour,
-      label: hour.toString().padStart(2, "0"),
-    };
-  });
+  // 12-hour locales list 1–12 (plus an AM/PM select); 24-hour locales list 0–23
+  const hoursOptions = twelveHourClock
+    ? Array.from({ length: 12 }, (_, i) => {
+        const hour = i + 1;
+        return {
+          value: hour,
+          label: hour.toString(),
+        };
+      })
+    : Array.from({ length: 24 }, (_, i) => {
+        const hour = i;
+        return {
+          value: hour,
+          label: hour.toString().padStart(2, "0"),
+        };
+      });
+
+  const periodOptions: { value: DayPeriod; label: string }[] = [
+    { value: "am", label: periodLabels.am },
+    { value: "pm", label: periodLabels.pm },
+  ];
 
   const minutesOptions = Array.from({ length: 12 }, (_, i) => {
     const minute = i * 5;
@@ -118,6 +124,7 @@ export function FormDateTime({
 
   const hoursItems = Object.fromEntries(hoursOptions.map((option) => [String(option.value), option.label]));
   const minutesItems = Object.fromEntries(minutesOptions.map((option) => [String(option.value), option.label]));
+  const periodItems = Object.fromEntries(periodOptions.map((option) => [option.value, option.label]));
 
   function roundToNearestFiveMinutes(minutes: number): number {
     return (Math.round(minutes / 5) * 5) % 60;
@@ -132,6 +139,11 @@ export function FormDateTime({
     setSelectedHours(referenceDate.getHours());
     setSelectedMinutes(referenceDate.getMinutes());
   };
+
+  // The time the selects show: the field's own time, else the pending selection (0–23 / 0–55)
+  const currentHours = (value: Date | undefined): number => (value ? new Date(value).getHours() : selectedHours);
+  const currentMinutes = (value: Date | undefined): number =>
+    value ? roundToNearestFiveMinutes(new Date(value).getMinutes()) : selectedMinutes;
 
   const handleTimeChange = (hours: number, minutes: number) => {
     const currentDate = form.getValues(id);
@@ -205,7 +217,7 @@ export function FormDateTime({
                     }}
                     disabled={(date) => (minDate && date < minDate ? true : false)}
                     locale={dateFnsLocale}
-                    weekStartsOn={1}
+                    weekStartsOn={weekStartsOn}
                     startMonth={new Date(1900, 0)}
                     endMonth={new Date(new Date().getFullYear() + 10, 11)}
                     modifiers={dayModifiers}
@@ -228,20 +240,20 @@ export function FormDateTime({
                       <Label htmlFor="hours-select">{t(`common.hours`)}</Label>
                       <Select
                         items={hoursItems}
-                        value={String(field.value ? new Date(field.value).getHours() : selectedHours)}
+                        value={String(
+                          twelveHourClock ? from24Hour(currentHours(field.value)).hour12 : currentHours(field.value),
+                        )}
                         onValueChange={(value) => {
                           if (!value) return;
-                          const hours = parseInt(value);
+                          const picked = parseInt(value);
+                          const hours = twelveHourClock
+                            ? to24Hour(picked, from24Hour(currentHours(field.value)).period)
+                            : picked;
                           setSelectedHours(hours);
-                          handleTimeChange(
-                            hours,
-                            field.value
-                              ? roundToNearestFiveMinutes(new Date(field.value).getMinutes())
-                              : selectedMinutes,
-                          );
+                          handleTimeChange(hours, currentMinutes(field.value));
                         }}
                       >
-                        <SelectTrigger id="hours-select" className="w-[70px]">
+                        <SelectTrigger id="hours-select" data-testid="form-datetime-hours" className="w-[70px]">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -258,17 +270,15 @@ export function FormDateTime({
                       <Label htmlFor="minutes-select">{t(`common.minutes`)}</Label>
                       <Select
                         items={minutesItems}
-                        value={String(
-                          field.value ? roundToNearestFiveMinutes(new Date(field.value).getMinutes()) : selectedMinutes,
-                        )}
+                        value={String(currentMinutes(field.value))}
                         onValueChange={(value) => {
                           if (!value) return;
                           const minutes = parseInt(value);
                           setSelectedMinutes(minutes);
-                          handleTimeChange(field.value ? new Date(field.value).getHours() : selectedHours, minutes);
+                          handleTimeChange(currentHours(field.value), minutes);
                         }}
                       >
-                        <SelectTrigger id="minutes-select" className="w-[70px]">
+                        <SelectTrigger id="minutes-select" data-testid="form-datetime-minutes" className="w-[70px]">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -280,6 +290,32 @@ export function FormDateTime({
                         </SelectContent>
                       </Select>
                     </div>
+                    {twelveHourClock && (
+                      <div className="flex flex-col space-y-2">
+                        <Label htmlFor="period-select">{t(`common.dayPeriod`)}</Label>
+                        <Select
+                          items={periodItems}
+                          value={from24Hour(currentHours(field.value)).period}
+                          onValueChange={(value) => {
+                            if (!value) return;
+                            const hours = to24Hour(from24Hour(currentHours(field.value)).hour12, value as DayPeriod);
+                            setSelectedHours(hours);
+                            handleTimeChange(hours, currentMinutes(field.value));
+                          }}
+                        >
+                          <SelectTrigger id="period-select" data-testid="form-datetime-period" className="w-[70px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {periodOptions.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
                   </div>
                   <div className="mt-2 flex flex-row gap-x-2">
                     {allowEmpty !== false && (

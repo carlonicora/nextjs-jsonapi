@@ -9,7 +9,6 @@ import { BlogPostView } from "../BlogPostView";
 vi.mock("next-intl", () => ({
   useTranslations: () => (key: string, values?: Record<string, unknown>) =>
     values ? `${key} ${Object.values(values).join(" ")}` : key,
-  useFormatter: () => ({ dateTime: (date: Date) => date.toISOString().slice(0, 10) }),
 }));
 vi.mock("next/image", () => ({
   default: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} />,
@@ -102,8 +101,8 @@ describe("BlogPostView", () => {
 
   it("shows neither the publish date nor the updated date", () => {
     render(<BlogPostView post={main} categories={cats} related={[]} basePath="/blog" />);
-    expect(screen.queryByText(/2026-10-12/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/2026-10-15/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Oct 12, 2026|12 Oct 2026/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Oct 15, 2026|15 Oct 2026/)).not.toBeInTheDocument();
     expect(screen.queryByText(/blog\.public\.updated/)).not.toBeInTheDocument();
   });
 

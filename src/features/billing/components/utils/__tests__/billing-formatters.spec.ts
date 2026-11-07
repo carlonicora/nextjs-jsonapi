@@ -41,17 +41,25 @@ describe("formatCurrency", () => {
 describe("formatDate", () => {
   const date = new Date(2025, 0, 15, 12);
 
-  it("uses en-GB day-month order without options", () => {
-    expect(formatDate(date)).toBe("15 Jan 2025");
+  it("uses the app language without options (no forced en-GB)", () => {
+    expect(formatDate(date)).toBe("Jan 15, 2025");
     expect(formatDate(undefined)).toBe("N/A");
     expect(formatDate(new Date("not a date"))).toBe("Invalid Date");
   });
 
-  it("maps the English app locale to en-GB, never US order", () => {
+  it("formats with the app language when no dateLocale is given", () => {
     const feb6 = new Date(2026, 1, 6, 12);
-    expect(formatDate(feb6, { locale: "en", t })).toBe("6 Feb 2026");
-    expect(formatDate(feb6, { locale: "en-US", t })).toBe("6 Feb 2026");
-    expect(formatDate("2026-02-06T12:00:00Z", { locale: "en", t })).toBe("6 Feb 2026");
+    expect(formatDate(feb6, { locale: "en", t })).toBe("Feb 6, 2026");
+    expect(formatDate(feb6, { locale: "en-US", t })).toBe("Feb 6, 2026");
+    expect(formatDate("2026-02-06T12:00:00Z", { locale: "en", t })).toBe("Feb 6, 2026");
+  });
+
+  it("uses the resolved dateLocale over the app language", () => {
+    const apr25 = new Date("2026-04-25T12:00:00Z");
+    expect(formatDate(apr25, { locale: "en", dateLocale: "en-GB" })).toBe("25 Apr 2026");
+    expect(formatDate(apr25, { locale: "en" })).toBe("Apr 25, 2026");
+    expect(formatDate(apr25, { locale: "it" })).toBe("25 apr 2026");
+    expect(formatDate(undefined, { locale: "en", dateLocale: "en-GB" })).toBe("N/A");
   });
 
   it("formats Italian with the Italian locale", () => {

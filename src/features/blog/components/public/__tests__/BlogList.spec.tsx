@@ -9,7 +9,6 @@ import { BlogList } from "../BlogList";
 vi.mock("next-intl", () => ({
   useTranslations: () => (key: string, values?: Record<string, unknown>) =>
     values ? `${key} ${Object.values(values).join(" ")}` : key,
-  useFormatter: () => ({ dateTime: (date: Date) => date.toISOString().slice(0, 10) }),
 }));
 vi.mock("next/image", () => ({
   default: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} />,
@@ -101,7 +100,7 @@ describe("BlogList", () => {
     expect(screen.getByRole("heading", { level: 1, name: "blog.public.title" })).toBeInTheDocument();
     expect(screen.getByText("blog.public.eyebrow")).toBeInTheDocument();
     // The public blog shows no dates in any layout.
-    expect(screen.queryByText(/2026-10-12/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Oct 12, 2026|12 Oct 2026/)).not.toBeInTheDocument();
   });
 
   it("active category chip is marked and links back to all", () => {

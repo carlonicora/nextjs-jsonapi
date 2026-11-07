@@ -1,13 +1,9 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { useI18nLocale } from "../../../i18n";
+import { useDateFormatter } from "../../../contexts/DateLocaleContext";
 
 function DateTimeCell({ date }: { date: Date }) {
-  const locale = useI18nLocale();
-  return (
-    <span className="text-muted-foreground text-xs">
-      {date.toLocaleString(locale, { dateStyle: "medium", timeStyle: "short", hour12: false })}
-    </span>
-  );
+  const { format } = useDateFormatter();
+  return <span className="text-muted-foreground text-xs">{format(date, "dateTimeMedium")}</span>;
 }
 
 export const cellDateTime = (params: { name: string; title: string }): ColumnDef<any> => {

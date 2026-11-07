@@ -3,7 +3,8 @@
 import { isValid, parse } from "date-fns";
 import { Calendar as CalendarIcon, CircleXIcon } from "lucide-react";
 import { ReactElement, useMemo, useState } from "react";
-import { useI18nDateFnsLocale, useI18nLocale } from "../../i18n";
+import { useDateLocale } from "../../contexts/DateLocaleContext";
+import { useI18nDateFnsLocale } from "../../i18n";
 import {
   Calendar,
   Input,
@@ -48,8 +49,9 @@ export const DatePickerPopover = ({
   align = "start",
   className,
 }: DatePickerPopoverProps) => {
-  const locale = useI18nLocale();
+  const { locale } = useDateLocale();
   const dateFnsLocale = useI18nDateFnsLocale();
+  const weekStartsOn = (dateFnsLocale?.options?.weekStartsOn ?? 1) as 0 | 1 | 2 | 3 | 4 | 5 | 6;
   const [isOpen, setIsOpen] = useState(false);
   const [displayMonth, setDisplayMonth] = useState<Date>(() => value || new Date());
 
@@ -239,7 +241,7 @@ export const DatePickerPopover = ({
               onSelect={handleCalendarSelect}
               disabled={(date) => (minDate && date < minDate ? true : false)}
               locale={dateFnsLocale}
-              weekStartsOn={1}
+              weekStartsOn={weekStartsOn}
               month={displayMonth}
               onMonthChange={setDisplayMonth}
             />
