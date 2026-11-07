@@ -18,6 +18,7 @@ import {
   TabsTrigger,
 } from "@/components";
 import { partitionTabs, Tab } from "@/components/containers";
+import { detailsFitsByDefault } from "@/components/containers/detailsFitsByDefault";
 import { HEADER_ROW_MIN_H, RoundPageContainerTitle } from "@/components/containers/RoundPageContainerTitle";
 import { Header, MobileNavigationBar } from "@/components/navigations";
 import { MicroLabel } from "@/components/typography";
@@ -207,8 +208,13 @@ export function RoundPageContainer({
   // without one (the customer portal) keeps the padding on both sides.
   const hasSidebar = useOptionalSidebar() !== null;
   const [mounted, setMounted] = useState(false);
+  // The page card; its inner width decides the details panel's default.
+  const cardRef = useRef<HTMLDivElement>(null);
 
+  // Runs once, on the first render after `mounted`: before that the container
+  // renders its placeholder and the card (measured below) does not exist yet.
   useEffect(() => {
+    if (!mounted) return;
     const match = document.cookie.split("; ").find((row) => row.startsWith(`${detailsCookieName}=`));
     const stored = match?.split("=")[1];
     // Apply the stored preference in BOTH directions. Previously this only ever
@@ -217,7 +223,22 @@ export function RoundPageContainer({
     // who explicitly collapsed the panel must stay collapsed on the next load.
     if (stored === "true") setShowDetailsState(true);
     else if (stored === "false") setShowDetailsState(false);
-  }, []);
+    // No stored choice yet: open when the page card fits the panel beside the
+    // centred content column. The card is measured, so the left sidebar's real
+    // state (open, minimised, absent) counts. Decided once, on load — resizing
+    // does not move it.
+    else if (
+      !defaultDetailsOpen &&
+      cardRef.current &&
+      detailsFitsByDefault({
+        cardInnerPx: cardRef.current.clientWidth,
+        remPx: parseFloat(getComputedStyle(document.documentElement).fontSize) || 16,
+        hasRail: layout === "rail" && !!tabs,
+        hasCentredColumn: !fullWidth && (!activeFillHeight || activeConstrainWidth),
+      })
+    )
+      setShowDetailsState(true);
+  }, [mounted]);
 
   useEffect(() => {
     setMounted(true);
@@ -433,7 +454,7 @@ export function RoundPageContainer({
             sibling in this fixed-height flex column. `h-full` resolves to 100% of
             the wrapper, leaving the bar no room and pushing it below the fold —
             it then appears only after scrolling to the very end of the page. */}
-        <div className="bg-background flex min-h-0 w-full flex-1 rounded-lg border p-0">
+        <div ref={cardRef} className="bg-background flex min-h-0 w-full flex-1 rounded-lg border p-0">
           {/* pb-16 under mobileFlow: room for the floating Help button, which
               otherwise sits over the last lines of the page. */}
           <div className={cn("flex w-full flex-col", mobileFlow && "min-h-0 overflow-y-auto pb-16")}>
