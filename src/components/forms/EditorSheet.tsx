@@ -93,6 +93,11 @@ export type EditorSheetProps<T extends FieldValues> = {
    *  sheet stays open with the form unchanged. Use it for a last confirmation
    *  (e.g. "this information will be deleted") that must not close the sheet. */
   onBeforeSubmit?: (values: T) => Promise<boolean> | boolean;
+  /** Optional. Called when `onSubmit` throws. Return `true` when the caller
+   *  showed its own message for that error: the generic "could not save" toast
+   *  is then skipped. Either way the sheet stays open with the user's input.
+   *  Omitted, every error shows the generic toast (the default). */
+  onSubmitError?: (error: unknown) => boolean;
   onReset: () => T;
   isFormDirty?: () => boolean;
 
@@ -150,6 +155,7 @@ export function EditorSheet<T extends FieldValues>({
   form,
   onSubmit,
   onBeforeSubmit,
+  onSubmitError,
   onReset,
   isFormDirty: isFormDirtyProp,
   entityType,
@@ -250,6 +256,7 @@ export function EditorSheet<T extends FieldValues>({
           }
         }
       } catch (error) {
+        if (onSubmitError?.(error)) return;
         errorToast({
           title: isEdit ? t("generic.errors.update") : t("generic.errors.create"),
           error,
@@ -259,6 +266,7 @@ export function EditorSheet<T extends FieldValues>({
     [
       onSubmit,
       onBeforeSubmit,
+      onSubmitError,
       setOpen,
       onSuccess,
       onSaved,

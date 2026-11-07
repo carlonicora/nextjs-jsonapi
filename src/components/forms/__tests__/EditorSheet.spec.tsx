@@ -248,6 +248,36 @@ describe("EditorSheet", () => {
         error,
       });
     });
+
+    it("skips the generic error toast when onSubmitError handles the error", async () => {
+      const { errorToast: mockErrorToast } = await import("../../errors/errorToast");
+      vi.mocked(mockErrorToast).mockClear();
+      const error = new Error("402:TRIAL_START_FAILED");
+      const onSubmit = vi.fn().mockRejectedValue(error);
+      const onSubmitError = vi.fn().mockReturnValue(true);
+      render(<TestEditor dialogOpen={true} onSubmit={onSubmit} onSubmitError={onSubmitError} />);
+
+      await userEvent.type(screen.getByTestId("name-input"), "Test Name");
+      await userEvent.click(screen.getByTestId("modal-button-create"));
+
+      expect(onSubmitError).toHaveBeenCalledWith(error);
+      expect(mockErrorToast).not.toHaveBeenCalled();
+      expect(screen.getByTestId("name-input")).toHaveValue("Test Name");
+    });
+
+    it("still shows the generic error toast when onSubmitError does not handle the error", async () => {
+      const { errorToast: mockErrorToast } = await import("../../errors/errorToast");
+      vi.mocked(mockErrorToast).mockClear();
+      const error = new Error("Network error");
+      const onSubmit = vi.fn().mockRejectedValue(error);
+      const onSubmitError = vi.fn().mockReturnValue(false);
+      render(<TestEditor dialogOpen={true} onSubmit={onSubmit} onSubmitError={onSubmitError} />);
+
+      await userEvent.type(screen.getByTestId("name-input"), "Test Name");
+      await userEvent.click(screen.getByTestId("modal-button-create"));
+
+      expect(mockErrorToast).toHaveBeenCalledWith({ title: "generic.errors.create", error });
+    });
   });
 
   describe("onBeforeSubmit", () => {
