@@ -1,3 +1,9 @@
+## [6.24.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.23.0...v6.24.0) (2026-11-07)
+
+### 🚀 Features
+
+* **editor:** EditorSheet takes an optional onSubmitError; when it returns true for a failed save the generic "could not save" toast is skipped so the editor can show its own message, and the sheet stays open with the user's input either way ([e7e99d4](https://github.com/carlonicora/nextjs-jsonapi/commit/e7e99d4dcedbd9b45d2d2145714f7d350bcb2c78))
+
 ## [6.23.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.22.0...v6.23.0) (2026-11-07)
 
 ### 🚀 Features
