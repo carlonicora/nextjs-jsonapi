@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { useTranslations } from "next-intl";
+import { Loader2 } from "lucide-react";
 import { Button } from "../../shadcnui";
 
 type CommonEditorButtonsProps = {
@@ -22,6 +23,19 @@ export function CommonEditorButtons({
 }: CommonEditorButtonsProps) {
   const t = useTranslations();
 
+  const submitLabel: ReactNode = form.formState.isSubmitting ? (
+    <>
+      <Loader2 className="h-4 w-4 animate-spin" />
+      {t(`ui.buttons.saving`)}
+    </>
+  ) : buttonTitle ? (
+    buttonTitle
+  ) : isEdit ? (
+    t(`ui.buttons.confirm_update`)
+  ) : (
+    t(`ui.buttons.confirm_create`)
+  );
+
   if (centerButtons) {
     return (
       <div className="flex w-full items-center justify-between gap-x-2">
@@ -33,7 +47,7 @@ export function CommonEditorButtons({
 
         {!hideSubmit ? (
           <Button type="submit" disabled={form.formState.isSubmitting || disabled} data-testid={`modal-button-create`}>
-            {buttonTitle ? buttonTitle : isEdit ? t(`ui.buttons.confirm_update`) : t(`ui.buttons.confirm_create`)}
+            {submitLabel}
           </Button>
         ) : (
           <div />
@@ -56,7 +70,7 @@ export function CommonEditorButtons({
 
       {!hideSubmit && (
         <Button type="submit" disabled={form.formState.isSubmitting || disabled} data-testid={`modal-button-create`}>
-          {buttonTitle ? buttonTitle : isEdit ? t(`ui.buttons.confirm_update`) : t(`ui.buttons.confirm_create`)}
+          {submitLabel}
         </Button>
       )}
     </div>
