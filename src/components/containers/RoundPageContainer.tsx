@@ -119,6 +119,8 @@ type RoundPageContainerProps = {
    * navigation — an "info" icon actively misdescribes a conversation list.
    */
   detailsIcon?: ReactNode;
+  /** Paints the details panel on the recessed surface so cards inside it read as cards. Default "default" (unchanged). */
+  detailsSurface?: "default" | "muted";
   /**
    * Which element scrolls the page.
    * - `"document"` (default) — the shell's height only FLOORS at the viewport
@@ -187,6 +189,7 @@ export function RoundPageContainer({
   defaultDetailsOpen = false,
   detailsTitle,
   detailsIcon,
+  detailsSurface = "default",
   scroll = "fixed",
 }: RoundPageContainerProps) {
   const t = useTranslations();
@@ -702,7 +705,15 @@ export function RoundPageContainer({
                   <SheetHeader>
                     <SheetTitle>{detailsTitle ?? t("ui.labels.details")}</SheetTitle>
                   </SheetHeader>
-                  <div className="overflow-y-auto p-6 pt-0">{details}</div>
+                  <div
+                    data-slot="details-body"
+                    className={cn(
+                      "overflow-y-auto",
+                      detailsSurface === "muted" ? "bg-muted dark:bg-background p-3" : "p-6 pt-0",
+                    )}
+                  >
+                    {details}
+                  </div>
                 </SheetContent>
               </Sheet>
             ) : (
@@ -739,7 +750,15 @@ export function RoundPageContainer({
                     </div>
                   </div>
                 )}
-                <div className="min-h-0 flex-1 overflow-y-auto p-4">{details}</div>
+                <div
+                  data-slot="details-body"
+                  className={cn(
+                    "min-h-0 flex-1 overflow-y-auto",
+                    detailsSurface === "muted" ? "bg-muted dark:bg-background p-3" : "p-4",
+                  )}
+                >
+                  {details}
+                </div>
               </div>
             ))}
         </div>

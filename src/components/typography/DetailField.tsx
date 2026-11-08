@@ -6,6 +6,8 @@ type DetailFieldProps = React.ComponentProps<"div"> & {
   value?: React.ReactNode;
   horizontal?: boolean;
   labelWidth?: string;
+  /** Extra classes for the value element (e.g. "min-w-0 flex-1 break-words" so long values wrap in a horizontal row). */
+  valueClassName?: string;
 };
 
 function DetailField({
@@ -13,6 +15,7 @@ function DetailField({
   value,
   horizontal = false,
   labelWidth,
+  valueClassName,
   className,
   children,
   ...props
@@ -26,7 +29,7 @@ function DetailField({
       <span className={cn("text-muted-foreground text-xs", horizontal && labelWidth && cn("shrink-0", labelWidth))}>
         {label}
       </span>
-      <div className="text-sm">{value ?? children}</div>
+      <div className={cn("text-sm", valueClassName)}>{value ?? children}</div>
     </div>
   );
 }
