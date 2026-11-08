@@ -1,3 +1,9 @@
+## [6.30.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.29.1...v6.30.0) (2026-11-08)
+
+### 🚀 Features
+
+* **forms:** while an EditorSheet saves, its submit button shows a spinner and "Saving..." instead of Create or Update, so a slow save no longer looks like a click that did nothing; the button stays disabled as before; adds the ui.buttons.saving key in English and Italian ([454239b](https://github.com/carlonicora/nextjs-jsonapi/commit/454239bac20fae8162a71d36ec9d65c6734ea8a7))
+
 ## [6.29.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.29.0...v6.29.1) (2026-11-08)
 
 ### 🐛 Bug Fixes
