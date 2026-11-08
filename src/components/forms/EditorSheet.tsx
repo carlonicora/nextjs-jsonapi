@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { isValidElement, ReactElement, ReactNode, useCallback, useEffect, useRef } from "react";
+import { isValidElement, ReactElement, ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 import { PencilIcon } from "lucide-react";
 import { ActionBarProvider, useIsInActionBar } from "../../contexts/ActionBarContext";
@@ -200,7 +200,12 @@ export function EditorSheet<T extends FieldValues>({
   const hasBeenOpen = useRef(false);
   // Fingerprint of the values the form was last seeded with, used to detect that
   // the entity behind `onReset` has changed while the sheet was closed.
-  const seeded = useRef<string | undefined>(undefined);
+  // An edit form starts seeded with the entity as it was at mount (the values its
+  // `useForm` defaults came from), so the FIRST open also notices an entity that
+  // changed since — e.g. content autosaved on the page — instead of showing the
+  // mount-time values and saving them back over the newer ones.
+  const [mountFingerprint] = useState(() => (isEdit ? JSON.stringify(onReset()) : undefined));
+  const seeded = useRef<string | undefined>(mountFingerprint);
 
   useEffect(() => {
     if (open) {

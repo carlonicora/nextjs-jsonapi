@@ -344,6 +344,42 @@ describe("EditorSheet", () => {
     });
   });
 
+  describe("edit form seeding", () => {
+    function EntityEditor({ name }: { name: string }) {
+      const form = useForm<TestValues>({ resolver: zodResolver(schema), defaultValues: { name } });
+      return (
+        <EditorSheet
+          form={form}
+          onSubmit={vi.fn().mockResolvedValue({ id: "123" })}
+          onReset={() => ({ name })}
+          entityType="Test Entity"
+          isEdit={true}
+          module={testModule}
+        >
+          <input {...form.register("name")} data-testid="name-input" />
+        </EditorSheet>
+      );
+    }
+
+    it("opens the first time with the entity as it is now, not as it was at mount", async () => {
+      const r = render(<EntityEditor name="Old" />);
+      // The page saved a newer value (e.g. autosaved content) before the sheet ever opened.
+      r.rerender(<EntityEditor name="New" />);
+
+      await userEvent.click(document.querySelector('[data-help="editor.edit"]') as HTMLElement);
+
+      expect(screen.getByTestId("name-input")).toHaveValue("New");
+    });
+
+    it("keeps the mount values on the first open when the entity did not change", async () => {
+      render(<EntityEditor name="Same" />);
+
+      await userEvent.click(document.querySelector('[data-help="editor.edit"]') as HTMLElement);
+
+      expect(screen.getByTestId("name-input")).toHaveValue("Same");
+    });
+  });
+
   describe("Activity hide and reveal (back/forward)", () => {
     it("uncontrolled sheet is closed and the form reset after Activity reveal", async () => {
       const page = (mode: "visible" | "hidden") => (
