@@ -1,3 +1,9 @@
+## [6.29.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.29.0...v6.29.1) (2026-11-08)
+
+### 🐛 Bug Fixes
+
+* **forms:** an edit EditorSheet now loads the entity's current values the first time it opens, instead of the values from when the page loaded; content changed on the page since then (for example autosaved text) shows in the form and is no longer saved back over by Update ([23607c3](https://github.com/carlonicora/nextjs-jsonapi/commit/23607c372c0274d202343d8d5a162ebb26752492))
+
 ## [6.29.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.28.0...v6.29.0) (2026-11-08)
 
 ### 🚀 Features
