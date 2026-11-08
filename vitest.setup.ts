@@ -1,5 +1,8 @@
 import "@testing-library/jest-dom/vitest";
+import { cleanup } from "@testing-library/react";
 import { afterEach, vi } from "vitest";
+
+afterEach(cleanup);
 
 // Reset the help-feature globalThis store between tests so specs that depend
 // on a clean state (e.g. asserting HelpProvider throws when helpContent is

@@ -2,6 +2,7 @@ import * as coreLocales from "@blocknote/core/locales";
 import { describe, expect, it, vi } from "vitest";
 import * as Y from "yjs";
 import { buildBlockNoteEditorOptions, resolveEditable } from "../blockNoteEditorOptions";
+import { isDocumentEmpty } from "../index";
 
 const content = [{ type: "paragraph", content: "hello" }] as any;
 const baseParams = () => ({
@@ -77,5 +78,12 @@ describe("resolveEditable", () => {
   it("falls back to onChange !== undefined", () => {
     expect(resolveEditable({ editable: undefined, onChange: () => {} })).toBe(true);
     expect(resolveEditable({ editable: undefined, onChange: undefined })).toBe(false);
+  });
+});
+
+describe("editors barrel", () => {
+  it("isDocumentEmpty is exported from the editors barrel", () => {
+    expect(isDocumentEmpty([])).toBe(true);
+    expect(isDocumentEmpty([{ type: "paragraph", content: [{ type: "mention", props: {} }] }])).toBe(false);
   });
 });

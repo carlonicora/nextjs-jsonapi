@@ -4,3 +4,4 @@ export * from "./BlockNoteEditorMentionInlineContent";
 export * from "./BlockNoteEditorSuggestionMenuController";
 export type { BlockNoteAiConfig, BlockNoteAiHandle, BlockNoteEditorProps } from "./BlockNoteEditor";
 export type { BlockNoteAiGenerateAction } from "./BlockNoteEditorAiActions";
+export { isDocumentEmpty } from "./blockNoteEditorOptions";

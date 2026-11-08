@@ -90,8 +90,15 @@ export function BlockNoteEditorMentionHoverCard({
         // rtl-ok: viewport-anchored floating position
         left: rect.left,
         zIndex: 50,
+        ...(resolved.hoverFrameless
+          ? { maxHeight: Math.max(240, window.innerHeight - rect.bottom - 12), overflowY: "auto" as const }
+          : {}),
       }}
-      className="bg-popover text-popover-foreground rounded-lg border p-2.5 text-xs shadow-md animate-in fade-in-0 zoom-in-95 duration-100"
+      className={
+        resolved.hoverFrameless
+          ? "animate-in fade-in-0 zoom-in-95 duration-100"
+          : "bg-popover text-popover-foreground rounded-lg border p-2.5 text-xs shadow-md animate-in fade-in-0 zoom-in-95 duration-100"
+      }
     >
       <ContentComponent id={hovered.id} entityType={hovered.entityType} alias={hovered.alias} />
     </div>,

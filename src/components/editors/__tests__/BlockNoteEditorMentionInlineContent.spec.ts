@@ -1,6 +1,16 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+import React from "react";
+import { render } from "@testing-library/react";
 
-import { parseMentionElement } from "../BlockNoteEditorMentionInlineContent";
+import { createMentionInlineContentSpec, parseMentionElement } from "../BlockNoteEditorMentionInlineContent";
+
+vi.mock("@blocknote/react", () => ({
+  createReactInlineContentSpec: (_config: unknown, implementation: unknown) => ({ implementation }),
+}));
+
+vi.mock("next/link", () => ({
+  default: (props: Record<string, unknown>) => React.createElement("a", props),
+}));
 
 describe("parseMentionElement", () => {
   const makeSpan = (attrs: Record<string, string>): HTMLElement => {
@@ -93,5 +103,23 @@ describe("parseMentionElement", () => {
       entityType: "type-x",
       alias: "Alias One",
     });
+  });
+});
+
+describe("createMentionInlineContentSpec — disabled mentions", () => {
+  it("marks the link with data-mention-link so the app styles it as a mention, without data-mention-id", () => {
+    const spec = createMentionInlineContentSpec((id) => ({ name: "A", url: `/npcs/${id}` }), true) as unknown as {
+      implementation: { render: (p: { inlineContent: { props: Record<string, string> } }) => React.ReactElement };
+    };
+
+    const { container } = render(
+      spec.implementation.render({ inlineContent: { props: { id: "m1", entityType: "npcs", alias: "A" } } }),
+    );
+
+    const anchor = container.querySelector("a");
+    expect(anchor).not.toBeNull();
+    expect(anchor!.hasAttribute("data-mention-link")).toBe(true);
+    expect(anchor!.hasAttribute("data-mention-id")).toBe(false);
+    expect(anchor!.getAttribute("href")).toBe("/npcs/m1");
   });
 });

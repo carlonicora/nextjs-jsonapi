@@ -23,6 +23,8 @@ export interface MentionResolveResult {
   HoverContent?: React.ComponentType<MentionRenderProps>;
   /** Override the default Link's click behavior (e.g., open a modal/sidebar instead of navigating). */
   onActivate?: (e: React.MouseEvent, props: MentionRenderProps) => void;
+  /** The HoverContent draws its own surface: the portal adds no frame and caps its height to the viewport. */
+  hoverFrameless?: boolean;
 }
 
 export type MentionResolveFn = (id: string, entityType: string, alias: string) => MentionResolveResult | null;
@@ -66,7 +68,7 @@ export const createMentionInlineContentSpec = (
     if (disableMention) {
       const resolved = resolveFn?.(props.id, props.entityType, displayName);
       return (
-        <Link href={resolved?.url ?? "#"} className="text-primary">
+        <Link href={resolved?.url ?? "#"} className="text-primary" data-mention-link="">
           @{displayName}
         </Link>
       );
