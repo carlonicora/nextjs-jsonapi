@@ -1,3 +1,9 @@
+## [6.28.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.27.0...v6.28.0) (2026-11-08)
+
+### 🚀 Features
+
+* **containers:** RoundPageContainer takes an optional detailsSurface prop; "muted" paints the Details panel on the recessed surface (bg-muted, page ground in dark mode) with p-3 padding on desktop and in the mobile sheet, so cards inside it stand out; the default is unchanged; DetailField takes an optional valueClassName for the value element ([69cc158](https://github.com/carlonicora/nextjs-jsonapi/commit/69cc158f51e179efa9f7595da5f8f577cc8931b4))
+
 ## [6.27.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.26.0...v6.27.0) (2026-11-07)
 
 ### 🚀 Features
