@@ -1,3 +1,9 @@
+## [6.29.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.28.0...v6.29.0) (2026-11-08)
+
+### 🚀 Features
+
+* **editors:** a mention resolver can return hoverFrameless so the mention popup adds no background, border or padding of its own and caps its height to the screen, for hover content that draws its own surface; a mention shown with hover cards switched off now carries data-mention-link, so the app can style it like other mentions instead of the browser default; isDocumentEmpty is exported from the editors entry point; without the new flag the popup renders as before ([db74a80](https://github.com/carlonicora/nextjs-jsonapi/commit/db74a80d0f70cd73b47e341d0737ac2b78bb6138))
+
 ## [6.28.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.27.0...v6.28.0) (2026-11-08)
 
 ### 🚀 Features
