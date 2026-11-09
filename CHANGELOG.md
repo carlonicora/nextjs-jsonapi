@@ -1,3 +1,9 @@
+## [6.31.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.30.0...v6.31.0) (2026-11-09)
+
+### 🚀 Features
+
+* **auth:** the register form hides the Terms and marketing boxes on a valid invite and logs the user in right after sign-up instead of asking them to confirm their email; configureLogin takes requireCompanyName (default true), and false removes the company field from every sign-up; Login and Register share the after-login step through useCompleteLogin; PendingRegistration has hasInvite; AuthService.completeOAuthRegistration takes optional consent and now sends a JSON:API body through callApi, which needs the matching nestjs-neo4jsonapi release; the register form fields carry data-testid attributes and GdprConsentSection takes a testId ([fb02a44](https://github.com/carlonicora/nextjs-jsonapi/commit/fb02a44572baa7c7c27b5404dc6e6a56b776cae5))
+
 ## [6.30.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.29.1...v6.30.0) (2026-11-08)
 
 ### 🚀 Features
