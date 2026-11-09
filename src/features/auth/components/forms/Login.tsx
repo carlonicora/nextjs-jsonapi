@@ -3,13 +3,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { getPublicApiUrl } from "../../../../client/config";
 import { errorToast, FormInput, FormPassword } from "../../../../components";
-import { useI18nRouter, usePageUrlGenerator } from "../../../../hooks";
 import { isDiscordAuthEnabled, isGoogleAuthEnabled, isInternalAuthEnabled } from "../../../../login";
 import {
   Button,
@@ -21,23 +19,16 @@ import {
   Form,
   Link,
 } from "../../../../shadcnui";
-import { UserInterface } from "../../../user";
-import { useCurrentUserContext } from "../../../user/contexts";
 import { useAuthContext } from "../../contexts";
 import { AuthService } from "../../data/auth.service";
-import { TwoFactorChallengeInterface } from "../../data/two-factor-challenge.interface";
 import { AuthComponent } from "../../enums";
+import { useCompleteLogin } from "../../hooks/useCompleteLogin";
 import { GoogleSignInButton } from "../buttons/GoogleSignInButton";
 
 export function Login() {
   const t = useTranslations();
-  const { setUser } = useCurrentUserContext<UserInterface>();
-  const { setComponentType, setPendingTwoFactor } = useAuthContext();
-  const generateUrl = usePageUrlGenerator();
-  const i18nRouter = useI18nRouter();
-  const nativeRouter = useRouter(); // For URLs that already include locale
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl");
+  const { setComponentType } = useAuthContext();
+  const completeLogin = useCompleteLogin();
 
   // Read referral code from cookie on mount
   const [referralCode, setReferralCode] = useState<string | null>(null);
@@ -82,26 +73,7 @@ export function Login() {
         password: values.password,
       });
 
-      // Check if 2FA is required (response is TwoFactorChallengeInterface)
-      if ("pendingToken" in response) {
-        const challenge = response as TwoFactorChallengeInterface;
-        setPendingTwoFactor(challenge);
-        setComponentType(AuthComponent.TwoFactorChallenge);
-        return;
-      }
-
-      // Normal login flow
-      const user = response as UserInterface;
-      setUser(user);
-
-      // Redirect to callback URL if present, otherwise go to home
-      // Use native router for callbackUrl since it already includes the locale prefix
-      // Use i18n router for normal navigation which adds locale automatically
-      if (callbackUrl) {
-        nativeRouter.replace(callbackUrl);
-      } else {
-        i18nRouter.replace(generateUrl({ page: `/` }));
-      }
+      completeLogin(response);
     } catch (e) {
       console.error("[Login] Login error:", e);
       errorToast({

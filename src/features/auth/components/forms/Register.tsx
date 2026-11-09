@@ -11,7 +11,12 @@ import { v4 } from "uuid";
 import { z } from "zod";
 import { getPublicApiUrl } from "../../../../client/config";
 import { errorToast, FormInput, FormPassword } from "../../../../components";
-import { getRegistrationMode, isDiscordAuthEnabled, isGoogleAuthEnabled } from "../../../../login/config";
+import {
+  getRegistrationMode,
+  isCompanyNameRequired,
+  isDiscordAuthEnabled,
+  isGoogleAuthEnabled,
+} from "../../../../login/config";
 import {
   Button,
   CardContent,
@@ -27,6 +32,7 @@ import { WaitlistService } from "../../../waitlist/data/WaitlistService";
 import { useAuthContext } from "../../contexts";
 import { AuthService } from "../../data/auth.service";
 import { AuthComponent } from "../../enums";
+import { useCompleteLogin } from "../../hooks/useCompleteLogin";
 import { GdprConsentSection } from "../GdprConsentSection";
 
 // Referral cookie utilities
@@ -68,6 +74,8 @@ export default function Register() {
   const searchParams = useSearchParams();
   const inviteCode = searchParams.get("invite");
   const registrationMode = getRegistrationMode();
+  const showCompanyField = isCompanyNameRequired();
+  const completeLogin = useCompleteLogin();
 
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   const [inviteValidated, setInviteValidated] = useState<boolean>(false);
@@ -87,27 +95,34 @@ export default function Register() {
     setSignupSource(getSignupSource());
   }, []);
 
-  const formSchema = z.object({
-    company: z.string().min(1, {
-      message: t(`common.errors.missing_company_name`),
-    }),
-    name: z.string().min(1, {
-      message: t("common.errors.missing_name"),
-    }),
-    email: z.string().email({
-      message: t(`common.errors.invalid_email`),
-    }),
-    password: z
-      .string()
-      .min(8, t(`auth.errors.password_too_short`))
-      .regex(/^(?=.*[0-9])(?=.*[^a-zA-Z0-9]).*$/, {
-        message: t(`auth.errors.password_invalid_format`),
+  const formSchema = z
+    .object({
+      company: z.string(),
+      name: z.string().min(1, {
+        message: t("common.errors.missing_name"),
       }),
-    termsAccepted: z.literal(true, {
-      message: t("auth.gdpr.terms_required"),
-    }),
-    marketingConsent: z.boolean().optional(),
-  });
+      email: z.string().email({
+        message: t(`common.errors.invalid_email`),
+      }),
+      password: z
+        .string()
+        .min(8, t(`auth.errors.password_too_short`))
+        .regex(/^(?=.*[0-9])(?=.*[^a-zA-Z0-9]).*$/, {
+          message: t(`auth.errors.password_invalid_format`),
+        }),
+      termsAccepted: z.boolean(),
+      marketingConsent: z.boolean().optional(),
+    })
+    .superRefine((values, ctx) => {
+      // Company is asked only when the app requires it
+      if (showCompanyField && values.company.length < 1) {
+        ctx.addIssue({ code: "custom", path: ["company"], message: t(`common.errors.missing_company_name`) });
+      }
+      // An invite carries the Terms acceptance recorded on the waitlist
+      if (!inviteValidated && values.termsAccepted !== true) {
+        ctx.addIssue({ code: "custom", path: ["termsAccepted"], message: t("auth.gdpr.terms_required") });
+      }
+    });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -116,7 +131,7 @@ export default function Register() {
       name: "",
       email: "",
       password: "",
-      termsAccepted: false as unknown as true,
+      termsAccepted: false,
       marketingConsent: false,
     },
   });
@@ -152,13 +167,15 @@ export default function Register() {
     try {
       const payload = {
         id: v4(),
-        companyName: values.company,
+        // Hidden company field: the server names the company after the user
+        companyName: showCompanyField ? values.company : undefined,
         name: values.name,
         email: values.email,
         password: values.password,
-        termsAcceptedAt: new Date().toISOString(),
-        marketingConsent: values.marketingConsent ?? false,
-        marketingConsentAt: values.marketingConsent ? new Date().toISOString() : null,
+        // An invite sign-up takes Terms and marketing consent from the waitlist entry on the server
+        termsAcceptedAt: inviteValidated ? undefined : new Date().toISOString(),
+        marketingConsent: inviteValidated ? undefined : (values.marketingConsent ?? false),
+        marketingConsentAt: inviteValidated ? undefined : values.marketingConsent ? new Date().toISOString() : null,
         inviteCode: inviteCode ?? undefined,
         referralCode: referralCode ?? undefined,
         source: getSignupSource(),
@@ -167,6 +184,13 @@ export default function Register() {
       await AuthService.register(payload);
       // Clear referral cookie after successful registration
       clearReferralCode();
+
+      if (inviteValidated) {
+        // The invite proved the email: the account is already active, log straight in
+        completeLogin(await AuthService.login({ email: values.email, password: values.password }));
+        return;
+      }
+
       setShowConfirmation(true);
     } catch (e) {
       errorToast({ title: t("common.errors.error"), error: e });
@@ -240,7 +264,7 @@ export default function Register() {
 
   return (
     <>
-      <CardHeader>
+      <CardHeader data-testid="page-register-container">
         <CardTitle className="text-primary flex flex-col items-center pb-10 text-4xl">
           <Image src="/logo.webp" alt="Logo" width={100} height={100} priority />
           {t(`auth.buttons.register`)}
@@ -257,19 +281,23 @@ export default function Register() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CardContent>
-              <FormInput
-                isRequired
-                form={form}
-                id="company"
-                name={t(`company.fields.name.label`)}
-                placeholder={t(`company.fields.name.placeholder`)}
-              />
+              {showCompanyField && (
+                <FormInput
+                  isRequired
+                  form={form}
+                  id="company"
+                  name={t(`company.fields.name.label`)}
+                  placeholder={t(`company.fields.name.placeholder`)}
+                  testId="form-register-input-company"
+                />
+              )}
               <FormInput
                 isRequired
                 form={form}
                 id="name"
                 name={t(`user.fields.name.label`)}
                 placeholder={t(`user.fields.name.placeholder`)}
+                testId="form-register-input-name"
               />
               <FormInput
                 isRequired
@@ -279,6 +307,7 @@ export default function Register() {
                 placeholder={t(`common.fields.email.placeholder`)}
                 disabled={inviteValidated}
                 description={inviteValidated ? t("waitlist.invite.email_locked_hint") : undefined}
+                testId="form-register-input-email"
               />
               <FormPassword
                 isRequired
@@ -286,9 +315,10 @@ export default function Register() {
                 id="password"
                 name={t(`user.fields.password.label`)}
                 placeholder={t(`user.fields.password.placeholder`)}
+                testId="form-register-input-password"
               />
-              <GdprConsentSection form={form} />
-              <Button className="mt-4 w-full" type={"submit"}>
+              {!inviteValidated && <GdprConsentSection form={form} testId="form-register-consent" />}
+              <Button className="mt-4 w-full" type={"submit"} data-testid="form-register-button-submit">
                 {t(`auth.buttons.register`)}
               </Button>
 

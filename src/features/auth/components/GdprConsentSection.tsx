@@ -9,12 +9,14 @@ interface GdprConsentSectionProps<T extends FieldValues> {
   form: UseFormReturn<T>;
   termsCheckboxId?: Path<T>;
   marketingCheckboxId?: Path<T>;
+  testId?: string;
 }
 
 export function GdprConsentSection<T extends FieldValues>({
   form,
   termsCheckboxId = "termsAccepted" as Path<T>,
   marketingCheckboxId = "marketingConsent" as Path<T>,
+  testId,
 }: GdprConsentSectionProps<T>) {
   const t = useTranslations("auth.gdpr");
 
@@ -32,7 +34,7 @@ export function GdprConsentSection<T extends FieldValues>({
   );
 
   return (
-    <div className="space-y-4 py-4">
+    <div className="space-y-4 py-4" data-testid={testId}>
       <GdprConsentCheckbox form={form} id={termsCheckboxId} label={termsLabel} required />
       <GdprConsentCheckbox
         form={form}

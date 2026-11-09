@@ -8,6 +8,7 @@ export class PendingRegistration extends AbstractApiData implements PendingRegis
   private _provider?: string;
   private _hasPass?: boolean;
   private _emailInUse?: boolean;
+  private _hasInvite?: boolean;
 
   get name(): string {
     return this._name ?? "";
@@ -33,6 +34,10 @@ export class PendingRegistration extends AbstractApiData implements PendingRegis
     return this._emailInUse ?? false;
   }
 
+  get hasInvite(): boolean {
+    return this._hasInvite ?? false;
+  }
+
   rehydrate(data: JsonApiHydratedDataInterface): this {
     super.rehydrate(data);
     this._name = data.jsonApi.attributes.name;
@@ -41,6 +46,7 @@ export class PendingRegistration extends AbstractApiData implements PendingRegis
     this._provider = data.jsonApi.attributes.provider;
     this._hasPass = data.jsonApi.attributes.hasPass ?? false;
     this._emailInUse = data.jsonApi.attributes.emailInUse ?? false;
+    this._hasInvite = data.jsonApi.attributes.hasInvite ?? false;
     return this;
   }
 

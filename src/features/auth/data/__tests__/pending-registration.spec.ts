@@ -16,6 +16,7 @@ describe("PendingRegistration.rehydrate()", () => {
       provider: "discord",
       hasPass: true,
       emailInUse: true,
+      hasInvite: true,
     });
 
     expect(pending.id).toBe("pending-1");
@@ -25,6 +26,7 @@ describe("PendingRegistration.rehydrate()", () => {
     expect(pending.provider).toBe("discord");
     expect(pending.hasPass).toBe(true);
     expect(pending.emailInUse).toBe(true);
+    expect(pending.hasInvite).toBe(true);
   });
 
   it("leaves avatar undefined and defaults hasPass/emailInUse to false when absent", () => {
@@ -33,5 +35,11 @@ describe("PendingRegistration.rehydrate()", () => {
     expect(pending.avatar).toBeUndefined();
     expect(pending.hasPass).toBe(false);
     expect(pending.emailInUse).toBe(false);
+  });
+
+  it("PendingRegistration rehydrates hasInvite with a false default", () => {
+    expect(hydrate({ name: "Aria", email: "aria@example.com", provider: "google" }).hasInvite).toBe(false);
+    expect(hydrate({ name: "Aria", hasInvite: null }).hasInvite).toBe(false);
+    expect(hydrate({ name: "Aria", hasInvite: true }).hasInvite).toBe(true);
   });
 });

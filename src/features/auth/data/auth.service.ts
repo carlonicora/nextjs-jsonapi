@@ -195,24 +195,30 @@ export class AuthService extends AbstractService {
     });
   }
 
+  /**
+   * Completes an OAuth sign-up waiting for consent. A sign-up with a usable
+   * waitlist invite sends no consent: the server copies it from the waitlist.
+   * Throws an Error with message `"<status>:<message>"` on failure.
+   */
   static async completeOAuthRegistration(params: {
     pendingId: string;
-    termsAcceptedAt: string;
-    marketingConsent: boolean;
-    marketingConsentAt: string | null;
+    termsAcceptedAt?: string;
+    marketingConsent?: boolean;
+    marketingConsentAt?: string | null;
   }): Promise<{ code: string }> {
-    const endpoint = new EndpointCreator({ endpoint: Modules.Auth, id: "oauth", childEndpoint: "complete" });
+    const input: AuthInput = {
+      id: params.pendingId,
+      termsAcceptedAt: params.termsAcceptedAt,
+      marketingConsent: params.marketingConsent,
+      marketingConsentAt: params.marketingConsentAt,
+    };
 
-    const response: ApiResponseInterface = await JsonApiPost({
-      classKey: Modules.Auth,
-      endpoint: endpoint.generate(),
-      body: params,
-      overridesJsonApiCreation: true,
-      language: "en",
+    return this.callApi<{ code: string }>({
+      type: Modules.Auth,
+      method: HttpMethod.POST,
+      endpoint: new EndpointCreator({ endpoint: Modules.Auth, id: "oauth", childEndpoint: "complete" }).generate(),
+      input: input,
+      suppressGlobalError: true,
     });
-
-    if (!response.ok) throw new Error(response.error);
-
-    return response.data as unknown as { code: string };
   }
 }

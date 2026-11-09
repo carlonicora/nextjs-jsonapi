@@ -1,5 +1,6 @@
 export {
   configureLogin,
+  isCompanyNameRequired,
   isDiscordAuthEnabled,
   isGoogleAuthEnabled,
   isInternalAuthEnabled,

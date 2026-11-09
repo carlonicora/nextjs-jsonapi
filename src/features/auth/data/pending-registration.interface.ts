@@ -7,4 +7,5 @@ export interface PendingRegistrationInterface extends ApiDataInterface {
   get provider(): string;
   get hasPass(): boolean;
   get emailInUse(): boolean;
+  get hasInvite(): boolean;
 }

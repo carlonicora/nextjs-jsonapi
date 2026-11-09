@@ -3,6 +3,7 @@ let _useGoogleAuth: boolean = false;
 let _useInternalAuth: boolean = true;
 let _allowRegistration: boolean = true;
 let _registrationMode: "open" | "closed" | "waitlist" = "open";
+let _requireCompanyName: boolean = true;
 
 export type RegistrationMode = "open" | "closed" | "waitlist";
 
@@ -12,6 +13,8 @@ export interface LoginConfig {
   useInternalAuth?: boolean;
   allowRegistration?: boolean;
   registrationMode?: RegistrationMode;
+  /** Show and require the company name on sign-up. Default `true`. */
+  requireCompanyName?: boolean;
 }
 
 export function configureLogin(params: LoginConfig): void {
@@ -20,6 +23,7 @@ export function configureLogin(params: LoginConfig): void {
   _useInternalAuth = params.useInternalAuth ?? true;
   _allowRegistration = params.allowRegistration ?? true;
   _registrationMode = params.registrationMode ?? "open";
+  _requireCompanyName = params.requireCompanyName ?? true;
 }
 
 export function isDiscordAuthEnabled(): boolean {
@@ -40,4 +44,8 @@ export function isRegistrationAllowed(): boolean {
 
 export function getRegistrationMode(): RegistrationMode {
   return _registrationMode;
+}
+
+export function isCompanyNameRequired(): boolean {
+  return _requireCompanyName;
 }
