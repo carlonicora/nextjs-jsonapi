@@ -1,3 +1,9 @@
+## [6.32.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.31.0...v6.32.0) (2026-11-09)
+
+### 🚀 Features
+
+* **auth:** Logout takes an optional redirectTo, a path inside the app where the browser goes once logged out, so a page can log the user out and bring them back to it after the next login; without it the logout still goes to the home page ([33add46](https://github.com/carlonicora/nextjs-jsonapi/commit/33add46a1d43f3d10819dfd243ad4d702cfb5e09))
+
 ## [6.31.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.30.0...v6.31.0) (2026-11-09)
 
 ### 🚀 Features
