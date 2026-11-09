@@ -18,9 +18,15 @@ interface LogoutProps {
    * logout: storage, cookies and the current page are left as they are.
    */
   beforeLogout?: () => Promise<boolean>;
+  /**
+   * Where to go once logged out: a path inside this app, already locale-resolved
+   * (the app's `getPathname` output), e.g. a link the user opened while logged in
+   * with another account. Omitted, the home page.
+   */
+  redirectTo?: string;
 }
 
-export function Logout({ storageKeys, beforeLogout }: LogoutProps) {
+export function Logout({ storageKeys, beforeLogout, redirectTo }: LogoutProps) {
   const generateUrl = usePageUrlGenerator();
 
   useEffect(() => {
@@ -33,7 +39,7 @@ export function Logout({ storageKeys, beforeLogout }: LogoutProps) {
       // clearing it is this component's job — never the consuming app's.
       clearClientStorage([CURRENT_USER_STORAGE_KEY, ...(storageKeys ?? [])]);
       await AuthService.logout();
-      window.location.href = generateUrl({ page: `/` });
+      window.location.href = redirectTo ?? generateUrl({ page: `/` });
     };
     logOut();
   }, []);
