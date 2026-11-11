@@ -1,3 +1,9 @@
+## [6.32.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.32.0...v6.32.1) (2026-11-11)
+
+### 🐛 Bug Fixes
+
+* **auth:** server permission checks (ServerSession.hasPermissionToModule and checkPermission) now read the user's modules from users/me/full once per request instead of the modules cookie, which browsers dropped once it passed 4096 bytes and which left non-admin users refused on every page; updateToken no longer receives or writes modules, TokenParams has no modules field, and removeToken still deletes the cookie older sessions carry ([f9bfd7c](https://github.com/carlonicora/nextjs-jsonapi/commit/f9bfd7c44b172a9165049530a21d9bd60a70a2a1))
+
 ## [6.32.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.31.0...v6.32.0) (2026-11-09)
 
 ### 🚀 Features
