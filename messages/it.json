@@ -2042,6 +2042,17 @@
       "show_less": "Mostra meno",
       "show_more": "Mostra di più"
     },
+    "calendar": {
+      "choose_month": "Scegli il mese",
+      "choose_year": "Scegli l'anno",
+      "navigation": "Barra di navigazione",
+      "next_month": "Vai al mese successivo",
+      "previous_month": "Vai al mese precedente",
+      "selected": "{date}, selezionato",
+      "today": "Oggi, {date}",
+      "week_number": "Settimana {number}",
+      "week_number_header": "Numero settimana"
+    },
     "dialogs": {
       "unsaved_changes_description": "Hai modifiche non salvate. Vuoi davvero scartarle?",
       "unsaved_changes_discard": "Scarta",

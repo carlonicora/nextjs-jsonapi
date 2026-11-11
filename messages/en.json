@@ -2042,6 +2042,17 @@
       "show_less": "Show less",
       "show_more": "Show more"
     },
+    "calendar": {
+      "choose_month": "Choose the month",
+      "choose_year": "Choose the year",
+      "navigation": "Navigation bar",
+      "next_month": "Go to the next month",
+      "previous_month": "Go to the previous month",
+      "selected": "{date}, selected",
+      "today": "Today, {date}",
+      "week_number": "Week {number}",
+      "week_number_header": "Week number"
+    },
     "dialogs": {
       "unsaved_changes_description": "You have unsaved changes. Are you sure you want to discard them?",
       "unsaved_changes_discard": "Discard",

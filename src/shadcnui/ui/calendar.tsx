@@ -1,12 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { DayPicker, getDefaultClassNames, type DayButton } from "react-day-picker";
+import { DateLib, DayPicker, getDefaultClassNames, type DayButton, type Labels } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { ChevronLeftIcon, ChevronRightIcon, ChevronDownIcon } from "lucide-react";
 import { useDir } from "../../contexts/DirectionContext";
+import { useUiText } from "./use-ui-text";
 
 function Calendar({
   className,
@@ -16,12 +17,37 @@ function Calendar({
   buttonVariant = "ghost",
   formatters,
   components,
+  labels,
   ...props
 }: React.ComponentProps<typeof DayPicker> & {
   buttonVariant?: React.ComponentProps<typeof Button>["variant"];
 }) {
   const defaultClassNames = getDefaultClassNames();
   const dir = useDir();
+  const uiText = useUiText();
+
+  // The accessible names react-day-picker builds, in the active language. Each falls back to
+  // react-day-picker's own English text when the app has no translation for it. The date part
+  // keeps react-day-picker's own format(date, "PPPP") in the locale the caller passed.
+  const translatedLabels: Partial<Labels> = {
+    labelPrevious: () => uiText("ui.calendar.previous_month", "Go to the Previous Month"),
+    labelNext: () => uiText("ui.calendar.next_month", "Go to the Next Month"),
+    labelNav: () => uiText("ui.calendar.navigation", ""),
+    labelMonthDropdown: () => uiText("ui.calendar.choose_month", "Choose the Month"),
+    labelYearDropdown: () => uiText("ui.calendar.choose_year", "Choose the Year"),
+    labelDayButton: (date, modifiers, options, dateLib) => {
+      let label = (dateLib ?? new DateLib(options)).format(date, "PPPP");
+      if (modifiers.today) label = uiText("ui.calendar.today", "Today, {date}", { date: label });
+      if (modifiers.selected) label = uiText("ui.calendar.selected", "{date}, selected", { date: label });
+      return label;
+    },
+    labelGridcell: (date, modifiers, options, dateLib) => {
+      const label = (dateLib ?? new DateLib(options)).format(date, "PPPP");
+      return modifiers?.today ? uiText("ui.calendar.today", "Today, {date}", { date: label }) : label;
+    },
+    labelWeekNumber: (weekNumber) => uiText("ui.calendar.week_number", "Week {number}", { number: weekNumber }),
+    labelWeekNumberHeader: () => uiText("ui.calendar.week_number_header", "Week Number"),
+  };
 
   return (
     <DayPicker
@@ -32,6 +58,7 @@ function Calendar({
         className,
       )}
       captionLayout={captionLayout}
+      labels={{ ...translatedLabels, ...labels }}
       formatters={{
         formatMonthDropdown: (date) => date.toLocaleString(props.locale?.code ?? "default", { month: "short" }),
         ...formatters,
