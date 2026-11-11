@@ -8,15 +8,6 @@ export interface TokenParams {
   companyId?: string;
   roles?: string[];
   features?: string[];
-  modules?: {
-    id: string;
-    permissions: {
-      create: boolean | string;
-      read: boolean | string;
-      update: boolean | string;
-      delete: boolean | string;
-    };
-  }[];
 }
 
 /**

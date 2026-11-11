@@ -173,10 +173,6 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
               companyId: fullUser.company?.id,
               roles: fullUser.roles.map((role) => role.id),
               features: fullUser.company?.features?.map((feature) => feature.id) ?? [],
-              modules: fullUser.modules.map((module) => ({
-                id: module.id,
-                permissions: module.permissions,
-              })),
             });
           }
 

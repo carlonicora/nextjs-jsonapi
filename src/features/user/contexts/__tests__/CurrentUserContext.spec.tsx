@@ -233,6 +233,8 @@ describe("CurrentUserProvider", () => {
     await new Promise((resolve) => setTimeout(resolve, 50));
 
     expect(updateToken).toHaveBeenCalledTimes(1);
+    // Modules no longer travel in a cookie: the server reads them from the api.
+    expect((updateToken.mock.calls[0] as unknown[])[0]).not.toHaveProperty("modules");
     expect(getByTestId("current-user-id").textContent).toBe("old");
 
     resolveUpdateToken();

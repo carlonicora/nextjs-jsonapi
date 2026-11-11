@@ -20,9 +20,6 @@ export function RefreshUser() {
         companyId: fullUser.company?.id,
         roles: fullUser.roles.map((role) => role.id),
         features: fullUser.company?.features?.map((feature) => feature.id) ?? [],
-        modules: fullUser.modules.map((module) => {
-          return { id: module.id, permissions: module.permissions };
-        }),
       };
 
       await getTokenHandler()?.updateToken(token);

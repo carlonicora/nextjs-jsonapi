@@ -1,10 +1,16 @@
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { userAgent } from "next/server";
-import { ungzip } from "pako";
+import { cache } from "react";
+import { UserService } from "../features/user/data/user.service";
 import { Action, checkPermissionsFromServer, ModuleWithPermissions } from "../permissions";
 import { getRoleId } from "../roles/config";
 import { VIEWPORT_COOKIE_NAME } from "../utils/use-mobile";
+
+// The user's modules come from the api once per request. They no longer travel in a
+// cookie: a non-admin user's scoped permissions push it past the browser's 4096-byte limit.
+// No `cache` option on the request: it carries the user's token.
+const getCachedFullUser = cache(async () => UserService.findFullUser());
 
 export interface SessionSnapshot {
   isLogged: boolean;
@@ -88,37 +94,15 @@ export class ServerSession {
       if (features && !features.includes(params.module.feature)) return false;
     }
 
-    const rawModules = cookieStore.get("modules")?.value;
-    if (!rawModules) return false;
-
-    const modules: {
-      id: string;
-      permissions: {
-        create: boolean | string;
-        read: boolean | string;
-        update: boolean | string;
-        delete: boolean | string;
-      };
-    }[] = JSON.parse(ungzip(Buffer.from(rawModules, "base64"), { toText: true }));
-
-    const selectedModule = modules.find((module) => module.id === params.module.moduleId);
+    const user = await getCachedFullUser();
+    const selectedModule = user.modules.find((module) => module.id === params.module.moduleId);
 
     return checkPermissionsFromServer({
       module: params.module,
       action: params.action,
       data: params.data,
       userId: await this.userId(),
-      selectedModule: selectedModule,
+      selectedModule: selectedModule ? { id: selectedModule.id, permissions: selectedModule.permissions } : undefined,
     });
-
-    // if (!selectedModule) return false;
-
-    // if (!selectedModule.permissions[params.action]) return false;
-    // if (typeof selectedModule.permissions[params.action] === "boolean")
-    //   return selectedModule.permissions[params.action] as boolean;
-
-    // if (!params.data) return false;
-
-    // return params.data[selectedModule.permissions[params.action] as string] === this.userId;
   }
 }

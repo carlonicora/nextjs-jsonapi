@@ -59,10 +59,6 @@ export class AuthService extends AbstractService {
         companyId: auth.user.company?.id,
         roles: auth.user.roles.map((role) => role.id),
         features: auth.user.company?.features?.map((feature) => feature.id) ?? [],
-        modules: auth.user.modules.map((module) => ({
-          id: module.id,
-          permissions: module.permissions,
-        })),
       });
     }
 
@@ -169,10 +165,6 @@ export class AuthService extends AbstractService {
         companyId: auth.user.company?.id,
         roles: auth.user.roles.map((role) => role.id),
         features: auth.user.company?.features?.map((feature) => feature.id) ?? [],
-        modules: auth.user.modules.map((module) => ({
-          id: module.id,
-          permissions: module.permissions,
-        })),
       });
     }
   }

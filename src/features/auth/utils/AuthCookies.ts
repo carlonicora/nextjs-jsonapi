@@ -2,7 +2,6 @@
 
 import { ENV } from "../../../core/env";
 import { cookies } from "next/headers";
-import { gzip } from "pako";
 
 export async function updateToken(params: {
   token?: string;
@@ -11,15 +10,6 @@ export async function updateToken(params: {
   companyId?: string;
   roles?: string[];
   features?: string[];
-  modules?: {
-    id: string;
-    permissions: {
-      create: boolean | string;
-      read: boolean | string;
-      update: boolean | string;
-      delete: boolean | string;
-    };
-  }[];
 }): Promise<void> {
   const isProduction = ENV.IS_PRODUCTION;
 
@@ -81,19 +71,6 @@ export async function updateToken(params: {
       secure: isProduction,
       expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
     });
-
-  if (params.modules) {
-    const compressedValue = Buffer.from(gzip(JSON.stringify(params.modules))).toString("base64");
-
-    (await cookies()).set({
-      name: "modules",
-      value: JSON.stringify(compressedValue),
-      httpOnly: true,
-      path: "/",
-      secure: isProduction,
-      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
-    });
-  }
 }
 
 export async function removeToken(): Promise<void> {
@@ -115,6 +92,7 @@ export async function removeToken(): Promise<void> {
   (await cookies()).delete({
     name: "features",
   });
+  // Clears the modules cookie that sessions from older versions still carry.
   (await cookies()).delete({
     name: "modules",
   });
