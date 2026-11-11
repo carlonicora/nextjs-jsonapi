@@ -1,3 +1,9 @@
+## [6.32.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.32.1...v6.32.2) (2026-11-11)
+
+### 🐛 Bug Fixes
+
+* **calendar:** the calendar accessible names (previous and next month, month and year pickers, day buttons, today, selected, week numbers) now follow the app language through new ui.calendar keys in English and Italian, instead of always English; a labels prop from the caller still wins ([6f0e6ac](https://github.com/carlonicora/nextjs-jsonapi/commit/6f0e6aca86ba1175c1125f6ff8b73785b9b21e27))
+
 ## [6.32.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.32.0...v6.32.1) (2026-11-11)
 
 ### 🐛 Bug Fixes
