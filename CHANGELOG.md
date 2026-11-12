@@ -1,3 +1,9 @@
+## [6.34.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.33.0...v6.34.0) (2026-11-12)
+
+### 🚀 Features
+
+* **models:** a value on a relationship no longer replaces a model's own getter of the same name, and a model reads it with relationshipMeta; apps must read an edge value through relationshipMeta in any model getter that shares its name with an edge field; docs/UPGRADING.md lists what changed ([e738769](https://github.com/carlonicora/nextjs-jsonapi/commit/e738769e87dc7d79533afe821c947aa3bfc275e7))
+
 ## [6.33.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.32.2...v6.33.0) (2026-11-12)
 
 ### 🚀 Features
