@@ -24,6 +24,12 @@ export abstract class AbstractApiData implements ApiDataInterface {
 
   protected _self?: string;
 
+  /**
+   * The relationship meta this record was read with (`_readIncludedWithMeta`): the edge
+   * values, by name. Read with `relationshipMeta`.
+   */
+  private _relationshipMeta?: Record<string, unknown>;
+
   get type(): string {
     if (!this._type) throw new Error("Type is not set.");
     return this._type;
@@ -52,6 +58,17 @@ export abstract class AbstractApiData implements ApiDataInterface {
 
   get jsonApi(): any {
     return this._jsonApi;
+  }
+
+  /**
+   * An edge value this record was read with, or undefined when the relationship carried
+   * none. Relationship meta never replaces an accessor: a model getter that shares its name
+   * with an edge field reads the edge value here.
+   *
+   * @example get relevance(): number | undefined { return this.relationshipMeta<number>("relevance") ?? this._relevance; }
+   */
+  protected relationshipMeta<T>(key: string): T | undefined {
+    return this._relationshipMeta?.[key] as T | undefined;
   }
 
   ingestJsonApi(_data: JsonApiHydratedDataInterface): void {}
@@ -254,9 +271,9 @@ export abstract class AbstractApiData implements ApiDataInterface {
           }) as T;
 
           // Merge relationship-level meta for single relationships
-          const relationshipMeta = data.jsonApi.relationships[type].meta;
-          if (relationshipMeta) {
-            AbstractApiData._mergeMeta(entity, relationshipMeta);
+          const linkageMeta = data.jsonApi.relationships[type].meta;
+          if (linkageMeta) {
+            AbstractApiData._mergeMeta(entity, linkageMeta);
           }
           return entity as T & M;
         }
@@ -270,23 +287,40 @@ export abstract class AbstractApiData implements ApiDataInterface {
     }) as T;
 
     // Merge relationship-level meta for single relationships
-    const relationshipMeta = data.jsonApi.relationships[type].meta;
-    if (relationshipMeta) {
-      AbstractApiData._mergeMeta(entity, relationshipMeta);
+    const linkageMeta = data.jsonApi.relationships[type].meta;
+    if (linkageMeta) {
+      AbstractApiData._mergeMeta(entity, linkageMeta);
     }
 
     return entity as T & M;
   }
 
   /**
-   * Copies relationship meta onto a rehydrated entity as own data properties. Object.assign throws
-   * when the model declares a getter-only accessor of the same name (an app's `Chunk` with
-   * `get relevance()`); an own property shadows that getter, so the model reads the meta value.
+   * Keeps relationship meta on a rehydrated record. Every value is stored in the record's
+   * relationship meta (`relationshipMeta`). A key is also set as an own data property, so
+   * `record.key` reads it, but only when no accessor of that name exists on the record's
+   * prototype chain: a model's getter is never replaced, and an edge value never takes the
+   * place of the record's own value.
    */
   private static _mergeMeta(entity: object, meta: Record<string, any>): void {
+    // No instanceof check: the package ships CJS and ESM chunks, and a record built by the
+    // other copy would fail it and lose its edge values without a sign. Every rehydrated
+    // record extends AbstractApiData.
+    const record = entity as AbstractApiData;
+    record._relationshipMeta = { ...(record._relationshipMeta ?? {}), ...meta };
     for (const [key, value] of Object.entries(meta)) {
+      if (AbstractApiData._hasAccessor(entity, key)) continue;
       Object.defineProperty(entity, key, { value, writable: true, enumerable: true, configurable: true });
     }
+  }
+
+  /** True when `key` is a getter or a setter on the prototype chain of `entity`. */
+  private static _hasAccessor(entity: object, key: string): boolean {
+    for (let proto = Object.getPrototypeOf(entity); proto !== null; proto = Object.getPrototypeOf(proto)) {
+      const descriptor = Object.getOwnPropertyDescriptor(proto, key);
+      if (descriptor) return descriptor.get !== undefined || descriptor.set !== undefined;
+    }
+    return false;
   }
 
   dehydrate(): JsonApiHydratedDataInterface {
