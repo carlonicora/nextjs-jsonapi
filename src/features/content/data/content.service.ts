@@ -8,6 +8,8 @@ export class ContentService extends AbstractService {
     fetchAll?: boolean;
     next?: NextRef;
     prev?: PreviousRef;
+    /** JSON:API `sort` (`name`, `-name`), forwarded to the API. */
+    sort?: string;
   }): Promise<ContentInterface[]> {
     const endpoint = new EndpointCreator({ endpoint: Modules.Content });
 
@@ -21,6 +23,8 @@ export class ContentService extends AbstractService {
     if (Modules.Content.inclusions?.lists?.fields) endpoint.limitToFields(Modules.Content.inclusions.lists.fields);
     if (Modules.Content.inclusions?.lists?.types) endpoint.limitToType(Modules.Content.inclusions.lists.types);
 
+    if (params.sort) endpoint.addAdditionalParam("sort", params.sort);
+
     return this.callApi({
       type: Modules.Content,
       method: HttpMethod.GET,
@@ -29,7 +33,12 @@ export class ContentService extends AbstractService {
     });
   }
 
-  static async findRelevant(params: { id: string; next?: NextRef; prev?: PreviousRef }): Promise<ContentInterface[]> {
+  static async findRelevant(params: {
+    id: string;
+    next?: NextRef;
+    prev?: PreviousRef;
+    sort?: string;
+  }): Promise<ContentInterface[]> {
     const endpoint: EndpointCreator = new EndpointCreator({
       endpoint: Modules.Content,
       id: params.id,
@@ -38,6 +47,8 @@ export class ContentService extends AbstractService {
 
     if (Modules.Content.inclusions?.lists?.fields) endpoint.limitToFields(Modules.Content.inclusions.lists.fields);
     if (Modules.Content.inclusions?.lists?.types) endpoint.limitToType(Modules.Content.inclusions.lists.types);
+
+    if (params.sort) endpoint.addAdditionalParam("sort", params.sort);
 
     return this.callApi<ContentInterface[]>({
       type: Modules.Content,

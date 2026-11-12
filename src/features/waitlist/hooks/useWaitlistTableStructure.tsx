@@ -53,7 +53,7 @@ export const useWaitlistTableStructure: UseTableStructureHook<WaitlistInterface,
       cell: ({ row }: { row: TableContent<WaitlistInterface> }) => (
         <span className="font-medium">{row.original.jsonApiData.email}</span>
       ),
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [WaitlistFields.status]: () => ({
@@ -61,7 +61,7 @@ export const useWaitlistTableStructure: UseTableStructureHook<WaitlistInterface,
       accessorKey: "status",
       header: t("waitlist.admin.columns.status"),
       cell: ({ row }: { row: TableContent<WaitlistInterface> }) => getStatusBadge(row.original.jsonApiData.status),
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [WaitlistFields.createdAt]: () => ({
@@ -73,7 +73,7 @@ export const useWaitlistTableStructure: UseTableStructureHook<WaitlistInterface,
         if (!entry.createdAt) return "-";
         return dates.format(entry.createdAt, "date");
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [WaitlistFields.source]: () => ({

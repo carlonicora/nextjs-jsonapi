@@ -50,6 +50,8 @@ export function PricesList({ productId, fullWidth }: PricesListProps) {
     retriever: (params) => StripePriceService.listPrices({ ...params, productId }),
     retrieverParams: {},
     module: Modules.StripePrice,
+    // Display only (call C8): the server's own order when no sort is chosen.
+    defaultSort: "-createdAt",
   });
 
   useEffect(() => {

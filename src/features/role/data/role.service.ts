@@ -10,10 +10,12 @@ export class RoleService extends AbstractService {
     });
   }
 
-  static async findAllRoles(params: { search?: string; next?: NextRef }): Promise<RoleInterface[]> {
+  static async findAllRoles(params: { search?: string; next?: NextRef; sort?: string }): Promise<RoleInterface[]> {
     const endpoint = new EndpointCreator({ endpoint: Modules.Role });
 
     if (params.search) endpoint.addAdditionalParam("search", params.search);
+
+    if (params.sort) endpoint.addAdditionalParam("sort", params.sort);
 
     return this.callApi({
       type: Modules.Role,
@@ -28,10 +30,14 @@ export class RoleService extends AbstractService {
     search?: string;
     next?: NextRef;
     prev?: PreviousRef;
+    /** JSON:API `sort` (`name`, `-name`), forwarded to the API. */
+    sort?: string;
   }): Promise<RoleInterface[]> {
     const endpoint = new EndpointCreator({ endpoint: Modules.User, id: params.userId, childEndpoint: Modules.Role });
 
     if (params.search) endpoint.addAdditionalParam("search", params.search);
+
+    if (params.sort) endpoint.addAdditionalParam("sort", params.sort);
 
     return this.callApi({
       type: Modules.Role,

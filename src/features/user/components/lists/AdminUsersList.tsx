@@ -21,6 +21,8 @@ function AdminUsersListInternal({ company }: AdminUsersListProps) {
     retriever: (params) => UserService.findManyForAmin(params),
     retrieverParams: { companyId: company.id },
     module: Modules.User,
+    // Display only (call C8): the server's own order when no sort is chosen.
+    defaultSort: "name",
   });
 
   return (

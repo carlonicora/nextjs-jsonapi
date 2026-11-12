@@ -57,7 +57,7 @@ export const useUserTableStructure: UseTableStructureHook<UserInterface, UserFie
           </Link>
         );
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [UserFields.email]: () => ({
@@ -65,7 +65,7 @@ export const useUserTableStructure: UseTableStructureHook<UserInterface, UserFie
       accessorKey: "email",
       header: t(`common.fields.email.label`),
       cell: ({ row }: { row: Row<TableContent<UserInterface>> }) => <>{row.getValue("email")}</>,
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     // Only meaningful on a platform-wide list (PlatformUsersList), where users

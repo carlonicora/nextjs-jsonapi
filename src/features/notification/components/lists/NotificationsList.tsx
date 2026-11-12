@@ -29,6 +29,8 @@ export function NotificationsList({ archived, headerControl, fullWidth }: Notifi
     module: Modules.Notification,
     retriever: (params) => NotificationService.findMany(params),
     retrieverParams: { isArchived: archived },
+    // Display only (call C8): the server's own order when no sort is chosen.
+    defaultSort: "-createdAt",
   });
 
   /* Mark read what this list ACTUALLY SHOWS, on every page. Reading the shared

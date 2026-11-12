@@ -59,7 +59,7 @@ export const useEmailAutomationTableStructure: UseTableStructureHook<
         const automation: EmailAutomationInterface = row.original.jsonApiData;
         return <Link href={generateUrl({ page: Modules.EmailAutomation, id: automation.id })}>{automation.name}</Link>;
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [EmailAutomationFields.purpose]: () => ({
@@ -78,7 +78,7 @@ export const useEmailAutomationTableStructure: UseTableStructureHook<
           </Badge>
         );
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [EmailAutomationFields.trigger]: () => ({
@@ -90,7 +90,7 @@ export const useEmailAutomationTableStructure: UseTableStructureHook<
         if (!automation.trigger) return <span className="text-muted-foreground text-xs">—</span>;
         return <span className="text-sm">{triggerLabels[automation.trigger] ?? automation.trigger}</span>;
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [EmailAutomationFields.status]: () => ({
@@ -105,7 +105,8 @@ export const useEmailAutomationTableStructure: UseTableStructureHook<
           <Badge variant="softGray">{t("emailAutomations.list.status.off")}</Badge>
         );
       },
-      enableSorting: false,
+      meta: { sortFields: ["isActive"] },
+      enableSorting: true,
       enableHiding: false,
     }),
     [EmailAutomationFields.steps]: () =>

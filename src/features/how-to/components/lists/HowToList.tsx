@@ -25,6 +25,8 @@ export default function HowToList({ fullWidth, extraFunctions }: HowToListProps)
     module: Modules.HowTo,
     retriever: (params) => HowToService.findMany(params),
     retrieverParams: {},
+    // Display only (call C8): the server's own order when no sort is chosen.
+    defaultSort: "-updatedAt",
   });
 
   const functions: ReactNode[] = [

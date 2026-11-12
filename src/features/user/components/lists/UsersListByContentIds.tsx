@@ -18,6 +18,8 @@ export function UsersListByContentIds({ contentIds }: UsersListByContentIdsProps
     module: Modules.User,
     retriever: (params) => UserService.findManyByContentIds(params),
     retrieverParams: { contentIds: contentIds },
+    // Display only (call C8): the server's own order when no sort is chosen.
+    defaultSort: "name",
   });
 
   return (

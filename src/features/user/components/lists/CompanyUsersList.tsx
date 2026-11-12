@@ -24,6 +24,10 @@ export function CompanyUsersList({ isDeleted, fullWidth }: CompanyUsersListProps
     retriever: (params) => UserService.findAllUsers(params),
     retrieverParams: { companyId: company?.id, isDeleted: isDeleted },
     module: Modules.User,
+    // The active and deleted lists can share a page (AllUsersListContainer tabs): each keeps its own sort.
+    sortKey: isDeleted ? `${Modules.User.name}-deleted` : undefined,
+    // Display only (call C8): the server's own order when no sort is chosen.
+    defaultSort: "name",
   }) as DataListRetriever<UserInterface>;
 
   useEffect(() => {

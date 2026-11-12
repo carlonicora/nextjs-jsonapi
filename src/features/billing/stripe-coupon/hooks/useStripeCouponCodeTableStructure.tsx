@@ -70,7 +70,7 @@ export const useStripeCouponCodeTableStructure: UseTableStructureHook<
         const code: StripeCouponCodeInterface = row.original.jsonApiData;
         return <span className="text-xs">{code.code}</span>;
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [StripeCouponCodeFields.places]: () => ({
@@ -91,7 +91,8 @@ export const useStripeCouponCodeTableStructure: UseTableStructureHook<
           </span>
         );
       },
-      enableSorting: false,
+      meta: { sortFields: ["timesRedeemed"] },
+      enableSorting: true,
       enableHiding: false,
     }),
     [StripeCouponCodeFields.expiresAt]: () => ({
@@ -106,7 +107,7 @@ export const useStripeCouponCodeTableStructure: UseTableStructureHook<
           </span>
         );
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [StripeCouponCodeFields.automatic]: () => ({
@@ -121,7 +122,7 @@ export const useStripeCouponCodeTableStructure: UseTableStructureHook<
           <span className="text-muted-foreground text-xs">—</span>
         );
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [StripeCouponCodeFields.status]: () => ({

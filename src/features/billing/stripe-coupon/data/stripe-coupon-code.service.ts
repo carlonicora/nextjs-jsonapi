@@ -18,12 +18,16 @@ export class StripeCouponCodeService extends AbstractService {
     couponId: string;
     next?: NextRef;
     prev?: PreviousRef;
+    /** JSON:API `sort` (`name`, `-name`), forwarded to the API. */
+    sort?: string;
   }): Promise<StripeCouponCodeInterface[]> {
     const endpoint = new EndpointCreator({
       endpoint: Modules.StripeCoupon,
       id: params.couponId,
       childEndpoint: Modules.StripeCouponCode,
     });
+
+    if (params.sort) endpoint.addAdditionalParam("sort", params.sort);
 
     return this.callApi({
       type: Modules.StripeCouponCode,

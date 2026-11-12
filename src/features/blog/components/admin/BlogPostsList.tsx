@@ -24,6 +24,8 @@ export function BlogPostsList({ fullWidth }: BlogPostsListProps = {}) {
     retriever: (params) => BlogPostService.findMany(params),
     retrieverParams: {},
     module: Modules.BlogPost,
+    // Display only (call C8): the server's own order when no sort is chosen.
+    defaultSort: "-updatedAt",
   });
 
   // Creating navigates to the new post's page (EditorSheet's default without onSuccess).

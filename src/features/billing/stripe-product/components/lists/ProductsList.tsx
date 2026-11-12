@@ -31,6 +31,8 @@ export function ProductsList({ fullWidth }: ProductsListProps = {}) {
     retriever: (params) => StripeProductService.listProducts(params),
     retrieverParams: {},
     module: Modules.StripeProduct,
+    // Display only (call C8): the server's own order when no sort is chosen.
+    defaultSort: "name",
   });
 
   // Archiving and restoring happen on the detail page, so the list has to learn

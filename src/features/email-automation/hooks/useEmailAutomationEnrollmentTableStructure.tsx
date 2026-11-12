@@ -47,7 +47,7 @@ export const useEmailAutomationEnrollmentTableStructure: UseTableStructureHook<
         const enrollment: EmailAutomationEnrollmentInterface = row.original.jsonApiData;
         return <span className="text-sm">{enrollment.email}</span>;
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [EmailAutomationEnrollmentFields.name]: () => ({
@@ -58,7 +58,7 @@ export const useEmailAutomationEnrollmentTableStructure: UseTableStructureHook<
         const enrollment: EmailAutomationEnrollmentInterface = row.original.jsonApiData;
         return enrollment.name ? <span className="text-sm">{enrollment.name}</span> : empty;
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [EmailAutomationEnrollmentFields.status]: () => ({
@@ -76,7 +76,7 @@ export const useEmailAutomationEnrollmentTableStructure: UseTableStructureHook<
           </Badge>
         );
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [EmailAutomationEnrollmentFields.currentStep]: () => ({
@@ -103,7 +103,7 @@ export const useEmailAutomationEnrollmentTableStructure: UseTableStructureHook<
           </span>
         );
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [EmailAutomationEnrollmentFields.sentCount]: () => ({

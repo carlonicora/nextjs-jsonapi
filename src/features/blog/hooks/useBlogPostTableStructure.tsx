@@ -62,7 +62,7 @@ export const useBlogPostTableStructure: UseTableStructureHook<BlogPostInterface,
         }[post.status];
         return <Badge variant={BLOG_STATUS_BADGE[post.status] ?? "softGray"}>{label ?? post.status}</Badge>;
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [BlogPostFields.categories]: () => ({
@@ -87,7 +87,7 @@ export const useBlogPostTableStructure: UseTableStructureHook<BlogPostInterface,
         if (!post.publishedAt) return <span className="text-muted-foreground text-xs">—</span>;
         return <span className="text-xs tabular-nums">{dates.format(post.publishedAt, "dateMedium")}</span>;
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [BlogPostFields.languages]: () => ({

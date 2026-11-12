@@ -130,7 +130,7 @@ export const useNotificationTableStructure: UseTableStructureHook<NotificationIn
           </span>
         );
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [NotificationFields.actions]: () => ({

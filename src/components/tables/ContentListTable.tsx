@@ -1,18 +1,34 @@
 "use client";
 import "../../client";
 
-import { ExpandedState, flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from "@tanstack/react-table";
+import {
+  ExpandedState,
+  flexRender,
+  getCoreRowModel,
+  getExpandedRowModel,
+  getSortedRowModel,
+  SortingState,
+  TableState,
+  useReactTable,
+} from "@tanstack/react-table";
 
 import { cn } from "@/index";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React, { ReactNode, memo, useMemo, useState } from "react";
-import { DataListRetriever, TableContent, useTableGenerator } from "../../hooks";
+import { DataListRetriever, TableContent, useListSortParam, useTableGenerator } from "../../hooks";
 import { ModuleWithPermissions } from "../../permissions";
 import { Button, Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "../../shadcnui";
 import { useIsMobile } from "../../utils/use-mobile";
 import { MicroLabel } from "../typography";
 import { ContentTableSearch } from "./ContentTableSearch";
+import { SortableHeader } from "./SortableHeader";
+import { nextSortValue, sortFieldsOf, sortStateFor } from "./sorting";
+
+/** Column `meta` read by the table: cell classes and, for a sortable column, the fields it sorts by. */
+type ColumnMeta = { className?: string; sortFields?: string[] };
+
+const ARIA_SORT = { asc: "ascending", desc: "descending" } as const;
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -76,6 +92,20 @@ type ContentListTableProps = {
    * toggles it via `row.getToggleExpandedHandler()`.
    */
   renderExpandedRow?: (rowData: any) => ReactNode;
+  /**
+   * Where a sortable column (`enableSorting: true`) sorts. `"server"` (default): a
+   * header click sets the retriever's sort and the API orders the whole list.
+   * `"client"`: for small, fully loaded tables only; the loaded rows are sorted in
+   * the browser and the sort is kept in the page address under `sortKey`.
+   */
+  sortMode?: "server" | "client";
+  /** Address key of the sort in `sortMode="client"` (`sort[<sortKey>]`). Required in client mode. */
+  sortKey?: string;
+  /**
+   * Client mode only: sorts the loaded items itself (grouped tables that sort inside
+   * their groups). Without it, rows are sorted by the column's accessor.
+   */
+  clientSort?: <T>(rows: T[], sort: string | undefined) => T[];
 };
 
 type CellRenderer = (context: unknown) => ReactNode;
@@ -123,8 +153,19 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
     if (data.isLoaded) setPendingDirection(null);
   }, [data.isLoaded]);
 
+  const isClientSort = props.sortMode === "client";
+  const clientSortParam = useListSortParam({ sortKey: props.sortKey ?? "" });
+  const activeSort = isClientSort ? clientSortParam.sort : data.sort;
+  const { clientSort } = props;
+
+  const sourceData = data?.data ?? EMPTY_ARRAY;
+  const rowsToRender = useMemo(
+    () => (isClientSort && clientSort ? clientSort(sourceData, activeSort) : sourceData),
+    [isClientSort, clientSort, sourceData, activeSort],
+  );
+
   const { data: tableData, columns: tableColumns } = useTableGenerator(props.tableGeneratorType, {
-    data: data?.data ?? EMPTY_ARRAY,
+    data: rowsToRender,
     fields: fields,
     checkedIds: checkedIds,
     toggleId: toggleId,
@@ -144,10 +185,33 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
     [fields],
   );
 
+  // Client mode without `clientSort`: TanStack sorts the loaded rows by the column the
+  // address sort names. Server mode never sorts rows: the retriever owns the order.
+  const clientSorting = useMemo((): SortingState | undefined => {
+    if (!isClientSort || clientSort || !activeSort) return undefined;
+    for (const column of tableColumns as Array<{ id?: string; accessorKey?: string; meta?: unknown }>) {
+      const id = column.id ?? column.accessorKey;
+      if (!id) continue;
+      const direction = sortStateFor(activeSort, sortFieldsOf({ id, columnDef: { meta: column.meta } }));
+      if (direction) return [{ id, desc: direction === "desc" }];
+    }
+    return undefined;
+  }, [isClientSort, clientSort, activeSort, tableColumns]);
+
+  const expansionEnabled = !!props.renderExpandedRow || !!props.expandable;
+  const tableState: Partial<TableState> | undefined =
+    expansionEnabled || isClientSort
+      ? {
+          ...(expansionEnabled && { expanded }),
+          ...(isClientSort && { sorting: clientSorting ?? [] }),
+        }
+      : undefined;
+
   const table = useReactTable({
     data: tableData,
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
+    ...(isClientSort ? { getSortedRowModel: getSortedRowModel(), manualSorting: false } : { manualSorting: true }),
     // Pagination is server-side (the data retriever), never TanStack's. Left on,
     // every core-row-model rebuild queues resetPageIndex -> setState -> re-render,
     // and the table generators rebuild their columns on every render, so it never
@@ -160,14 +224,13 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
       getRowId: (row: TableContent<any>, index: number) => row.jsonApiData?.id ?? String(index),
       getRowCanExpand: () => true,
       onExpandedChange: setExpanded,
-      state: { expanded },
     }),
     ...(props.expandable && {
       getExpandedRowModel: getExpandedRowModel(),
       getSubRows: props.getSubRows,
       onExpandedChange: setExpanded,
-      state: { expanded },
     }),
+    ...(tableState && { state: tableState }),
     initialState: {
       columnVisibility,
     },
@@ -291,10 +354,45 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
               table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
-                    const meta = header.column.columnDef.meta as { className?: string } | undefined;
+                    const meta = header.column.columnDef.meta as ColumnMeta | undefined;
+                    const label = header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext());
+                    // Only an explicit `true` opts a column in: TanStack defaults a missing key to sortable.
+                    // A server-mode retriever without `setSort` (hand-built) cannot sort: plain header.
+                    if (
+                      header.isPlaceholder ||
+                      header.column.columnDef.enableSorting !== true ||
+                      (!isClientSort && !data.setSort)
+                    ) {
+                      return (
+                        <TableHead key={header.id} className={meta?.className}>
+                          {label}
+                        </TableHead>
+                      );
+                    }
+                    const sortFields = sortFieldsOf(header.column);
+                    const direction = sortStateFor(activeSort, sortFields);
+                    const defaultDirection =
+                      !isClientSort && !activeSort ? sortStateFor(data.defaultSort, sortFields) : undefined;
+                    const onToggle = () => {
+                      const next = nextSortValue(activeSort, sortFields);
+                      if (isClientSort) clientSortParam.setSort(next);
+                      else data.setSort?.(next);
+                    };
                     return (
-                      <TableHead key={header.id} className={meta?.className}>
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                      <TableHead
+                        key={header.id}
+                        className={meta?.className}
+                        aria-sort={direction ? ARIA_SORT[direction] : "none"}
+                      >
+                        <SortableHeader
+                          columnId={header.column.id}
+                          label={label}
+                          direction={direction}
+                          defaultDirection={defaultDirection}
+                          onToggle={onToggle}
+                        />
                       </TableHead>
                     );
                   })}
@@ -318,7 +416,7 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                           className={`group ${onRowClick ? "hover:bg-muted/50 cursor-pointer" : ""}`}
                         >
                           {row.getVisibleCells().map((cell) => {
-                            const meta = cell.column.columnDef.meta as { className?: string } | undefined;
+                            const meta = cell.column.columnDef.meta as ColumnMeta | undefined;
                             return (
                               <TableCell key={cell.id} className={meta?.className}>
                                 {renderCell(cell.column.columnDef.cell, cell.getContext())}
@@ -345,7 +443,7 @@ export const ContentListTable = memo(function ContentListTable(props: ContentLis
                       className={`group ${onRowClick ? "hover:bg-muted/50 cursor-pointer" : ""}`}
                     >
                       {row.getVisibleCells().map((cell) => {
-                        const meta = cell.column.columnDef.meta as { className?: string } | undefined;
+                        const meta = cell.column.columnDef.meta as ColumnMeta | undefined;
                         return (
                           <TableCell key={cell.id} className={meta?.className}>
                             {renderCell(cell.column.columnDef.cell, cell.getContext())}

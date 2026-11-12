@@ -60,7 +60,7 @@ export const useCompanyTableStructure: UseTableStructureHook<CompanyInterface, C
           </Link>
         );
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [CompanyFields.createdAt]: () =>

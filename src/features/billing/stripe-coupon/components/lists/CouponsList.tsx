@@ -31,6 +31,8 @@ export function CouponsList({ fullWidth }: CouponsListProps = {}) {
     retriever: (params) => StripeCouponService.listCoupons(params),
     retrieverParams: {},
     module: Modules.StripeCoupon,
+    // Display only (call C8): the server's own order when no sort is chosen.
+    defaultSort: "-updatedAt",
   });
 
   // Renames and code changes happen on the detail page, so the list has to

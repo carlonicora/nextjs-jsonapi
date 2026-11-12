@@ -38,9 +38,14 @@ export class ReferralAdminService extends AbstractService {
   }
 
   /** Every referral in the period, newest first. */
-  static async getReferrals(params: { period: ReferralAdminPeriod }): Promise<ReferralAdminReferralInterface[]> {
+  static async getReferrals(params: {
+    period: ReferralAdminPeriod;
+    sort?: string;
+  }): Promise<ReferralAdminReferralInterface[]> {
     const endpoint = new EndpointCreator({ endpoint: Modules.ReferralAdminReferral });
     endpoint.addAdditionalParam("period", params.period);
+
+    if (params.sort) endpoint.addAdditionalParam("sort", params.sort);
 
     return this.callApi<ReferralAdminReferralInterface[]>({
       type: Modules.ReferralAdminReferral,

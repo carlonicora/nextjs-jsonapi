@@ -26,6 +26,8 @@ export function CompaniesList({ fullWidth }: CompaniesListProps = {}) {
     retriever: (params) => CompanyService.findMany(params),
     retrieverParams: {},
     module: Modules.Company,
+    // Display only (call C8): the server's own order when no sort is chosen.
+    defaultSort: "name",
   });
 
   const functions: ReactNode[] = [<CompanyEditor key="create-account" />];

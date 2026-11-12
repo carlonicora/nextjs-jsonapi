@@ -6,7 +6,14 @@ function DateCell({ date }: { date: Date }) {
   return <span className="text-muted-foreground text-xs">{format(date, "dateMedium")}</span>;
 }
 
-export const cellDate = (params: { name: string; title: string }): ColumnDef<any> => {
+export const cellDate = (params: {
+  name: string;
+  title: string;
+  /** Opt-in: the header sorts the list by this column. */
+  sortable?: boolean;
+  /** Stored fields the column sorts by, when they differ from `name`. */
+  sortFields?: string[];
+}): ColumnDef<any> => {
   return {
     id: params.name,
     accessorKey: params.name,
@@ -16,7 +23,8 @@ export const cellDate = (params: { name: string; title: string }): ColumnDef<any
       if (!date) return null;
       return <DateCell date={date} />;
     },
-    enableSorting: false,
+    enableSorting: params.sortable === true,
+    ...(params.sortFields && { meta: { sortFields: params.sortFields } }),
     enableHiding: false,
   };
 };

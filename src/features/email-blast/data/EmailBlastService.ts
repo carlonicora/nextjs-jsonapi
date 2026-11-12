@@ -4,12 +4,16 @@ import { EmailBlastAudienceInterface } from "./EmailBlastAudienceInterface";
 import { EmailBlastInput, EmailBlastInterface } from "./EmailBlastInterface";
 
 export class EmailBlastService extends AbstractService {
-  static async findMany(params: { next?: NextRef; previous?: PreviousRef } = {}): Promise<EmailBlastInterface[]> {
+  static async findMany(
+    params: { next?: NextRef; previous?: PreviousRef; sort?: string } = {},
+  ): Promise<EmailBlastInterface[]> {
     const endpoint = new EndpointCreator({ endpoint: Modules.EmailBlast });
 
     if (Modules.EmailBlast.inclusions?.lists?.fields)
       endpoint.limitToFields(Modules.EmailBlast.inclusions.lists.fields);
     if (Modules.EmailBlast.inclusions?.lists?.types) endpoint.limitToType(Modules.EmailBlast.inclusions.lists.types);
+
+    if (params.sort) endpoint.addAdditionalParam("sort", params.sort);
 
     return this.callApi<EmailBlastInterface[]>({
       type: Modules.EmailBlast,

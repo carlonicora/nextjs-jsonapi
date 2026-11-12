@@ -11,10 +11,12 @@ export class CompanyService extends AbstractService {
     });
   }
 
-  static async findMany(params: { search?: string; next?: NextRef }): Promise<CompanyInterface[]> {
+  static async findMany(params: { search?: string; next?: NextRef; sort?: string }): Promise<CompanyInterface[]> {
     const endpoint = new EndpointCreator({ endpoint: Modules.Company });
 
     if (params.search) endpoint.addAdditionalParam("search", params.search);
+
+    if (params.sort) endpoint.addAdditionalParam("sort", params.sort);
 
     return this.callApi<CompanyInterface[]>({
       type: Modules.Company,

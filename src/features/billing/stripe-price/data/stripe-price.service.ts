@@ -13,6 +13,8 @@ export class StripePriceService extends AbstractService {
     active?: boolean;
     next?: NextRef;
     prev?: PreviousRef;
+    /** JSON:API `sort` (`name`, `-name`), forwarded to the API. */
+    sort?: string;
   }): Promise<StripePriceInterface[]> {
     const endpoint = new EndpointCreator({
       endpoint: Modules.StripePrice,
@@ -24,6 +26,8 @@ export class StripePriceService extends AbstractService {
     if (params?.active !== undefined) {
       endpoint.addAdditionalParam("active", params.active.toString());
     }
+
+    if (params?.sort) endpoint.addAdditionalParam("sort", params?.sort);
 
     return this.callApi({
       type: Modules.StripePrice,

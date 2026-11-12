@@ -81,11 +81,16 @@ export const useReferralAdminReferralTableStructure: UseTableStructureHook<
         // A referral written before the source was recorded: unknown, not guessed.
         return <span className="text-muted-foreground text-xs">—</span>;
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [ReferralAdminReferralFields.date]: () =>
-      cellDate({ name: ReferralAdminReferralFields.date, title: t("referral.admin.referrals.columns.date") }),
+      cellDate({
+        name: ReferralAdminReferralFields.date,
+        title: t("referral.admin.referrals.columns.date"),
+        sortable: true,
+        sortFields: ["referredAt"],
+      }),
     [ReferralAdminReferralFields.status]: () => ({
       id: ReferralAdminReferralFields.status,
       header: t("referral.admin.referrals.columns.status"),
@@ -95,7 +100,7 @@ export const useReferralAdminReferralTableStructure: UseTableStructureHook<
         ) : (
           <Badge variant="softYellow">{t("referral.admin.status.pending")}</Badge>
         ),
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [ReferralAdminReferralFields.credits]: () => ({
@@ -109,8 +114,8 @@ export const useReferralAdminReferralTableStructure: UseTableStructureHook<
         const award = decimal(entry.tokensAwarded, 0);
         return <span className="block text-xs tabular-nums text-end">{`${award} + ${award}`}</span>;
       },
-      meta: { className: "text-end" },
-      enableSorting: false,
+      meta: { className: "text-end", sortFields: ["tokensAwarded"] },
+      enableSorting: true,
       enableHiding: false,
     }),
   };

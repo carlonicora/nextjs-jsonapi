@@ -15,6 +15,8 @@ export function RolesList() {
     retriever: (params) => RoleService.findAllRoles(params),
     retrieverParams: {},
     module: Modules.Role,
+    // Display only (call C8): the server's own order when no sort is chosen.
+    defaultSort: "name",
   });
 
   return (

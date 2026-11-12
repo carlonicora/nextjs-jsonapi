@@ -8,13 +8,17 @@ import { EmailAutomationInput, EmailAutomationInterface } from "./EmailAutomatio
 import { EmailAutomationTriggerInterface } from "./EmailAutomationTriggerInterface";
 
 export class EmailAutomationService extends AbstractService {
-  static async findMany(params: { next?: NextRef; previous?: PreviousRef } = {}): Promise<EmailAutomationInterface[]> {
+  static async findMany(
+    params: { next?: NextRef; previous?: PreviousRef; sort?: string } = {},
+  ): Promise<EmailAutomationInterface[]> {
     const endpoint = new EndpointCreator({ endpoint: Modules.EmailAutomation });
 
     if (Modules.EmailAutomation.inclusions?.lists?.fields)
       endpoint.limitToFields(Modules.EmailAutomation.inclusions.lists.fields);
     if (Modules.EmailAutomation.inclusions?.lists?.types)
       endpoint.limitToType(Modules.EmailAutomation.inclusions.lists.types);
+
+    if (params.sort) endpoint.addAdditionalParam("sort", params.sort);
 
     return this.callApi<EmailAutomationInterface[]>({
       type: Modules.EmailAutomation,
@@ -90,6 +94,8 @@ export class EmailAutomationService extends AbstractService {
     status?: string;
     next?: NextRef;
     previous?: PreviousRef;
+    /** JSON:API `sort` (`name`, `-name`), forwarded to the API. */
+    sort?: string;
   }): Promise<EmailAutomationEnrollmentInterface[]> {
     const endpoint = new EndpointCreator({
       endpoint: Modules.EmailAutomation,
@@ -98,6 +104,8 @@ export class EmailAutomationService extends AbstractService {
     });
 
     if (params.status) endpoint.addAdditionalParam("status", params.status);
+
+    if (params.sort) endpoint.addAdditionalParam("sort", params.sort);
 
     return this.callApi<EmailAutomationEnrollmentInterface[]>({
       type: Modules.EmailAutomationEnrollment,

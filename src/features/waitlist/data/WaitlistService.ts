@@ -43,12 +43,16 @@ export class WaitlistService extends AbstractService {
     fetchAll?: boolean;
     next?: NextRef;
     previous?: PreviousRef;
+    /** JSON:API `sort` (`name`, `-name`), forwarded to the API. */
+    sort?: string;
   }): Promise<WaitlistInterface[]> {
     const endpoint = new EndpointCreator({ endpoint: Modules.Waitlist });
 
     if (params?.status) endpoint.addAdditionalParam("status", params.status);
     if (params?.search) endpoint.addAdditionalParam("search", params.search);
     if (params?.fetchAll) endpoint.addAdditionalParam("fetchAll", "true");
+
+    if (params?.sort) endpoint.addAdditionalParam("sort", params?.sort);
 
     return this.callApi<WaitlistInterface[]>({
       type: Modules.Waitlist,

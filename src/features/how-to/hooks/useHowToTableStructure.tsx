@@ -43,7 +43,7 @@ export const useHowToTableStructure: UseTableStructureHook<HowToInterface, HowTo
         const howTo: HowToInterface = row.original.jsonApiData;
         return <Link href={generateUrl({ page: Modules.HowTo, id: howTo.id })}>{howTo.name}</Link>;
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [HowToFields.description]: () => ({

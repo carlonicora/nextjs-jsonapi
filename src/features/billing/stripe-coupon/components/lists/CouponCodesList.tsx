@@ -25,6 +25,8 @@ export function CouponCodesList({ couponId }: CouponCodesListProps) {
     retriever: (params) => StripeCouponCodeService.listByCoupon({ ...params, couponId }),
     retrieverParams: {},
     module: Modules.StripeCouponCode,
+    // Display only (call C8): the server's own order when no sort is chosen.
+    defaultSort: "createdAt",
   });
 
   // Switching "Apply automatically" on one code clears it on the others in the

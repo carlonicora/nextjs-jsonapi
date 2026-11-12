@@ -33,7 +33,13 @@ export const useEmailBlastTableStructure: UseTableStructureHook<EmailBlastInterf
 
   // Typography role 15 (numeric): tabular-nums, end-aligned. NEVER
   // font-mono — no monospace font is loaded in these apps.
-  const numericColumn = (field: EmailBlastFields, header: string, read: (b: EmailBlastInterface) => number) => ({
+  // `sortField` is the stored count the column shows (its id differs from the property).
+  const numericColumn = (
+    field: EmailBlastFields,
+    header: string,
+    read: (b: EmailBlastInterface) => number,
+    sortField: string,
+  ) => ({
     id: field,
     accessorKey: field,
     header: header,
@@ -41,7 +47,8 @@ export const useEmailBlastTableStructure: UseTableStructureHook<EmailBlastInterf
       const blast: EmailBlastInterface = row.original.jsonApiData;
       return <span className="block text-xs tabular-nums text-end">{read(blast) ?? 0}</span>;
     },
-    enableSorting: false,
+    meta: { sortFields: [sortField] },
+    enableSorting: true,
     enableHiding: false,
   });
 
@@ -54,7 +61,7 @@ export const useEmailBlastTableStructure: UseTableStructureHook<EmailBlastInterf
         const blast: EmailBlastInterface = row.original.jsonApiData;
         return <Link href={generateUrl({ page: Modules.EmailBlast, id: blast.id })}>{blast.subject}</Link>;
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [EmailBlastFields.purpose]: () => ({
@@ -69,7 +76,7 @@ export const useEmailBlastTableStructure: UseTableStructureHook<EmailBlastInterf
           <Badge variant="softGray">{t("emailPurpose.marketing")}</Badge>
         );
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [EmailBlastFields.status]: () => ({
@@ -80,7 +87,7 @@ export const useEmailBlastTableStructure: UseTableStructureHook<EmailBlastInterf
         const blast: EmailBlastInterface = row.original.jsonApiData;
         return <Badge variant={STATUS_VARIANTS[blast.status]}>{t(`emailBlasts.list.status.${blast.status}`)}</Badge>;
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [EmailBlastFields.sentAt]: () => ({
@@ -92,18 +99,19 @@ export const useEmailBlastTableStructure: UseTableStructureHook<EmailBlastInterf
         if (!blast.sentAt) return <span className="text-muted-foreground text-xs">—</span>;
         return <span className="text-sm">{dates.format(blast.sentAt, "date")}</span>;
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [EmailBlastFields.sent]: () =>
-      numericColumn(EmailBlastFields.sent, t("emailBlasts.list.columns.sent"), (b) => b.sentCount),
+      numericColumn(EmailBlastFields.sent, t("emailBlasts.list.columns.sent"), (b) => b.sentCount, "sentCount"),
     [EmailBlastFields.failed]: () =>
-      numericColumn(EmailBlastFields.failed, t("emailBlasts.list.columns.failed"), (b) => b.failedCount),
+      numericColumn(EmailBlastFields.failed, t("emailBlasts.list.columns.failed"), (b) => b.failedCount, "failedCount"),
     [EmailBlastFields.unsubscribed]: () =>
       numericColumn(
         EmailBlastFields.unsubscribed,
         t("emailBlasts.list.columns.unsubscribed"),
         (b) => b.unsubscribedCount,
+        "unsubscribedCount",
       ),
   };
 

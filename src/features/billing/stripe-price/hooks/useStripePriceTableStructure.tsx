@@ -61,7 +61,7 @@ export const useStripePriceTableStructure: UseTableStructureHook<StripePriceInte
           </Link>
         );
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [StripePriceFields.amount]: () => ({
@@ -77,7 +77,8 @@ export const useStripePriceTableStructure: UseTableStructureHook<StripePriceInte
           </span>
         );
       },
-      enableSorting: false,
+      meta: { sortFields: ["unitAmount"] },
+      enableSorting: true,
       enableHiding: false,
     }),
     [StripePriceFields.interval]: () => ({
@@ -89,7 +90,8 @@ export const useStripePriceTableStructure: UseTableStructureHook<StripePriceInte
         // Typography role 8 (UI chrome): single-line, plain text-xs.
         return <span className="text-xs">{formatInterval(price, fmt)}</span>;
       },
-      enableSorting: false,
+      meta: { sortFields: ["recurringInterval"] },
+      enableSorting: true,
       enableHiding: false,
     }),
     [StripePriceFields.token]: () => ({
@@ -100,7 +102,7 @@ export const useStripePriceTableStructure: UseTableStructureHook<StripePriceInte
         const price: StripePriceInterface = row.original.jsonApiData;
         return <span className="block text-xs tabular-nums text-end">{price.token ?? ""}</span>;
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [StripePriceFields.status]: () => ({
@@ -123,7 +125,8 @@ export const useStripePriceTableStructure: UseTableStructureHook<StripePriceInte
           </span>
         );
       },
-      enableSorting: false,
+      meta: { sortFields: ["active"] },
+      enableSorting: true,
       enableHiding: false,
     }),
     [StripePriceFields.actions]: () => ({

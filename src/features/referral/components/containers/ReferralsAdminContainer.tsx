@@ -103,9 +103,11 @@ export function ReferralsAdminContainer() {
 
   const referrals: DataListRetriever<ReferralAdminReferralInterface> = useDataListRetriever({
     module: Modules.ReferralAdminReferral,
-    retriever: (params: { period: ReferralAdminPeriod }) =>
-      ReferralAdminService.getReferrals({ period: params.period }),
+    retriever: (params: { period: ReferralAdminPeriod; sort?: string }) =>
+      ReferralAdminService.getReferrals({ period: params.period, sort: params.sort }),
     retrieverParams: { period },
+    // Display only (call C8): the server's own order when no sort is chosen.
+    defaultSort: "-referredAt",
   });
 
   useRefetchOnChange(referrers as DataListRetriever<unknown>, "period", period);

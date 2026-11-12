@@ -35,7 +35,7 @@ export const useStripeProductTableStructure: UseTableStructureHook<StripeProduct
         const product: StripeProductInterface = row.original.jsonApiData;
         return <Link href={generateUrl({ page: Modules.StripeProduct, id: product.id })}>{product.name}</Link>;
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [StripeProductFields.status]: () => ({
@@ -50,7 +50,8 @@ export const useStripeProductTableStructure: UseTableStructureHook<StripeProduct
           <Badge variant="softGray">{t("billing.admin.products.status.archived")}</Badge>
         );
       },
-      enableSorting: false,
+      meta: { sortFields: ["active"] },
+      enableSorting: true,
       enableHiding: false,
     }),
     [StripeProductFields.prices]: () => ({

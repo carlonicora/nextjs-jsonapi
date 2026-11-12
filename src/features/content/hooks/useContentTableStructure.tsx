@@ -58,7 +58,7 @@ export const useContentTableStructure = <U extends string = ContentFields>(
           </Tooltip>
         );
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [ContentFields.relevance]: () => ({

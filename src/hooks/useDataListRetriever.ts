@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ClientAbstractService } from "../core/abstracts/ClientAbstractService";
 import { getLastApiMeta, getLastApiTotal } from "../core/abstracts/AbstractService";
+import { useListSortParam } from "./useListSortParam";
 
 export type PageInfo = {
   startItem: number;
@@ -27,6 +28,15 @@ export type DataListRetriever<T> = {
   removeElement: (element: T) => void;
   isSearch: boolean;
   pageInfo?: PageInfo;
+  /** The chosen sort in JSON:API wire format (`name`, `-name`), kept in the page address. */
+  sort?: string;
+  /** The list's display-only default order (e.g. `-updatedAt`). Never sent to the API. */
+  defaultSort?: string;
+  /**
+   * Sets (or, with `null`, clears) the sort: writes the address and refetches from page 1, keeping the search term.
+   * Optional so hand-built retrievers keep compiling; without it a server-mode table renders plain headers.
+   */
+  setSort?: (value: string | null) => void;
 };
 
 export function useDataListRetriever<T>(params: {
@@ -37,6 +47,10 @@ export function useDataListRetriever<T>(params: {
   addAdditionalParameter?: (key: string, value: any | null) => void;
   requiresSearch?: boolean;
   module: any;
+  /** Address key of this list's sort (`sort[<sortKey>]`). Defaults to `module.name`. */
+  sortKey?: string;
+  /** Display-only default order, exposed for the table header and never passed to the retriever. */
+  defaultSort?: string;
 }): DataListRetriever<T> {
   const [data, setData] = useState<T[] | undefined>(undefined);
   const [total, setTotal] = useState<number | undefined>(undefined);
@@ -51,6 +65,15 @@ export function useDataListRetriever<T>(params: {
   const abortControllerRef = useRef<AbortController | null>(null);
   const isFetchingRef = useRef(false);
   const isPaginatingRef = useRef(false);
+
+  // The sort lives in the page address. The first fetch waits until the address has been
+  // read, so a restored sort is fetched once instead of unsorted first and sorted after.
+  const sortParam = useListSortParam({ sortKey: params.sortKey ?? params.module?.name ?? "" });
+  const sortReady = sortParam.ready;
+  const sortRef = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    sortRef.current = sortParam.sort;
+  }, [sortParam.sort]);
 
   const resolvedType = params.module;
   const resolvedService = ClientAbstractService; // We'll just use ClientAbstractService directly for pagination
@@ -129,7 +152,7 @@ export function useDataListRetriever<T>(params: {
       /** Re-fetch even though a single-page list is already loaded. */
       force?: boolean;
     }) => {
-      if (ready === false) return;
+      if (ready === false || !sortReady) return;
 
       // Prevent concurrent pagination calls
       if ((fetchParams?.callNext || fetchParams?.callPrevious) && isPaginatingRef.current) {
@@ -213,6 +236,7 @@ export function useDataListRetriever<T>(params: {
           // An explicit `search` passed through addAdditionalParameter wins: overwriting it
           // with the internal term (only ever set by `search()`) silently dropped it.
           if (additionalParamsRef.current.search === undefined) retrieverParams.search = currentSearchTerm;
+          if (sortRef.current !== undefined) retrieverParams.sort = sortRef.current;
           retrieverParams.next = nextRef;
           retrieverParams.previous = previousRef;
           retrieverParams.self = selfRef;
@@ -254,7 +278,7 @@ export function useDataListRetriever<T>(params: {
         }
       }
     },
-    [stableParams, ready, params.search],
+    [stableParams, ready, sortReady, params.search],
   );
 
   const setRefreshedElement = useCallback(
@@ -297,10 +321,10 @@ export function useDataListRetriever<T>(params: {
   // and ready effect fired simultaneously on initial render
   useEffect(() => {
     // Only fetch if ready and haven't loaded yet
-    if (ready && !isLoaded) {
+    if (ready && sortReady && !isLoaded) {
       fetchData({ isRefresh: true });
     }
-  }, [ready, fetchData]);
+  }, [ready, sortReady, fetchData]);
 
   // Cache Components keeps a visited route alive in a hidden <Activity>: leaving it cleans up
   // its effects, coming back re-runs them with the old state intact. A loaded list would then
@@ -377,6 +401,19 @@ export function useDataListRetriever<T>(params: {
     [fetchData],
   );
 
+  const writeSortParam = sortParam.setSort;
+  const setSort = useCallback(
+    (value: string | null) => {
+      writeSortParam(value);
+      sortRef.current = value ? value : undefined;
+      setNextPage(undefined);
+      setPreviousPage(undefined);
+      // `force`: a new order must be fetched even when the loaded list fits on one page.
+      fetchData({ isRefine: true, isRefresh: true, force: true });
+    },
+    [fetchData, writeSortParam],
+  );
+
   const isSearch = !!searchTermRef.current;
 
   const refresh = useCallback(async () => {
@@ -412,5 +449,8 @@ export function useDataListRetriever<T>(params: {
     isSearch: isSearch,
     removeElement: removeElement,
     pageInfo: pageInfo,
+    sort: sortParam.sort,
+    defaultSort: params.defaultSort,
+    setSort: setSort,
   };
 }

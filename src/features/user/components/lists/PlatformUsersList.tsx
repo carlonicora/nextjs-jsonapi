@@ -30,6 +30,8 @@ export function PlatformUsersList({ includeDeleted, fullWidth }: PlatformUsersLi
     retriever: (params) => UserService.findMany(params),
     retrieverParams: { includeDeleted: includeDeleted },
     module: Modules.User,
+    // Display only (call C8): the server's own order when no sort is chosen.
+    defaultSort: "name",
   }) as DataListRetriever<UserInterface>;
 
   return (

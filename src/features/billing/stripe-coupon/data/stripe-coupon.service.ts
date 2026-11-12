@@ -10,10 +10,16 @@ export class StripeCouponService extends AbstractService {
   /**
    * List all coupons with their codes (admin)
    */
-  static async listCoupons(params?: { next?: NextRef; prev?: PreviousRef }): Promise<StripeCouponInterface[]> {
+  static async listCoupons(params?: {
+    next?: NextRef;
+    prev?: PreviousRef;
+    sort?: string;
+  }): Promise<StripeCouponInterface[]> {
     const endpoint = new EndpointCreator({
       endpoint: Modules.StripeCoupon,
     });
+
+    if (params?.sort) endpoint.addAdditionalParam("sort", params?.sort);
 
     return this.callApi({
       type: Modules.StripeCoupon,

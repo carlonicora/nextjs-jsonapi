@@ -42,7 +42,7 @@ export const useRoleTableStructure: UseTableStructureHook<RoleInterface, RoleFie
         const role = row.original.jsonApiData as RoleInterface;
         return <Link href={generateUrl({ page: Modules.Role, id: role.id })}>{row.getValue("name")}</Link>;
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [RoleFields.description]: () => ({
@@ -50,7 +50,7 @@ export const useRoleTableStructure: UseTableStructureHook<RoleInterface, RoleFie
       accessorKey: "description",
       header: t(`role.fields.description.label`),
       cell: ({ row }: { row: Row<TableContent<RoleInterface>> }) => <>{row.getValue("description")}</>,
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [RoleFields.createdAt]: () =>

@@ -31,6 +31,8 @@ export function EmailAutomationsList({ fullWidth }: EmailAutomationsListProps = 
     retriever: (params) => EmailAutomationService.findMany(params),
     retrieverParams: {},
     module: Modules.EmailAutomation,
+    // Display only (call C8): the server's own order when no sort is chosen.
+    defaultSort: "-updatedAt",
   });
 
   // The trigger column shows the label the app declares, not the stored key.

@@ -32,6 +32,8 @@ export function EmailBlastsList({ fullWidth }: EmailBlastsListProps = {}) {
     retriever: (params) => EmailBlastService.findMany(params),
     retrieverParams: {},
     module: Modules.EmailBlast,
+    // Display only (call C8): the server's own order when no sort is chosen.
+    defaultSort: "-updatedAt",
   });
 
   const functions: ReactNode[] = [<EmailBlastEditor key="create-email-blast" />];

@@ -3,10 +3,12 @@ import { BLOG_ACTION } from "../types/blog.constants";
 import { BlogPostInput, BlogPostInterface } from "./BlogPostInterface";
 
 export class BlogPostService extends AbstractService {
-  static async findMany(params: { search?: string; next?: NextRef } = {}): Promise<BlogPostInterface[]> {
+  static async findMany(params: { search?: string; next?: NextRef; sort?: string } = {}): Promise<BlogPostInterface[]> {
     const endpoint = new EndpointCreator({ endpoint: Modules.BlogPost });
 
     if (params.search) endpoint.addAdditionalParam("search", params.search);
+
+    if (params.sort) endpoint.addAdditionalParam("sort", params.sort);
 
     return this.callApi<BlogPostInterface[]>({
       type: Modules.BlogPost,

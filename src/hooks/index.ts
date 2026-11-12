@@ -9,6 +9,7 @@ export type {
 export { useUrlRewriter } from "./url.rewriter";
 export { useDataListRetriever, type DataListRetriever } from "./useDataListRetriever";
 export { useDebounce } from "./useDebounce";
+export { useListSortParam } from "./useListSortParam";
 export { usePageUrlGenerator } from "./usePageUrlGenerator";
 export { registerTableGenerator, useTableGenerator } from "./useTableGenerator";
 

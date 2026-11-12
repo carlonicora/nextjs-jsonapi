@@ -32,6 +32,8 @@ export function WaitlistList({ fullWidth }: WaitlistListProps = {}) {
     retriever: (params) => WaitlistService.findMany(params),
     retrieverParams: {},
     module: Modules.Waitlist,
+    // Display only (call C8): the server's own order when no sort is chosen.
+    defaultSort: "-createdAt",
   });
 
   const loadStats = useCallback(async () => {

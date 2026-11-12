@@ -52,6 +52,7 @@ function createMockDataRetriever(overrides: Partial<DataListRetriever<any>> = {}
     removeAdditionalParameter: vi.fn(),
     setRefreshedElement: vi.fn(),
     removeElement: vi.fn(),
+    setSort: vi.fn(),
     isSearch: false,
     ...overrides,
   };

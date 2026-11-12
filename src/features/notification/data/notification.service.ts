@@ -6,10 +6,14 @@ export class NotificationService extends AbstractService {
     isArchived?: boolean;
     next?: NextRef;
     suppressGlobalError?: boolean;
+    /** JSON:API `sort` (`name`, `-name`), forwarded to the API. */
+    sort?: string;
   }): Promise<NotificationInterface[]> {
     const endpoint = new EndpointCreator({ endpoint: Modules.Notification });
 
     if (params.isArchived) endpoint.addAdditionalParam("isArchived", "true");
+
+    if (params.sort) endpoint.addAdditionalParam("sort", params.sort);
 
     return this.callApi<NotificationInterface[]>({
       type: Modules.Notification,

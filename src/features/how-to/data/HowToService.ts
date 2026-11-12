@@ -16,6 +16,8 @@ export class HowToService extends AbstractService {
       fetchAll?: boolean;
       next?: NextRef;
       prev?: PreviousRef;
+      /** JSON:API `sort` (`name`, `-name`), forwarded to the API. */
+      sort?: string;
     } = {},
   ): Promise<HowToInterface[]> {
     const endpoint = new EndpointCreator({ endpoint: Modules.HowTo });
@@ -24,6 +26,8 @@ export class HowToService extends AbstractService {
     if (params.search) endpoint.addAdditionalParam("search", params.search);
     if (Modules.HowTo.inclusions?.lists?.fields) endpoint.limitToFields(Modules.HowTo.inclusions.lists.fields);
     if (Modules.HowTo.inclusions?.lists?.types) endpoint.limitToType(Modules.HowTo.inclusions.lists.types);
+
+    if (params.sort) endpoint.addAdditionalParam("sort", params.sort);
 
     return this.callApi({
       type: Modules.HowTo,

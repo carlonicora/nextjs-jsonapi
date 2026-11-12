@@ -28,6 +28,8 @@ export function EmailAutomationRecipientsList() {
     retriever: (params) => EmailAutomationService.findEnrollments(params),
     retrieverParams: { automationId: automation?.id },
     module: Modules.EmailAutomationEnrollment,
+    // Display only (call C8): the server's own order when no sort is chosen.
+    defaultSort: "-enrolledAt",
   });
 
   const handleStatusChange = (value: string | null) => {

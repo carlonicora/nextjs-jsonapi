@@ -37,7 +37,7 @@ export const useStripeCouponTableStructure: UseTableStructureHook<StripeCouponIn
         const coupon: StripeCouponInterface = row.original.jsonApiData;
         return <Link href={generateUrl({ page: STRIPE_COUPON_DETAIL_PAGE_URL, id: coupon.id })}>{coupon.name}</Link>;
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     }),
     [StripeCouponFields.discount]: () => ({
@@ -48,7 +48,8 @@ export const useStripeCouponTableStructure: UseTableStructureHook<StripeCouponIn
         const coupon: StripeCouponInterface = row.original.jsonApiData;
         return <span className="text-xs">{formatCouponDiscount(coupon, t, fmt)}</span>;
       },
-      enableSorting: false,
+      meta: { sortFields: ["discountType", "percentOff", "amountOff"] },
+      enableSorting: true,
       enableHiding: false,
     }),
     [StripeCouponFields.places]: () => ({
@@ -70,7 +71,8 @@ export const useStripeCouponTableStructure: UseTableStructureHook<StripeCouponIn
           </span>
         );
       },
-      enableSorting: false,
+      meta: { sortFields: ["timesRedeemed", "maxRedemptions"] },
+      enableSorting: true,
       enableHiding: false,
     }),
     [StripeCouponFields.codes]: () => ({
@@ -96,7 +98,8 @@ export const useStripeCouponTableStructure: UseTableStructureHook<StripeCouponIn
           <Badge variant="softGray">{t("billing.admin.coupons.status.ended")}</Badge>
         );
       },
-      enableSorting: false,
+      meta: { sortFields: ["valid"] },
+      enableSorting: true,
       enableHiding: false,
     }),
   };

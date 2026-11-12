@@ -33,6 +33,8 @@ export class UserService extends AbstractService {
     includeDeleted?: boolean;
     next?: NextRef;
     prev?: PreviousRef;
+    /** JSON:API `sort` (`name`, `-name`), forwarded to the API. */
+    sort?: string;
   }): Promise<UserInterface[]> {
     const endpoint = new EndpointCreator({ endpoint: Modules.User });
 
@@ -41,6 +43,8 @@ export class UserService extends AbstractService {
     if (params.includeDeleted) endpoint.addAdditionalParam("includeDeleted", "true");
     if (params.fetchAll) endpoint.addAdditionalParam("fetchAll", "true");
     if (params.search) endpoint.addAdditionalParam("search", params.search);
+
+    if (params.sort) endpoint.addAdditionalParam("sort", params.sort);
 
     return this.callApi({
       type: Modules.User,
@@ -55,6 +59,8 @@ export class UserService extends AbstractService {
     search?: string;
     next?: NextRef;
     prev?: PreviousRef;
+    /** JSON:API `sort` (`name`, `-name`), forwarded to the API. */
+    sort?: string;
   }): Promise<UserInterface[]> {
     const endpoint = new EndpointCreator({ endpoint: Modules.User });
 
@@ -62,6 +68,8 @@ export class UserService extends AbstractService {
     endpoint.addAdditionalParam("includeDeleted", "true");
     endpoint.addAdditionalParam("fetchAll", "true");
     if (params.search) endpoint.addAdditionalParam("search", params.search);
+
+    if (params.sort) endpoint.addAdditionalParam("sort", params.sort);
 
     return this.callApi({
       type: Modules.User,
@@ -71,7 +79,12 @@ export class UserService extends AbstractService {
     });
   }
 
-  static async findRelevant(params: { id: string; next?: NextRef; prev?: PreviousRef }): Promise<UserInterface[]> {
+  static async findRelevant(params: {
+    id: string;
+    next?: NextRef;
+    prev?: PreviousRef;
+    sort?: string;
+  }): Promise<UserInterface[]> {
     const endpoint: EndpointCreator = new EndpointCreator({
       endpoint: Modules.Content,
       id: params.id,
@@ -80,6 +93,8 @@ export class UserService extends AbstractService {
 
     if (Modules.User.inclusions?.lists?.fields) endpoint.limitToFields(Modules.User.inclusions.lists.fields);
     if (Modules.User.inclusions?.lists?.types) endpoint.limitToType(Modules.User.inclusions.lists.types);
+
+    if (params.sort) endpoint.addAdditionalParam("sort", params.sort);
 
     return this.callApi<UserInterface[]>({
       type: Modules.User,
@@ -94,6 +109,8 @@ export class UserService extends AbstractService {
     search?: string;
     next?: NextRef;
     prev?: PreviousRef;
+    /** JSON:API `sort` (`name`, `-name`), forwarded to the API. */
+    sort?: string;
   }): Promise<UserInterface[]> {
     if (!params.companyId) return [];
 
@@ -104,6 +121,8 @@ export class UserService extends AbstractService {
     });
 
     if (params.search) endpoint.addAdditionalParam("search", params.search);
+
+    if (params.sort) endpoint.addAdditionalParam("sort", params.sort);
 
     return this.callApi({
       type: Modules.User,
@@ -121,6 +140,8 @@ export class UserService extends AbstractService {
     isDeleted?: boolean;
     next?: NextRef;
     prev?: PreviousRef;
+    /** JSON:API `sort` (`name`, `-name`), forwarded to the API. */
+    sort?: string;
   }): Promise<UserInterface[]> {
     const endpoint = new EndpointCreator({
       endpoint: Modules.Company,
@@ -132,6 +153,8 @@ export class UserService extends AbstractService {
     if (params.isDeleted) endpoint.addAdditionalParam("isDeleted", "true");
     if (params.limitToRoles && params.limitToRoles.length > 0)
       endpoint.addAdditionalParam("limitToRoles", params.limitToRoles.join(","));
+
+    if (params.sort) endpoint.addAdditionalParam("sort", params.sort);
 
     return this.callApi({
       type: Modules.User,
@@ -146,10 +169,14 @@ export class UserService extends AbstractService {
     search?: string;
     next?: NextRef;
     prev?: PreviousRef;
+    /** JSON:API `sort` (`name`, `-name`), forwarded to the API. */
+    sort?: string;
   }): Promise<UserInterface[]> {
     const endpoint = new EndpointCreator({ endpoint: Modules.Role, id: params.roleId, childEndpoint: Modules.User });
 
     if (params.search) endpoint.addAdditionalParam("search", params.search);
+
+    if (params.sort) endpoint.addAdditionalParam("sort", params.sort);
 
     return this.callApi({
       type: Modules.User,
