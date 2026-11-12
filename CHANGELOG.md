@@ -1,3 +1,9 @@
+## [6.33.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.32.2...v6.33.0) (2026-11-12)
+
+### 🚀 Features
+
+* **tables:** a column opts into sorting with sortable: true on cellText, cellLink, cellDate and cellDateTime (sortFields when the stored fields differ); a header click sorts the whole list on the server through the list retriever, which keeps the sort in the page address under sort[<module>] and refetches from page 1; ContentListTable takes sortMode "client" with sortKey and an optional clientSort for small, fully loaded tables; useDataListRetriever takes sortKey and defaultSort and returns sort, defaultSort and setSort (optional on the type, so hand-built retrievers still compile and show plain headers); the users, roles, companies, content, notifications, waitlist, Stripe products, prices and coupons, blog posts, email automations and blasts, how-tos and referrals tables sort by their columns ([b568b90](https://github.com/carlonicora/nextjs-jsonapi/commit/b568b90117e30277225b4047a2b715f5cafe4631))
+
 ## [6.32.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.32.1...v6.32.2) (2026-11-11)
 
 ### 🐛 Bug Fixes
