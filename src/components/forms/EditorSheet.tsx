@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { isValidElement, ReactElement, ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { isValidElement, ReactElement, ReactNode, useCallback, useEffect, useRef } from "react";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 import { PencilIcon } from "lucide-react";
 import { ActionBarProvider, useIsInActionBar } from "../../contexts/ActionBarContext";
@@ -204,8 +204,13 @@ export function EditorSheet<T extends FieldValues>({
   // `useForm` defaults came from), so the FIRST open also notices an entity that
   // changed since — e.g. content autosaved on the page — instead of showing the
   // mount-time values and saving them back over the newer ones.
-  const [mountFingerprint] = useState(() => (isEdit ? JSON.stringify(onReset()) : undefined));
-  const seeded = useRef<string | undefined>(mountFingerprint);
+  // Taken in a mount effect, not during render: `onReset` may set the caller's
+  // state (e.g. UserEditor clears its roles), which React refuses mid-render.
+  // Declared before the open/close effect so it runs first on mount.
+  const seeded = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    if (isEdit) seeded.current = JSON.stringify(onReset());
+  }, []);
 
   useEffect(() => {
     if (open) {
