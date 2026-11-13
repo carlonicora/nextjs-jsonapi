@@ -168,3 +168,19 @@ describe("AssistantMessage.buildOptimistic", () => {
     expect(a.id).not.toEqual(b.id);
   });
 });
+
+describe("AssistantMessage.createAppendMessageJsonApi", () => {
+  it("createAppendMessageJsonApi carries clientContext when given", () => {
+    const payload: any = new AssistantMessage().createAppendMessageJsonApi({
+      content: "x",
+      clientContext: { k: "v" },
+    });
+    expect(payload.data.attributes.clientContext).toEqual({ k: "v" });
+    expect(payload.data.attributes.content).toBe("x");
+  });
+
+  it("createAppendMessageJsonApi omits clientContext when not given", () => {
+    const payload: any = new AssistantMessage().createAppendMessageJsonApi({ content: "x" });
+    expect("clientContext" in payload.data.attributes).toBe(false);
+  });
+});

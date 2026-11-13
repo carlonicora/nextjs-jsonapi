@@ -67,4 +67,33 @@ describe("AssistantThread", () => {
     expect(scrollTargets[0].textContent).toContain("newest answer");
     expect(scrollTargets[0].textContent).not.toContain("older question");
   });
+
+  it("renderAfterMessage is called after each message with its neighbours and its output follows the message", () => {
+    const first = buildMessageStub({ role: "user", content: "first text", position: 0 });
+    const second = buildMessageStub({ role: "assistant", content: "second text", position: 1 });
+    const renderAfterMessage = vi.fn(
+      (
+        m: AssistantMessageInterface,
+        _neighbours: { previous?: AssistantMessageInterface; next?: AssistantMessageInterface },
+      ) => <span data-testid={"after-" + m.id} />,
+    );
+
+    render(
+      <AssistantThread
+        messages={[first, second]}
+        sending={false}
+        onSelectFollowUp={vi.fn()}
+        renderAfterMessage={renderAfterMessage}
+      />,
+    );
+
+    const afterFirst = screen.getByTestId("after-" + first.id);
+    expect(screen.getByTestId("after-" + second.id)).toBeInTheDocument();
+    const secondCall = renderAfterMessage.mock.calls.find((call) => call[0] === second);
+    expect(secondCall?.[1]).toEqual({ previous: first, next: undefined });
+    const firstCall = renderAfterMessage.mock.calls.find((call) => call[0] === first);
+    expect(firstCall?.[1]).toEqual({ previous: undefined, next: second });
+    const secondText = screen.getByText("second text");
+    expect(afterFirst.compareDocumentPosition(secondText) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
 });

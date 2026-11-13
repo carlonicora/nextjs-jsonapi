@@ -71,6 +71,8 @@ export class AssistantService extends AbstractService {
     limitToHandbookPageId?: string;
     /** BlockNote document. Serialised by the model into `content`; never its own attribute. */
     contentBlocks?: unknown[];
+    /** Opaque string context the host attaches to this message. */
+    clientContext?: Record<string, string>;
   }): Promise<AssistantMessageInterface[]> {
     const message = new AssistantMessage();
     return this.callApi<AssistantMessageInterface[]>({
@@ -88,6 +90,7 @@ export class AssistantService extends AbstractService {
         handbookMode: params.handbookMode,
         limitToHandbookPageId: params.limitToHandbookPageId,
         contentBlocks: params.contentBlocks,
+        clientContext: params.clientContext,
       }),
       overridesJsonApiCreation: true,
     });
@@ -104,6 +107,8 @@ export class AssistantService extends AbstractService {
     content: string;
     /** BlockNote document. Serialised by the model into `content`; never its own attribute. */
     contentBlocks?: unknown[];
+    /** Opaque string context the host attaches to this message. */
+    clientContext?: Record<string, string>;
   }): Promise<AssistantMessageInterface[]> {
     const message = new AssistantMessage();
     return this.callApi<AssistantMessageInterface[]>({
@@ -117,6 +122,7 @@ export class AssistantService extends AbstractService {
       input: message.createAppendMessageJsonApi({
         content: params.content,
         contentBlocks: params.contentBlocks,
+        clientContext: params.clientContext,
       }),
       overridesJsonApiCreation: true,
     });

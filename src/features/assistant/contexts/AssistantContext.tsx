@@ -90,6 +90,17 @@ interface Props {
    * assistant list, which is wrong for a scoped surface.
    */
   breadcrumbsOverride?: BreadcrumbItemData[];
+  /**
+   * Sent as `clientContext` with every user message of this provider (create
+   * and append, both engines). Opaque to the library: it never reads the
+   * keys or values, the host's server does.
+   */
+  clientContext?: Record<string, string>;
+  /**
+   * Title of a thread this provider creates. Absent, the server names the
+   * thread itself. Opaque to the library.
+   */
+  newThreadTitle?: string;
 }
 
 function stripOptimistic(list: AssistantMessageInterface[]): AssistantMessageInterface[] {
@@ -121,6 +132,8 @@ export function AssistantProvider({
   scope,
   retrievalMode,
   threadUrl,
+  clientContext,
+  newThreadTitle,
 }: Props) {
   const t = useTranslations();
   const generateUrl = usePageUrlGenerator();
@@ -220,6 +233,8 @@ export function AssistantProvider({
             limitToHandbookPageId: opts?.limitToHandbookPageId ?? retrievalMode?.limitToHandbookPageId,
             contentBlocks: opts?.contentBlocks,
             boundContent: pendingScope,
+            clientContext,
+            title: newThreadTitle,
           };
           const created = operatorMode
             ? await AssistantService.createOperator(input)
@@ -241,6 +256,7 @@ export function AssistantProvider({
                 assistantId: assistant.id,
                 content: trimmed,
                 contentBlocks: opts?.contentBlocks,
+                clientContext,
               })
             : await AssistantService.appendMessage({
                 assistantId: assistant.id,
@@ -250,6 +266,7 @@ export function AssistantProvider({
                 handbookMode: opts?.handbookMode ?? retrievalMode?.handbookMode,
                 limitToHandbookPageId: opts?.limitToHandbookPageId ?? retrievalMode?.limitToHandbookPageId,
                 contentBlocks: opts?.contentBlocks,
+                clientContext,
               });
           setMessages((prev) => [...stripOptimistic(prev), ...result]);
         }
@@ -266,7 +283,18 @@ export function AssistantProvider({
         setStatus(undefined);
       }
     },
-    [assistant, messages, socket, operatorMode, pendingScope, retrievalMode, manageUrl, resolveThreadUrl],
+    [
+      assistant,
+      messages,
+      socket,
+      operatorMode,
+      pendingScope,
+      retrievalMode,
+      manageUrl,
+      resolveThreadUrl,
+      clientContext,
+      newThreadTitle,
+    ],
   );
 
   const appendResolvedMessage = useCallback((message: AssistantMessageInterface) => {

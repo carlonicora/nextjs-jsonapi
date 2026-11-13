@@ -1,4 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
+import { ApiRequestDataTypeInterface } from "../../../../core/interfaces/ApiRequestDataTypeInterface";
+import { ModuleRegistry } from "../../../../core/registry/ModuleRegistry";
 import { Assistant } from "../Assistant";
 
 describe("Assistant model", () => {
@@ -26,5 +28,31 @@ describe("Assistant model", () => {
     });
     const roundTripped = new Assistant().rehydrate(original.dehydrate());
     expect(roundTripped.engine).toBe("operator");
+  });
+});
+
+// createJsonApi reads Modules.Assistant.name; the registry is shared across
+// files in a worker, so register only when absent.
+const registerIfAbsent = (key: string, module: ApiRequestDataTypeInterface) => {
+  try {
+    ModuleRegistry.get(key as any);
+  } catch {
+    ModuleRegistry.register(key, module);
+  }
+};
+
+describe("Assistant.createJsonApi clientContext", () => {
+  beforeAll(() => {
+    registerIfAbsent("Assistant", { name: "assistants", model: Assistant } as any);
+  });
+
+  it("createJsonApi carries clientContext as an attribute when given", () => {
+    const payload: any = new Assistant().createJsonApi({ firstMessage: "hello", clientContext: { a: "b" } });
+    expect(payload.data.attributes.clientContext).toEqual({ a: "b" });
+  });
+
+  it("createJsonApi omits clientContext when not given", () => {
+    const payload: any = new Assistant().createJsonApi({ firstMessage: "hello" });
+    expect("clientContext" in payload.data.attributes).toBe(false);
   });
 });

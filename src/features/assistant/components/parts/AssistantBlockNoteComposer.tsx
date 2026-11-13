@@ -20,6 +20,8 @@ interface Props {
    * keys rows on the item title — duplicate entity names then collide.
    */
   suggestionMenuComponent?: FC<SuggestionMenuProps<DefaultReactSuggestionItem>>;
+  /** Editor placeholder. Absent, the assistant's default placeholder text. */
+  placeholder?: string;
 }
 
 /**
@@ -68,6 +70,7 @@ export function AssistantBlockNoteComposer({
   mentionSearchParams,
   mentionResolveFn,
   suggestionMenuComponent,
+  placeholder,
 }: Props) {
   const t = useTranslations();
   // React's generated ids carry delimiters (`:r0:` / `«r0»`) and this value ends
@@ -112,7 +115,7 @@ export function AssistantBlockNoteComposer({
             key={resetKey}
             id={editorId}
             type="assistants"
-            placeholder={t("features.assistant.composer_placeholder")}
+            placeholder={placeholder ?? t("features.assistant.composer_placeholder")}
             enableMentions
             mentionSearchFn={mentionSearchFn}
             mentionSearchParams={mentionSearchParams}

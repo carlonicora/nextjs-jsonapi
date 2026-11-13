@@ -132,6 +132,8 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
     handbookMode?: boolean;
     limitToHandbookPageId?: string;
     contentBlocks?: unknown[];
+    /** Opaque string context the host attaches to this message. */
+    clientContext?: Record<string, string>;
   }) {
     return {
       data: {
@@ -148,6 +150,7 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
           ...(params.limitToHandbookPageId !== undefined
             ? { limitToHandbookPageId: params.limitToHandbookPageId }
             : {}),
+          ...(params.clientContext !== undefined ? { clientContext: params.clientContext } : {}),
         },
       },
     };

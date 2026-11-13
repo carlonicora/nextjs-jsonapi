@@ -18,6 +18,11 @@ export type AssistantInput = {
    * data-access point in the run to that resource's scope.
    */
   boundContent?: { type: string; id: string };
+  /**
+   * Opaque string context the host attaches to this message. The library
+   * never reads it; it travels as the `clientContext` attribute.
+   */
+  clientContext?: Record<string, string>;
 };
 
 export interface AssistantInterface extends ApiDataInterface {

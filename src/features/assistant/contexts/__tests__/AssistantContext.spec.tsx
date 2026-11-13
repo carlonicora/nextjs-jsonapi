@@ -832,4 +832,74 @@ describe("AssistantContext", () => {
       expect(socket.on).not.toHaveBeenCalledWith("assistant:created", expect.any(Function));
     });
   });
+
+  describe("clientContext and newThreadTitle", () => {
+    it("sendMessage on a new operator thread sends clientContext and newThreadTitle", async () => {
+      const replaceState = vi.spyOn(window.history, "replaceState").mockImplementation(() => {});
+      AssistantService.createOperator = vi.fn().mockResolvedValue(buildAssistantStub({ id: "a-ctx" }));
+      AssistantMessageService.findByAssistant = vi.fn().mockResolvedValue([]);
+
+      const { result } = renderHook(() => useAssistantContext(), {
+        wrapper: ({ children }) => (
+          <AssistantProvider clientContext={{ k: "v" }} newThreadTitle="T">
+            {children}
+          </AssistantProvider>
+        ),
+      });
+      act(() => {
+        result.current.setOperatorMode(true);
+      });
+      await act(async () => {
+        await result.current.sendMessage("hello");
+      });
+
+      expect(AssistantService.createOperator).toHaveBeenCalledWith(
+        expect.objectContaining({ clientContext: { k: "v" }, title: "T" }),
+      );
+      replaceState.mockRestore();
+    });
+
+    it("sendMessage on an existing operator thread sends clientContext", async () => {
+      AssistantService.appendMessageOperator = vi.fn().mockResolvedValue([]);
+      const existing = buildAssistantDehydrated({ id: "a-op-ctx", engine: "operator" });
+
+      const { result } = renderHook(() => useAssistantContext(), {
+        wrapper: ({ children }) => (
+          <AssistantProvider dehydratedAssistant={existing} clientContext={{ k: "v" }}>
+            {children}
+          </AssistantProvider>
+        ),
+      });
+      await act(async () => {
+        await result.current.sendMessage("follow-up");
+      });
+
+      expect(AssistantService.appendMessageOperator).toHaveBeenCalledWith(
+        expect.objectContaining({ assistantId: "a-op-ctx", clientContext: { k: "v" } }),
+      );
+    });
+
+    it("a changed clientContext prop is used by the next send", async () => {
+      AssistantService.appendMessageOperator = vi.fn().mockResolvedValue([]);
+      const existing = buildAssistantDehydrated({ id: "a-op-ctx2", engine: "operator" });
+      let current: Record<string, string> = { k: "v" };
+
+      const { result, rerender } = renderHook(() => useAssistantContext(), {
+        wrapper: ({ children }) => (
+          <AssistantProvider dehydratedAssistant={existing} clientContext={current}>
+            {children}
+          </AssistantProvider>
+        ),
+      });
+      current = { k: "w" };
+      rerender();
+      await act(async () => {
+        await result.current.sendMessage("next");
+      });
+
+      expect(AssistantService.appendMessageOperator).toHaveBeenLastCalledWith(
+        expect.objectContaining({ clientContext: { k: "w" } }),
+      );
+    });
+  });
 });

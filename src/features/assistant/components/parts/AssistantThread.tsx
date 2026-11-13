@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { AssistantMessageInterface } from "../../../assistant-message/data/AssistantMessageInterface";
-import { MessageList } from "../../../assistant-message/components/MessageList";
+import { MessageList, type AfterMessageRenderer } from "../../../assistant-message/components/MessageList";
 import type { ApprovalActionRenderer, MentionRenderer } from "../../../assistant-message/components/MessageItem";
 import { AssistantStatusLine } from "./AssistantStatusLine";
 
@@ -16,6 +16,8 @@ interface Props {
   onRetry?: (tempId: string) => void;
   renderApprovalAction?: ApprovalActionRenderer;
   renderMention?: MentionRenderer;
+  /** Host slot rendered after each message (see `AfterMessageRenderer`). */
+  renderAfterMessage?: AfterMessageRenderer;
 }
 
 export function AssistantThread({
@@ -27,6 +29,7 @@ export function AssistantThread({
   onRetry,
   renderApprovalAction,
   renderMention,
+  renderAfterMessage,
 }: Props) {
   const lastMessageRef = useRef<HTMLDivElement>(null);
 
@@ -47,6 +50,7 @@ export function AssistantThread({
         renderApprovalAction={renderApprovalAction}
         renderMention={renderMention}
         lastMessageRef={lastMessageRef}
+        renderAfterMessage={renderAfterMessage}
       />
       {sending && <AssistantStatusLine status={status} />}
     </div>

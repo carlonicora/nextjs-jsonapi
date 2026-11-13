@@ -1,8 +1,17 @@
 "use client";
 
-import type { RefObject } from "react";
+import type { ReactNode, RefObject } from "react";
 import { AssistantMessageInterface } from "../data/AssistantMessageInterface";
 import { MessageItem, type ApprovalActionRenderer, type MentionRenderer } from "./MessageItem";
+
+/**
+ * Host slot rendered right after one message, inside its wrapper. Receives the
+ * message and its neighbours in display order.
+ */
+export type AfterMessageRenderer = (
+  message: AssistantMessageInterface,
+  neighbours: { previous?: AssistantMessageInterface; next?: AssistantMessageInterface },
+) => ReactNode;
 
 interface Props {
   messages: AssistantMessageInterface[];
@@ -12,6 +21,7 @@ interface Props {
   renderApprovalAction?: ApprovalActionRenderer;
   renderMention?: MentionRenderer;
   lastMessageRef?: RefObject<HTMLDivElement | null>;
+  renderAfterMessage?: AfterMessageRenderer;
 }
 
 export function MessageList({
@@ -22,6 +32,7 @@ export function MessageList({
   renderApprovalAction,
   renderMention,
   lastMessageRef,
+  renderAfterMessage,
 }: Props) {
   const ordered = [...messages].sort((a, b) => a.position - b.position);
 
@@ -46,6 +57,7 @@ export function MessageList({
             renderApprovalAction={renderApprovalAction}
             renderMention={renderMention}
           />
+          {renderAfterMessage?.(m, { previous: ordered[i - 1], next: ordered[i + 1] })}
         </div>
       ))}
     </div>
