@@ -1,3 +1,9 @@
+## [6.35.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.34.1...v6.35.0) (2026-11-13)
+
+### 🚀 Features
+
+* **assistant:** AssistantProvider takes a clientContext it sends with every user message and a newThreadTitle for the threads it creates; AssistantThread takes renderAfterMessage to show the host's content after a message; AssistantBlockNoteComposer takes a placeholder ([b2568af](https://github.com/carlonicora/nextjs-jsonapi/commit/b2568af3e5f99ca58c3800043026b3d1ca3982a4))
+
 ## [6.34.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.34.0...v6.34.1) (2026-11-13)
 
 ### 🐛 Bug Fixes
