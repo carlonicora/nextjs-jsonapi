@@ -1,3 +1,9 @@
+## [6.34.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.34.0...v6.34.1) (2026-11-13)
+
+### 🐛 Bug Fixes
+
+* **forms:** an edit EditorSheet no longer calls onReset while rendering, so an editor whose onReset sets its own state (UserEditor clearing its roles) no longer triggers the React warning "Cannot update a component while rendering a different component"; the first open still shows the entity's current values ([fd94c89](https://github.com/carlonicora/nextjs-jsonapi/commit/fd94c894aff3e6103547ad2cfe45eb5285aaa5c4))
+
 ## [6.34.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.33.0...v6.34.0) (2026-11-12)
 
 ### 🚀 Features
