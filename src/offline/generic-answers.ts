@@ -177,6 +177,10 @@ export type ListOptions = {
   searchFields?: string[];
   /** The order with no `orderBy` (default `updatedAt DESC`, the server's). */
   defaultOrderBy?: string;
+  /** `sort` fields ordered by rank: the index of the value in its tuple, a missing or unknown value after every rank. */
+  sortRanks?: Record<string, readonly string[]>;
+  /** The fields `sort` may name (default: any identifier); any other answers 400 "Invalid sort", as the server's `parseSort`. */
+  sortFields?: readonly string[];
 };
 
 /**
@@ -218,6 +222,8 @@ export function orderRecords(
   query: URLSearchParams,
   options: ListOptions = {},
 ): StoredRecord[] | null {
+  const sort = query.get("sort");
+  if (typeof sort === "string" && sort.trim() !== "") return sortRecords(records, sort, options);
   const requested = query.get("orderBy")?.trim();
   const value = requested || options.defaultOrderBy?.trim() || SERVER_DEFAULT_ORDER_BY;
   const match = ORDER_BY.exec(value);
@@ -227,6 +233,54 @@ export function orderRecords(
   return [...records].sort((left, right) => {
     const order = compareAscending(attributeOf(left, field), attributeOf(right, field));
     return desc ? -order : order;
+  });
+}
+
+/** A JSON:API `sort` key the server accepts: `-?<identifier>`. */
+const SORT_KEY = /^(-?)([A-Za-z_][A-Za-z0-9_]*)$/;
+
+/** Fields the server never compares as lowercased text (`caseInsensitiveSortKey`). */
+const NEVER_TEXT_FIELDS: readonly string[] = ["id", "createdAt", "updatedAt"];
+
+/** One `sort` key ascending, as the server's ORDER BY key for it compares. */
+function compareSortKey(left: unknown, right: unknown, field: string, options: ListOptions): number {
+  const ranks =
+    options.sortRanks && Object.prototype.hasOwnProperty.call(options.sortRanks, field)
+      ? options.sortRanks[field]
+      : undefined;
+  if (ranks) {
+    const rank = (value: unknown) => {
+      const index = typeof value === "string" ? ranks.indexOf(value) : -1;
+      return index === -1 ? ranks.length : index;
+    };
+    return rank(left) - rank(right);
+  }
+  if (NEVER_TEXT_FIELDS.includes(field)) return compareAscending(left, right);
+  const lower = (value: unknown) => (typeof value === "string" ? value.toLowerCase() : value);
+  return compareAscending(lower(left), lower(right));
+}
+
+/**
+ * Orders records as the server's list ORDER BY does for a JSON:API `sort` (`a,-b`): each key in
+ * turn (a rank field by `sortRanks`, text lowercased, `-` descending), ties by `id` ascending.
+ * `null` when the server would refuse the `sort` (400).
+ */
+function sortRecords(records: StoredRecord[], sort: string, options: ListOptions): StoredRecord[] | null {
+  const keys: { field: string; desc: boolean }[] = [];
+  for (const token of sort.split(",").map((key) => key.trim())) {
+    const match = SORT_KEY.exec(token);
+    if (!match) return null;
+    const field = match[2];
+    if (options.sortFields && !options.sortFields.includes(field)) return null;
+    if (keys.some((key) => key.field === field)) return null;
+    keys.push({ field, desc: match[1] === "-" });
+  }
+  return [...records].sort((left, right) => {
+    for (const { field, desc } of keys) {
+      const order = compareSortKey(attributeOf(left, field), attributeOf(right, field), field, options);
+      if (order !== 0) return desc ? -order : order;
+    }
+    return compareAscending(left.id, right.id);
   });
 }
 
@@ -254,7 +308,8 @@ export async function listAnswer(
   const base = request.url ? request.url.split("?")[0] : request.path;
   const sorted = orderRecords(searchRecords(records, request.query, options), request.query, options);
   if (!sorted) {
-    return errorAnswer(400, "Bad Request", "Invalid orderBy");
+    const sort = request.query.get("sort");
+    return errorAnswer(400, "Bad Request", sort?.trim() ? "Invalid sort" : "Invalid orderBy");
   }
 
   if (request.query.get("fetchAll") === "true") {
@@ -323,7 +378,12 @@ export function resourceListAnswer(resources: any[]): OfflineAnswer {
 }
 
 function listOptionsOf(typeConfig: OfflineTypeConfig): ListOptions {
-  return { searchFields: typeConfig.searchFields, defaultOrderBy: typeConfig.defaultOrderBy };
+  return {
+    searchFields: typeConfig.searchFields,
+    defaultOrderBy: typeConfig.defaultOrderBy,
+    sortRanks: typeConfig.sortRanks,
+    sortFields: typeConfig.sortFields,
+  };
 }
 
 // ---------------------------------------------------------------------------------------------

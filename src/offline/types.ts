@@ -84,6 +84,10 @@ export type OfflineTypeConfig = {
   searchFields?: string[];
   /** The server's order with no `orderBy` (default `updatedAt DESC`). */
   defaultOrderBy?: string;
+  /** `sort` fields ordered by rank (value → index in its tuple, unset after every rank), as the server's code-authored rank expressions. */
+  sortRanks?: Record<string, readonly string[]>;
+  /** The fields `sort` may name on the type's lists (default: any identifier); any other answers 400 "Invalid sort". */
+  sortFields?: readonly string[];
   /**
    * Called by the generic POST/PUT/PATCH/DELETE local answers inside the same transaction as the
    * write and the enqueue (a throw rolls both back). Never called by sync or write-through.

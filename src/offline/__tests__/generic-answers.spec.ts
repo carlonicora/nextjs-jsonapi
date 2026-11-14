@@ -152,6 +152,120 @@ describe("generic answers", () => {
     expect(result.body.data.map((r: any) => r.id)).toEqual(["n2", "n1"]);
   });
 
+  describe("sort (JSON:API, with ranks)", () => {
+    const RANKS = { importance: ["primary", "recurring", "minor"] } as const;
+
+    const ranked = (id: string, attributes: Record<string, unknown>) => ({
+      type: "npcs",
+      id,
+      rootId: "C",
+      resource: {
+        type: "npcs",
+        id,
+        attributes,
+        relationships: { root: { data: { type: "roots", id: "C" } } },
+      },
+      updatedAt: null,
+    });
+
+    const records = () => [
+      ranked("m1", { name: "Minor", importance: "minor", updatedAt: "2026-01-05T00:00:00.000Z" }),
+      ranked("u1", { name: "Unset", updatedAt: "2026-01-09T00:00:00.000Z" }),
+      ranked("r-old", { name: "Old", importance: "recurring", updatedAt: "2026-01-01T00:00:00.000Z" }),
+      ranked("p1", { name: "Prime", importance: "primary", updatedAt: "2026-01-02T00:00:00.000Z" }),
+      ranked("r-new", { name: "New", importance: "recurring", updatedAt: "2026-01-03T00:00:00.000Z" }),
+    ];
+
+    const sortedIds = async (query: string, options: Parameters<typeof listAnswer>[2] = { sortRanks: RANKS }) => {
+      const result = await listAnswer(
+        { request: { method: "GET", path: "x", query: new URLSearchParams(query) }, params: {}, store },
+        records(),
+        options,
+      );
+      return result;
+    };
+
+    it("orders a rank field by its tuple, unset last, then the next key", async () => {
+      const result = await sortedIds("sort=importance,-updatedAt&fetchAll=true");
+
+      expect(result.body.data.map((r: any) => r.id)).toEqual(["p1", "r-new", "r-old", "m1", "u1"]);
+    });
+
+    it("a descending rank puts unset first, then minor, recurring, primary", async () => {
+      const result = await sortedIds("sort=-importance,-updatedAt&fetchAll=true");
+
+      expect(result.body.data.map((r: any) => r.id)).toEqual(["u1", "m1", "r-new", "r-old", "p1"]);
+    });
+
+    it("sorts text case-insensitively A to Z, ties by id ascending", async () => {
+      const list = [ranked("b", { name: "Bram" }), ranked("a2", { name: "alba" }), ranked("a1", { name: "Alba" })];
+      const result = await listAnswer(
+        {
+          request: { method: "GET", path: "x", query: new URLSearchParams("sort=name&fetchAll=true") },
+          params: {},
+          store,
+        },
+        list,
+      );
+
+      expect(result.body.data.map((r: any) => r.id)).toEqual(["a1", "a2", "b"]);
+    });
+
+    it("a descending text sort reverses it, a record with no name first", async () => {
+      const list = [ranked("b", { name: "Bram" }), ranked("n", {}), ranked("a", { name: "alba" })];
+      const result = await listAnswer(
+        {
+          request: { method: "GET", path: "x", query: new URLSearchParams("sort=-name&fetchAll=true") },
+          params: {},
+          store,
+        },
+        list,
+      );
+
+      expect(result.body.data.map((r: any) => r.id)).toEqual(["n", "b", "a"]);
+    });
+
+    it("a sort key that is not an identifier answers 400 Invalid sort", async () => {
+      const result = await sortedIds("sort=-bad%20field&fetchAll=true");
+
+      expect(result.status).toBe(400);
+      expect(result.body.errors[0].detail).toBe("Invalid sort");
+    });
+
+    it("with sortFields, a sort on any other field answers 400 Invalid sort", async () => {
+      const options = { sortRanks: RANKS, sortFields: ["name", "importance"] };
+
+      const refused = await sortedIds("sort=description&fetchAll=true", options);
+      const accepted = await sortedIds("sort=-name&fetchAll=true", options);
+      const anyField = await sortedIds("sort=description&fetchAll=true");
+
+      expect(refused.status).toBe(400);
+      expect(refused.body.errors[0].detail).toBe("Invalid sort");
+      expect(accepted.status).toBe(200);
+      expect(accepted.body.data.map((r: any) => r.id)).toEqual(["u1", "p1", "r-old", "r-new", "m1"]);
+      expect(anyField.status).toBe(200);
+    });
+
+    it("an invalid orderBy with no sort still answers 400 Invalid orderBy", async () => {
+      const result = await sortedIds("orderBy=-name&fetchAll=true");
+
+      expect(result.status).toBe(400);
+      expect(result.body.errors[0].detail).toBe("Invalid orderBy");
+    });
+
+    it("the generic root list honours OfflineTypeConfig.sortRanks", async () => {
+      const config = offlineConfig();
+      config.types = config.types.map((type) =>
+        type.module.name === "npcs" ? { ...type, sortRanks: { importance: ["primary", "recurring", "minor"] } } : type,
+      );
+      await store.putRecord(ranked("n1", { name: "Alda", importance: "minor" }));
+      await store.putRecord(ranked("n2", { name: "brom", importance: "primary" }));
+
+      const result = await answer(store, "GET", "roots/C/npcs?sort=importance&fetchAll=true", undefined, config);
+
+      expect(result.body.data.map((r: any) => r.id)).toEqual(["n2", "n1"]);
+    });
+  });
   it("listAnswer pages, searches and orders any set of stored records for app answers", async () => {
     const records = await store.listRecords({ type: "npcs", rootId: "C" });
 
