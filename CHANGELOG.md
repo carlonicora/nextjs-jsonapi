@@ -1,3 +1,9 @@
+## [6.36.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.35.0...v6.36.0) (2026-11-14)
+
+### 🚀 Features
+
+* **offline:** offline list answers read the JSON:API sort; sortRanks orders a field by its position in a list of values, an unset value last when ascending; sortFields limits the fields a sort may name and answers 400 "Invalid sort" for any other; ListOptions and OfflineTypeConfig take both; without a sort the answer is the same as before ([b26ea73](https://github.com/carlonicora/nextjs-jsonapi/commit/b26ea734de08b86386c598614f05742482f783e9))
+
 ## [6.35.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.34.1...v6.35.0) (2026-11-13)
 
 ### 🚀 Features
