@@ -61,10 +61,7 @@ export function FormBlockNote({
    */
   stretch?: boolean;
   enableMentions?: boolean;
-  mentionSearchFn?: (
-    query: string,
-    params?: Record<string, string>,
-  ) => Promise<import("../editors/BlockNoteEditorSuggestionMenuController").MentionItem[]>;
+  mentionSearchFn?: import("../editors/BlockNoteEditorSuggestionMenuController").MentionSearchFn;
   mentionSearchParams?: Record<string, string>;
   mentionResolveFn?: MentionResolveFn;
   suggestionMenuComponent?: React.FC<SuggestionMenuProps<DefaultReactSuggestionItem>>;

@@ -3,7 +3,7 @@
 import { BlockNoteEditor } from "@blocknote/core";
 import { DefaultReactSuggestionItem, SuggestionMenuController, SuggestionMenuProps } from "@blocknote/react";
 import { autoUpdate, flip, shift } from "@floating-ui/react";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 
 export interface MentionItem {
   id: string;
@@ -22,12 +22,30 @@ export type MentionSuggestionItem = DefaultReactSuggestionItem & {
   entityType?: string;
 };
 
-export type MentionSearchFn = (query: string, params?: Record<string, string>) => Promise<MentionItem[]>;
+/** Page size the mention search is expected to use; the menu asks for the next page at this offset step. */
+export const MENTION_PAGE_SIZE = 25;
+
+/** `options.offset` absent means the first page (offset 0). */
+export type MentionSearchFn = (
+  query: string,
+  params?: Record<string, string>,
+  options?: { offset?: number },
+) => Promise<MentionItem[]>;
+
+/**
+ * Fetches the page at `offset` for the query the menu is currently showing.
+ * Items come back mapped like the first page (their `onItemClick` inserts the
+ * mention), without the keep-open sentinel.
+ */
+export type MentionLoadMoreFn = (offset: number) => Promise<MentionSuggestionItem[]>;
 
 export type MentionInsertFn = (id: string, name: string, entityType: string) => void;
 
 const MentionInsertContext = React.createContext<MentionInsertFn | null>(null);
 export const useMentionInsert = () => React.useContext(MentionInsertContext);
+
+const MentionLoadMoreContext = React.createContext<MentionLoadMoreFn | null>(null);
+export const useMentionLoadMore = () => React.useContext(MentionLoadMoreContext);
 
 // BlockNote's SuggestionMenuController auto-closes the menu when the query
 // grows more than 3 characters past the last query that returned results
@@ -64,35 +82,51 @@ export function BlockNoteEditorMentionSuggestionMenu({
     [editor],
   );
 
+  const lastQueryRef = useRef("");
+
+  const toSuggestionItem = useCallback(
+    (item: MentionItem): MentionSuggestionItem => ({
+      id: item.id,
+      entityType: item.entityType,
+      title: item.name,
+      subtext: item.entityType,
+      icon: item.icon as React.ReactElement | undefined,
+      onItemClick: () => {
+        editor.insertInlineContent([
+          {
+            type: "mention",
+            props: {
+              alias: item.name,
+              id: item.id,
+              entityType: item.entityType,
+            },
+          },
+          " ",
+        ]);
+      },
+    }),
+    [editor],
+  );
+
   const getItems = useCallback(
     async (query: string): Promise<DefaultReactSuggestionItem[]> => {
+      lastQueryRef.current = query;
       const results = await mentionSearchFn(query, mentionSearchParams);
-      const items: MentionSuggestionItem[] = results.map((item) => ({
-        id: item.id,
-        entityType: item.entityType,
-        title: item.name,
-        subtext: item.entityType,
-        icon: item.icon as React.ReactElement | undefined,
-        onItemClick: () => {
-          editor.insertInlineContent([
-            {
-              type: "mention",
-              props: {
-                alias: item.name,
-                id: item.id,
-                entityType: item.entityType,
-              },
-            },
-            " ",
-          ]);
-        },
-      }));
+      const items: MentionSuggestionItem[] = results.map(toSuggestionItem);
       if (items.length === 0) {
         items.push({ id: KEEP_OPEN_SENTINEL_TITLE, title: KEEP_OPEN_SENTINEL_TITLE, onItemClick: () => {} });
       }
       return items;
     },
-    [editor, mentionSearchFn, mentionSearchParams],
+    [mentionSearchFn, mentionSearchParams, toSuggestionItem],
+  );
+
+  const loadMore = useCallback<MentionLoadMoreFn>(
+    async (offset: number) => {
+      const results = await mentionSearchFn(lastQueryRef.current, mentionSearchParams, { offset });
+      return results.map(toSuggestionItem);
+    },
+    [mentionSearchFn, mentionSearchParams, toSuggestionItem],
   );
 
   const wrappedSuggestionMenuComponent = useMemo<
@@ -119,21 +153,23 @@ export function BlockNoteEditorMentionSuggestionMenu({
 
   return (
     <MentionInsertContext.Provider value={onMentionInsert}>
-      <div className="blocknote-suggestion-container" style={{ position: "static" }}>
-        <SuggestionMenuController
-          triggerCharacter={"@"}
-          getItems={getItems}
-          suggestionMenuComponent={wrappedSuggestionMenuComponent}
-          floatingUIOptions={{
-            useFloatingOptions: {
-              strategy: "fixed",
-              placement: "bottom-start",
-              middleware: [flip(), shift()],
-              whileElementsMounted: autoUpdate,
-            },
-          }}
-        />
-      </div>
+      <MentionLoadMoreContext.Provider value={loadMore}>
+        <div className="blocknote-suggestion-container" style={{ position: "static" }}>
+          <SuggestionMenuController
+            triggerCharacter={"@"}
+            getItems={getItems}
+            suggestionMenuComponent={wrappedSuggestionMenuComponent}
+            floatingUIOptions={{
+              useFloatingOptions: {
+                strategy: "fixed",
+                placement: "bottom-start",
+                middleware: [flip(), shift()],
+                whileElementsMounted: autoUpdate,
+              },
+            }}
+          />
+        </div>
+      </MentionLoadMoreContext.Provider>
     </MentionInsertContext.Provider>
   );
 }

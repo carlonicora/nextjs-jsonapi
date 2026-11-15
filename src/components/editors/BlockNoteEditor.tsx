@@ -96,10 +96,7 @@ export type BlockNoteEditorProps = {
   renderOverlays?: (editor: any) => React.ReactNode;
   enableMentions?: boolean;
   disableMentions?: boolean;
-  mentionSearchFn?: (
-    query: string,
-    params?: Record<string, string>,
-  ) => Promise<import("./BlockNoteEditorSuggestionMenuController").MentionItem[]>;
+  mentionSearchFn?: import("./BlockNoteEditorSuggestionMenuController").MentionSearchFn;
   mentionSearchParams?: Record<string, string>;
   mentionResolveFn?: MentionResolveFn;
   suggestionMenuComponent?: React.FC<SuggestionMenuProps<DefaultReactSuggestionItem>>;

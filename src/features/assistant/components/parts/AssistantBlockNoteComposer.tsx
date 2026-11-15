@@ -6,13 +6,13 @@ import { useCallback, useId, useState, type FC, type KeyboardEvent } from "react
 import type { DefaultReactSuggestionItem, SuggestionMenuProps } from "@blocknote/react";
 import { BlockNoteEditorContainer } from "../../../../components/editors/BlockNoteEditorContainer";
 import type { MentionResolveFn } from "../../../../components/editors/BlockNoteEditorMentionInlineContent";
-import type { MentionItem } from "../../../../components/editors/BlockNoteEditorSuggestionMenuController";
+import type { MentionSearchFn } from "../../../../components/editors/BlockNoteEditorSuggestionMenuController";
 import { Button } from "../../../../shadcnui";
 
 interface Props {
   onSend: (content: string, opts: { contentBlocks: unknown[] }) => Promise<void>;
   disabled?: boolean;
-  mentionSearchFn?: (query: string, params?: Record<string, string>) => Promise<MentionItem[]>;
+  mentionSearchFn?: MentionSearchFn;
   mentionSearchParams?: Record<string, string>;
   mentionResolveFn?: MentionResolveFn;
   /**

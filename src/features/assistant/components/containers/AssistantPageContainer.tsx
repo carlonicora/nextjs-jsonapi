@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import type React from "react";
 import { RoundPageContainer } from "../../../../components/containers/RoundPageContainer";
 import type { MentionResolveFn } from "../../../../components/editors/BlockNoteEditorMentionInlineContent";
-import type { MentionItem } from "../../../../components/editors/BlockNoteEditorSuggestionMenuController";
+import type { MentionSearchFn } from "../../../../components/editors/BlockNoteEditorSuggestionMenuController";
 import { SectionHeader } from "../../../../components/typography";
 import { Modules } from "../../../../core";
 import type { ApprovalActionRenderer, MentionRenderer } from "../../../assistant-message/components/MessageItem";
@@ -19,7 +19,7 @@ import { AssistantThreadHeader } from "../parts/AssistantThreadHeader";
 interface Props {
   renderApprovalAction?: ApprovalActionRenderer;
   renderMention?: MentionRenderer;
-  mentionSearchFn?: (query: string, params?: Record<string, string>) => Promise<MentionItem[]>;
+  mentionSearchFn?: MentionSearchFn;
   mentionSearchParams?: Record<string, string>;
   mentionResolveFn?: MentionResolveFn;
   /**
