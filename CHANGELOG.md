@@ -1,3 +1,9 @@
+## [6.37.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.37.0...v6.37.1) (2026-11-15)
+
+### 💎 Styles
+
+* **tests:** format JSX in BlockNoteEditorMentionSuggestionMenu setup for better readability ([b34e6a9](https://github.com/carlonicora/nextjs-jsonapi/commit/b34e6a972f5cb3a0926b625365cb971c588d11af))
+
 ## [6.37.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.36.0...v6.37.0) (2026-11-15)
 
 ### 🚀 Features
