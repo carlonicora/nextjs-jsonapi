@@ -1,3 +1,9 @@
+## [6.37.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.36.0...v6.37.0) (2026-11-15)
+
+### 🚀 Features
+
+* **mentions:** the mention search takes an optional offset, and a custom suggestion menu reads useMentionLoadMore to fetch the next page of the current query; MENTION_PAGE_SIZE gives the page size; editors, FormBlockNote and the assistant composer type mentionSearchFn as MentionSearchFn; a search that ignores the offset works as before ([3127eb1](https://github.com/carlonicora/nextjs-jsonapi/commit/3127eb14c714962b49fcbca90ca10967b99040be))
+
 ## [6.36.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.35.0...v6.36.0) (2026-11-14)
 
 ### 🚀 Features
