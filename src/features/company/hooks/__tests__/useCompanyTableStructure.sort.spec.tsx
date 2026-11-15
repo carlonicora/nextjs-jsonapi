@@ -6,7 +6,7 @@ import { useCompanyTableStructure } from "../useCompanyTableStructure";
 vi.mock("next-intl", () => ({ useTranslations: () => (key: string) => key, useLocale: () => "en" }));
 vi.mock("../../../user/contexts", () => ({ useCurrentUserContext: () => ({ currentUser: undefined }) }));
 
-/** Spec row A24: name. Only an explicit `enableSorting: true` opts a column in (call C3). */
+/** Spec row A24: name; WYR-98: createdAt. Only an explicit `enableSorting: true` opts a column in (call C3). */
 describe("useCompanyTableStructure sorting", () => {
   it("opts in exactly the row's sortable columns", () => {
     const { result } = renderHook(() =>
@@ -14,6 +14,6 @@ describe("useCompanyTableStructure sorting", () => {
     );
     const columns = result.current.columns as any[];
     const sortable = columns.filter((column) => column.enableSorting === true).map((column) => column.id);
-    expect(sortable.sort()).toEqual(["name"]);
+    expect(sortable.sort()).toEqual(["createdAt", "name"]);
   });
 });

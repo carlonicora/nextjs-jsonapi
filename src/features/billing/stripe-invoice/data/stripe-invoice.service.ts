@@ -31,6 +31,24 @@ export class StripeInvoiceService extends AbstractService {
   }
 
   /**
+   * List every invoice of a company (platform administrator only), drafts excluded, newest first,
+   * each with its recorded price and `forSubscription`
+   */
+  static async findManyForCompany(params: { companyId: string }): Promise<StripeInvoiceInterface[]> {
+    const endpoint = new EndpointCreator({
+      endpoint: Modules.Company,
+      id: params.companyId,
+      childEndpoint: Modules.StripeInvoice,
+    });
+
+    return this.callApi({
+      type: Modules.StripeInvoice,
+      method: HttpMethod.GET,
+      endpoint: endpoint.generate(),
+    });
+  }
+
+  /**
    * Get a specific invoice by ID
    */
   static async getInvoice(params: { invoiceId: string }): Promise<StripeInvoiceInterface> {

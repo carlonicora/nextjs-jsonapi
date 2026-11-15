@@ -23,6 +23,11 @@ export class Company extends AbstractApiData implements CompanyInterface {
   private _creditWarningDismissedAt?: Date;
   private _creditWarningOffer?: CreditWarningOffer;
 
+  private _subscriptionPlan?: "monthly" | "yearly" | "other";
+  private _subscriptionPlanName?: string;
+  private _subscriptionStatus?: string;
+  private _subscriptionNextAt?: Date;
+
   private _features?: FeatureInterface[];
   private _modules?: ModuleInterface[];
 
@@ -88,6 +93,22 @@ export class Company extends AbstractApiData implements CompanyInterface {
 
   get creditWarningOffer(): CreditWarningOffer | undefined {
     return this._creditWarningOffer;
+  }
+
+  get subscriptionPlan(): "monthly" | "yearly" | "other" | undefined {
+    return this._subscriptionPlan;
+  }
+
+  get subscriptionPlanName(): string | undefined {
+    return this._subscriptionPlanName;
+  }
+
+  get subscriptionStatus(): string | undefined {
+    return this._subscriptionStatus;
+  }
+
+  get subscriptionNextAt(): Date | undefined {
+    return this._subscriptionNextAt;
   }
 
   get features(): FeatureInterface[] {
@@ -166,6 +187,13 @@ export class Company extends AbstractApiData implements CompanyInterface {
       ? new Date(data.jsonApi.attributes.creditWarningDismissedAt)
       : undefined;
     this._creditWarningOffer = data.jsonApi.attributes.creditWarningOffer ?? undefined;
+
+    this._subscriptionPlan = data.jsonApi.attributes.subscriptionPlan ?? undefined;
+    this._subscriptionPlanName = data.jsonApi.attributes.subscriptionPlanName ?? undefined;
+    this._subscriptionStatus = data.jsonApi.attributes.subscriptionStatus ?? undefined;
+    this._subscriptionNextAt = data.jsonApi.attributes.subscriptionNextAt
+      ? new Date(data.jsonApi.attributes.subscriptionNextAt)
+      : undefined;
 
     this._legal_address = data.jsonApi.attributes.legal_address;
     this._street_number = data.jsonApi.attributes.street_number;

@@ -36,6 +36,29 @@ export class StripeSubscriptionService extends AbstractService {
   }
 
   /**
+   * List a company's subscriptions (platform administrator only): the recurring ones, current
+   * first; with `oneTime` the old one-time purchases that have no invoice instead
+   */
+  static async findManyForCompany(params: {
+    companyId: string;
+    oneTime?: boolean;
+  }): Promise<StripeSubscriptionInterface[]> {
+    const endpoint = new EndpointCreator({
+      endpoint: Modules.Company,
+      id: params.companyId,
+      childEndpoint: Modules.StripeSubscription,
+    });
+
+    if (params.oneTime) endpoint.addAdditionalParam("oneTime", "true");
+
+    return this.callApi({
+      type: Modules.StripeSubscription,
+      method: HttpMethod.GET,
+      endpoint: endpoint.generate(),
+    });
+  }
+
+  /**
    * Get a specific subscription by ID
    */
   static async getSubscription(params: { subscriptionId: string }): Promise<StripeSubscriptionInterface> {

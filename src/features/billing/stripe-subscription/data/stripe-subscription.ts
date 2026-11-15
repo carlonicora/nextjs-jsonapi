@@ -18,6 +18,7 @@ export class StripeSubscription extends AbstractApiData implements StripeSubscri
   private _trialEnd?: Date;
   private _price?: StripePriceInterface;
   private _discount?: StripeSubscriptionDiscount;
+  private _quantity?: number;
 
   get stripeSubscriptionId(): string {
     if (!this._stripeSubscriptionId) throw new Error("stripeSubscriptionId is not defined");
@@ -63,6 +64,10 @@ export class StripeSubscription extends AbstractApiData implements StripeSubscri
     return this._discount;
   }
 
+  get quantity(): number | undefined {
+    return this._quantity;
+  }
+
   rehydrate(data: JsonApiHydratedDataInterface): this {
     super.rehydrate(data);
 
@@ -83,6 +88,7 @@ export class StripeSubscription extends AbstractApiData implements StripeSubscri
     this._trialEnd = data.jsonApi.attributes.trialEnd ? new Date(data.jsonApi.attributes.trialEnd) : undefined;
 
     const attributes = data.jsonApi.attributes;
+    this._quantity = attributes.quantity ?? undefined;
     const percentOff = attributes.discountPercentOff ?? undefined;
     const amountOff = attributes.discountAmountOff ?? undefined;
     this._discount =

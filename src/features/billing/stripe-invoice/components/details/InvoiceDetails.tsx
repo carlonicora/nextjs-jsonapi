@@ -12,6 +12,8 @@ type InvoiceDetailsProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onInvoiceChange: () => void;
+  /** Hides Retry payment and View in Stripe (the administrator's read-only view). */
+  readOnly?: boolean;
 };
 
 export function InvoiceDetails({
@@ -19,6 +21,7 @@ export function InvoiceDetails({
   open,
   onOpenChange,
   onInvoiceChange: _onInvoiceChange,
+  readOnly = false,
 }: InvoiceDetailsProps) {
   const t = useTranslations();
   const fmt = useBillingFormatOptions();
@@ -153,21 +156,21 @@ export function InvoiceDetails({
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-2 pt-4 border-t">
             {invoice.stripePdfUrl && (
-              <Button variant="outline" onClick={handleDownloadPDF}>
+              <Button variant="outline" onClick={handleDownloadPDF} data-testid="invoice-details-download">
                 <Download className="me-2 h-4 w-4" />
                 {t("billing.ui.invoice.download_pdf")}
               </Button>
             )}
 
-            {invoice.status === InvoiceStatus.OPEN && invoice.attempted && (
-              <Button variant="default" onClick={handleRetryPayment}>
+            {!readOnly && invoice.status === InvoiceStatus.OPEN && invoice.attempted && (
+              <Button variant="default" onClick={handleRetryPayment} data-testid="invoice-details-retry">
                 <RefreshCw className="me-2 h-4 w-4" />
                 {t("billing.ui.invoice.retry_payment")}
               </Button>
             )}
 
-            {invoice.stripeHostedInvoiceUrl && (
-              <Button variant="outline" onClick={handleViewInStripe}>
+            {!readOnly && invoice.stripeHostedInvoiceUrl && (
+              <Button variant="outline" onClick={handleViewInStripe} data-testid="invoice-details-view-in-stripe">
                 <ExternalLink className="me-2 h-4 w-4" />
                 {t("billing.ui.invoice.view_in_stripe")}
               </Button>

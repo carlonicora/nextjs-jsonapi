@@ -43,6 +43,8 @@ export interface StripeSubscriptionInterface extends ApiDataInterface {
   get trialEnd(): Date | undefined;
   get price(): StripePriceInterface | undefined;
   get discount(): StripeSubscriptionDiscount | undefined;
+  /** How many units were bought (one-time purchases); undefined when the response lacks it. */
+  get quantity(): number | undefined;
 }
 
 // ============================================================================

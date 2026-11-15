@@ -10,7 +10,18 @@ import { getRoleId } from "../../../roles";
 import { Link } from "../../../shadcnui";
 import { UserInterface } from "../../user";
 import { useCurrentUserContext } from "../../user/contexts";
+import { useDateFormatter } from "../../../contexts/DateLocaleContext";
+import { AdminSubscriptionStatusBadge } from "../../billing/admin-company/components/AdminSubscriptionStatusBadge";
 import { CompanyFields, CompanyInterface } from "../data";
+
+function SubscriptionNextDateCell({ date }: { date?: Date }) {
+  const { format } = useDateFormatter();
+  return (
+    <span data-testid="company-subscription-next-date" className="text-muted-foreground text-xs">
+      {date ? format(date, "dateMedium") : "—"}
+    </span>
+  );
+}
 
 export const useCompanyTableStructure: UseTableStructureHook<CompanyInterface, CompanyFields> = (params) => {
   const t = useTranslations();
@@ -67,7 +78,49 @@ export const useCompanyTableStructure: UseTableStructureHook<CompanyInterface, C
       cellDate({
         name: "createdAt",
         title: t(`common.date.create`),
+        sortable: true,
       }),
+    [CompanyFields.subscriptionPlan]: () => ({
+      id: "subscriptionPlan",
+      accessorKey: "subscriptionPlan",
+      header: t(`billing.ui.admin_company.columns.plan`),
+      cell: ({ row }: { row: Row<TableContent<CompanyInterface>> }) => {
+        const company = row.original.jsonApiData as CompanyInterface;
+        const plan = company.subscriptionPlan;
+        const label = !plan
+          ? "—"
+          : plan === "other"
+            ? (company.subscriptionPlanName ?? "—")
+            : t(`billing.ui.admin_company.plan.${plan}`);
+        return <span data-testid="company-subscription-plan">{label}</span>;
+      },
+      enableHiding: false,
+    }),
+    [CompanyFields.subscriptionStatus]: () => ({
+      id: "subscriptionStatus",
+      accessorKey: "subscriptionStatus",
+      header: t(`billing.ui.admin_company.columns.status`),
+      cell: ({ row }: { row: Row<TableContent<CompanyInterface>> }) => {
+        const company = row.original.jsonApiData as CompanyInterface;
+        const state = company.subscriptionStatus;
+        return (
+          <span data-testid="company-subscription-status">
+            {state ? <AdminSubscriptionStatusBadge state={state} /> : "—"}
+          </span>
+        );
+      },
+      enableHiding: false,
+    }),
+    [CompanyFields.subscriptionNextAt]: () => ({
+      id: "subscriptionNextAt",
+      accessorKey: "subscriptionNextAt",
+      header: t(`billing.ui.admin_company.columns.next_date`),
+      cell: ({ row }: { row: Row<TableContent<CompanyInterface>> }) => {
+        const company = row.original.jsonApiData as CompanyInterface;
+        return <SubscriptionNextDateCell date={company.subscriptionNextAt} />;
+      },
+      enableHiding: false,
+    }),
   };
 
   // Memoize columns to prevent infinite re-renders

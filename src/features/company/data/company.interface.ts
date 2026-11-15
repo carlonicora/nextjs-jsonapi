@@ -63,6 +63,17 @@ export interface CompanyInterface extends ApiDataInterface {
   get creditWarningDismissedAt(): Date | undefined;
   get creditWarningOffer(): CreditWarningOffer | undefined;
 
+  /**
+   * Current-subscription summary, filled only by the admin companies list
+   * (never sent by `createJsonApi()`). All four are absent on every other
+   * company read and for a company without a recurring subscription.
+   * `subscriptionPlanName` is set only when `subscriptionPlan` is `"other"`.
+   */
+  get subscriptionPlan(): "monthly" | "yearly" | "other" | undefined;
+  get subscriptionPlanName(): string | undefined;
+  get subscriptionStatus(): string | undefined;
+  get subscriptionNextAt(): Date | undefined;
+
   get features(): FeatureInterface[];
   get modules(): ModuleInterface[];
   get legal_address(): string | undefined;

@@ -1,4 +1,5 @@
 import { ApiDataInterface, StripeSubscriptionInterface } from "../../../../core";
+import { StripePriceInterface } from "../../stripe-price/data/stripe-price.interface";
 
 // ============================================================================
 // Invoice Enums
@@ -40,6 +41,14 @@ export interface StripeInvoiceInterface extends ApiDataInterface {
   get stripePdfUrl(): string | undefined;
   get paid(): boolean;
   get metadata(): Record<string, any> | undefined;
+  /** Start of the period the invoice's first non-proration line covers (admin reads). */
+  get servicePeriodStart(): Date | undefined;
+  /** End of the period the invoice's first non-proration line covers (admin reads). */
+  get servicePeriodEnd(): Date | undefined;
+  /** The price the invoice's first non-proration line was for, when known locally. */
+  get stripePrice(): StripePriceInterface | undefined;
+  /** Whether the invoice belongs to a subscription; sent by the admin company invoices list only. */
+  get forSubscription(): boolean | undefined;
 }
 
 // ============================================================================

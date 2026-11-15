@@ -90,3 +90,47 @@ describe("Company.trialEndsAt", () => {
     expect(payload.data.attributes).not.toHaveProperty("trialEndsAt");
   });
 });
+
+describe("Company subscription attributes", () => {
+  it("rehydrates the admin list subscription attributes", () => {
+    const company = new Company().rehydrate({
+      jsonApi: {
+        attributes: {
+          subscriptionPlan: "yearly",
+          subscriptionStatus: "active",
+          subscriptionNextAt: "2027-08-14T00:00:00.000Z",
+        },
+      },
+    } as any);
+
+    expect(company.subscriptionPlan).toBe("yearly");
+    expect(company.subscriptionStatus).toBe("active");
+    expect(company.subscriptionNextAt).toEqual(new Date("2027-08-14T00:00:00.000Z"));
+  });
+
+  it("rehydrates subscriptionPlanName for an other plan", () => {
+    const company = new Company().rehydrate({
+      jsonApi: { attributes: { subscriptionPlan: "other", subscriptionPlanName: "Pro" } },
+    } as any);
+
+    expect(company.subscriptionPlan).toBe("other");
+    expect(company.subscriptionPlanName).toBe("Pro");
+  });
+
+  it("leaves every subscription getter undefined when the attributes are absent", () => {
+    const company = new Company().rehydrate({ jsonApi: { attributes: {} } } as any);
+
+    expect(company.subscriptionPlan).toBeUndefined();
+    expect(company.subscriptionPlanName).toBeUndefined();
+    expect(company.subscriptionStatus).toBeUndefined();
+    expect(company.subscriptionNextAt).toBeUndefined();
+  });
+
+  it("does not send the subscription attributes from createJsonApi", () => {
+    const payload = new Company().createJsonApi({ id: "c1", name: "Acme" } as any);
+
+    expect(payload.data.attributes).not.toHaveProperty("subscriptionPlan");
+    expect(payload.data.attributes).not.toHaveProperty("subscriptionStatus");
+    expect(payload.data.attributes).not.toHaveProperty("subscriptionNextAt");
+  });
+});

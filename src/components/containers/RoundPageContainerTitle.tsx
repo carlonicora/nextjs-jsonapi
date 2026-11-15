@@ -91,15 +91,15 @@ export function RoundPageContainerTitle({
             <div className="text-muted-foreground flex min-w-0 items-center gap-x-2 text-base font-light">
               {title.titleActions}
               {module && module.icon ? <module.icon className="text-primary h-5 w-5 shrink-0" /> : title.icon}
-              <span className="truncate">
-                {title.type}
-                {title.element && (
-                  <>
-                    <span aria-hidden> · </span>
-                    <span className="text-primary font-semibold">{title.element}</span>
-                  </>
-                )}
-              </span>
+              {title.element ? (
+                <h1 className="truncate">
+                  {title.type}
+                  <span aria-hidden> · </span>
+                  <span className="text-primary font-semibold">{title.element}</span>
+                </h1>
+              ) : (
+                <span className="truncate">{title.type}</span>
+              )}
             </div>
             {detailsToggle}
           </div>
@@ -115,7 +115,11 @@ export function RoundPageContainerTitle({
               {module && module.icon ? <module.icon className="text-primary h-6 w-6" /> : title.icon}
               {title.type}
             </div>
-            <div className={cn("text-primary w-full text-xl font-semibold")}>{title.element}</div>
+            {title.element ? (
+              <h1 className={cn("text-primary w-full text-xl font-semibold")}>{title.element}</h1>
+            ) : (
+              <div className="w-full" />
+            )}
           </div>
           {(title.functions || details) && (
             <div className="flex shrink-0 items-center gap-x-2">

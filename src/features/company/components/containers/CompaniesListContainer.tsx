@@ -2,6 +2,7 @@
 
 import { RoundPageContainer } from "../../../../components";
 import { Modules } from "../../../../core";
+import { CompanyFields } from "../../data";
 import { CompanyProvider } from "../../contexts/CompanyContext";
 import { CompaniesList } from "../lists/CompaniesList";
 
@@ -14,11 +15,11 @@ import { CompaniesList } from "../lists/CompaniesList";
  * Components"). Routes mount this container instead — the same shape as every
  * other list page.
  */
-export function CompaniesListContainer() {
+export function CompaniesListContainer({ fields }: { fields?: CompanyFields[] } = {}) {
   return (
     <CompanyProvider>
       <RoundPageContainer module={Modules.Company} fullWidth>
-        <CompaniesList fullWidth />
+        <CompaniesList fullWidth fields={fields} />
       </RoundPageContainer>
     </CompanyProvider>
   );

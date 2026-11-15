@@ -17,9 +17,11 @@ type CompaniesListProps = {
    * rounded shell — two borders fighting each other at every corner.
    */
   fullWidth?: boolean;
+  /** Columns to show. Defaults to the name only (the list before WYR-98). */
+  fields?: CompanyFields[];
 };
 
-export function CompaniesList({ fullWidth }: CompaniesListProps = {}) {
+export function CompaniesList({ fullWidth, fields = [CompanyFields.name] }: CompaniesListProps = {}) {
   const t = useTranslations();
 
   const data: DataListRetriever<CompanyInterface> = useDataListRetriever({
@@ -35,7 +37,7 @@ export function CompaniesList({ fullWidth }: CompaniesListProps = {}) {
   return (
     <ContentListTable
       data={data}
-      fields={[CompanyFields.name]}
+      fields={fields}
       tableGeneratorType={Modules.Company}
       functions={functions}
       fullWidth={fullWidth}

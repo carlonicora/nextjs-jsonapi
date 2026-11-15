@@ -1,4 +1,5 @@
 import { AbstractApiData, JsonApiHydratedDataInterface, Modules, StripeSubscriptionInterface } from "../../../../core";
+import { StripePriceInterface } from "../../stripe-price/data/stripe-price.interface";
 import { InvoiceStatus, StripeInvoiceInterface } from "./stripe-invoice.interface";
 
 export class StripeInvoice extends AbstractApiData implements StripeInvoiceInterface {
@@ -25,6 +26,10 @@ export class StripeInvoice extends AbstractApiData implements StripeInvoiceInter
   private _stripePdfUrl?: string;
   private _paid: boolean = false;
   private _metadata?: Record<string, any>;
+  private _servicePeriodStart?: Date;
+  private _servicePeriodEnd?: Date;
+  private _stripePrice?: StripePriceInterface;
+  private _forSubscription?: boolean;
 
   get stripeInvoiceId(): string {
     if (!this._stripeInvoiceId) throw new Error("stripeInvoiceId is not defined");
@@ -128,6 +133,22 @@ export class StripeInvoice extends AbstractApiData implements StripeInvoiceInter
     return this._metadata;
   }
 
+  get servicePeriodStart(): Date | undefined {
+    return this._servicePeriodStart;
+  }
+
+  get servicePeriodEnd(): Date | undefined {
+    return this._servicePeriodEnd;
+  }
+
+  get stripePrice(): StripePriceInterface | undefined {
+    return this._stripePrice;
+  }
+
+  get forSubscription(): boolean | undefined {
+    return this._forSubscription;
+  }
+
   rehydrate(data: JsonApiHydratedDataInterface): this {
     super.rehydrate(data);
 
@@ -160,6 +181,16 @@ export class StripeInvoice extends AbstractApiData implements StripeInvoiceInter
         ? JSON.parse(data.jsonApi.attributes.metadata)
         : data.jsonApi.attributes.metadata
       : undefined;
+
+    this._servicePeriodStart = data.jsonApi.attributes.servicePeriodStart
+      ? new Date(data.jsonApi.attributes.servicePeriodStart)
+      : undefined;
+    this._servicePeriodEnd = data.jsonApi.attributes.servicePeriodEnd
+      ? new Date(data.jsonApi.attributes.servicePeriodEnd)
+      : undefined;
+    this._forSubscription = data.jsonApi.attributes.forSubscription ?? undefined;
+
+    this._stripePrice = this._readIncluded(data, "stripePrice", Modules.StripePrice) as StripePriceInterface;
 
     // Hydrate subscription relationship
     this._subscription = this._readIncluded(

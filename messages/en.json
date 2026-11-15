@@ -896,6 +896,69 @@
           "select_plan": "Select Plan"
         },
         "subscribe_description": "Choose a subscription plan to get started"
+      },
+      "admin_company": {
+        "columns": {
+          "plan": "Plan",
+          "status": "Status",
+          "next_date": "Next date"
+        },
+        "plan": {
+          "monthly": "Monthly",
+          "yearly": "Yearly"
+        },
+        "for": {
+          "monthly": "Monthly plan",
+          "yearly": "Yearly plan",
+          "other": "{name} plan",
+          "one_time": "Extra credits"
+        },
+        "status": {
+          "trial": "Trial",
+          "active": "Active",
+          "cancelled": "Cancelled",
+          "past_due": "Past due",
+          "incomplete": "Incomplete",
+          "paused": "Paused",
+          "ended": "Ended"
+        },
+        "invoice_status": {
+          "failed": "Failed"
+        },
+        "subscription": {
+          "title": "Subscription",
+          "none": "No subscription",
+          "plan": "Plan",
+          "status": "Status",
+          "renews": "Renews",
+          "ends": "Ends",
+          "trial_ends": "Trial ends",
+          "ended": "Ended",
+          "started": "Started",
+          "discount": "Discount"
+        },
+        "discount": {
+          "forever": "forever",
+          "once": "once",
+          "repeating": "for {months} months",
+          "until": "until {date}"
+        },
+        "payments": {
+          "title": "Payments",
+          "empty": "No payments yet.",
+          "total_paid": "Total paid: {amounts}",
+          "columns": {
+            "date": "Date",
+            "for": "For",
+            "status": "Status",
+            "amount": "Amount",
+            "period": "Period"
+          }
+        },
+        "errors": {
+          "subscription": "Could not load the subscription.",
+          "payments": "Could not load the payments."
+        }
       }
     }
   },

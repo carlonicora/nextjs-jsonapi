@@ -896,6 +896,69 @@
           "select_plan": "Scegli il piano"
         },
         "subscribe_description": "Scegli un piano di abbonamento per iniziare"
+      },
+      "admin_company": {
+        "columns": {
+          "plan": "Piano",
+          "status": "Stato",
+          "next_date": "Prossima data"
+        },
+        "plan": {
+          "monthly": "Mensile",
+          "yearly": "Annuale"
+        },
+        "for": {
+          "monthly": "Piano mensile",
+          "yearly": "Piano annuale",
+          "other": "Piano {name}",
+          "one_time": "Crediti extra"
+        },
+        "status": {
+          "trial": "Prova",
+          "active": "Attivo",
+          "cancelled": "Annullato",
+          "past_due": "Pagamento in ritardo",
+          "incomplete": "Incompleto",
+          "paused": "In pausa",
+          "ended": "Terminato"
+        },
+        "invoice_status": {
+          "failed": "Non riuscito"
+        },
+        "subscription": {
+          "title": "Abbonamento",
+          "none": "Nessun abbonamento",
+          "plan": "Piano",
+          "status": "Stato",
+          "renews": "Rinnovo",
+          "ends": "Termina",
+          "trial_ends": "Fine prova",
+          "ended": "Terminato il",
+          "started": "Iniziato",
+          "discount": "Sconto"
+        },
+        "discount": {
+          "forever": "per sempre",
+          "once": "una volta",
+          "repeating": "per {months} mesi",
+          "until": "fino al {date}"
+        },
+        "payments": {
+          "title": "Pagamenti",
+          "empty": "Nessun pagamento.",
+          "total_paid": "Totale pagato: {amounts}",
+          "columns": {
+            "date": "Data",
+            "for": "Per",
+            "status": "Stato",
+            "amount": "Importo",
+            "period": "Periodo"
+          }
+        },
+        "errors": {
+          "subscription": "Impossibile caricare l'abbonamento.",
+          "payments": "Impossibile caricare i pagamenti."
+        }
       }
     }
   },
