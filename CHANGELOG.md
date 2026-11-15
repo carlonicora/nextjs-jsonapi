@@ -1,3 +1,9 @@
+## [6.38.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.37.1...v6.38.0) (2026-11-15)
+
+### 🚀 Features
+
+* **analytics:** the admin analytics page has two tabs, Site visitors and App users; Site visitors adds most viewed, entry and exit page lists and App users a most used pages list; the Section filter and the daily-uniques chart, model and service method are removed; the admin service and models take an audience instead of a section ([905ebd4](https://github.com/carlonicora/nextjs-jsonapi/commit/905ebd4199f8b60cfe2387380b7d39f1e9079420))
+
 ## [6.37.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.37.0...v6.37.1) (2026-11-15)
 
 ### 💎 Styles
