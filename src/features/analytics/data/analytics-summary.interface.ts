@@ -1,7 +1,7 @@
 import { ApiDataInterface } from "../../../core";
 
 export interface AnalyticsSummaryInterface extends ApiDataInterface {
-  get section(): string;
+  get section(): "total";
   get window(): string;
   get visitors(): number;
   get sessions(): number;

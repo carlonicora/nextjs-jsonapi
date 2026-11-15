@@ -123,7 +123,7 @@ describe("AnalyticsJourneyContainer", () => {
 
     await waitFor(() =>
       expect(AnalyticsAdminService.getSessions).toHaveBeenCalledWith(
-        expect.objectContaining({ visitorId: "visitor-0000-0000-abc123", section: "all" }),
+        expect.objectContaining({ visitorId: "visitor-0000-0000-abc123" }),
       ),
     );
     expect(await screen.findByTestId("analytics-session-link-s9")).toHaveAttribute(
@@ -131,5 +131,15 @@ describe("AnalyticsJourneyContainer", () => {
       "/administration/analytics/sessions/s9",
     );
     expect(screen.queryByTestId("analytics-session-link-s1")).not.toBeInTheDocument();
+  });
+
+  it("looks up other sessions without an audience", async () => {
+    render(<AnalyticsJourneyContainer sessionId="s1" />);
+
+    await waitFor(() => expect(AnalyticsAdminService.getSessions).toHaveBeenCalled());
+    const params = vi.mocked(AnalyticsAdminService.getSessions).mock.calls[0][0] as Record<string, unknown>;
+    expect(params.visitorId).toBe("visitor-0000-0000-abc123");
+    expect(params).not.toHaveProperty("audience");
+    expect(params).not.toHaveProperty("section");
   });
 });

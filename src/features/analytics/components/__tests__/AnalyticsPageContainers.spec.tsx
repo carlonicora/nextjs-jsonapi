@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { configureI18n } from "../../../../i18n";
 import { AnalyticsAdminService } from "../../data/AnalyticsAdminService";
@@ -11,7 +11,6 @@ vi.mock("../../data/AnalyticsAdminService", () => ({
     getTimeline: vi.fn(),
     getBreakdown: vi.fn(),
     getSessions: vi.fn(),
-    getDailyUniques: vi.fn(),
     getSession: vi.fn(),
     getSessionPageViews: vi.fn(),
     next: vi.fn(),
@@ -83,6 +82,8 @@ const session = (id: string, startedAt: string) =>
     deviceType: "desktop",
   }) as any;
 
+const follows = (a: Node, b: Node) => Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+
 describe("AnalyticsAdminPageContainer", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -90,27 +91,51 @@ describe("AnalyticsAdminPageContainer", () => {
     vi.mocked(AnalyticsAdminService.getTimeline).mockResolvedValue([]);
     vi.mocked(AnalyticsAdminService.getBreakdown).mockResolvedValue([]);
     vi.mocked(AnalyticsAdminService.getSessions).mockResolvedValue([session("s1", "2026-10-01T10:00:00.000Z")]);
-    vi.mocked(AnalyticsAdminService.getDailyUniques).mockResolvedValue([]);
   });
 
-  it("renders the daily visitors and users cards between Over time and Breakdown", async () => {
+  it("renders the visitors tab panels in order", async () => {
     render(<AnalyticsAdminPageContainer />);
 
-    const visitorsCard = await screen.findByTestId("analytics-daily-visitors-card");
-    const usersCard = screen.getByTestId("analytics-daily-users-card");
-    expect(visitorsCard).toHaveTextContent("analytics.admin.panels.daily_visitors");
-    expect(usersCard).toHaveTextContent("analytics.admin.panels.daily_users");
+    const panel = await screen.findByTestId("analytics-panel-visitors");
+    await within(panel).findByTestId("analytics-tile-visitors");
+    expect(screen.getByTestId("analytics-audience-tabs")).toBeInTheDocument();
+    expect(screen.getByTestId("analytics-tab-visitors")).toHaveTextContent("analytics.admin.tabs.visitors");
+    expect(screen.getByTestId("analytics-tab-users")).toHaveTextContent("analytics.admin.tabs.users");
 
-    const overTime = screen.getByText("analytics.admin.panels.over_time");
-    const breakdown = screen.getByText("analytics.admin.panels.breakdown");
-    const follows = (a: Node, b: Node) => Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+    const ordered = [
+      within(panel).getByTestId("analytics-tile-visitors"),
+      within(panel).getByText("analytics.admin.panels.over_time"),
+      within(panel).getByTestId("analytics-page-list-top-pages"),
+      within(panel).getByTestId("analytics-page-list-entry-pages"),
+      within(panel).getByTestId("analytics-page-list-exit-pages"),
+      within(panel).getByText("analytics.admin.panels.breakdown"),
+      within(panel).getByText("analytics.admin.panels.sessions"),
+    ];
+    for (let i = 1; i < ordered.length; i += 1) {
+      expect(follows(ordered[i - 1], ordered[i])).toBe(true);
+    }
+    expect(within(panel).getByTestId("analytics-page-list-top-pages")).toHaveTextContent(
+      "analytics.admin.panels.top_pages",
+    );
+    expect(within(panel).queryByTestId("analytics-page-list-most-used-pages")).not.toBeInTheDocument();
+  });
 
-    expect(follows(overTime, visitorsCard)).toBe(true);
-    expect(follows(visitorsCard, usersCard)).toBe(true);
-    expect(follows(usersCard, breakdown)).toBe(true);
-    expect(overTime.closest('[data-slot="card"]')?.nextElementSibling).toBe(visitorsCard);
-    expect(visitorsCard.nextElementSibling).toBe(usersCard);
-    expect(usersCard.nextElementSibling).toBe(breakdown.closest('[data-slot="card"]'));
+  it("the users tab shows the most-used pages card and no Breakdown", async () => {
+    render(<AnalyticsAdminPageContainer />);
+
+    await screen.findByTestId("analytics-tile-visitors");
+    fireEvent.click(screen.getByTestId("analytics-tab-users"));
+
+    const panel = await screen.findByTestId("analytics-panel-users");
+    const mostUsed = await within(panel).findByTestId("analytics-page-list-most-used-pages");
+    expect(mostUsed).toHaveTextContent("analytics.admin.panels.most_used_pages");
+    expect(within(panel).getByTestId("analytics-tile-visitors")).toHaveTextContent("analytics.admin.tiles.users");
+    expect(screen.queryByText("analytics.admin.panels.breakdown")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("analytics-page-list-top-pages")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("analytics-page-list-entry-pages")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("analytics-page-list-exit-pages")).not.toBeInTheDocument();
+    expect(follows(within(panel).getByText("analytics.admin.panels.over_time"), mostUsed)).toBe(true);
+    expect(follows(mostUsed, within(panel).getByText("analytics.admin.panels.sessions"))).toBe(true);
   });
 
   it("loads the dashboard and links each session under the given sessionPageUrl", async () => {

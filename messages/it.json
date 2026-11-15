@@ -137,9 +137,12 @@
       "anonymous": "Anonimo",
       "columns": {
         "device": "Dispositivo",
+        "exit_share": "% sessioni",
+        "exits": "Uscite",
         "gap": "Intervallo",
         "key": "Valore",
         "landing": "Pagina di arrivo",
+        "page": "Pagina",
         "page_views": "Visualizzazioni di pagina",
         "pages": "Pagine",
         "path": "Percorso",
@@ -147,34 +150,23 @@
         "source": "Sorgente / mezzo",
         "started": "Iniziata",
         "time": "Tempo",
+        "users": "Utenti",
         "visitor": "Visitatore",
         "visitors": "Visitatori"
       },
       "consented": "Consenso dato",
-      "daily_uniques": {
-        "no_data": "Nessun dato",
-        "today": "Oggi, conteggio in corso",
-        "users": "Utenti unici",
-        "visitors": "Visitatori unici"
-      },
-      "description": "Visitatori, sessioni e visualizzazioni di pagina su sito e applicazione.",
+      "description": "Visitatori del sito e utenti dell'app: visite, pagine e sessioni.",
       "dimensions": {
         "campaign": "Campagna",
-        "landing": "Pagine di arrivo",
         "medium": "Mezzo",
         "referrer": "Referrer",
-        "route": "Pagine",
         "source": "Sorgente"
       },
       "filter": {
         "granularity": "Granularità",
         "granularity_day": "Giorno",
         "granularity_month": "Mese",
-        "granularity_week": "Settimana",
-        "section": "Sezione",
-        "section_all": "Tutto",
-        "section_app": "Applicazione",
-        "section_public": "Sito"
+        "granularity_week": "Settimana"
       },
       "load_more": "Carica altro",
       "no_data": "Nessun dato di analisi per questo periodo",
@@ -182,16 +174,23 @@
       "other": "Altro",
       "panels": {
         "breakdown": "Ripartizione",
-        "daily_users": "Utenti unici al giorno",
-        "daily_visitors": "Visitatori unici al giorno",
+        "entry_pages": "Pagine di arrivo",
+        "exit_pages": "Pagine di uscita",
         "journey": "Percorso",
+        "most_used_pages": "Pagine più usate",
         "other_sessions": "Altre sessioni di questo visitatore",
         "over_time": "Nel tempo",
-        "sessions": "Sessioni"
+        "sessions": "Sessioni",
+        "top_pages": "Pagine più viste"
       },
       "series": {
         "page_views": "Visualizzazioni di pagina",
+        "users": "Utenti",
         "visitors": "Visitatori"
+      },
+      "tabs": {
+        "users": "Utenti dell'app",
+        "visitors": "Visitatori del sito"
       },
       "tiles": {
         "consent_share": "Visitatori che hanno dato il consenso",
@@ -199,6 +198,7 @@
         "pages_per_session": "Pagine per sessione",
         "sessions": "Sessioni",
         "summarised_note": "I dati più vecchi di 13 mesi vengono riassunti in totali giornalieri, quindi per quel periodo non ci sono i dettagli di visitatori e sessioni.",
+        "users": "Utenti",
         "visitors": "Visitatori",
         "vs_previous": "rispetto al periodo precedente"
       },

@@ -22,6 +22,8 @@ const SERIES = ["visitors", "pageViews"] as const;
 type AnalyticsTimelineChartProps = {
   rows: AnalyticsTimelineInterface[];
   className?: string;
+  /** Legend/tooltip label of the first series; defaults to "Visitors". */
+  firstSeriesLabel?: string;
 };
 
 type TimelineBucket = { bucket: string; visitors: number; pageViews: number };
@@ -65,8 +67,8 @@ const inferGranularity = (buckets: string[]): "day" | "week" | "month" => {
 /**
  * Traffic over time as a grouped bar chart: visitors and page views per bucket.
  *
- * The backend returns one row per bucket per section; the chart sums the
- * sections into one entry per bucket. The two series measure different things,
+ * The rows are one audience (the selected tab), one row per bucket; the chart
+ * still keys them by bucket so a duplicate bucket can never draw twice. The two series measure different things,
  * so they sit side by side rather than stacked.
  *
  * Colour does an IDENTITY job here — each bar is a series, not a magnitude — so
@@ -75,7 +77,7 @@ const inferGranularity = (buckets: string[]): "day" | "week" | "month" => {
  * which obliges a relief channel: the legend and the value-carrying tooltip
  * below are what make the fills readable.
  */
-export function AnalyticsTimelineChart({ rows, className }: AnalyticsTimelineChartProps) {
+export function AnalyticsTimelineChart({ rows, className, firstSeriesLabel }: AnalyticsTimelineChartProps) {
   const t = useTranslations();
   const { compact, bucketDate, decimal } = useUsageFormatters();
   const { resolvedTheme } = useTheme();
@@ -99,10 +101,10 @@ export function AnalyticsTimelineChart({ rows, className }: AnalyticsTimelineCha
   const chartConfig = useMemo(
     () =>
       ({
-        visitors: { label: t("analytics.admin.series.visitors") },
+        visitors: { label: firstSeriesLabel ?? t("analytics.admin.series.visitors") },
         pageViews: { label: t("analytics.admin.series.page_views") },
       }) as ChartConfig,
-    [t],
+    [t, firstSeriesLabel],
   );
 
   if (chartData.length === 0) {

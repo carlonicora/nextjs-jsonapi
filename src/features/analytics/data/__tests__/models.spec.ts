@@ -7,7 +7,6 @@ import { AbstractApiData } from "../../../../core/abstracts/AbstractApiData";
 import { JsonApiHydratedDataInterface } from "../../../../core/interfaces/JsonApiHydratedDataInterface";
 import { analyticsModules } from "../../analytics.modules";
 import { AnalyticsBreakdown } from "../analytics-breakdown";
-import { AnalyticsDailyUniqueTimeline } from "../analytics-daily-unique-timeline";
 import { AnalyticsEvent } from "../analytics-event";
 import { AnalyticsPageView } from "../analytics-page-view";
 import { AnalyticsSession } from "../analytics-session";
@@ -60,7 +59,7 @@ describe("analytics models — rehydrate", () => {
   it("rehydrates every summary attribute", () => {
     const m = new AnalyticsSummary().rehydrate(
       hydrate({
-        section: "all",
+        section: "total",
         window: "current",
         visitors: 120,
         sessions: 150,
@@ -69,7 +68,7 @@ describe("analytics models — rehydrate", () => {
         consentShare: 0.4,
       }),
     );
-    expect(m.section).toBe("all");
+    expect(m.section).toBe("total");
     expect(m.window).toBe("current");
     expect(m.visitors).toBe(120);
     expect(m.sessions).toBe(150);
@@ -80,34 +79,14 @@ describe("analytics models — rehydrate", () => {
 
   it("parses the timeline bucket into a Date, not the wire string", () => {
     const m = new AnalyticsTimeline().rehydrate(
-      hydrate({ bucket: "2026-09-01", section: "public", visitors: 1, sessions: 2, pageViews: 3 }),
+      hydrate({ bucket: "2026-09-01", section: "visitors", visitors: 1, sessions: 2, pageViews: 3 }),
     );
     expect(m.bucket).toBeInstanceOf(Date);
     expect(m.bucket.toISOString().slice(0, 10)).toBe("2026-09-01");
-    expect(m.section).toBe("public");
+    expect(m.section).toBe("visitors");
     expect(m.visitors).toBe(1);
     expect(m.sessions).toBe(2);
     expect(m.pageViews).toBe(3);
-  });
-
-  it("rehydrates a daily-unique row: the day into a UTC-midnight Date and both counts", () => {
-    const m = new AnalyticsDailyUniqueTimeline().rehydrate(hydrate({ day: "2026-11-03", visitors: 3, users: 1 }));
-    expect(m.day).toBeInstanceOf(Date);
-    expect(m.day.getTime()).toBe(new Date("2026-11-03").getTime());
-    expect(m.visitors).toBe(3);
-    expect(m.users).toBe(1);
-  });
-
-  it("rehydrates an unknown daily-unique count to null, whether sent as null or missing", () => {
-    const m = new AnalyticsDailyUniqueTimeline().rehydrate(hydrate({ day: "2026-11-03", visitors: null }));
-    expect(m.visitors).toBeNull();
-    expect(m.users).toBeNull();
-  });
-
-  it("keeps a zero daily-unique count as 0, not null", () => {
-    const m = new AnalyticsDailyUniqueTimeline().rehydrate(hydrate({ day: "2026-11-03", visitors: 0, users: 0 }));
-    expect(m.visitors).toBe(0);
-    expect(m.users).toBe(0);
   });
 
   it("rehydrates every breakdown attribute", () => {
@@ -248,8 +227,8 @@ describe("analytics models — createJsonApi", () => {
 
   it("serialises a summary back to a JSON:API resource object", () => {
     const doc = new AnalyticsSummary().createJsonApi({
-      id: "all|current",
-      section: "all",
+      id: "total|current",
+      section: "total",
       window: "current",
       visitors: 1,
       sessions: 2,
@@ -258,15 +237,15 @@ describe("analytics models — createJsonApi", () => {
       consentShare: 0.5,
     });
     expect(doc.data.type).toBe("analytics/administration/summary");
-    expect(doc.data.id).toBe("all|current");
-    expect(doc.data.attributes).toMatchObject({ section: "all", window: "current", visitors: 1, consentShare: 0.5 });
+    expect(doc.data.id).toBe("total|current");
+    expect(doc.data.attributes).toMatchObject({ section: "total", window: "current", visitors: 1, consentShare: 0.5 });
   });
 
   it("emits the timeline bucket as YYYY-MM-DD via formatLocalDate, never a raw Date", () => {
     const doc = new AnalyticsTimeline().createJsonApi({
-      id: "2026-09-01|public",
+      id: "2026-09-01|visitors",
       bucket: new Date(2026, 8, 1),
-      section: "public",
+      section: "visitors",
       visitors: 1,
       sessions: 1,
       pageViews: 1,
@@ -275,12 +254,39 @@ describe("analytics models — createJsonApi", () => {
     expect(JSON.parse(JSON.stringify(doc)).data.attributes.bucket).toBe("2026-09-01");
   });
 
-  it("emits the daily-unique day as YYYY-MM-DD via formatLocalDate, never a raw Date", () => {
-    const doc = new AnalyticsDailyUniqueTimeline().createJsonApi({ id: "2026-11-03", day: new Date(2026, 10, 3) });
-    expect(doc.data.type).toBe("analytics/administration/daily-uniques");
-    expect(doc.data.id).toBe("2026-11-03");
-    expect(doc.data.attributes.day).toBe("2026-11-03");
-    expect(JSON.parse(JSON.stringify(doc)).data.attributes.day).toBe("2026-11-03");
+  it("timeline round-trip keeps section users", () => {
+    const doc = new AnalyticsTimeline().createJsonApi({
+      id: "2026-09-01|users",
+      bucket: new Date(2026, 8, 1),
+      section: "users",
+      visitors: 1,
+      sessions: 2,
+      pageViews: 3,
+    });
+    const m = new AnalyticsTimeline().rehydrate({ jsonApi: doc.data, included: [] } as any);
+    expect(m.section).toBe("users");
+    expect(m.id).toBe("2026-09-01|users");
+  });
+
+  it("timeline rehydrate reads any section other than users as visitors", () => {
+    const m = new AnalyticsTimeline().rehydrate(hydrate({ bucket: "2026-09-01", section: "public" }));
+    expect(m.section).toBe("visitors");
+  });
+
+  it("summary round-trip keeps section total", () => {
+    const doc = new AnalyticsSummary().createJsonApi({
+      id: "total|previous",
+      section: "total",
+      window: "previous",
+      visitors: 1,
+      sessions: 2,
+      pageViews: 3,
+      pagesPerSession: 1.5,
+      consentShare: 0.5,
+    });
+    const m = new AnalyticsSummary().rehydrate({ jsonApi: doc.data, included: [] } as any);
+    expect(m.section).toBe("total");
+    expect(m.window).toBe("previous");
   });
 
   it("serialises a breakdown row", () => {

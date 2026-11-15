@@ -1,59 +1,66 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { formatLocalDate, Modules, NextRef } from "../../../core";
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { Modules, NextRef } from "../../../core";
 import { SharedProvider } from "../../../contexts";
 import { BreadcrumbItemData } from "../../../interfaces";
 import { AnalyticsAdminFilterBar } from "../components/AnalyticsAdminFilterBar";
 import type { AnalyticsBreakdownInterface } from "../data/analytics-breakdown.interface";
-import type { AnalyticsDailyUniqueTimelineInterface } from "../data/analytics-daily-unique-timeline.interface";
 import type { AnalyticsSessionInterface } from "../data/analytics-session.interface";
 import type { AnalyticsSummaryInterface } from "../data/analytics-summary.interface";
 import type { AnalyticsTimelineInterface } from "../data/analytics-timeline.interface";
 import {
-  ANALYTICS_DIMENSIONS,
+  ANALYTICS_AUDIENCE_BREAKDOWNS,
+  type AnalyticsAudience,
   type AnalyticsDimension,
   type AnalyticsGranularity,
-  type AnalyticsSection,
 } from "../data/analytics.types";
 import { AnalyticsAdminService } from "../data/AnalyticsAdminService";
 
 /** Default base route of the journey page each session row links to. */
 const ANALYTICS_SESSION_PAGE_URL = "/administration/analytics/sessions";
 
-/** Rows kept per breakdown tab before the repository folds the tail into "other". */
-const BREAKDOWN_LIMIT = 20;
-
 /** The window the page opens on, in days. */
 const DEFAULT_RANGE_DAYS = 30;
 
-const EMPTY_BREAKDOWNS: Record<AnalyticsDimension, AnalyticsBreakdownInterface[]> = {
+/** Every dimension empty: the base the selected tab's fetched dimensions are merged onto. */
+const emptyBreakdowns = (): Record<AnalyticsDimension, AnalyticsBreakdownInterface[]> => ({
   source: [],
   medium: [],
   campaign: [],
   referrer: [],
   route: [],
   landing: [],
-};
+  exit: [],
+});
 
 export type AnalyticsAdminFilterState = {
   /** ISO 8601 instant. */
   from: string;
   /** ISO 8601 instant. */
   to: string;
-  section: AnalyticsSection;
+  /** The selected tab. Defaults to "visitors". */
+  audience: AnalyticsAudience;
+  /** Defaults to "day". */
   granularity: AnalyticsGranularity;
 };
 
+/** The filter keys whose change refetches the selected tab. */
+const FETCH_KEYS = [
+  "from",
+  "to",
+  "audience",
+  "granularity",
+] as const satisfies readonly (keyof AnalyticsAdminFilterState)[];
+
 export interface AnalyticsAdminContextType {
-  /** The six summary rows: {public, app, total} × {current, previous}. */
+  /** Two rows: total × {current, previous}, for the selected audience. */
   summary: AnalyticsSummaryInterface[];
   timeline: AnalyticsTimelineInterface[];
+  /** Dimensions the selected tab did not fetch are []. */
   breakdowns: Record<AnalyticsDimension, AnalyticsBreakdownInterface[]>;
   sessions: AnalyticsSessionInterface[];
-  /** One row per day of the range: unique visitors and users, never filtered by section. */
-  dailyUniques: AnalyticsDailyUniqueTimelineInterface[];
   filters: AnalyticsAdminFilterState;
   /** Merges a partial patch into the current filters; every key is optional. */
   setFilters: (next: Partial<AnalyticsAdminFilterState>) => void;
@@ -92,8 +99,9 @@ type AnalyticsAdminProviderProps = {
 };
 
 /**
- * Owns every filter the administrative analytics page reads, fetches the panels
- * behind it, and publishes the filter bar into the page title bar.
+ * Owns every filter the administrative analytics page reads (the selected
+ * audience tab included), fetches only that tab's panels, and publishes the
+ * filter bar into the page title bar.
  *
  * The filter bar is rendered into `title.functions` here — NOT in the container —
  * because `RoundPageContainer`'s title bar reads `title.functions` from
@@ -113,7 +121,7 @@ export const AnalyticsAdminProvider = ({
     return {
       from: initialFrom ?? range.from,
       to: initialTo ?? range.to,
-      section: "all",
+      audience: "visitors",
       granularity: "day",
     };
   });
@@ -121,26 +129,31 @@ export const AnalyticsAdminProvider = ({
   const [summary, setSummary] = useState<AnalyticsSummaryInterface[]>([]);
   const [timeline, setTimeline] = useState<AnalyticsTimelineInterface[]>([]);
   const [breakdowns, setBreakdowns] =
-    useState<Record<AnalyticsDimension, AnalyticsBreakdownInterface[]>>(EMPTY_BREAKDOWNS);
+    useState<Record<AnalyticsDimension, AnalyticsBreakdownInterface[]>>(emptyBreakdowns);
   const [sessions, setSessions] = useState<AnalyticsSessionInterface[]>([]);
-  const [dailyUniques, setDailyUniques] = useState<AnalyticsDailyUniqueTimelineInterface[]>([]);
   /** The cursor URL of the next sessions page, as the API returned it. */
   const [sessionsNextPage, setSessionsNextPage] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { from, to, section, granularity } = filters;
+  /**
+   * The out-of-order guard: every fetch bumps it, and a response (panels or
+   * Load more) whose captured value no longer matches is dropped, so a fast
+   * A to B to A switch never shows B's data on A.
+   */
+  const requestRef = useRef(0);
+
+  const { from, to, audience, granularity } = filters;
 
   useEffect(() => {
-    // `cancelled` is the out-of-order guard: a filter change fires a new request
-    // while the previous one is still in flight, and without this flag the slower
-    // (older) response would land last and overwrite the fresher state.
-    let cancelled = false;
+    const request = ++requestRef.current;
+    const isStale = () => requestRef.current !== request;
 
     setIsLoading(true);
     setError(null);
 
-    const base = { from, to, section };
+    const base = { from, to, audience };
+    const tabBreakdowns = ANALYTICS_AUDIENCE_BREAKDOWNS[audience];
     // callApi writes the response's next-page link into this ref.
     const sessionsNext: NextRef = {};
 
@@ -148,53 +161,48 @@ export const AnalyticsAdminProvider = ({
       AnalyticsAdminService.getSummary(base),
       AnalyticsAdminService.getTimeline({ ...base, granularity }),
       Promise.all(
-        ANALYTICS_DIMENSIONS.map((dimension) =>
-          AnalyticsAdminService.getBreakdown({ ...base, dimension, limit: BREAKDOWN_LIMIT }),
-        ),
+        tabBreakdowns.map(({ dimension, limit }) => AnalyticsAdminService.getBreakdown({ ...base, dimension, limit })),
       ),
       AnalyticsAdminService.getSessions({ ...base, next: sessionsNext }),
-      // The local calendar days the admin picked: the picker emits local-midnight
-      // instants, so slicing the UTC instant would shift the range a day east of UTC.
-      AnalyticsAdminService.getDailyUniques({
-        fromDate: formatLocalDate(new Date(from)),
-        toDate: formatLocalDate(new Date(to)),
-      }),
     ])
-      .then(([nextSummary, nextTimeline, nextBreakdowns, nextSessions, nextDailyUniques]) => {
-        if (cancelled) return;
+      .then(([nextSummary, nextTimeline, nextBreakdowns, nextSessions]) => {
+        if (isStale()) return;
         setSummary(nextSummary ?? []);
         setTimeline(nextTimeline ?? []);
-        setBreakdowns(
-          Object.fromEntries(
-            ANALYTICS_DIMENSIONS.map((dimension, index) => [dimension, nextBreakdowns[index] ?? []]),
-          ) as Record<AnalyticsDimension, AnalyticsBreakdownInterface[]>,
-        );
+        const merged = emptyBreakdowns();
+        tabBreakdowns.forEach(({ dimension }, index) => {
+          merged[dimension] = nextBreakdowns[index] ?? [];
+        });
+        setBreakdowns(merged);
         setSessions(nextSessions ?? []);
         setSessionsNextPage(sessionsNext.next);
-        setDailyUniques(nextDailyUniques ?? []);
       })
       .catch((err) => {
-        if (cancelled) return;
+        if (isStale()) return;
         console.error("Failed to load analytics:", err);
         setError(err instanceof Error ? err.message : String(err));
       })
       .finally(() => {
-        if (cancelled) return;
+        if (isStale()) return;
         setIsLoading(false);
       });
+  }, [from, to, audience, granularity]);
 
-    return () => {
-      cancelled = true;
-    };
-  }, [from, to, section, granularity]);
-
-  const setFilters = useCallback((next: Partial<AnalyticsAdminFilterState>) => {
-    setFilterState((prev) => ({ ...prev, ...next }));
-  }, []);
+  // A change that refetches flips isLoading in the same update as the filters,
+  // so no render shows the new tab or period with the old one's data.
+  const setFilters = useCallback(
+    (next: Partial<AnalyticsAdminFilterState>) => {
+      const refetches = FETCH_KEYS.some((key) => next[key] !== undefined && next[key] !== filters[key]);
+      setFilterState((prev) => ({ ...prev, ...next }));
+      if (refetches) setIsLoading(true);
+    },
+    [filters],
+  );
 
   const loadMoreSessions = useCallback(async () => {
     if (!sessionsNextPage) return;
 
+    const request = requestRef.current;
     const sessionsNext: NextRef = {};
     try {
       const nextSessions = await AnalyticsAdminService.next<AnalyticsSessionInterface[]>({
@@ -202,11 +210,13 @@ export const AnalyticsAdminProvider = ({
         endpoint: sessionsNextPage,
         next: sessionsNext,
       });
+      // The tab or filters changed while this page was in flight: it belongs to the old list.
+      if (requestRef.current !== request) return;
       setSessions((prev) => [...prev, ...(nextSessions ?? [])]);
       setSessionsNextPage(sessionsNext.next);
     } catch (err) {
+      // The list and the Load more button stay; the page error is for the panels only.
       console.error("Failed to load more analytics sessions:", err);
-      setError(err instanceof Error ? err.message : String(err));
     }
   }, [sessionsNextPage]);
 
@@ -221,7 +231,6 @@ export const AnalyticsAdminProvider = ({
         key="analyticsAdminFilterBar"
         from={from}
         to={to}
-        section={section}
         granularity={granularity}
         onChange={setFilters}
       />
@@ -236,7 +245,6 @@ export const AnalyticsAdminProvider = ({
       timeline,
       breakdowns,
       sessions,
-      dailyUniques,
       filters,
       setFilters,
       loadMoreSessions,
@@ -250,7 +258,6 @@ export const AnalyticsAdminProvider = ({
       timeline,
       breakdowns,
       sessions,
-      dailyUniques,
       filters,
       setFilters,
       loadMoreSessions,

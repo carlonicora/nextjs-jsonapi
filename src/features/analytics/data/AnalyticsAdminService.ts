@@ -1,6 +1,5 @@
 import { AbstractService, EndpointCreator, HttpMethod, Modules, NextRef } from "../../../core";
 import { AnalyticsBreakdownInterface } from "./analytics-breakdown.interface";
-import { AnalyticsDailyUniqueTimelineInterface } from "./analytics-daily-unique-timeline.interface";
 import { AnalyticsPageViewInterface } from "./analytics-page-view.interface";
 import { AnalyticsSessionInterface } from "./analytics-session.interface";
 import { AnalyticsSummaryInterface } from "./analytics-summary.interface";
@@ -10,7 +9,8 @@ import { AnalyticsDimension, AnalyticsFilters, AnalyticsGranularity } from "./an
 function withFilters(endpoint: EndpointCreator, filters: AnalyticsFilters): EndpointCreator {
   endpoint.addAdditionalParam("from", filters.from);
   endpoint.addAdditionalParam("to", filters.to);
-  endpoint.addAdditionalParam("section", filters.section);
+  // Left out only by the journey page's per-visitor lookup, which lists both audiences.
+  if (filters.audience !== undefined) endpoint.addAdditionalParam("audience", filters.audience);
   return endpoint;
 }
 
@@ -34,25 +34,6 @@ export class AnalyticsAdminService extends AbstractService {
 
     return this.callApi<AnalyticsTimelineInterface[]>({
       type: Modules.AnalyticsTimeline,
-      method: HttpMethod.GET,
-      endpoint: endpoint.generate(),
-    });
-  }
-
-  /**
-   * One row per calendar day from fromDate to toDate (YYYY-MM-DD, local dates).
-   * Always daily and never filtered by section, so it skips withFilters.
-   */
-  static async getDailyUniques(params: {
-    fromDate: string;
-    toDate: string;
-  }): Promise<AnalyticsDailyUniqueTimelineInterface[]> {
-    const endpoint = new EndpointCreator({ endpoint: Modules.AnalyticsDailyUniqueTimeline });
-    endpoint.addAdditionalParam("fromDate", params.fromDate);
-    endpoint.addAdditionalParam("toDate", params.toDate);
-
-    return this.callApi<AnalyticsDailyUniqueTimelineInterface[]>({
-      type: Modules.AnalyticsDailyUniqueTimeline,
       method: HttpMethod.GET,
       endpoint: endpoint.generate(),
     });

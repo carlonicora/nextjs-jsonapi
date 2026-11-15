@@ -4,17 +4,11 @@ import { useTranslations } from "next-intl";
 import { DateRangeSelector } from "../../../components/forms/DateRangeSelector";
 import { Button } from "../../../shadcnui";
 import { cn } from "../../../utils";
-import {
-  ANALYTICS_GRANULARITIES,
-  ANALYTICS_SECTIONS,
-  type AnalyticsGranularity,
-  type AnalyticsSection,
-} from "../data/analytics.types";
+import { ANALYTICS_GRANULARITIES, type AnalyticsGranularity } from "../data/analytics.types";
 
 type FilterState = {
   from: string;
   to: string;
-  section: AnalyticsSection;
   granularity: AnalyticsGranularity;
 };
 
@@ -31,14 +25,8 @@ type Props = FilterState & {
  * what lets the page issue a single coordinated batch of requests instead of one
  * per control.
  */
-export function AnalyticsAdminFilterBar({ section, granularity, onChange }: Props) {
+export function AnalyticsAdminFilterBar({ granularity, onChange }: Props) {
   const t = useTranslations();
-
-  const sectionLabels: Record<AnalyticsSection, string> = {
-    all: t("analytics.admin.filter.section_all"),
-    public: t("analytics.admin.filter.section_public"),
-    app: t("analytics.admin.filter.section_app"),
-  };
 
   const granularityLabels: Record<AnalyticsGranularity, string> = {
     day: t("analytics.admin.filter.granularity_day"),
@@ -57,13 +45,6 @@ export function AnalyticsAdminFilterBar({ section, granularity, onChange }: Prop
           }}
         />
       </div>
-
-      <Segmented
-        ariaLabel={t("analytics.admin.filter.section")}
-        value={section}
-        options={ANALYTICS_SECTIONS.map((value) => ({ value, label: sectionLabels[value] }))}
-        onSelect={(value) => onChange({ section: value })}
-      />
 
       <Segmented
         ariaLabel={t("analytics.admin.filter.granularity")}

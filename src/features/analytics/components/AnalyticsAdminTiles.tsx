@@ -8,10 +8,12 @@ import { cn } from "../../../utils";
 import { useUsageFormatters } from "../../tokenusage/lib/formatters";
 import { percentageDelta } from "../../tokenusage/lib/metrics";
 import type { AnalyticsSummaryInterface } from "../data/analytics-summary.interface";
+import type { AnalyticsAudience } from "../data/analytics.types";
 
 type Props = {
-  /** The six summary rows: {public, app, total} × {current, previous}. */
+  /** The two summary rows: total × {current, previous}, for the selected audience. */
   summary: AnalyticsSummaryInterface[];
+  audience: AnalyticsAudience;
 };
 
 type SummaryMetrics = Pick<
@@ -28,12 +30,12 @@ const ZERO: SummaryMetrics = { visitors: 0, sessions: 0, pageViews: 0, pagesPerS
  * each with its delta against the equal-length preceding window. Two supporting
  * tiles below carry the ratios that give those numbers context.
  *
- * The tiles read the `total` row: the backend already applies the section filter
- * to it, so it is the figure for whatever the filter bar selected. The backend
- * always returns both windows, which is why no tile has to branch on a missing
- * row: an absent one is simply zero-filled here.
+ * The tiles read the two `total` rows the backend returns for the selected
+ * audience, one per window; an absent one is simply zero-filled here. On App
+ * users the first tile counts users and the consent tile is hidden: consent is a
+ * site-visitor matter, so pages per session takes the whole supporting row.
  */
-export function AnalyticsAdminTiles({ summary }: Props) {
+export function AnalyticsAdminTiles({ summary, audience }: Props) {
   const t = useTranslations();
   const { decimal } = useUsageFormatters();
 
@@ -50,7 +52,7 @@ export function AnalyticsAdminTiles({ summary }: Props) {
       <div className="grid gap-3 sm:grid-cols-3">
         <LeadTile
           testId="analytics-tile-visitors"
-          label={t("analytics.admin.tiles.visitors")}
+          label={audience === "users" ? t("analytics.admin.tiles.users") : t("analytics.admin.tiles.visitors")}
           value={decimal(current.visitors, 0)}
           delta={percentageDelta(current.visitors, previous.visitors)}
           previousLabel={previousLabel}
@@ -74,7 +76,7 @@ export function AnalyticsAdminTiles({ summary }: Props) {
         />
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className={cn("grid gap-3", audience === "visitors" && "sm:grid-cols-2")}>
         <SupportingTile
           testId="analytics-tile-pages-per-session"
           label={t("analytics.admin.tiles.pages_per_session")}
@@ -82,13 +84,15 @@ export function AnalyticsAdminTiles({ summary }: Props) {
           delta={percentageDelta(current.pagesPerSession, previous.pagesPerSession)}
           decimal={decimal}
         />
-        <SupportingTile
-          testId="analytics-tile-consent-share"
-          label={t("analytics.admin.tiles.consent_share")}
-          // consentShare is a 0..1 ratio on the wire.
-          value={`${decimal(current.consentShare * 100, 0)}%`}
-          decimal={decimal}
-        />
+        {audience === "visitors" && (
+          <SupportingTile
+            testId="analytics-tile-consent-share"
+            label={t("analytics.admin.tiles.consent_share")}
+            // consentShare is a 0..1 ratio on the wire.
+            value={`${decimal(current.consentShare * 100, 0)}%`}
+            decimal={decimal}
+          />
+        )}
       </div>
     </div>
   );

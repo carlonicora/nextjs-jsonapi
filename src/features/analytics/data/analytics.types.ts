@@ -1,21 +1,42 @@
 // Each value list is the single source of its union type: components iterate
 // the constant, and the type is derived from it so the two cannot drift.
 
-export const ANALYTICS_SECTIONS = ["all", "public", "app"] as const;
-export type AnalyticsSection = (typeof ANALYTICS_SECTIONS)[number];
+export const ANALYTICS_AUDIENCES = ["visitors", "users"] as const;
+export type AnalyticsAudience = (typeof ANALYTICS_AUDIENCES)[number];
 
 export const ANALYTICS_GRANULARITIES = ["day", "week", "month"] as const;
 export type AnalyticsGranularity = (typeof ANALYTICS_GRANULARITIES)[number];
 
-export const ANALYTICS_DIMENSIONS = ["source", "medium", "campaign", "referrer", "route", "landing"] as const;
+export const ANALYTICS_DIMENSIONS = ["source", "medium", "campaign", "referrer", "route", "landing", "exit"] as const;
 export type AnalyticsDimension = (typeof ANALYTICS_DIMENSIONS)[number];
+
+/** The Breakdown card's tabs (visitors tab only). */
+export const ANALYTICS_ATTRIBUTION_DIMENSIONS = ["source", "medium", "campaign", "referrer"] as const;
+
+/** What each tab fetches from the breakdown endpoint, in this order. */
+export const ANALYTICS_AUDIENCE_BREAKDOWNS: Record<
+  AnalyticsAudience,
+  readonly { dimension: AnalyticsDimension; limit: number }[]
+> = {
+  visitors: [
+    { dimension: "source", limit: 20 },
+    { dimension: "medium", limit: 20 },
+    { dimension: "campaign", limit: 20 },
+    { dimension: "referrer", limit: 20 },
+    { dimension: "route", limit: 10 },
+    { dimension: "landing", limit: 10 },
+    { dimension: "exit", limit: 10 },
+  ],
+  users: [{ dimension: "route", limit: 10 }],
+};
 
 export type AnalyticsFilters = {
   /** ISO 8601 instant. */
   from: string;
   /** ISO 8601 instant. */
   to: string;
-  section: AnalyticsSection;
+  /** Omitted only by the journey page's per-visitor lookup (both audiences). */
+  audience?: AnalyticsAudience;
 };
 
 /** One page view, as the tracker posts it to `wayfinding`. */
@@ -40,7 +61,7 @@ export type AnalyticsEventInput = {
 
 export type AnalyticsSummaryInput = {
   id: string;
-  section: string;
+  section: "total";
   window: string;
   visitors: number;
   sessions: number;
@@ -53,20 +74,10 @@ export type AnalyticsTimelineInput = {
   id: string;
   /** Backend field type is "date" — emitted via formatLocalDate, never raw. */
   bucket: Date;
-  section: string;
+  section: AnalyticsAudience;
   visitors: number;
   sessions: number;
   pageViews: number;
-};
-
-export type AnalyticsDailyUniqueTimelineInput = {
-  id: string;
-  /** Backend field type is "date" — emitted via formatLocalDate, never raw. */
-  day?: Date;
-  /** null = unknown for that day. */
-  visitors?: number | null;
-  /** null = unknown for that day. */
-  users?: number | null;
 };
 
 export type AnalyticsBreakdownInput = {

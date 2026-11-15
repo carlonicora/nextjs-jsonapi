@@ -1,11 +1,11 @@
 import { AbstractApiData, formatLocalDate, JsonApiHydratedDataInterface, Modules } from "../../../core";
 import { AnalyticsTimelineInterface } from "./analytics-timeline.interface";
-import { AnalyticsTimelineInput } from "./analytics.types";
+import { AnalyticsAudience, AnalyticsTimelineInput } from "./analytics.types";
 
-/** One (bucket, section) point of the visitors-over-time chart. */
+/** One bucket of the over-time chart; `section` carries the audience the row was counted for. */
 export class AnalyticsTimeline extends AbstractApiData implements AnalyticsTimelineInterface {
   private _bucket: Date = new Date(0);
-  private _section: string = "";
+  private _section: AnalyticsAudience = "visitors";
   private _visitors: number = 0;
   private _sessions: number = 0;
   private _pageViews: number = 0;
@@ -14,7 +14,7 @@ export class AnalyticsTimeline extends AbstractApiData implements AnalyticsTimel
     return this._bucket;
   }
 
-  get section(): string {
+  get section(): AnalyticsAudience {
     return this._section;
   }
 
@@ -36,7 +36,7 @@ export class AnalyticsTimeline extends AbstractApiData implements AnalyticsTimel
     const attrs = data.jsonApi.attributes;
     // Wire format is "YYYY-MM-DD"; the interface promises a Date.
     this._bucket = attrs.bucket ? new Date(attrs.bucket) : new Date(0);
-    this._section = attrs.section ?? "";
+    this._section = attrs.section === "users" ? "users" : "visitors";
     this._visitors = attrs.visitors ?? 0;
     this._sessions = attrs.sessions ?? 0;
     this._pageViews = attrs.pageViews ?? 0;

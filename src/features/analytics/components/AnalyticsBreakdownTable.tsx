@@ -2,21 +2,11 @@
 
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "../../../shadcnui";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../shadcnui";
 import { useUsageFormatters } from "../../tokenusage/lib/formatters";
 import type { AnalyticsBreakdownInterface } from "../data/analytics-breakdown.interface";
-import { ANALYTICS_DIMENSIONS, type AnalyticsDimension } from "../data/analytics.types";
+import { ANALYTICS_ATTRIBUTION_DIMENSIONS, type AnalyticsDimension } from "../data/analytics.types";
+import { AnalyticsRankTable } from "./AnalyticsRankTable";
 
 type Props = {
   breakdowns: Record<AnalyticsDimension, AnalyticsBreakdownInterface[]>;
@@ -25,8 +15,11 @@ type Props = {
 /** The key the repository folds the tail past the limit into. */
 const OTHER_KEY = "other";
 
+type AttributionDimension = (typeof ANALYTICS_ATTRIBUTION_DIMENSIONS)[number];
+
 /**
- * Attribution and content breakdowns, one tab per dimension.
+ * Attribution breakdowns (Site visitors tab), one tab per attribution dimension.
+ * Pages are not here: they have their own page-list cards.
  *
  * Each tab is the same four-column table — key, visitors, sessions, page views —
  * sorted by visitors. Sorting is client-side because the whole ranked set is
@@ -37,26 +30,24 @@ const OTHER_KEY = "other";
 export function AnalyticsBreakdownTable({ breakdowns }: Props) {
   const t = useTranslations();
 
-  const labels: Record<AnalyticsDimension, string> = {
+  const labels: Record<AttributionDimension, string> = {
     source: t("analytics.admin.dimensions.source"),
     medium: t("analytics.admin.dimensions.medium"),
     campaign: t("analytics.admin.dimensions.campaign"),
     referrer: t("analytics.admin.dimensions.referrer"),
-    route: t("analytics.admin.dimensions.route"),
-    landing: t("analytics.admin.dimensions.landing"),
   };
 
   return (
-    <Tabs defaultValue={ANALYTICS_DIMENSIONS[0]}>
-      {/* Six tabs are wider than a phone-width card: scroll them sideways there. */}
+    <Tabs defaultValue={ANALYTICS_ATTRIBUTION_DIMENSIONS[0]}>
+      {/* The tabs can be wider than a phone-width card: scroll them sideways there. */}
       <TabsList className="max-md:w-full max-md:justify-start max-md:overflow-x-auto">
-        {ANALYTICS_DIMENSIONS.map((dimension) => (
+        {ANALYTICS_ATTRIBUTION_DIMENSIONS.map((dimension) => (
           <TabsTrigger key={dimension} value={dimension}>
             {labels[dimension]}
           </TabsTrigger>
         ))}
       </TabsList>
-      {ANALYTICS_DIMENSIONS.map((dimension) => (
+      {ANALYTICS_ATTRIBUTION_DIMENSIONS.map((dimension) => (
         <TabsContent key={dimension} value={dimension}>
           <BreakdownRows rows={breakdowns[dimension] ?? []} />
         </TabsContent>
@@ -76,30 +67,23 @@ function BreakdownRows({ rows }: { rows: AnalyticsBreakdownInterface[] }) {
   }
 
   return (
-    // The package's <Table> wraps itself in an `overflow-x-clip` container, which
-    // would swallow the overflow before this scroller ever saw it — hence the
-    // child override. Wide tables must scroll, never widen the page.
-    <div className="overflow-x-auto [&_[data-slot=table-container]]:overflow-x-visible">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="text-xs font-medium">{t("analytics.admin.columns.key")}</TableHead>
-            <TableHead className="text-end text-xs font-medium">{t("analytics.admin.columns.visitors")}</TableHead>
-            <TableHead className="text-end text-xs font-medium">{t("analytics.admin.columns.sessions")}</TableHead>
-            <TableHead className="text-end text-xs font-medium">{t("analytics.admin.columns.page_views")}</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {sortedRows.map((row) => (
-            <TableRow key={row.id} data-testid={`analytics-breakdown-row-${row.id}`}>
-              <TableCell className="text-xs">{row.key === OTHER_KEY ? t("analytics.admin.other") : row.key}</TableCell>
-              <TableCell className="text-end text-xs tabular-nums">{decimal(row.visitors, 0)}</TableCell>
-              <TableCell className="text-end text-xs tabular-nums">{decimal(row.sessions, 0)}</TableCell>
-              <TableCell className="text-end text-xs tabular-nums">{decimal(row.pageViews, 0)}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+    <AnalyticsRankTable
+      columns={[
+        { label: t("analytics.admin.columns.key") },
+        { label: t("analytics.admin.columns.visitors"), numeric: true },
+        { label: t("analytics.admin.columns.sessions"), numeric: true },
+        { label: t("analytics.admin.columns.page_views"), numeric: true },
+      ]}
+      rows={sortedRows.map((row) => ({
+        id: row.id,
+        testId: `analytics-breakdown-row-${row.id}`,
+        cells: [
+          row.key === OTHER_KEY ? t("analytics.admin.other") : row.key,
+          decimal(row.visitors, 0),
+          decimal(row.sessions, 0),
+          decimal(row.pageViews, 0),
+        ],
+      }))}
+    />
   );
 }

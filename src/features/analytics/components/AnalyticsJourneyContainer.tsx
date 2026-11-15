@@ -84,7 +84,6 @@ export function AnalyticsJourneyContainer({ sessionId, pageUrl = ANALYTICS_ADMIN
         const visitorSessions = await AnalyticsAdminService.getSessions({
           from: from.toISOString(),
           to: to.toISOString(),
-          section: "all",
           visitorId: nextSession.visitorId,
         });
         if (cancelled) return;

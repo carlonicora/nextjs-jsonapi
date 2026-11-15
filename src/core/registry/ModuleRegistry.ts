@@ -103,7 +103,6 @@ export interface FoundationModuleDefinitions {
   AnalyticsEvent: ModuleWithPermissions;
   AnalyticsSummary: ModuleWithPermissions;
   AnalyticsTimeline: ModuleWithPermissions;
-  AnalyticsDailyUniqueTimeline: ModuleWithPermissions;
   AnalyticsBreakdown: ModuleWithPermissions;
   AnalyticsSession: ModuleWithPermissions;
   AnalyticsPageView: ModuleWithPermissions;

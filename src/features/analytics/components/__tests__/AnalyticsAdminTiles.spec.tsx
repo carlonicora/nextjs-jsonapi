@@ -22,7 +22,7 @@ const summary = [
 
 describe("AnalyticsAdminTiles", () => {
   it("shows the current totals with the delta against the previous window", () => {
-    render(<AnalyticsAdminTiles summary={summary} />);
+    render(<AnalyticsAdminTiles summary={summary} audience="visitors" />);
 
     expect(screen.getByTestId("analytics-tile-visitors")).toHaveTextContent("120");
     expect(screen.getByTestId("analytics-tile-visitors-delta")).toHaveTextContent("+20%");
@@ -31,9 +31,28 @@ describe("AnalyticsAdminTiles", () => {
   });
 
   it("suppresses the delta rather than showing Infinity when the previous window is zero", () => {
-    render(<AnalyticsAdminTiles summary={summary} />);
+    render(<AnalyticsAdminTiles summary={summary} audience="visitors" />);
 
     // sessions previous is 0
     expect(screen.getByTestId("analytics-tile-sessions-delta")).toHaveTextContent("—");
+  });
+
+  it("visitors audience keeps five tiles with the Visitors label and consent", () => {
+    render(<AnalyticsAdminTiles summary={summary} audience="visitors" />);
+
+    expect(screen.getByTestId("analytics-tile-visitors")).toHaveTextContent("analytics.admin.tiles.visitors");
+    for (const id of ["visitors", "sessions", "page-views", "pages-per-session", "consent-share"]) {
+      expect(screen.getByTestId(`analytics-tile-${id}`)).toBeInTheDocument();
+    }
+  });
+
+  it("users audience labels the first tile Users and hides consent", () => {
+    render(<AnalyticsAdminTiles summary={summary} audience="users" />);
+
+    const first = screen.getByTestId("analytics-tile-visitors");
+    expect(first).toHaveTextContent("analytics.admin.tiles.users");
+    expect(first).not.toHaveTextContent("analytics.admin.tiles.visitors");
+    expect(screen.queryByTestId("analytics-tile-consent-share")).not.toBeInTheDocument();
+    expect(screen.getByTestId("analytics-tile-pages-per-session")).toBeInTheDocument();
   });
 });

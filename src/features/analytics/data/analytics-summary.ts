@@ -2,9 +2,9 @@ import { AbstractApiData, JsonApiHydratedDataInterface, Modules } from "../../..
 import { AnalyticsSummaryInterface } from "./analytics-summary.interface";
 import { AnalyticsSummaryInput } from "./analytics.types";
 
-/** One (section, window) row of the headline tiles: current or previous period. */
+/** One window row of the headline tiles (current or previous period), for the selected audience. */
 export class AnalyticsSummary extends AbstractApiData implements AnalyticsSummaryInterface {
-  private _section: string = "";
+  private _section = "total" as const;
   private _window: string = "";
   private _visitors: number = 0;
   private _sessions: number = 0;
@@ -12,7 +12,7 @@ export class AnalyticsSummary extends AbstractApiData implements AnalyticsSummar
   private _pagesPerSession: number = 0;
   private _consentShare: number = 0;
 
-  get section(): string {
+  get section(): "total" {
     return this._section;
   }
 
@@ -44,7 +44,8 @@ export class AnalyticsSummary extends AbstractApiData implements AnalyticsSummar
     super.rehydrate(data);
 
     const attrs = data.jsonApi.attributes;
-    this._section = attrs.section ?? "";
+    // The API sends only the total row since the per-section rows went.
+    this._section = "total";
     this._window = attrs.window ?? "";
     this._visitors = attrs.visitors ?? 0;
     this._sessions = attrs.sessions ?? 0;

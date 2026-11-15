@@ -30,12 +30,12 @@ type CallApiParams = { type: ApiRequestDataTypeInterface; method: string; endpoi
 const callApi = () => vi.spyOn(AbstractService as any, "callApi").mockResolvedValue([]);
 const firstCall = (spy: ReturnType<typeof callApi>): CallApiParams => spy.mock.calls[0][0] as CallApiParams;
 
-const filters = { from: "2026-09-01T00:00:00.000Z", to: "2026-10-01T00:00:00.000Z", section: "public" as const };
+const filters = { from: "2026-09-01T00:00:00.000Z", to: "2026-10-01T00:00:00.000Z", audience: "users" as const };
 
 describe("AnalyticsAdminService", () => {
   beforeEach(() => vi.restoreAllMocks());
 
-  it("getSummary sends from, to and section to the summary endpoint", async () => {
+  it("getSummary sends from, to and audience", async () => {
     const spy = callApi();
 
     await AnalyticsAdminService.getSummary(filters);
@@ -44,11 +44,12 @@ describe("AnalyticsAdminService", () => {
     expect(call.type).toBe(ModuleRegistry.get("AnalyticsSummary" as any));
     expect(call.method).toBe("GET");
     expect(call.endpoint).toBe(
-      "analytics/administration/summary?from=2026-09-01T00:00:00.000Z&to=2026-10-01T00:00:00.000Z&section=public",
+      "analytics/administration/summary?from=2026-09-01T00:00:00.000Z&to=2026-10-01T00:00:00.000Z&audience=users",
     );
+    expect(call.endpoint).not.toContain("section");
   });
 
-  it("getTimeline builds the endpoint from Modules.AnalyticsTimeline with from, to, section and granularity", async () => {
+  it("getTimeline builds the endpoint from Modules.AnalyticsTimeline with from, to, audience and granularity", async () => {
     const spy = callApi();
 
     await AnalyticsAdminService.getTimeline({ ...filters, granularity: "week" });
@@ -56,7 +57,7 @@ describe("AnalyticsAdminService", () => {
     const call = firstCall(spy);
     expect(call.type).toBe(ModuleRegistry.get("AnalyticsTimeline" as any));
     expect(call.endpoint).toBe(
-      "analytics/administration/timeline?from=2026-09-01T00:00:00.000Z&to=2026-10-01T00:00:00.000Z&section=public&granularity=week",
+      "analytics/administration/timeline?from=2026-09-01T00:00:00.000Z&to=2026-10-01T00:00:00.000Z&audience=users&granularity=week",
     );
   });
 
@@ -68,7 +69,7 @@ describe("AnalyticsAdminService", () => {
     const call = firstCall(spy);
     expect(call.type).toBe(ModuleRegistry.get("AnalyticsBreakdown" as any));
     expect(call.endpoint).toBe(
-      "analytics/administration/breakdown?from=2026-09-01T00:00:00.000Z&to=2026-10-01T00:00:00.000Z&section=public&dimension=source&limit=50",
+      "analytics/administration/breakdown?from=2026-09-01T00:00:00.000Z&to=2026-10-01T00:00:00.000Z&audience=users&dimension=source&limit=50",
     );
   });
 
@@ -90,8 +91,21 @@ describe("AnalyticsAdminService", () => {
     expect(call.type).toBe(ModuleRegistry.get("AnalyticsSession" as any));
     expect(call.next).toBe(next);
     expect(call.endpoint).toBe(
-      "analytics/administration/sessions?from=2026-09-01T00:00:00.000Z&to=2026-10-01T00:00:00.000Z&section=public&visitorId=v1&userId=u1",
+      "analytics/administration/sessions?from=2026-09-01T00:00:00.000Z&to=2026-10-01T00:00:00.000Z&audience=users&visitorId=v1&userId=u1",
     );
+  });
+
+  it("getSessions leaves audience out for a visitor lookup", async () => {
+    const spy = callApi();
+
+    await AnalyticsAdminService.getSessions({ from: filters.from, to: filters.to, visitorId: "v1" });
+
+    const call = firstCall(spy);
+    expect(call.endpoint).toBe(
+      "analytics/administration/sessions?from=2026-09-01T00:00:00.000Z&to=2026-10-01T00:00:00.000Z&visitorId=v1",
+    );
+    expect(call.endpoint).not.toContain("audience");
+    expect(call.endpoint).not.toContain("section");
   });
 
   it("getSession reads one session by id", async () => {
@@ -113,20 +127,5 @@ describe("AnalyticsAdminService", () => {
     expect(call.type).toBe(ModuleRegistry.get("AnalyticsPageView" as any));
     expect(call.method).toBe("GET");
     expect(call.endpoint).toBe("analytics/administration/sessions/s1/pageviews");
-  });
-  it("getDailyUniques sends only fromDate and toDate to the daily-uniques endpoint, never the section filters", async () => {
-    const spy = callApi();
-
-    await AnalyticsAdminService.getDailyUniques({ fromDate: "2026-10-05", toDate: "2026-11-04" });
-
-    const call = firstCall(spy);
-    expect(call.type).toBe(ModuleRegistry.get("AnalyticsDailyUniqueTimeline" as any));
-    expect(call.method).toBe("GET");
-    expect(call.endpoint).toContain("analytics/administration/daily-uniques");
-    expect(call.endpoint).toContain("fromDate=2026-10-05");
-    expect(call.endpoint).toContain("toDate=2026-11-04");
-    expect(call.endpoint).not.toContain("section");
-    expect(call.endpoint).not.toMatch(/[?&]from=/);
-    expect(call.endpoint).not.toMatch(/[?&]to=/);
   });
 });

@@ -21,12 +21,13 @@ export const ANALYTICS_ADMIN_I18N_KEYS = [
   "analytics.admin.tiles.consent_share",
   "analytics.admin.tiles.vs_previous",
   "analytics.admin.tiles.summarised_note",
+  "analytics.admin.tiles.users",
+
+  // Tabs
+  "analytics.admin.tabs.visitors",
+  "analytics.admin.tabs.users",
 
   // Filter bar
-  "analytics.admin.filter.section",
-  "analytics.admin.filter.section_all",
-  "analytics.admin.filter.section_public",
-  "analytics.admin.filter.section_app",
   "analytics.admin.filter.granularity",
   "analytics.admin.filter.granularity_day",
   "analytics.admin.filter.granularity_week",
@@ -38,16 +39,18 @@ export const ANALYTICS_ADMIN_I18N_KEYS = [
   "analytics.admin.panels.sessions",
   "analytics.admin.panels.journey",
   "analytics.admin.panels.other_sessions",
-  "analytics.admin.panels.daily_visitors",
-  "analytics.admin.panels.daily_users",
+
+  // Page lists
+  "analytics.admin.panels.top_pages",
+  "analytics.admin.panels.entry_pages",
+  "analytics.admin.panels.exit_pages",
+  "analytics.admin.panels.most_used_pages",
 
   // Breakdown tabs
   "analytics.admin.dimensions.source",
   "analytics.admin.dimensions.medium",
   "analytics.admin.dimensions.campaign",
   "analytics.admin.dimensions.referrer",
-  "analytics.admin.dimensions.route",
-  "analytics.admin.dimensions.landing",
 
   // Table columns
   "analytics.admin.columns.key",
@@ -63,6 +66,10 @@ export const ANALYTICS_ADMIN_I18N_KEYS = [
   "analytics.admin.columns.time",
   "analytics.admin.columns.gap",
   "analytics.admin.columns.path",
+  "analytics.admin.columns.page",
+  "analytics.admin.columns.exits",
+  "analytics.admin.columns.exit_share",
+  "analytics.admin.columns.users",
 
   // Shared states and markers
   "analytics.admin.anonymous",
@@ -75,10 +82,5 @@ export const ANALYTICS_ADMIN_I18N_KEYS = [
   // Timeline chart series
   "analytics.admin.series.visitors",
   "analytics.admin.series.page_views",
-
-  // Daily uniques charts
-  "analytics.admin.daily_uniques.visitors",
-  "analytics.admin.daily_uniques.users",
-  "analytics.admin.daily_uniques.today",
-  "analytics.admin.daily_uniques.no_data",
+  "analytics.admin.series.users",
 ] as const;
