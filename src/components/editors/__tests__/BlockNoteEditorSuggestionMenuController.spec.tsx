@@ -26,7 +26,11 @@ function setup(results: Awaited<ReturnType<MentionSearchFn>>) {
   const search = vi.fn<MentionSearchFn>().mockResolvedValue(results);
   const params = { campaignId: "c1" };
   render(
-    <BlockNoteEditorMentionSuggestionMenu editor={editor as any} mentionSearchFn={search} mentionSearchParams={params} />,
+    <BlockNoteEditorMentionSuggestionMenu
+      editor={editor as any}
+      mentionSearchFn={search}
+      mentionSearchParams={params}
+    />,
   );
   return { editor, search, params };
 }
