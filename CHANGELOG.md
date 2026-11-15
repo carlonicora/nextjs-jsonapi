@@ -1,3 +1,9 @@
+## [6.39.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.38.0...v6.39.0) (2026-11-15)
+
+### 🚀 Features
+
+* **billing:** the admin company page can show the company's subscription and every payment with the total paid, switched on with AdminCompanyContainer showBilling; the companies list takes an optional fields prop that can add Plan, Status and Next date columns, and its Created column now sorts; the invoice dialog takes readOnly to hide Retry payment and View in Stripe; the company details block no longer draws its own title, and the page header draws the page name as a heading ([22285fb](https://github.com/carlonicora/nextjs-jsonapi/commit/22285fbc49e3d632200b54840a545eac9d335f84))
+
 ## [6.38.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.37.1...v6.38.0) (2026-11-15)
 
 ### 🚀 Features
