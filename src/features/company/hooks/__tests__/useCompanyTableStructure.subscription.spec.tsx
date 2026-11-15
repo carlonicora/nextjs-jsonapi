@@ -38,9 +38,13 @@ describe("useCompanyTableStructure subscription columns", () => {
     expect(byId.subscriptionNextAt.enableSorting).not.toBe(true);
   });
 
-  it("shows the translated plan for monthly", () => {
-    renderCell(CompanyFields.subscriptionPlan, { id: "c1", subscriptionPlan: "monthly" });
-    expect(screen.getByTestId("company-subscription-plan").textContent).toBe("billing.ui.admin_company.plan.monthly");
+  it("shows the price name for a monthly plan, never a bare Monthly", () => {
+    renderCell(CompanyFields.subscriptionPlan, {
+      id: "c1",
+      subscriptionPlan: "monthly",
+      subscriptionPlanName: "Pro monthly",
+    });
+    expect(screen.getByTestId("company-subscription-plan").textContent).toBe("Pro monthly");
   });
 
   it("shows the plan name as is for other", () => {

@@ -10,18 +10,8 @@ import { getRoleId } from "../../../roles";
 import { Link } from "../../../shadcnui";
 import { UserInterface } from "../../user";
 import { useCurrentUserContext } from "../../user/contexts";
-import { useDateFormatter } from "../../../contexts/DateLocaleContext";
 import { AdminSubscriptionStatusBadge } from "../../billing/admin-company/components/AdminSubscriptionStatusBadge";
 import { CompanyFields, CompanyInterface } from "../data";
-
-function SubscriptionNextDateCell({ date }: { date?: Date }) {
-  const { format } = useDateFormatter();
-  return (
-    <span data-testid="company-subscription-next-date" className="text-muted-foreground text-xs">
-      {date ? format(date, "dateMedium") : "—"}
-    </span>
-  );
-}
 
 export const useCompanyTableStructure: UseTableStructureHook<CompanyInterface, CompanyFields> = (params) => {
   const t = useTranslations();
@@ -86,13 +76,7 @@ export const useCompanyTableStructure: UseTableStructureHook<CompanyInterface, C
       header: t(`billing.ui.admin_company.columns.plan`),
       cell: ({ row }: { row: Row<TableContent<CompanyInterface>> }) => {
         const company = row.original.jsonApiData as CompanyInterface;
-        const plan = company.subscriptionPlan;
-        const label = !plan
-          ? "—"
-          : plan === "other"
-            ? (company.subscriptionPlanName ?? "—")
-            : t(`billing.ui.admin_company.plan.${plan}`);
-        return <span data-testid="company-subscription-plan">{label}</span>;
+        return <span data-testid="company-subscription-plan">{company.subscriptionPlanName ?? "—"}</span>;
       },
       enableHiding: false,
     }),
@@ -111,16 +95,13 @@ export const useCompanyTableStructure: UseTableStructureHook<CompanyInterface, C
       },
       enableHiding: false,
     }),
-    [CompanyFields.subscriptionNextAt]: () => ({
-      id: "subscriptionNextAt",
-      accessorKey: "subscriptionNextAt",
-      header: t(`billing.ui.admin_company.columns.next_date`),
-      cell: ({ row }: { row: Row<TableContent<CompanyInterface>> }) => {
-        const company = row.original.jsonApiData as CompanyInterface;
-        return <SubscriptionNextDateCell date={company.subscriptionNextAt} />;
-      },
-      enableHiding: false,
-    }),
+    [CompanyFields.subscriptionNextAt]: () =>
+      cellDate({
+        name: "subscriptionNextAt",
+        title: t(`billing.ui.admin_company.columns.next_date`),
+        emptyText: "—",
+        testId: "company-subscription-next-date",
+      }),
   };
 
   // Memoize columns to prevent infinite re-renders

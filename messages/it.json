@@ -958,6 +958,10 @@
         "errors": {
           "subscription": "Impossibile caricare l'abbonamento.",
           "payments": "Impossibile caricare i pagamenti."
+        },
+        "tabs": {
+          "details": "Dettagli",
+          "users": "Utenti"
         }
       }
     }

@@ -7,6 +7,11 @@ const { companyContext, hasRole } = vi.hoisted(() => ({
   hasRole: vi.fn(),
 }));
 
+vi.mock("../../../../core", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../../../../core")>()),
+  Modules: { Company: { name: "companies" } },
+}));
+
 vi.mock("../../contexts/CompanyContext", () => ({
   useCompanyContext: () => companyContext(),
 }));
@@ -27,8 +32,24 @@ vi.mock("../../../user/components", () => ({
   AdminUsersList: () => <div data-testid="mock-admin-users-list" />,
 }));
 
-vi.mock("../../../billing/admin-company/components/AdminCompanyBilling", () => ({
-  AdminCompanyBilling: () => <div data-testid="mock-admin-company-billing" />,
+vi.mock("../../../billing/admin-company/components/AdminCompanySubscriptionTab", () => ({
+  AdminCompanySubscriptionTab: () => <div data-testid="mock-subscription-tab" />,
+}));
+
+vi.mock("../../../billing/admin-company/components/AdminCompanyPaymentsTab", () => ({
+  AdminCompanyPaymentsTab: () => <div data-testid="mock-payments-tab" />,
+}));
+
+vi.mock("../../../../components/containers/RoundPageContainer", () => ({
+  RoundPageContainer: (props: { layout?: string; tabs?: { label: string; content: React.ReactNode }[] }) => (
+    <div data-testid="mock-round-page" data-layout={props.layout}>
+      {props.tabs?.map((tab) => (
+        <section key={tab.label} data-tab={tab.label}>
+          {tab.content}
+        </section>
+      ))}
+    </div>
+  ),
 }));
 
 beforeEach(() => {
@@ -38,17 +59,31 @@ beforeEach(() => {
 });
 
 describe("AdminCompanyContainer", () => {
-  it("does not render the billing section by default", () => {
-    render(<AdminCompanyContainer />);
-    expect(screen.getByTestId("mock-company-details")).toBeInTheDocument();
-    expect(screen.getByTestId("mock-admin-users-list")).toBeInTheDocument();
-    expect(screen.queryByTestId("mock-admin-company-billing")).toBeNull();
+  it("renders the details and the users list in the caller's container by default", () => {
+    const { container } = render(<AdminCompanyContainer />);
+    const ids = Array.from(container.querySelectorAll("[data-testid]")).map((el) => el.getAttribute("data-testid"));
+    expect(ids).toEqual(["mock-company-details", "mock-admin-users-list"]);
   });
 
-  it("renders the billing section between the details and the users list with showBilling", () => {
+  it("draws the page as vertical tabs Details, Subscription, Payments, Users with showBilling", () => {
     const { container } = render(<AdminCompanyContainer showBilling />);
-    const ids = Array.from(container.querySelectorAll("[data-testid]")).map((el) => el.getAttribute("data-testid"));
-    expect(ids).toEqual(["mock-company-details", "mock-admin-company-billing", "mock-admin-users-list"]);
+    expect(screen.getByTestId("mock-round-page")).toHaveAttribute("data-layout", "rail");
+    const tabs = Array.from(container.querySelectorAll("[data-tab]")).map((el) => el.getAttribute("data-tab"));
+    expect(tabs).toEqual([
+      "billing.ui.admin_company.tabs.details",
+      "billing.ui.admin_company.subscription.title",
+      "billing.ui.admin_company.payments.title",
+      "billing.ui.admin_company.tabs.users",
+    ]);
+    const contents = Array.from(container.querySelectorAll("[data-tab] > [data-testid]")).map((el) =>
+      el.getAttribute("data-testid"),
+    );
+    expect(contents).toEqual([
+      "mock-company-details",
+      "mock-subscription-tab",
+      "mock-payments-tab",
+      "mock-admin-users-list",
+    ]);
   });
 
   it("renders nothing for a non-administrator", () => {

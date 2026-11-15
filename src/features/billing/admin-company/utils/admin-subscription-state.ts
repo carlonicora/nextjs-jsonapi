@@ -70,3 +70,8 @@ export function adminPlanFromPrice(price: StripePriceInterface): AdminPlan {
   if (count === 1 && price.recurring.interval === "year") return { key: "yearly" };
   return { key: "other", name: price.nickname ?? price.product?.name };
 }
+
+/** The name a price is shown by: its nickname, else its product's name. */
+export function adminPriceName(price?: StripePriceInterface): string | undefined {
+  return price?.nickname ?? price?.product?.name ?? undefined;
+}

@@ -109,14 +109,20 @@ export async function openSharedDatabase(
     string,
     { resolve: (rows: Record<string, unknown>[]) => void; reject: (e: Error) => void }
   >();
+  // Every lease this page asked for and has not finished. The holder's "granted" reaches every
+  // page: only the page that asked acts on it, so a third page never releases another page's lease.
+  const askedLeases = new Set<string>();
   let currentLease: string | undefined;
 
   const isHolder = () => local !== undefined;
 
   /** Runs a lease granted by the holder: `run` sends its statements under that lease. */
   const runGranted = async (id: string) => {
+    if (!askedLeases.has(id)) return;
     const waiting = waitingLeases.get(id);
     if (!waiting) {
+      // Asked for, but already run here (this page became the holder meanwhile): hand it back.
+      askedLeases.delete(id);
       post({ kind: "release", id });
       return;
     }
@@ -128,6 +134,7 @@ export async function openSharedDatabase(
       waiting.reject(error as Error);
     } finally {
       currentLease = undefined;
+      askedLeases.delete(id);
       post({ kind: "release", id });
     }
   };
@@ -191,6 +198,7 @@ export async function openSharedDatabase(
     // Leases this page asked for and nobody granted: they run here now.
     for (const [id, waiting] of waitingLeases) {
       waitingLeases.delete(id);
+      askedLeases.delete(id);
       mutex(waiting.run).then(waiting.resolve, waiting.reject);
     }
     post({ kind: "holder" });
@@ -267,6 +275,7 @@ export async function openSharedDatabase(
     if (closed) return Promise.reject(new Error("The device database is closed."));
     if (isHolder()) return mutex(fn);
     const id = newId();
+    askedLeases.add(id);
     return new Promise<T>((resolve, reject) => {
       waitingLeases.set(id, {
         run: fn as () => Promise<unknown>,
@@ -288,6 +297,7 @@ export async function openSharedDatabase(
     for (const waiting of waitingResults.values()) waiting.reject(error);
     waitingLeases.clear();
     waitingResults.clear();
+    askedLeases.clear();
     for (const finish of [...leases.values()]) finish();
     try {
       if (local) await local.close();

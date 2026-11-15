@@ -1,6 +1,6 @@
 import { StripeInvoiceInterface } from "../../stripe-invoice/data/stripe-invoice.interface";
 import { StripeSubscriptionInterface } from "../../stripe-subscription/data/stripe-subscription.interface";
-import { adminPlanFromPrice, safeDate } from "./admin-subscription-state";
+import { adminPlanFromPrice, adminPriceName, safeDate } from "./admin-subscription-state";
 
 /** One row of the administrator's Payments list: an invoice, or an old purchase with no invoice. */
 export type AdminPaymentRow = {
@@ -8,6 +8,8 @@ export type AdminPaymentRow = {
   date: Date;
   forKey: "monthly" | "yearly" | "other" | "one_time" | "unknown";
   forName?: string;
+  /** The name of the price the row was for (nickname, else product name), when known. */
+  priceName?: string;
   status: "paid" | "open" | "void" | "uncollectible" | "failed" | "draft";
   amount?: number;
   currency?: string;
@@ -44,6 +46,7 @@ function invoiceRow(invoice: StripeInvoiceInterface): AdminPaymentRow {
     invoice,
   };
   if (plan?.key === "other") row.forName = plan.name;
+  row.priceName = adminPriceName(invoice.stripePrice);
   if (forKey !== "one_time") {
     row.periodStart = invoice.servicePeriodStart;
     row.periodEnd = invoice.servicePeriodEnd;
@@ -58,6 +61,7 @@ function purchaseRow(purchase: StripeSubscriptionInterface): AdminPaymentRow {
     id: purchase.id,
     date: safeDate(() => purchase.currentPeriodStart) ?? purchase.createdAt,
     forKey: "one_time",
+    priceName: adminPriceName(price),
     status: "paid",
     amount,
     currency: price?.currency,

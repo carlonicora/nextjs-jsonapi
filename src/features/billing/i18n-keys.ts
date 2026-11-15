@@ -423,6 +423,8 @@ export const BILLING_UI_I18N_KEYS = [
   "billing.ui.admin_company.status.ended",
   "billing.ui.admin_company.invoice_status.failed",
   "billing.ui.admin_company.subscription.title",
+  "billing.ui.admin_company.tabs.details",
+  "billing.ui.admin_company.tabs.users",
   "billing.ui.admin_company.subscription.none",
   "billing.ui.admin_company.subscription.plan",
   "billing.ui.admin_company.subscription.status",

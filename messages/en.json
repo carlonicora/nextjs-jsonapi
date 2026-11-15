@@ -958,6 +958,10 @@
         "errors": {
           "subscription": "Could not load the subscription.",
           "payments": "Could not load the payments."
+        },
+        "tabs": {
+          "details": "Details",
+          "users": "Users"
         }
       }
     }

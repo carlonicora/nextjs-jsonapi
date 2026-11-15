@@ -86,6 +86,27 @@ describe("shared device database", () => {
     await a.close();
   });
 
+  it("with a third page open, a page's turn is not released by the page that did not ask for it", async () => {
+    const log: string[] = [];
+    const a = await openSharedDatabase("u5", async () => fakeDatabase(log, "files"));
+    const b = await openSharedDatabase("u5", async () => fakeDatabase(log, "never"));
+    const c = await openSharedDatabase("u5", async () => fakeDatabase(log, "never"));
+
+    expect(
+      await b.exclusive(async () => {
+        await b.exec("BEGIN");
+        await settle();
+        await b.exec("B1");
+        return b.exec("COMMIT");
+      }),
+    ).toEqual([{ sql: "COMMIT" }]);
+    expect(log).toEqual(["files:BEGIN", "files:B1", "files:COMMIT"]);
+
+    await c.close();
+    await b.close();
+    await a.close();
+  });
+
   it("a transaction of one page never interleaves with another page's statements", async () => {
     const log: string[] = [];
     const a = await openSharedDatabase("u2", async () => fakeDatabase(log, "db"));
