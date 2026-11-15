@@ -1,3 +1,9 @@
+## [6.40.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.39.0...v6.40.0) (2026-11-15)
+
+### 🚀 Features
+
+* **billing:** AdminCompanyContainer showBilling draws the admin company page as vertical tabs (Details, Subscription, Payments, Users), the subscription in standard detail rows and the payments in the standard table, with plans shown by their price name; cellDate takes optional emptyText and testId; in the offline store a page now acts only on database leases it asked for, so a third open page no longer releases another page's lease ([64c37a8](https://github.com/carlonicora/nextjs-jsonapi/commit/64c37a8af98b3c59280c9221dbffc8a572d87119))
+
 ## [6.39.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.38.0...v6.39.0) (2026-11-15)
 
 ### 🚀 Features
