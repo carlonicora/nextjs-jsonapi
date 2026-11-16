@@ -1,3 +1,9 @@
+## [6.42.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.42.0...v6.42.1) (2026-11-16)
+
+### 🐛 Bug Fixes
+
+* **deps:** the library now builds on @xyflow/react 13, BlockNote 0.57, @hookform/resolvers 7, i18next 27, the new Stripe browser packages and tsup 9; the email automation canvas uses React Flow 13's change sets; server-side BlockNote HTML and Markdown rendering works again on 0.57 and still leaves no window or document on the server's globals ([d28291e](https://github.com/carlonicora/nextjs-jsonapi/commit/d28291e73c6c2fee54479bbbc8fe922019fa85e8))
+
 ## [6.42.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.41.0...v6.42.0) (2026-11-16)
 
 ### 🚀 Features
