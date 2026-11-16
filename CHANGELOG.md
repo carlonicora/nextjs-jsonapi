@@ -1,3 +1,9 @@
+## [6.42.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.41.0...v6.42.0) (2026-11-16)
+
+### 🚀 Features
+
+* **forms:** CurrencyInput takes an optional decimalSeparator; with "," it shows the value as 600,50, reads 1.234,5 as 1234.50 and 1.000 as one thousand, and still accepts a dot as the decimal; without it the input behaves as before ([16efa6f](https://github.com/carlonicora/nextjs-jsonapi/commit/16efa6fcc8c0d5a850de02a5451ed744ac4dcdb4))
+
 ## [6.41.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.40.0...v6.41.0) (2026-11-16)
 
 ### 🚀 Features
