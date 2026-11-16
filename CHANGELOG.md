@@ -1,3 +1,9 @@
+## [6.41.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.40.0...v6.41.0) (2026-11-16)
+
+### 🚀 Features
+
+* **analytics:** the admin analytics tiles sit on one row, and each tab shows a unique visitors or unique users per day chart above Over time, one point per picked day, counted for that tab's audience only; DateRangeSelector applies a one-day range picked by clicking the same day twice and takes an optional initialRange, which the analytics filter bar uses to show the page's real window and sends the end of the last picked day instead of its midnight ([bf2bc95](https://github.com/carlonicora/nextjs-jsonapi/commit/bf2bc9593a6adfe65b6185c9c6fe408edae7f855))
+
 ## [6.40.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.39.0...v6.40.0) (2026-11-15)
 
 ### 🚀 Features
