@@ -17,9 +17,11 @@ import { Input, InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } f
  *
  * Currency symbols and decimal-separator rules: the component accepts both
  * `,` and `.` as decimal separators (mirroring the codebase's `parseCurrencyInput`
- * utility) and renders the canonical cents → `"X.YZ"` via `(cents / 100).toFixed(2)`.
- * A localised display (e.g. `1.234,56`) is intentionally out of scope here —
- * this input is for editing; presentation lives elsewhere (`formatCurrency`).
+ * utility) and renders the canonical cents as `"X.YZ"`, or as `"X,YZ"` when
+ * `decimalSeparator` is `","`. With `","`, a dot-only value grouped in threes
+ * (`1.000`, `1.234.567`) is read as thousands grouping, not as a decimal.
+ * Thousands grouping is never displayed — this input is for editing;
+ * presentation lives elsewhere (`formatCurrency`).
  *
  * For form-bound inputs use `<FormInput type="currency" />`. This component
  * is for standalone (non-react-hook-form) usage such as table-row editors
@@ -34,19 +36,24 @@ export type CurrencyInputProps = {
   placeholder?: string;
   className?: string;
   testId?: string;
+  /** Separator the value is displayed with. Defaults to `"."`. */
+  decimalSeparator?: "." | ",";
 };
 
-function centsToInput(cents: number): string {
-  return (cents / 100).toFixed(2);
+function centsToInput(cents: number, decimalSeparator: "." | ","): string {
+  const value = (cents / 100).toFixed(2);
+  return decimalSeparator === "," ? value.replace(".", ",") : value;
 }
 
-function parseInput(raw: string): number {
+function parseInput(raw: string, decimalSeparator: "." | ","): number {
   if (!raw || raw.trim() === "") return 0;
   const trimmed = raw.trim();
   const lastComma = trimmed.lastIndexOf(",");
   const lastDot = trimmed.lastIndexOf(".");
   let normalized: string;
-  if (lastComma > lastDot) {
+  if (decimalSeparator === "," && /^-?\d{1,3}(\.\d{3})+$/.test(trimmed)) {
+    normalized = trimmed.replace(/\./g, "");
+  } else if (lastComma > lastDot) {
     normalized = trimmed.replace(/\./g, "").replace(",", ".");
   } else if (lastDot > lastComma) {
     normalized = trimmed.replace(/,/g, "");
@@ -58,8 +65,11 @@ function parseInput(raw: string): number {
   return Math.round(parsed * 100);
 }
 
-function sanitizeKeystroke(raw: string): string {
+function sanitizeKeystroke(raw: string, decimalSeparator: "." | ","): string {
   let value = raw.replace(/[^0-9.,-]/g, "");
+  // With a comma decimal, a dot may be thousands grouping (`1.234,56`), so every
+  // separator is kept and `parseInput` reads the mix on blur.
+  if (decimalSeparator === ",") return value;
   const firstSep = value.search(/[.,]/);
   if (firstSep !== -1) {
     const sep = value[firstSep];
@@ -79,17 +89,18 @@ export function CurrencyInput({
   placeholder,
   className,
   testId,
+  decimalSeparator = ".",
 }: CurrencyInputProps) {
   const [draft, setDraft] = useState<string | null>(null);
-  const display = draft !== null ? draft : centsToInput(valueCents);
+  const display = draft !== null ? draft : centsToInput(valueCents, decimalSeparator);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDraft(sanitizeKeystroke(e.target.value));
+    setDraft(sanitizeKeystroke(e.target.value, decimalSeparator));
   };
 
   const handleBlur = () => {
     if (draft === null) return;
-    onChange(parseInput(draft));
+    onChange(parseInput(draft, decimalSeparator));
     setDraft(null);
   };
 
