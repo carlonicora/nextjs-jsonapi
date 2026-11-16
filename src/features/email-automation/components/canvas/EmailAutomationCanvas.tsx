@@ -4,15 +4,13 @@ import {
   Background,
   Connection,
   Edge,
-  EdgeChange,
   FinalConnectionState,
   Node,
-  NodeChange,
   OnConnectStart,
+  OnEdgesChange,
+  OnNodesChange,
   OnNodeDrag,
   ReactFlow,
-  applyEdgeChanges,
-  applyNodeChanges,
   useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -108,8 +106,8 @@ export function EmailAutomationCanvas() {
     setEdges(laidEdges);
   }, [laidNodes, laidEdges]);
 
-  const onNodesChange = useCallback((changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)), []);
-  const onEdgesChange = useCallback((changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)), []);
+  const onNodesChange = useCallback<OnNodesChange>((changes) => setNodes((nds) => changes.applyTo(nds)), []);
+  const onEdgesChange = useCallback<OnEdgesChange>((changes) => setEdges((eds) => changes.applyTo(eds)), []);
 
   // The trigger has no stored position: only steps are persisted.
   const onNodeDragStop: OnNodeDrag = useCallback(
