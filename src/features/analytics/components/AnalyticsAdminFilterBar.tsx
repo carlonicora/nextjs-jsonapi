@@ -25,7 +25,7 @@ type Props = FilterState & {
  * what lets the page issue a single coordinated batch of requests instead of one
  * per control.
  */
-export function AnalyticsAdminFilterBar({ granularity, onChange }: Props) {
+export function AnalyticsAdminFilterBar({ from, to, granularity, onChange }: Props) {
   const t = useTranslations();
 
   const granularityLabels: Record<AnalyticsGranularity, string> = {
@@ -39,9 +39,18 @@ export function AnalyticsAdminFilterBar({ granularity, onChange }: Props) {
       {/* The date button is a fixed 300px; on a phone it takes the full row instead. */}
       <div className="max-md:w-full max-md:[&_#date]:w-full">
         <DateRangeSelector
+          // The provider's window (last 30 days by default), so the button shows
+          // the range the panels were fetched for, not the selector's own default.
+          initialRange={{ from: new Date(from), to: new Date(to) }}
           onDateChange={(range) => {
             if (!range?.from || !range?.to) return;
-            onChange({ from: range.from.toISOString(), to: range.to.toISOString() });
+            // The picker reports midnight at the START of each day, and the API
+            // filters with startedAt <= to. Sending range.to as-is drops the last
+            // day (and a one-day pick returns nothing), so send the END of that day
+            // in the browser's local time.
+            const to = new Date(range.to);
+            to.setHours(23, 59, 59, 999);
+            onChange({ from: range.from.toISOString(), to: to.toISOString() });
           }}
         />
       </div>

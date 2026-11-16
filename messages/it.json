@@ -155,6 +155,11 @@
         "visitors": "Visitatori"
       },
       "consented": "Consenso dato",
+      "daily_uniques": {
+        "today": "Oggi, conteggio in corso",
+        "users": "Utenti unici",
+        "visitors": "Visitatori unici"
+      },
       "description": "Visitatori del sito e utenti dell'app: visite, pagine e sessioni.",
       "dimensions": {
         "campaign": "Campagna",
@@ -174,6 +179,8 @@
       "other": "Altro",
       "panels": {
         "breakdown": "Ripartizione",
+        "daily_users": "Utenti unici al giorno",
+        "daily_visitors": "Visitatori unici al giorno",
         "entry_pages": "Pagine di arrivo",
         "exit_pages": "Pagine di uscita",
         "journey": "Percorso",

@@ -8,6 +8,7 @@ import { useAnalyticsAdmin } from "../contexts/AnalyticsAdminContext";
 import { ANALYTICS_AUDIENCES, type AnalyticsAudience } from "../data/analytics.types";
 import { AnalyticsAdminTiles } from "./AnalyticsAdminTiles";
 import { AnalyticsBreakdownTable } from "./AnalyticsBreakdownTable";
+import { AnalyticsDailyUniquesChart } from "./AnalyticsDailyUniquesChart";
 import { AnalyticsPageListCard } from "./AnalyticsPageListCard";
 import { AnalyticsSessionsTable } from "./AnalyticsSessionsTable";
 import { AnalyticsTimelineChart } from "./AnalyticsTimelineChart";
@@ -68,8 +69,17 @@ export function AnalyticsAdminContainer() {
 
 function AudiencePanels({ audience }: { audience: AnalyticsAudience }) {
   const t = useTranslations();
-  const { summary, timeline, breakdowns, sessions, loadMoreSessions, hasMoreSessions, sessionPageUrl } =
-    useAnalyticsAdmin();
+  const {
+    summary,
+    timeline,
+    dailyTimeline,
+    breakdowns,
+    sessions,
+    filters,
+    loadMoreSessions,
+    hasMoreSessions,
+    sessionPageUrl,
+  } = useAnalyticsAdmin();
 
   const currentSessions = summary.find((row) => row.section === "total" && row.window === "current")?.sessions ?? 0;
 
@@ -82,6 +92,15 @@ function AudiencePanels({ audience }: { audience: AnalyticsAudience }) {
             client's, so the caption is always shown. */}
         <p className="text-muted-foreground text-xs">{t("analytics.admin.tiles.summarised_note")}</p>
       </div>
+
+      <Card data-testid={`analytics-daily-${audience}-card`}>
+        <CardHeader>
+          <CardTitle>{t(`analytics.admin.panels.daily_${audience}`)}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <AnalyticsDailyUniquesChart rows={dailyTimeline} from={filters.from} to={filters.to} metric={audience} />
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

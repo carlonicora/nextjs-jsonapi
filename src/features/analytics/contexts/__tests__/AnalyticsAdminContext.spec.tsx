@@ -46,6 +46,8 @@ function Probe() {
   return (
     <div>
       <span data-testid="summary">{ctx.summary.map((s) => s.id).join(",")}</span>
+      <span data-testid="timeline">{ctx.timeline.map((r) => r.id).join(",")}</span>
+      <span data-testid="daily-timeline">{ctx.dailyTimeline.map((r) => r.id).join(",")}</span>
       <span data-testid="breakdown-source">{ctx.breakdowns.source.map((b) => b.id).join(",")}</span>
       <span data-testid="breakdown-route">{ctx.breakdowns.route.map((b) => b.id).join(",")}</span>
       <span data-testid="sessions">{ctx.sessions.map((s) => s.id).join(",")}</span>
@@ -108,9 +110,10 @@ describe("AnalyticsAdminContext", () => {
 
     expect(AnalyticsAdminService.getSummary).toHaveBeenCalledTimes(1);
     expect(AnalyticsAdminService.getSummary).toHaveBeenCalledWith(expect.objectContaining({ audience: "visitors" }));
-    expect(AnalyticsAdminService.getTimeline).toHaveBeenCalledWith(
+    // Day is the default granularity: one day timeline serves Over time and the daily chart.
+    expect(vi.mocked(AnalyticsAdminService.getTimeline).mock.calls.map(([args]) => args)).toEqual([
       expect.objectContaining({ audience: "visitors", granularity: "day" }),
-    );
+    ]);
     expect(AnalyticsAdminService.getSessions).toHaveBeenCalledWith(expect.objectContaining({ audience: "visitors" }));
 
     const breakdowns = vi
@@ -249,9 +252,33 @@ describe("AnalyticsAdminContext", () => {
     expect(AnalyticsAdminService.getSummary).toHaveBeenLastCalledWith(
       expect.objectContaining({ audience: "visitors" }),
     );
-    expect(AnalyticsAdminService.getTimeline).toHaveBeenLastCalledWith(
+    const lastTwo = vi
+      .mocked(AnalyticsAdminService.getTimeline)
+      .mock.calls.slice(-2)
+      .map(([args]) => args);
+    expect(lastTwo).toEqual([
       expect.objectContaining({ audience: "visitors", granularity: "week" }),
+      expect.objectContaining({ audience: "visitors", granularity: "day" }),
+    ]);
+  });
+
+  it("keeps the daily timeline at day granularity whatever the granularity filter says", async () => {
+    vi.mocked(AnalyticsAdminService.getTimeline).mockImplementation(
+      async (params: any) => [{ id: `${params.audience}|${params.granularity}` }] as any,
     );
+
+    renderProvider();
+    await waitFor(() => expect(screen.getByTestId("daily-timeline")).toHaveTextContent("visitors|day"));
+
+    fireEvent.click(screen.getByText("week"));
+    await waitFor(() => expect(screen.getByTestId("timeline")).toHaveTextContent("visitors|week"));
+    expect(screen.getByTestId("daily-timeline").textContent).toBe("visitors|day");
+
+    fireEvent.click(screen.getByText("users"));
+    await waitFor(() => expect(screen.getByTestId("daily-timeline")).toHaveTextContent("users|day"));
+    expect(screen.getByTestId("timeline").textContent).toBe("users|week");
+
+    vi.mocked(AnalyticsAdminService.getTimeline).mockImplementation(async () => []);
   });
 
   it("appends the next page of sessions on loadMoreSessions", async () => {

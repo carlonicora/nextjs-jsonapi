@@ -60,11 +60,35 @@ describe("nextDateRange", () => {
     ).toEqual({ from: AUG_10, to: AUG_20 });
   });
 
-  it("opens a range from the empty state", () => {
+  // From the empty state (e.g. after Clear) addToRange returns { from: d, to: d }
+  // on the FIRST click. That must become an incomplete range, or the one-day
+  // range is applied and the popover closes before the user picks the end.
+  it("opens an incomplete range from the empty state", () => {
     expect(nextDateRange({ current: undefined, computed: { from: AUG_10, to: AUG_10 }, triggerDate: AUG_10 })).toEqual({
       from: AUG_10,
-      to: AUG_10,
+      to: undefined,
     });
+  });
+
+  it("opens an incomplete range when the current range has no start", () => {
+    expect(
+      nextDateRange({
+        current: { from: undefined, to: undefined },
+        computed: { from: AUG_10, to: AUG_10 },
+        triggerDate: AUG_10,
+      }),
+    ).toEqual({ from: AUG_10, to: undefined });
+  });
+
+  // Clicking the start day again completes a one-day range.
+  it("keeps a one-day range when the same day is clicked twice", () => {
+    expect(
+      nextDateRange({
+        current: { from: AUG_10, to: undefined },
+        computed: { from: AUG_10, to: AUG_10 },
+        triggerDate: AUG_10,
+      }),
+    ).toEqual({ from: AUG_10, to: AUG_10 });
   });
 
   // react-day-picker returns undefined to DESELECT; that must survive the

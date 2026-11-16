@@ -28,6 +28,13 @@ import { cn } from "../../utils";
  * which is the conventional range-picker behaviour. `triggerDate` is the day
  * react-day-picker reports as the one that was clicked (`onSelect`'s second
  * argument) — the only reliable source for it, since the computed range hides it.
+ *
+ * A click on an EMPTY range (no `from`, e.g. after Clear) also starts a new,
+ * incomplete range at the clicked day. react-day-picker's `addToRange` returns
+ * `{ from: d, to: d }` there on the first click; taken as-is, that one-day range
+ * would be applied at once and close the popover before the user picks the end.
+ * A one-day range is chosen by clicking the same day twice: the second click on
+ * the incomplete range yields `{ from: d, to: d }`, which is kept.
  */
 export function nextDateRange(params: {
   current: DateRange | undefined;
@@ -38,7 +45,8 @@ export function nextDateRange(params: {
   // react-day-picker returns undefined to DESELECT (clicking the only selected
   // day of a single-day range). Honour that before anything else.
   if (!computed) return undefined;
-  if (current?.from && current?.to) return { from: triggerDate, to: undefined };
+  if (!current?.from) return { from: triggerDate, to: undefined };
+  if (current.to) return { from: triggerDate, to: undefined };
   return computed;
 }
 
@@ -46,20 +54,33 @@ type DateRangeSelectorProps = {
   onDateChange: (date?: DateRange) => void;
   avoidSettingDates?: boolean;
   showPreviousMonth?: boolean;
+  /**
+   * The range the button shows on mount. Pass it when the caller already holds
+   * a range (e.g. a provider's default window), so the button and the data agree.
+   * Without it the selector opens on the current month.
+   */
+  initialRange?: DateRange;
 };
 
-export function DateRangeSelector({ onDateChange, avoidSettingDates, showPreviousMonth }: DateRangeSelectorProps) {
+export function DateRangeSelector({
+  onDateChange,
+  avoidSettingDates,
+  showPreviousMonth,
+  initialRange,
+}: DateRangeSelectorProps) {
   const t = useTranslations();
   const { format } = useDateFormatter();
   const dateFnsLocale = useI18nDateFnsLocale();
   const weekStartsOn = (dateFnsLocale?.options?.weekStartsOn ?? 1) as 0 | 1 | 2 | 3 | 4 | 5 | 6;
   const [date, setDate] = useState<DateRange | undefined>(
-    avoidSettingDates
-      ? undefined
-      : {
-          from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-          to: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-        },
+    initialRange
+      ? initialRange
+      : avoidSettingDates
+        ? undefined
+        : {
+            from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+            to: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+          },
   );
 
   const [open, setOpen] = useState(false);
@@ -75,7 +96,8 @@ export function DateRangeSelector({ onDateChange, avoidSettingDates, showPreviou
     if (
       date?.from &&
       date?.to &&
-      date.to > date.from &&
+      // >= so a one-day range (same day clicked twice) is applied too.
+      date.to >= date.from &&
       (prevRange?.from?.getTime() !== date.from.getTime() || prevRange?.to?.getTime() !== date.to.getTime())
     ) {
       onDateChange(date);

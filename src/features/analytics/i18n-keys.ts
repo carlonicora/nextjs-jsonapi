@@ -39,6 +39,8 @@ export const ANALYTICS_ADMIN_I18N_KEYS = [
   "analytics.admin.panels.sessions",
   "analytics.admin.panels.journey",
   "analytics.admin.panels.other_sessions",
+  "analytics.admin.panels.daily_visitors",
+  "analytics.admin.panels.daily_users",
 
   // Page lists
   "analytics.admin.panels.top_pages",
@@ -83,4 +85,9 @@ export const ANALYTICS_ADMIN_I18N_KEYS = [
   "analytics.admin.series.visitors",
   "analytics.admin.series.page_views",
   "analytics.admin.series.users",
+
+  // Daily uniques charts
+  "analytics.admin.daily_uniques.visitors",
+  "analytics.admin.daily_uniques.users",
+  "analytics.admin.daily_uniques.today",
 ] as const;

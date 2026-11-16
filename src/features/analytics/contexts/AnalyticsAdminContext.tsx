@@ -58,6 +58,11 @@ export interface AnalyticsAdminContextType {
   /** Two rows: total × {current, previous}, for the selected audience. */
   summary: AnalyticsSummaryInterface[];
   timeline: AnalyticsTimelineInterface[];
+  /**
+   * The selected audience's timeline at day granularity, whatever the
+   * granularity filter says: the source of the per-day uniques chart.
+   */
+  dailyTimeline: AnalyticsTimelineInterface[];
   /** Dimensions the selected tab did not fetch are []. */
   breakdowns: Record<AnalyticsDimension, AnalyticsBreakdownInterface[]>;
   sessions: AnalyticsSessionInterface[];
@@ -128,6 +133,7 @@ export const AnalyticsAdminProvider = ({
 
   const [summary, setSummary] = useState<AnalyticsSummaryInterface[]>([]);
   const [timeline, setTimeline] = useState<AnalyticsTimelineInterface[]>([]);
+  const [dailyTimeline, setDailyTimeline] = useState<AnalyticsTimelineInterface[]>([]);
   const [breakdowns, setBreakdowns] =
     useState<Record<AnalyticsDimension, AnalyticsBreakdownInterface[]>>(emptyBreakdowns);
   const [sessions, setSessions] = useState<AnalyticsSessionInterface[]>([]);
@@ -157,18 +163,26 @@ export const AnalyticsAdminProvider = ({
     // callApi writes the response's next-page link into this ref.
     const sessionsNext: NextRef = {};
 
+    // The daily chart always needs day buckets. With the Day filter the Over time
+    // timeline is exactly that, so one request serves both.
+    const timelineRequest = AnalyticsAdminService.getTimeline({ ...base, granularity });
+    const dailyTimelineRequest =
+      granularity === "day" ? timelineRequest : AnalyticsAdminService.getTimeline({ ...base, granularity: "day" });
+
     Promise.all([
       AnalyticsAdminService.getSummary(base),
-      AnalyticsAdminService.getTimeline({ ...base, granularity }),
+      timelineRequest,
+      dailyTimelineRequest,
       Promise.all(
         tabBreakdowns.map(({ dimension, limit }) => AnalyticsAdminService.getBreakdown({ ...base, dimension, limit })),
       ),
       AnalyticsAdminService.getSessions({ ...base, next: sessionsNext }),
     ])
-      .then(([nextSummary, nextTimeline, nextBreakdowns, nextSessions]) => {
+      .then(([nextSummary, nextTimeline, nextDailyTimeline, nextBreakdowns, nextSessions]) => {
         if (isStale()) return;
         setSummary(nextSummary ?? []);
         setTimeline(nextTimeline ?? []);
+        setDailyTimeline(nextDailyTimeline ?? []);
         const merged = emptyBreakdowns();
         tabBreakdowns.forEach(({ dimension }, index) => {
           merged[dimension] = nextBreakdowns[index] ?? [];
@@ -243,6 +257,7 @@ export const AnalyticsAdminProvider = ({
     () => ({
       summary,
       timeline,
+      dailyTimeline,
       breakdowns,
       sessions,
       filters,
@@ -256,6 +271,7 @@ export const AnalyticsAdminProvider = ({
     [
       summary,
       timeline,
+      dailyTimeline,
       breakdowns,
       sessions,
       filters,

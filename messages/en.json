@@ -155,6 +155,11 @@
         "visitors": "Visitors"
       },
       "consented": "Consented",
+      "daily_uniques": {
+        "today": "Today, still counting",
+        "users": "Unique users",
+        "visitors": "Unique visitors"
+      },
       "description": "Site visitors and app users: visits, pages and sessions.",
       "dimensions": {
         "campaign": "Campaign",
@@ -174,6 +179,8 @@
       "other": "Other",
       "panels": {
         "breakdown": "Breakdown",
+        "daily_users": "Unique users per day",
+        "daily_visitors": "Unique visitors per day",
         "entry_pages": "Entry pages",
         "exit_pages": "Exit pages",
         "journey": "Journey",

@@ -104,6 +104,7 @@ describe("AnalyticsAdminPageContainer", () => {
 
     const ordered = [
       within(panel).getByTestId("analytics-tile-visitors"),
+      within(panel).getByTestId("analytics-daily-visitors-card"),
       within(panel).getByText("analytics.admin.panels.over_time"),
       within(panel).getByTestId("analytics-page-list-top-pages"),
       within(panel).getByTestId("analytics-page-list-entry-pages"),
@@ -118,6 +119,11 @@ describe("AnalyticsAdminPageContainer", () => {
       "analytics.admin.panels.top_pages",
     );
     expect(within(panel).queryByTestId("analytics-page-list-most-used-pages")).not.toBeInTheDocument();
+    expect(within(panel).getByTestId("analytics-daily-visitors-card")).toHaveTextContent(
+      "analytics.admin.panels.daily_visitors",
+    );
+    expect(within(panel).getByTestId("analytics-daily-visitors-data")).toBeInTheDocument();
+    expect(within(panel).queryByTestId("analytics-daily-users-card")).not.toBeInTheDocument();
   });
 
   it("the users tab shows the most-used pages card and no Breakdown", async () => {
@@ -134,6 +140,11 @@ describe("AnalyticsAdminPageContainer", () => {
     expect(screen.queryByTestId("analytics-page-list-top-pages")).not.toBeInTheDocument();
     expect(screen.queryByTestId("analytics-page-list-entry-pages")).not.toBeInTheDocument();
     expect(screen.queryByTestId("analytics-page-list-exit-pages")).not.toBeInTheDocument();
+    const dailyUsers = within(panel).getByTestId("analytics-daily-users-card");
+    expect(dailyUsers).toHaveTextContent("analytics.admin.panels.daily_users");
+    expect(within(panel).getByTestId("analytics-daily-users-data")).toBeInTheDocument();
+    expect(screen.queryByTestId("analytics-daily-visitors-card")).not.toBeInTheDocument();
+    expect(follows(dailyUsers, within(panel).getByText("analytics.admin.panels.over_time"))).toBe(true);
     expect(follows(within(panel).getByText("analytics.admin.panels.over_time"), mostUsed)).toBe(true);
     expect(follows(mostUsed, within(panel).getByText("analytics.admin.panels.sessions"))).toBe(true);
   });

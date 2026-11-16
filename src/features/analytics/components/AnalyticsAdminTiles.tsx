@@ -26,14 +26,15 @@ const ZERO: SummaryMetrics = { visitors: 0, sessions: 0, pageViews: 0, pagesPerS
 /**
  * The KPI header of the administrative analytics page.
  *
- * Three lead tiles carry the traffic volumes — visitors, sessions, page views —
- * each with its delta against the equal-length preceding window. Two supporting
- * tiles below carry the ratios that give those numbers context.
+ * Every tile sits on one row. Three lead tiles carry the traffic volumes —
+ * visitors, sessions, page views — each with its delta against the equal-length
+ * preceding window. Supporting tiles follow on the same row with the ratios that
+ * give those numbers context.
  *
  * The tiles read the two `total` rows the backend returns for the selected
  * audience, one per window; an absent one is simply zero-filled here. On App
  * users the first tile counts users and the consent tile is hidden: consent is a
- * site-visitor matter, so pages per session takes the whole supporting row.
+ * site-visitor matter, so the row holds four tiles instead of five.
  */
 export function AnalyticsAdminTiles({ summary, audience }: Props) {
   const t = useTranslations();
@@ -48,52 +49,52 @@ export function AnalyticsAdminTiles({ summary, audience }: Props) {
   const previousLabel = t("analytics.admin.tiles.vs_previous");
 
   return (
-    <div className="grid gap-3">
-      <div className="grid gap-3 sm:grid-cols-3">
-        <LeadTile
-          testId="analytics-tile-visitors"
-          label={audience === "users" ? t("analytics.admin.tiles.users") : t("analytics.admin.tiles.visitors")}
-          value={decimal(current.visitors, 0)}
-          delta={percentageDelta(current.visitors, previous.visitors)}
-          previousLabel={previousLabel}
-          decimal={decimal}
-        />
-        <LeadTile
-          testId="analytics-tile-sessions"
-          label={t("analytics.admin.tiles.sessions")}
-          value={decimal(current.sessions, 0)}
-          delta={percentageDelta(current.sessions, previous.sessions)}
-          previousLabel={previousLabel}
-          decimal={decimal}
-        />
-        <LeadTile
-          testId="analytics-tile-page-views"
-          label={t("analytics.admin.tiles.page_views")}
-          value={decimal(current.pageViews, 0)}
-          delta={percentageDelta(current.pageViews, previous.pageViews)}
-          previousLabel={previousLabel}
-          decimal={decimal}
-        />
-      </div>
-
-      <div className={cn("grid gap-3", audience === "visitors" && "sm:grid-cols-2")}>
+    <div
+      className={cn(
+        "grid gap-3 sm:grid-cols-2",
+        audience === "visitors" ? "md:grid-cols-3 lg:grid-cols-5" : "lg:grid-cols-4",
+      )}
+    >
+      <LeadTile
+        testId="analytics-tile-visitors"
+        label={audience === "users" ? t("analytics.admin.tiles.users") : t("analytics.admin.tiles.visitors")}
+        value={decimal(current.visitors, 0)}
+        delta={percentageDelta(current.visitors, previous.visitors)}
+        previousLabel={previousLabel}
+        decimal={decimal}
+      />
+      <LeadTile
+        testId="analytics-tile-sessions"
+        label={t("analytics.admin.tiles.sessions")}
+        value={decimal(current.sessions, 0)}
+        delta={percentageDelta(current.sessions, previous.sessions)}
+        previousLabel={previousLabel}
+        decimal={decimal}
+      />
+      <LeadTile
+        testId="analytics-tile-page-views"
+        label={t("analytics.admin.tiles.page_views")}
+        value={decimal(current.pageViews, 0)}
+        delta={percentageDelta(current.pageViews, previous.pageViews)}
+        previousLabel={previousLabel}
+        decimal={decimal}
+      />
+      <SupportingTile
+        testId="analytics-tile-pages-per-session"
+        label={t("analytics.admin.tiles.pages_per_session")}
+        value={decimal(current.pagesPerSession, 1)}
+        delta={percentageDelta(current.pagesPerSession, previous.pagesPerSession)}
+        decimal={decimal}
+      />
+      {audience === "visitors" && (
         <SupportingTile
-          testId="analytics-tile-pages-per-session"
-          label={t("analytics.admin.tiles.pages_per_session")}
-          value={decimal(current.pagesPerSession, 1)}
-          delta={percentageDelta(current.pagesPerSession, previous.pagesPerSession)}
+          testId="analytics-tile-consent-share"
+          label={t("analytics.admin.tiles.consent_share")}
+          // consentShare is a 0..1 ratio on the wire.
+          value={`${decimal(current.consentShare * 100, 0)}%`}
           decimal={decimal}
         />
-        {audience === "visitors" && (
-          <SupportingTile
-            testId="analytics-tile-consent-share"
-            label={t("analytics.admin.tiles.consent_share")}
-            // consentShare is a 0..1 ratio on the wire.
-            value={`${decimal(current.consentShare * 100, 0)}%`}
-            decimal={decimal}
-          />
-        )}
-      </div>
+      )}
     </div>
   );
 }
