@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 
 // The modal competes with `useNotificationSync` for the same socket queue; the
@@ -28,6 +28,8 @@ const mocks = vi.hoisted(() => ({
     }),
   ),
   queue: { current: [] as unknown[] },
+  // The push prompt state the bell row reads; tests replace `current`.
+  push: { current: null as null | Record<string, unknown> },
   barrel: function <T extends object>(exports: T): T {
     return new Proxy({ then: undefined, ...exports }, { has: () => true }) as T;
   },
@@ -71,12 +73,28 @@ vi.mock("../../../contexts/NotificationContext", () => ({
   }),
 }));
 
+vi.mock("../../../contexts/PushPromptContext", () => ({
+  usePushPrompt: () => mocks.push.current,
+}));
+
 // The popover and card primitives are irrelevant here; render their children.
+// The Popover stub exposes a plain button that opens it, so `handleOpenChange`
+// can be driven; `Button` renders a real button so its props reach the DOM.
 vi.mock("../../../../../shadcnui", () => {
   const passthrough = ({ children }: { children?: React.ReactNode }) => <div>{children}</div>;
   return mocks.barrel({
+    Button: ({ children, size: _size, ...rest }: React.ButtonHTMLAttributes<HTMLButtonElement> & { size?: string }) => (
+      <button type="button" {...rest}>
+        {children}
+      </button>
+    ),
     Link: passthrough,
-    Popover: passthrough,
+    Popover: ({ children, onOpenChange }: { children?: React.ReactNode; onOpenChange?: (open: boolean) => void }) => (
+      <div>
+        <button type="button" data-testid="test-open-popover" onClick={() => onOpenChange?.(true)} />
+        {children}
+      </div>
+    ),
     PopoverContent: passthrough,
     PopoverHeader: passthrough,
     PopoverTitle: passthrough,
@@ -163,5 +181,118 @@ describe("NotificationModal socket queue", () => {
     vi.runAllTimers();
 
     expect(mocks.showToast).toHaveBeenCalledWith("Transcript ready", expect.objectContaining({ duration: undefined }));
+  });
+});
+
+describe("NotificationModal push prompt row", () => {
+  const state = (overrides: Record<string, unknown> = {}) => ({
+    supported: true,
+    permission: "default",
+    busy: false,
+    enable: vi.fn(() => Promise.resolve()),
+    refreshPermission: vi.fn(),
+    ...overrides,
+  });
+
+  beforeEach(() => {
+    mocks.queue.current = [];
+    mocks.push.current = null;
+  });
+
+  it("renders when asked for, supported and the permission is not yet answered", () => {
+    mocks.push.current = state();
+
+    render(<NotificationModal isOpen={true} setIsOpen={vi.fn()} showPushPrompt />);
+
+    expect(screen.queryAllByTestId("push-prompt-row")).toHaveLength(1);
+  });
+
+  it("is absent when showPushPrompt is false or omitted", () => {
+    mocks.push.current = state();
+
+    const { unmount } = render(<NotificationModal isOpen={true} setIsOpen={vi.fn()} showPushPrompt={false} />);
+    expect(screen.queryAllByTestId("push-prompt-row")).toHaveLength(0);
+    unmount();
+
+    render(<NotificationModal isOpen={true} setIsOpen={vi.fn()} />);
+    expect(screen.queryAllByTestId("push-prompt-row")).toHaveLength(0);
+  });
+
+  it("is absent when there is no push prompt state", () => {
+    mocks.push.current = null;
+
+    render(<NotificationModal isOpen={true} setIsOpen={vi.fn()} showPushPrompt />);
+
+    expect(screen.queryAllByTestId("push-prompt-row")).toHaveLength(0);
+  });
+
+  it("is absent when push is not supported", () => {
+    mocks.push.current = state({ supported: false });
+
+    render(<NotificationModal isOpen={true} setIsOpen={vi.fn()} showPushPrompt />);
+
+    expect(screen.queryAllByTestId("push-prompt-row")).toHaveLength(0);
+  });
+
+  it.each(["granted", "denied"])("is absent when the permission is %s", (permission) => {
+    mocks.push.current = state({ permission });
+
+    render(<NotificationModal isOpen={true} setIsOpen={vi.fn()} showPushPrompt />);
+
+    expect(screen.queryAllByTestId("push-prompt-row")).toHaveLength(0);
+  });
+
+  it("re-reads the permission when the popover opens", () => {
+    const current = state();
+    mocks.push.current = current;
+
+    render(<NotificationModal isOpen={false} setIsOpen={vi.fn()} showPushPrompt />);
+    fireEvent.click(screen.getByTestId("test-open-popover"));
+
+    expect(current.refreshPermission).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls enable when the button is clicked", () => {
+    const current = state();
+    mocks.push.current = current;
+
+    render(<NotificationModal isOpen={true} setIsOpen={vi.fn()} showPushPrompt />);
+    fireEvent.click(screen.getByTestId("push-prompt-enable"));
+
+    expect(current.enable).toHaveBeenCalledTimes(1);
+  });
+
+  it("disables the button while busy", () => {
+    mocks.push.current = state({ busy: true });
+
+    render(<NotificationModal isOpen={true} setIsOpen={vi.fn()} showPushPrompt />);
+
+    expect((screen.getByTestId("push-prompt-enable") as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it("hides the row right after enable resolves", async () => {
+    const current = state();
+    current.enable = vi.fn(async () => {
+      mocks.push.current = { ...current, permission: "granted" };
+    });
+    mocks.push.current = current;
+
+    const { rerender } = render(<NotificationModal isOpen={true} setIsOpen={vi.fn()} showPushPrompt />);
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("push-prompt-enable"));
+    });
+    rerender(<NotificationModal isOpen={true} setIsOpen={vi.fn()} showPushPrompt />);
+
+    expect(current.enable).toHaveBeenCalledTimes(1);
+    expect(screen.queryAllByTestId("push-prompt-row")).toHaveLength(0);
+  });
+
+  it("shows the title and the button text from the package messages", () => {
+    mocks.push.current = state();
+
+    render(<NotificationModal isOpen={true} setIsOpen={vi.fn()} showPushPrompt />);
+
+    expect(screen.getByTestId("push-prompt-row").textContent).toContain("notification.push.title");
+    expect(screen.getByTestId("push-prompt-enable").textContent).toBe("notification.push.enable");
   });
 });

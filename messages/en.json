@@ -1719,6 +1719,10 @@
     "description": "Notification",
     "empty": "No notifications",
     "inbox": "Inbox",
+    "push": {
+      "enable": "Turn on",
+      "title": "Turn on browser notifications"
+    },
     "ui": {
       "error_boundary": {
         "message": "Something went wrong with notifications.",

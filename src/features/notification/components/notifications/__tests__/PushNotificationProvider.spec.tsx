@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { usePushPrompt } from "../../../contexts/PushPromptContext";
 import { PushNotificationProvider } from "../PushNotificationProvider";
 
 // Hoisted so the vi.mock factories below can read it (Vitest hoists factories
@@ -21,6 +22,11 @@ vi.mock("../../../../../contexts", () => ({
 vi.mock("../../../../../roles", () => ({
   getRoleId: () => ({ Administrator: "administrator" }),
 }));
+
+function PromptProbe() {
+  const prompt = usePushPrompt();
+  return <span>{prompt === null ? "no prompt" : `${prompt.permission}:${String(prompt.supported)}`}</span>;
+}
 
 describe("PushNotificationProvider", () => {
   beforeEach(() => {
@@ -58,5 +64,27 @@ describe("PushNotificationProvider", () => {
       </PushNotificationProvider>,
     );
     expect(screen.getByText("inside the provider")).toBeInTheDocument();
+  });
+
+  it("gives a child calling usePushPrompt the hook state", () => {
+    const state = {
+      supported: true,
+      permission: "default" as NotificationPermission,
+      busy: false,
+      enable: vi.fn(),
+      refreshPermission: vi.fn(),
+    };
+    mocks.hook.mockReturnValue(state);
+    render(
+      <PushNotificationProvider>
+        <PromptProbe />
+      </PushNotificationProvider>,
+    );
+    expect(screen.getByText("default:true")).toBeInTheDocument();
+  });
+
+  it("usePushPrompt returns null with no provider", () => {
+    render(<PromptProbe />);
+    expect(screen.getByText("no prompt")).toBeInTheDocument();
   });
 });

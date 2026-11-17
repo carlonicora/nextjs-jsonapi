@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { usePageUrlGenerator } from "../../../../hooks";
+import { unsubscribeFromPush } from "../../../../hooks/usePushNotifications";
 import { CURRENT_USER_STORAGE_KEY } from "../../../user/data/user.storage";
 import { AuthService } from "../../data/auth.service";
 import { clearClientStorage } from "../../utils/clearClientStorage";
@@ -32,6 +33,10 @@ export function Logout({ storageKeys, beforeLogout, redirectTo }: LogoutProps) {
   useEffect(() => {
     const logOut = async () => {
       if (beforeLogout && !(await beforeLogout())) return;
+      // Stop this device receiving pushes meant for the user who is leaving.
+      // It never throws and gives up after 2 s; the catch is a second guard so
+      // a failed unsubscribe can never block the logout.
+      await unsubscribeFromPush().catch(() => undefined);
       // `CurrentUserProvider` persists the user in localStorage, so clearing the
       // cookies alone leaves the client believing the session is still alive:
       // the server renders as anonymous while every `useCurrentUserContext()`

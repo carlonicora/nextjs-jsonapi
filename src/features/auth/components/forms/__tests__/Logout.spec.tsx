@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, waitFor } from "@testing-library/react";
+import { act, render, waitFor } from "@testing-library/react";
 import { Logout } from "../Logout";
 
 // Mock the dependencies
@@ -20,10 +20,15 @@ vi.mock("../../../utils/clearClientStorage", () => ({
   clearClientStorage: vi.fn(),
 }));
 
+vi.mock("../../../../../hooks/usePushNotifications", () => ({
+  unsubscribeFromPush: vi.fn().mockResolvedValue(undefined),
+}));
+
 // Import mocked modules for assertions
 import { CURRENT_USER_STORAGE_KEY } from "../../../../user/data/user.storage";
 import { AuthService } from "../../../data/auth.service";
 import { clearClientStorage } from "../../../utils/clearClientStorage";
+import { unsubscribeFromPush } from "../../../../../hooks/usePushNotifications";
 
 describe("Logout", () => {
   let windowLocationHref: string;
@@ -31,6 +36,7 @@ describe("Logout", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(unsubscribeFromPush).mockResolvedValue(undefined);
     windowLocationHref = "";
 
     // Mock window.location.href using Object.defineProperty on window.location
@@ -180,6 +186,125 @@ describe("Logout", () => {
       });
       expect(clearClientStorage).toHaveBeenCalledWith([CURRENT_USER_STORAGE_KEY]);
       expect(AuthService.logout).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  // A device that logs out must stop receiving pushes meant for that user.
+  describe("Scenario: Unsubscribes from browser push", () => {
+    it("unsubscribes before logging out", async () => {
+      const callOrder: string[] = [];
+      const beforeLogout = vi.fn(async () => {
+        callOrder.push("beforeLogout");
+        return true;
+      });
+      vi.mocked(unsubscribeFromPush).mockImplementation(async () => {
+        callOrder.push("unsubscribeFromPush");
+      });
+      vi.mocked(clearClientStorage).mockImplementation(() => {
+        callOrder.push("clearClientStorage");
+      });
+      vi.mocked(AuthService.logout).mockImplementation(async () => {
+        callOrder.push("AuthService.logout");
+      });
+
+      render(<Logout beforeLogout={beforeLogout} />);
+
+      await waitFor(() => {
+        expect(windowLocationHref).toBe("/");
+      });
+      expect(callOrder).toEqual(["beforeLogout", "unsubscribeFromPush", "clearClientStorage", "AuthService.logout"]);
+    });
+
+    it("a cancelled beforeLogout does not unsubscribe", async () => {
+      const beforeLogout = vi.fn(async () => false);
+
+      render(<Logout beforeLogout={beforeLogout} />);
+
+      await waitFor(() => {
+        expect(beforeLogout).toHaveBeenCalledTimes(1);
+      });
+      await act(async () => {});
+
+      expect(unsubscribeFromPush).not.toHaveBeenCalled();
+      expect(AuthService.logout).not.toHaveBeenCalled();
+      expect(windowLocationHref).toBe("");
+    });
+
+    it("logout still completes when unsubscribeFromPush rejects", async () => {
+      vi.mocked(unsubscribeFromPush).mockRejectedValue(new Error("push service down"));
+
+      render(<Logout />);
+
+      await waitFor(() => {
+        expect(windowLocationHref).toBe("/");
+      });
+      expect(unsubscribeFromPush).toHaveBeenCalledTimes(1);
+      expect(AuthService.logout).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  // The real unsubscribeFromPush behind Logout: the browser's unsubscribe fails or hangs.
+  describe("Scenario: Logout with a failing or hanging browser unsubscribe", () => {
+    const KEY = "push_registered_u1";
+
+    function stubBrowserUnsubscribe(unsubscribe: () => Promise<boolean>) {
+      const subscription = { unsubscribe: vi.fn(unsubscribe) };
+      vi.stubGlobal("navigator", {
+        serviceWorker: {
+          getRegistration: vi.fn(async () => ({
+            pushManager: { getSubscription: vi.fn(async () => subscription) },
+          })),
+        },
+      });
+      return subscription;
+    }
+
+    beforeEach(async () => {
+      const actual = await vi.importActual<typeof import("../../../../../hooks/usePushNotifications")>(
+        "../../../../../hooks/usePushNotifications",
+      );
+      vi.mocked(unsubscribeFromPush).mockImplementation(actual.unsubscribeFromPush);
+      sessionStorage.setItem(KEY, "h1");
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+      vi.unstubAllGlobals();
+      sessionStorage.clear();
+    });
+
+    it("a throwing unsubscribe still logs out, with the push keys cleared", async () => {
+      const error = vi.spyOn(console, "error").mockImplementation(() => {});
+      const subscription = stubBrowserUnsubscribe(() => Promise.reject(new Error("push service down")));
+
+      render(<Logout />);
+
+      await waitFor(() => {
+        expect(windowLocationHref).toBe("/");
+      });
+      expect(subscription.unsubscribe).toHaveBeenCalledTimes(1);
+      expect(sessionStorage.getItem(KEY)).toBeNull();
+      expect(AuthService.logout).toHaveBeenCalledTimes(1);
+      error.mockRestore();
+    });
+
+    it("a hanging unsubscribe does not hold logout past 2 s, with the push keys cleared", async () => {
+      vi.useFakeTimers();
+      stubBrowserUnsubscribe(() => new Promise<boolean>(() => {}));
+
+      render(<Logout />);
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1999);
+      });
+      expect(sessionStorage.getItem(KEY)).toBeNull();
+      expect(AuthService.logout).not.toHaveBeenCalled();
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1);
+      });
+      expect(AuthService.logout).toHaveBeenCalledTimes(1);
+      expect(windowLocationHref).toBe("/");
     });
   });
 });

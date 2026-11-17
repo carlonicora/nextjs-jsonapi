@@ -7,6 +7,7 @@ import { useSocketContext } from "../../../../contexts";
 import { Modules } from "../../../../core";
 import { usePageUrlGenerator } from "../../../../hooks";
 import {
+  Button,
   Link,
   Popover,
   PopoverContent,
@@ -20,15 +21,17 @@ import {
   TooltipTrigger,
 } from "../../../../shadcnui";
 import { useNotificationContext } from "../../contexts/NotificationContext";
+import { usePushPrompt } from "../../contexts/PushPromptContext";
 import { NotificationInterface } from "../../data";
 import { NotificationErrorBoundary } from "../common";
 
 interface NotificationModalProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
+  showPushPrompt?: boolean;
 }
 
-function NotificationModalContent({ isOpen, setIsOpen }: NotificationModalProps) {
+function NotificationModalContent({ isOpen, setIsOpen, showPushPrompt = false }: NotificationModalProps) {
   const _instanceId = useRef(Math.random().toString(36).substr(2, 9));
   const {
     notifications,
@@ -46,6 +49,7 @@ function NotificationModalContent({ isOpen, setIsOpen }: NotificationModalProps)
     removeSocketNotification: _removeSocketNotification,
     clearSocketNotifications,
   } = useSocketContext();
+  const pushPrompt = usePushPrompt();
   const t = useTranslations();
   const generateUrl = usePageUrlGenerator();
   const [newNotifications, setNewNotifications] = useState<boolean>(false);
@@ -160,6 +164,10 @@ function NotificationModalContent({ isOpen, setIsOpen }: NotificationModalProps)
     setIsOpen(newlyRequestedOpenState);
 
     if (newlyRequestedOpenState) {
+      // The browser permission can change outside the app (site settings), so
+      // the push row re-reads it every time the bell opens.
+      pushPrompt?.refreshPermission();
+
       // Refresh notifications from API if cache is stale
       if (shouldRefresh) {
         loadNotifications();
@@ -185,6 +193,8 @@ function NotificationModalContent({ isOpen, setIsOpen }: NotificationModalProps)
   };
 
   const unreadNotifications = newNotifications && unreadCount > 0;
+  const showPushRow =
+    showPushPrompt && pushPrompt !== null && pushPrompt.supported && pushPrompt.permission === "default";
 
   return (
     <Popover open={isOpen} onOpenChange={handleOpenChange} data-testid={`sidebar-notification button`}>
@@ -251,6 +261,22 @@ function NotificationModalContent({ isOpen, setIsOpen }: NotificationModalProps)
             <TooltipContent>{t(`notification.all`)}</TooltipContent>
           </Tooltip>
         </PopoverHeader>
+        {showPushRow && (
+          <div
+            data-testid="push-prompt-row"
+            className="flex items-center justify-between gap-2 border-b px-3 py-2 text-xs"
+          >
+            <span>{t(`notification.push.title`)}</span>
+            <Button
+              size="sm"
+              data-testid="push-prompt-enable"
+              disabled={pushPrompt.busy}
+              onClick={() => void pushPrompt.enable()}
+            >
+              {t(`notification.push.enable`)}
+            </Button>
+          </div>
+        )}
         {isLoading && <div className="text-muted-foreground px-3 py-2 text-xs">{t(`common.loading`)}</div>}
         {error && <div className="text-destructive px-3 py-2 text-xs">{error}</div>}
         {/* The cap goes on the scroll viewport, not on the ScrollArea root: the

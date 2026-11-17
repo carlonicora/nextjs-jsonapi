@@ -1719,6 +1719,10 @@
     "description": "Notifica",
     "empty": "Nessuna notifica",
     "inbox": "In arrivo",
+    "push": {
+      "enable": "Attiva",
+      "title": "Attiva le notifiche del browser"
+    },
     "ui": {
       "error_boundary": {
         "message": "Qualcosa è andato storto con le notifiche.",
