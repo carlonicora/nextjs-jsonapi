@@ -1,3 +1,9 @@
+## [6.43.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.42.1...v6.43.0) (2026-11-17)
+
+### 🚀 Features
+
+* **notifications:** NotificationModal takes showPushPrompt, which adds a "Turn on browser notifications" row with a Turn on button to the bell popover while the browser permission is still undecided; usePushNotifications now returns supported, permission, busy, enable and refreshPermission, and PushNotificationProvider shares them with the modal; the new unsubscribeFromPush clears the push_registered_ keys and unsubscribes the browser within 2 s, and Logout calls it before signing out, so a logged-out browser stops getting that user's notifications ([8db89a6](https://github.com/carlonicora/nextjs-jsonapi/commit/8db89a65afff0a1839d9143e2ec521abcb1a1983))
+
 ## [6.42.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.42.0...v6.42.1) (2026-11-16)
 
 ### 🐛 Bug Fixes
