@@ -1,3 +1,9 @@
+## [6.44.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.44.0...v6.44.1) (2026-11-18)
+
+### 🐛 Bug Fixes
+
+* **assistant-message:** bulleted and numbered lists in an assistant answer show their bullets, numbers and indent again, instead of plain lines ([db3d718](https://github.com/carlonicora/nextjs-jsonapi/commit/db3d718a5dc3060198b2c92207ce2114ec024ce9))
+
 ## [6.44.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.43.0...v6.44.0) (2026-11-18)
 
 ### 🚀 Features
