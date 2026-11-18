@@ -1,3 +1,9 @@
+## [6.44.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.43.0...v6.44.0) (2026-11-18)
+
+### 🚀 Features
+
+* **skill:** apps that register the Skill module get Assistant skills on screen: a Skills list and editor for a company's own, copied and switched-off skills (SkillListContainer), and an Administration page (SkillsAdminContainer) that manages the global skills or, through a company picker, any one company's skills; in the rich Assistant message box / opens a menu of the active skills and never the editor's heading and block menu, in the plain box it opens the skills menu on the step-by-step Assistant, and answers show small labels with the skills they used; EntitySelector takes noneLabel, a first entry that clears the pick, and the AI connections and token-usage company filters are now that searchable picker, so every company can be found on the server; TokenUsageAdminFilterBar no longer takes companies and useTokenUsageAdmin no longer returns it; FormTextarea takes disabled; an AssistantProvider whose defaultOperatorMode changes after mount moves a new conversation to that Assistant ([b8784d4](https://github.com/carlonicora/nextjs-jsonapi/commit/b8784d416d5d672cc4547226aa0f296a837678e4))
+
 ## [6.43.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.42.1...v6.43.0) (2026-11-17)
 
 ### 🚀 Features
