@@ -2,17 +2,20 @@
 
 import { PlusCircleIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { SharedProvider } from "../../../contexts";
 import { Button } from "../../../shadcnui";
 import { useSocketContext } from "../../../contexts/SocketContext";
 import { BreadcrumbItemData, JsonApiHydratedDataInterface, Modules, rehydrate, rehydrateList } from "../../../core";
+import { ModuleRegistry } from "../../../core/registry/ModuleRegistry";
 import { usePageUrlGenerator } from "../../../hooks";
 import { AssistantMessage } from "../../assistant-message/data/AssistantMessage";
 import type { AssistantMessageInterface } from "../../assistant-message/data/AssistantMessageInterface";
 import { AssistantMessageService } from "../../assistant-message/data/AssistantMessageService";
 import type { AssistantInterface } from "../data/AssistantInterface";
 import { AssistantService } from "../data/AssistantService";
+import type { SkillInterface } from "../../skill/data/SkillInterface";
+import { SkillService } from "../../skill/data/SkillService";
 
 interface AssistantContextValue {
   assistant?: AssistantInterface;
@@ -46,6 +49,13 @@ interface AssistantContextValue {
   scope?: { type: string; id: string };
   /** Changes the scope a new thread binds to. Ignored once a thread is active. */
   setScope(scope?: { type: string; id: string }): void;
+  /**
+   * Active skills of the company, for the `/` menu. Loaded only while operator
+   * mode is on and the app registered the Skill module; `[]` otherwise.
+   */
+  skills: SkillInterface[];
+  /** Reloads `skills` and resolves the fresh list (`[]` when skills do not apply or the read fails). */
+  refreshSkills(): Promise<SkillInterface[]>;
 }
 
 const AssistantContext = createContext<AssistantContextValue | undefined>(undefined);
@@ -101,6 +111,12 @@ interface Props {
    * thread itself. Opaque to the library.
    */
   newThreadTitle?: string;
+  /**
+   * Operator mode of a new conversation (no hydrated thread, and after
+   * `startNew`). Defaults to `false`. A hydrated thread always follows its
+   * persisted engine.
+   */
+  defaultOperatorMode?: boolean;
 }
 
 function stripOptimistic(list: AssistantMessageInterface[]): AssistantMessageInterface[] {
@@ -134,6 +150,7 @@ export function AssistantProvider({
   threadUrl,
   clientContext,
   newThreadTitle,
+  defaultOperatorMode = false,
 }: Props) {
   const t = useTranslations();
   const generateUrl = usePageUrlGenerator();
@@ -157,9 +174,15 @@ export function AssistantProvider({
   // The engine is persisted on the Assistant resource: an existing operator
   // thread must keep routing to the operator endpoints after a reload, so the
   // initial mode is derived from the hydrated thread instead of defaulting off.
-  const [operatorMode, setOperatorMode] = useState<boolean>(
-    () => dehydratedAssistant?.jsonApi?.attributes?.engine === "operator",
+  const [operatorMode, setOperatorMode] = useState<boolean>(() =>
+    dehydratedAssistant ? dehydratedAssistant.jsonApi?.attributes?.engine === "operator" : defaultOperatorMode,
   );
+  const [skills, setSkills] = useState<SkillInterface[]>([]);
+  // Read after an await, so a list that arrives once operator mode is off is dropped.
+  const operatorModeRef = useRef(operatorMode);
+  useEffect(() => {
+    operatorModeRef.current = operatorMode;
+  }, [operatorMode]);
   // The scope the next created thread binds to. Starts from the `scope` prop
   // and can be changed by the host (e.g. a scope picker) until a thread exists.
   const [pendingScope, setPendingScope] = useState<{ type: string; id: string } | undefined>(scope);
@@ -348,12 +371,26 @@ export function AssistantProvider({
     setAssistant(undefined);
     setMessages([]);
     setFailedMessageIds(new Set());
-    setOperatorMode(false);
+    setOperatorMode(defaultOperatorMode);
     setPendingScope(scope);
     if (manageUrl && typeof window !== "undefined") {
       window.history.replaceState(null, "", resolveThreadUrl());
     }
-  }, [manageUrl, resolveThreadUrl, scope]);
+  }, [manageUrl, resolveThreadUrl, scope, defaultOperatorMode]);
+
+  // The host's default can settle after the first render (a plan read that arrives
+  // late). While no conversation is open, follow it, so a new conversation starts on
+  // the Assistant the host asked for. An open conversation keeps its own engine. Only a
+  // CHANGE of the default acts: on mount the initial state already holds it, and a host
+  // that sets the mode itself when it mounts (Wyrdli's Ask sheet) must not be overridden.
+  const previousDefaultOperatorMode = useRef(defaultOperatorMode);
+  const hasOpenThread = useRef(!!assistant);
+  hasOpenThread.current = !!assistant;
+  useEffect(() => {
+    if (previousDefaultOperatorMode.current === defaultOperatorMode) return;
+    previousDefaultOperatorMode.current = defaultOperatorMode;
+    if (!hasOpenThread.current) setOperatorMode(defaultOperatorMode);
+  }, [defaultOperatorMode]);
 
   const setScope = useCallback(
     (next?: { type: string; id: string }) => {
@@ -392,6 +429,32 @@ export function AssistantProvider({
     };
   }, [scope?.type, scope?.id]);
 
+  // The skill list is a convenience for the `/` menu: a failed read gives an
+  // empty list and the message still sends. Apps without the Skill module
+  // never make the request.
+  const refreshSkills = useCallback(async (): Promise<SkillInterface[]> => {
+    if (!operatorMode || !ModuleRegistry.has("Skill")) return [];
+    try {
+      const loaded = await SkillService.findActive();
+      const list = Array.isArray(loaded) ? loaded : [];
+      if (!operatorModeRef.current) return [];
+      setSkills(list);
+      return list;
+    } catch {
+      // A failed read counts as "no skills" (spec section 8.3): drop the list held from before.
+      setSkills([]);
+      return [];
+    }
+  }, [operatorMode]);
+
+  useEffect(() => {
+    if (operatorMode) {
+      void refreshSkills();
+    } else {
+      setSkills([]);
+    }
+  }, [operatorMode, refreshSkills]);
+
   const value = useMemo<AssistantContextValue>(
     () => ({
       assistant,
@@ -412,6 +475,8 @@ export function AssistantProvider({
       appendResolvedMessage,
       scope: pendingScope,
       setScope,
+      skills,
+      refreshSkills,
     }),
     [
       assistant,
@@ -431,6 +496,8 @@ export function AssistantProvider({
       appendResolvedMessage,
       pendingScope,
       setScope,
+      skills,
+      refreshSkills,
     ],
   );
 
@@ -487,4 +554,9 @@ export function useAssistantContext(): AssistantContextValue {
   const ctx = useContext(AssistantContext);
   if (!ctx) throw new Error("useAssistantContext must be used within AssistantProvider");
   return ctx;
+}
+
+/** The Assistant context, or `null` outside an `AssistantProvider` (e.g. a composer mounted on its own). */
+export function useAssistantContextOptional(): AssistantContextValue | null {
+  return useContext(AssistantContext) ?? null;
 }

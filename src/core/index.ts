@@ -74,6 +74,10 @@ export * from "../features/billing/components/utils/currency";
 // importable from the server (same rationale as the tokenusage entries below).
 export * from "../features/ai-connection/data";
 export * from "../features/ai-connection/ai-connection.module";
+// Assistant skills: data + module only, NOT the feature barrel (same rationale
+// as the AI connection entries above).
+export * from "../features/skill/data";
+export * from "../features/skill/SkillModule";
 export * from "../features/company/company.module";
 export * from "../features/company/data";
 export * from "../features/content/content.module";

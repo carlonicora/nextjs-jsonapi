@@ -1,13 +1,16 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { DateRangeSelector } from "../../../components/forms/DateRangeSelector";
-import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../shadcnui";
+import EntitySelector from "../../../components/forms/EntitySelector";
+import { Modules } from "../../../core";
+import { Button } from "../../../shadcnui";
 import { cn } from "../../../utils";
+import { CompanyInterface } from "../../company/data/company.interface";
+import { CompanyService } from "../../company/data/company.service";
 import type { Granularity, Metric } from "../data/tokenusage-admin.types";
-
-/** Sentinel for "no company filter" — Base UI Select cannot hold `undefined`. */
-const ALL_COMPANIES = "all";
 
 type FilterState = {
   from: string;
@@ -18,7 +21,6 @@ type FilterState = {
 };
 
 type Props = FilterState & {
-  companies: { id: string; label: string }[];
   /** Receives ONLY the keys that changed. */
   onChange: (next: Partial<FilterState>) => void;
 };
@@ -31,13 +33,33 @@ type Props = FilterState & {
  * what lets the page issue a single coordinated batch of requests instead of one
  * per control.
  */
-export function TokenUsageAdminFilterBar({ granularity, companyId, metric, companies, onChange }: Props) {
+export function TokenUsageAdminFilterBar({ granularity, companyId, metric, onChange }: Props) {
   const t = useTranslations();
+  const form = useForm<{ company?: { id: string; name: string } }>({ defaultValues: { company: undefined } });
 
-  const companyItems: Record<string, string> = {
-    [ALL_COMPANIES]: t("token_usage.admin.all_companies"),
-    ...Object.fromEntries(companies.map((company) => [company.id, company.label])),
-  };
+  // The company picker is the library's EntitySelector (copies SkillsAdminContainer):
+  // it searches every company on the server a page at a time. A companyId set from
+  // outside (the provider's initialCompanyId) is read once so its name shows.
+  useEffect(() => {
+    if (!companyId) {
+      form.setValue("company", undefined);
+      return;
+    }
+    if (form.getValues("company")?.id === companyId) return;
+    let active = true;
+    CompanyService.findOne({ companyId })
+      .then((found) => {
+        if (!active) return;
+        form.setValue("company", { id: found.id, name: found.name });
+      })
+      .catch(() => {
+        // An id that is not a company falls back to all companies.
+        if (active) onChange({ companyId: undefined });
+      });
+    return () => {
+      active = false;
+    };
+  }, [companyId]);
 
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -73,25 +95,16 @@ export function TokenUsageAdminFilterBar({ granularity, companyId, metric, compa
         onSelect={(value) => onChange({ metric: value })}
       />
 
-      <Select
-        items={companyItems}
-        value={companyId ?? ALL_COMPANIES}
-        onValueChange={(value) =>
-          onChange({ companyId: !value || value === ALL_COMPANIES ? undefined : (value as string) })
-        }
-      >
-        <SelectTrigger className="w-56">
-          <SelectValue placeholder={t("token_usage.admin.all_companies")} />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={ALL_COMPANIES}>{t("token_usage.admin.all_companies")}</SelectItem>
-          {companies.map((company) => (
-            <SelectItem key={company.id} value={company.id}>
-              {company.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <div className="w-56 min-w-0 shrink" data-testid="token-usage-company-picker">
+        <EntitySelector<CompanyInterface>
+          id="company"
+          form={form}
+          module={Modules.Company}
+          retriever={(params) => CompanyService.findMany({ ...params, sort: "name" })}
+          noneLabel={t("token_usage.admin.all_companies")}
+          onChange={(picked) => onChange({ companyId: picked?.id })}
+        />
+      </div>
     </div>
   );
 }

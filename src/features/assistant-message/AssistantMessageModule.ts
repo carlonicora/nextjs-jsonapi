@@ -19,6 +19,7 @@ export const AssistantMessageModule = (factory: ModuleFactory) =>
             `content`,
             `position`,
             `suggestedQuestions`,
+            `skillsUsed`,
             `inputTokens`,
             `outputTokens`,
             `messageType`,

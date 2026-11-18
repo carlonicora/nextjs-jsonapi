@@ -15,6 +15,7 @@ export function FormTextarea({
   description,
   isRequired,
   textareaRef,
+  disabled,
 }: {
   form: any;
   id: string;
@@ -25,6 +26,7 @@ export function FormTextarea({
   description?: ReactNode;
   isRequired?: boolean;
   textareaRef?: React.RefObject<HTMLTextAreaElement>;
+  disabled?: boolean;
 }) {
   return (
     <div className="flex w-full flex-col">
@@ -41,7 +43,7 @@ export function FormTextarea({
             {...field}
             ref={textareaRef}
             className={cn("min-h-96 w-full", className)}
-            disabled={form.formState.isSubmitting}
+            disabled={disabled === true || form.formState.isSubmitting}
             placeholder={placeholder}
             data-testid={testId}
           />

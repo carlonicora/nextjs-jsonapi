@@ -43,6 +43,7 @@ function buildMessageStub(p: {
   content?: string;
   references?: ApiDataInterface[];
   suggestedQuestions?: string[];
+  skillsUsed?: string[];
 }): AssistantMessageInterface {
   return {
     id: Math.random().toString(36).slice(2),
@@ -53,6 +54,7 @@ function buildMessageStub(p: {
     references: p.references ?? [],
     citations: [],
     suggestedQuestions: p.suggestedQuestions ?? [],
+    skillsUsed: p.skillsUsed ?? [],
     createdAt: new Date(),
     updatedAt: new Date(),
   } as unknown as AssistantMessageInterface;
@@ -109,5 +111,32 @@ describe("MessageItem", () => {
     const retryBtn = screen.getByRole("button", { name: "features.assistant.retry" });
     retryBtn.click();
     expect(onRetry).toHaveBeenCalledWith("tmp-123");
+  });
+  it("assistant message with skillsUsed renders the labels row between the answer bubble and the sources", () => {
+    const msg = buildMessageStub({
+      role: "assistant",
+      content: "the answer",
+      references: [makeRehydratedAccount({ id: "acc-2", name: "Acme" })],
+      skillsUsed: ["email"],
+    });
+    render(<MessageItem message={msg} isLatestAssistant={true} onSelectFollowUp={vi.fn()} />);
+    const labels = screen.getByTestId("message-skill-labels");
+    expect(screen.getByTestId("message-skill-label-email")).toBeInTheDocument();
+    const answer = screen.getByText("the answer");
+    const toggle = screen.getByRole("button", { name: /sources\.toggle/i });
+    expect(answer.compareDocumentPosition(labels) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(labels.compareDocumentPosition(toggle) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("assistant message with no skillsUsed renders no labels row", () => {
+    const msg = buildMessageStub({ role: "assistant", content: "plain", skillsUsed: [] });
+    render(<MessageItem message={msg} isLatestAssistant={true} onSelectFollowUp={vi.fn()} />);
+    expect(screen.queryByTestId("message-skill-labels")).not.toBeInTheDocument();
+  });
+
+  it("user message never renders the labels row", () => {
+    const msg = buildMessageStub({ role: "user", content: "/email hi", skillsUsed: ["email"] });
+    render(<MessageItem message={msg} isLatestAssistant={false} onSelectFollowUp={vi.fn()} />);
+    expect(screen.queryByTestId("message-skill-labels")).not.toBeInTheDocument();
   });
 });

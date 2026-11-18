@@ -1,6 +1,12 @@
 "use client";
 
-import { BlockNoteSchema, defaultInlineContentSpecs, filterSuggestionItems, PartialBlock } from "@blocknote/core";
+import {
+  type BlockNoteEditor as BlockNoteEditorInstance,
+  BlockNoteSchema,
+  defaultInlineContentSpecs,
+  filterSuggestionItems,
+  PartialBlock,
+} from "@blocknote/core";
 import * as coreLocales from "@blocknote/core/locales";
 import {
   createReactInlineContentSpec,
@@ -74,6 +80,16 @@ export type BlockNoteAiConfig = {
   actions?: BlockNoteAiGenerateAction[];
 };
 
+/**
+ * Replaces the editor's `/` menu with the host's own (the Assistant's skill
+ * menu). BlockNote keeps one suggestion menu per trigger character, so when
+ * this is set the block-type and AI `/` menus are not mounted.
+ */
+export type BlockNoteSlashSuggestions<T extends DefaultReactSuggestionItem = DefaultReactSuggestionItem> = {
+  getItems: (query: string, editor: BlockNoteEditorInstance<any, any, any>) => Promise<T[]>;
+  suggestionMenuComponent: React.FC<SuggestionMenuProps<T>>;
+};
+
 export type BlockNoteEditorProps = {
   id: string;
   type: string;
@@ -132,6 +148,8 @@ export type BlockNoteEditorProps = {
    * collaborative editor, which has no `onChange`.
    */
   editable?: boolean;
+  /** Custom `/` menu; absent, the editor keeps its block-type (and AI) `/` menu. */
+  slashSuggestions?: BlockNoteSlashSuggestions<any>;
 };
 
 const createDiffActionsInlineContentSpec = (
@@ -423,6 +441,7 @@ export default function BlockNoteEditor({
   collaboration,
   disableUploads,
   editable,
+  slashSuggestions,
 }: BlockNoteEditorProps): React.JSX.Element {
   const isEditable = resolveEditable({ editable, onChange });
   const t = useTranslations();
@@ -985,6 +1004,13 @@ export default function BlockNoteEditor({
     [editor],
   );
 
+  // Stable identity: BlockNote reloads the menu items whenever getItems changes,
+  // so a new function per render would reload them in a loop.
+  const slashGetItems = useCallback(
+    (query: string) => (slashSuggestions ? slashSuggestions.getItems(query, editor) : Promise.resolve([])),
+    [slashSuggestions, editor],
+  );
+
   return (
     <div
       ref={editorRef}
@@ -1010,7 +1036,7 @@ export default function BlockNoteEditor({
         onChange={handleChange}
         editable={isEditable}
         formattingToolbar={false}
-        slashMenu={!aiActive}
+        slashMenu={!aiActive && !slashSuggestions}
         // Follow the app theme: hardcoding "light" leaves dark (light-theme)
         // text on the dark card, which is nearly unreadable in dark mode.
         theme={resolvedTheme === "dark" ? "dark" : "light"}
@@ -1050,7 +1076,14 @@ export default function BlockNoteEditor({
         {enableMentions && mentionResolveFn && (
           <BlockNoteEditorMentionHoverCard containerRef={editorRef} mentionResolveFn={mentionResolveFn} />
         )}
-        {aiActive && (
+        {slashSuggestions && (
+          <SuggestionMenuController
+            triggerCharacter="/"
+            getItems={slashGetItems}
+            suggestionMenuComponent={slashSuggestions.suggestionMenuComponent}
+          />
+        )}
+        {aiActive && !slashSuggestions && (
           <SuggestionMenuController
             triggerCharacter="/"
             getItems={async (query: string) =>

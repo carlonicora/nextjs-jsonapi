@@ -44,6 +44,11 @@ export class HandbookThreadMessage extends AbstractApiData implements HandbookTh
     return [];
   }
 
+  /** The handbook runs on the answer-only Assistant, which uses no skills. */
+  get skillsUsed(): string[] {
+    return [];
+  }
+
   /** Token accounting is not billed against a handbook thread. */
   get inputTokens(): number | undefined {
     return undefined;

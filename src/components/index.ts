@@ -34,6 +34,7 @@ export * from "../features/company/components";
 export * from "../features/content/components";
 export * from "../features/email-blast/components";
 export * from "../features/how-to/components";
+export * from "../features/skill/components";
 export * from "../features/handbook/components";
 export * from "../features/assistant/components";
 export * from "../features/assistant-message/components";

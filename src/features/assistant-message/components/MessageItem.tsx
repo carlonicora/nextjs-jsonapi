@@ -6,6 +6,7 @@ import { useMemo, type ReactNode } from "react";
 import ReactMarkdown, { defaultUrlTransform } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { AssistantMessageInterface } from "../data/AssistantMessageInterface";
+import { MessageSkillLabels } from "../../skill/components/parts/MessageSkillLabels";
 import { MessageSourcesContainer } from "./parts/MessageSourcesContainer";
 
 /**
@@ -123,6 +124,7 @@ export function MessageItem({
           </ReactMarkdown>
         </div>
       )}
+      <MessageSkillLabels names={message.skillsUsed ?? []} />
       <MessageSourcesContainer
         message={message}
         isLatestAssistant={isLatestAssistant}

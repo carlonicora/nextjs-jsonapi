@@ -24,6 +24,8 @@ export interface AssistantMessageInterface extends ApiDataInterface {
   get content(): string;
   get position(): number;
   get suggestedQuestions(): string[];
+  /** Names of the skills the Assistant used for this answer. Empty when none. */
+  get skillsUsed(): string[];
   get inputTokens(): number | undefined;
   get outputTokens(): number | undefined;
   get references(): ApiDataInterface[];

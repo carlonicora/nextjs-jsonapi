@@ -36,6 +36,8 @@ type EntitySelectorProps<T extends BaseEntity> = {
   renderAfter?: (props: { form: any; selectedEntity?: T }) => ReactNode;
   autoSelectSingle?: boolean;
   useFormWatch?: boolean;
+  /** When set, the list starts with this entry; picking it clears the selection (e.g. "All companies"). */
+  noneLabel?: string;
 };
 
 export default function EntitySelector<T extends BaseEntity>({
@@ -62,6 +64,7 @@ export default function EntitySelector<T extends BaseEntity>({
   renderAfter,
   autoSelectSingle = false,
   useFormWatch: shouldUseFormWatch = false,
+  noneLabel,
 }: EntitySelectorProps<T>) {
   const t = useTranslations();
   const placeholder = placeholderProp ?? t("ui.search.placeholder_global");
@@ -177,7 +180,7 @@ export default function EntitySelector<T extends BaseEntity>({
                       ? getSelectedItemDisplay
                         ? getSelectedItemDisplay(effectiveValue)
                         : (effectiveValue?.name ?? "")
-                      : placeholder}
+                      : (noneLabel ?? placeholder)}
                   </span>
                   {hasValue(effectiveValue) && !disabled && (
                     <CircleX
@@ -215,6 +218,16 @@ export default function EntitySelector<T extends BaseEntity>({
                     ) : null}
                   </div>
                   <CommandList>
+                    {noneLabel && (
+                      <CommandItem
+                        key="__none__"
+                        value="__none__"
+                        className="cursor-pointer bg-transparent data-selected:bg-transparent hover:bg-muted data-selected:hover:bg-muted"
+                        onSelect={() => handleSelect()}
+                      >
+                        <span>{noneLabel}</span>
+                      </CommandItem>
+                    )}
                     {onCreateNew && (
                       <CommandItem
                         key="__create_new__"

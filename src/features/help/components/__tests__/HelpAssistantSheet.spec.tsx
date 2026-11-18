@@ -15,6 +15,8 @@ vi.mock("../../../assistant/contexts/AssistantContext", () => ({
     sendMessage,
     retrySend: vi.fn(),
   }),
+  // The composer reads the optional hook for the skill menu; Help runs the responder engine.
+  useAssistantContextOptional: () => ({ operatorMode: false, skills: [], refreshSkills: vi.fn() }),
 }));
 
 describe("HelpAssistantSheet", () => {

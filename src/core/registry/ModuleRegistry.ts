@@ -108,6 +108,8 @@ export interface FoundationModuleDefinitions {
   AnalyticsPageView: ModuleWithPermissions;
   // Account deletion (opt-in: registered only by apps that enable it)
   AccountDeletion: ModuleWithPermissions;
+  // Assistant skills (opt-in: registered only by apps that enable it)
+  Skill: ModuleWithPermissions;
   // Discord connect (registered by apps that offer it)
   DiscordConnection: ModuleWithPermissions;
   DiscordConnectIntent: ModuleWithPermissions;

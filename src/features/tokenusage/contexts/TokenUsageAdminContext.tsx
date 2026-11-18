@@ -35,7 +35,6 @@ export interface TokenUsageAdminContextType {
   byOperation: TokenUsageAdminBreakdownInterface[];
   /** Customer spend by operation — the customer-side mirror of byOperation. */
   byCustomerOperation: TokenUsageAdminBreakdownInterface[];
-  companies: { id: string; label: string }[];
   filters: TokenUsageAdminFilterState;
   /** Merges a partial patch into the current filters; every key is optional. */
   setFilters: (next: Partial<TokenUsageAdminFilterState>) => void;
@@ -162,17 +161,6 @@ export const TokenUsageAdminProvider = ({
     setFilterState((prev) => ({ ...prev, ...next }));
   }, []);
 
-  /**
-   * Derived from the company breakdown, per the page design. Note the
-   * consequence: once a company filter is applied the breakdown returns that
-   * company alone, so the selector narrows to it — clearing the filter restores
-   * the full list.
-   */
-  const companies = useMemo(
-    () => byCompany.filter((row) => row.id !== "other").map((row) => ({ id: row.id, label: row.label })),
-    [byCompany],
-  );
-
   // Unlinked: this provider only serves the token-usage page, so the root is
   // always the current page.
   const breadcrumb = (): BreadcrumbItemData[] => [{ name: t("token_usage.admin.title") }];
@@ -187,7 +175,6 @@ export const TokenUsageAdminProvider = ({
         granularity={granularity}
         companyId={companyId}
         metric={metric}
-        companies={companies}
         onChange={setFilters}
       />
     ),
@@ -201,7 +188,6 @@ export const TokenUsageAdminProvider = ({
       byUser,
       byOperation,
       byCustomerOperation,
-      companies,
       filters,
       setFilters,
       singleCustomerMode,
@@ -215,7 +201,6 @@ export const TokenUsageAdminProvider = ({
       byUser,
       byOperation,
       byCustomerOperation,
-      companies,
       filters,
       setFilters,
       singleCustomerMode,

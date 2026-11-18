@@ -1,10 +1,11 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { RoundPageContainer } from "../../../../components";
 import { Modules } from "../../../../core";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../shadcnui";
+import EntitySelector from "../../../../components/forms/EntitySelector";
 import { CompanyInterface } from "../../../company/data/company.interface";
 import { CompanyService } from "../../../company/data/company.service";
 import { AiConnectionsProvider, useAiConnections } from "../../contexts/AiConnectionsContext";
@@ -26,9 +27,6 @@ export const AI_CONNECTION_TYPE_ORDER = [
   "transcriber",
   "documentAi",
 ] as const;
-
-/** Sentinel for the global chain — Base UI Select cannot hold `null`. */
-const GLOBAL_SCOPE = "global";
 
 /**
  * Page container for the AI-connections administration surface.
@@ -52,52 +50,46 @@ export function AiConnectionsContainer() {
 function AiConnectionsBody() {
   const t = useTranslations();
   const { scopeCompanyId, setScopeCompanyId } = useAiConnections();
-  const [companies, setCompanies] = useState<CompanyInterface[]>([]);
+  const form = useForm<{ company?: { id: string; name: string } }>({ defaultValues: { company: undefined } });
 
   useEffect(() => {
+    if (!scopeCompanyId) {
+      form.setValue("company", undefined);
+      return;
+    }
+    if (form.getValues("company")?.id === scopeCompanyId) return;
     let active = true;
-    CompanyService.findMany({})
-      .then((response) => {
-        if (active) setCompanies(response ?? []);
+    CompanyService.findOne({ companyId: scopeCompanyId })
+      .then((found) => {
+        if (active) form.setValue("company", { id: found.id, name: found.name });
       })
       .catch(() => {
-        // A company list that cannot be read only costs the per-company scope;
-        // the global chains — the page's primary content — still render.
-        if (active) setCompanies([]);
+        // An id that is not a company falls back to the global chain.
+        if (active) setScopeCompanyId(null);
       });
     return () => {
       active = false;
     };
-  }, []);
-
-  const scopeItems = useMemo<Record<string, string>>(
-    () => ({
-      [GLOBAL_SCOPE]: t("ai_connections.admin.scope.global"),
-      ...Object.fromEntries(companies.map((company) => [company.id, company.name])),
-    }),
-    [companies, t],
-  );
+  }, [scopeCompanyId]);
 
   return (
     <div className="flex w-full flex-col gap-4 p-4">
       <div className="flex flex-wrap items-center gap-2">
-        <Select
-          items={scopeItems}
-          value={scopeCompanyId ?? GLOBAL_SCOPE}
-          onValueChange={(value) => setScopeCompanyId(!value || value === GLOBAL_SCOPE ? null : String(value))}
+        <div
+          className="w-64"
+          role="group"
+          aria-label={t("ai_connections.admin.scope.company")}
+          data-testid="ai-connection-company-picker"
         >
-          <SelectTrigger size="sm" className="w-64" aria-label={t("ai_connections.admin.scope.company")}>
-            <SelectValue placeholder={t("ai_connections.admin.scope.global")} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={GLOBAL_SCOPE}>{t("ai_connections.admin.scope.global")}</SelectItem>
-            {companies.map((company) => (
-              <SelectItem key={company.id} value={company.id}>
-                {company.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <EntitySelector<CompanyInterface>
+            id="company"
+            form={form}
+            module={Modules.Company}
+            retriever={(params) => CompanyService.findMany({ ...params, sort: "name" })}
+            noneLabel={t("ai_connections.admin.scope.global")}
+            onChange={(picked) => setScopeCompanyId(picked?.id ?? null)}
+          />
+        </div>
       </div>
 
       <div className="flex w-full flex-col gap-4">

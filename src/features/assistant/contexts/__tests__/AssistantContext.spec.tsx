@@ -1,6 +1,7 @@
-import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeAll, beforeEach, afterEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
-import { AssistantProvider, useAssistantContext } from "../AssistantContext";
+import { AssistantProvider, useAssistantContext, useAssistantContextOptional } from "../AssistantContext";
+import { SkillService } from "../../../skill/data/SkillService";
 import { AssistantService } from "../../data/AssistantService";
 import { AssistantMessageService } from "../../../assistant-message/data/AssistantMessageService";
 import { useSocketContext } from "../../../../contexts/SocketContext";
@@ -900,6 +901,205 @@ describe("AssistantContext", () => {
       expect(AssistantService.appendMessageOperator).toHaveBeenLastCalledWith(
         expect.objectContaining({ clientContext: { k: "w" } }),
       );
+    });
+  });
+  describe("skills", () => {
+    function skillStub(name: string) {
+      return { id: `id-${name}`, name, description: `${name} description`, type: "skills" } as any;
+    }
+
+    function mockSkillModule(registered: boolean) {
+      const actual = ModuleRegistry.has.bind(ModuleRegistry);
+      return vi
+        .spyOn(ModuleRegistry, "has")
+        .mockImplementation((name: string) => (name === "Skill" ? registered : actual(name)));
+    }
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it("module not registered + operator mode on: never calls findActive, skills is [], refreshSkills resolves []", async () => {
+      mockSkillModule(false);
+      SkillService.findActive = vi.fn().mockResolvedValue([skillStub("email")]);
+      const existing = buildAssistantDehydrated({ id: "a-sk1", engine: "operator" });
+      const { result } = renderHook(() => useAssistantContext(), {
+        wrapper: ({ children }) => <AssistantProvider dehydratedAssistant={existing}>{children}</AssistantProvider>,
+      });
+      expect(result.current.operatorMode).toBe(true);
+      let refreshed: unknown;
+      await act(async () => {
+        refreshed = await result.current.refreshSkills();
+      });
+      expect(refreshed).toEqual([]);
+      expect(result.current.skills).toEqual([]);
+      expect(SkillService.findActive).not.toHaveBeenCalled();
+    });
+
+    it("module registered + operator mode off: never calls findActive", async () => {
+      mockSkillModule(true);
+      SkillService.findActive = vi.fn().mockResolvedValue([skillStub("email")]);
+      const { result } = renderHook(() => useAssistantContext(), { wrapper });
+      expect(result.current.operatorMode).toBe(false);
+      let refreshed: unknown;
+      await act(async () => {
+        refreshed = await result.current.refreshSkills();
+      });
+      expect(refreshed).toEqual([]);
+      expect(SkillService.findActive).not.toHaveBeenCalled();
+    });
+
+    it("module registered + operator thread: loads the active skills once on mount", async () => {
+      mockSkillModule(true);
+      const list = [skillStub("email"), skillStub("quote")];
+      SkillService.findActive = vi.fn().mockResolvedValue(list);
+      const existing = buildAssistantDehydrated({ id: "a-sk2", engine: "operator" });
+      const { result } = renderHook(() => useAssistantContext(), {
+        wrapper: ({ children }) => <AssistantProvider dehydratedAssistant={existing}>{children}</AssistantProvider>,
+      });
+      await waitFor(() => expect(result.current.skills).toEqual(list));
+      expect(SkillService.findActive).toHaveBeenCalledTimes(1);
+    });
+
+    it("setOperatorMode(true) loads the skills and setOperatorMode(false) clears them", async () => {
+      mockSkillModule(true);
+      const list = [skillStub("email")];
+      SkillService.findActive = vi.fn().mockResolvedValue(list);
+      const { result } = renderHook(() => useAssistantContext(), { wrapper });
+      expect(SkillService.findActive).not.toHaveBeenCalled();
+      act(() => result.current.setOperatorMode(true));
+      await waitFor(() => expect(result.current.skills).toEqual(list));
+      expect(SkillService.findActive).toHaveBeenCalledTimes(1);
+      act(() => result.current.setOperatorMode(false));
+      await waitFor(() => expect(result.current.skills).toEqual([]));
+    });
+
+    it("refreshSkills fetches again and resolves the fresh list", async () => {
+      mockSkillModule(true);
+      const first = [skillStub("email")];
+      const fresh = [skillStub("email"), skillStub("humanizer")];
+      SkillService.findActive = vi.fn().mockResolvedValueOnce(first).mockResolvedValueOnce(fresh);
+      const existing = buildAssistantDehydrated({ id: "a-sk3", engine: "operator" });
+      const { result } = renderHook(() => useAssistantContext(), {
+        wrapper: ({ children }) => <AssistantProvider dehydratedAssistant={existing}>{children}</AssistantProvider>,
+      });
+      await waitFor(() => expect(result.current.skills).toEqual(first));
+      let refreshed: unknown;
+      await act(async () => {
+        refreshed = await result.current.refreshSkills();
+      });
+      expect(refreshed).toEqual(fresh);
+      expect(result.current.skills).toEqual(fresh);
+      expect(SkillService.findActive).toHaveBeenCalledTimes(2);
+    });
+
+    it("a failed read drops the list held from before, so the box shows no menu", async () => {
+      mockSkillModule(true);
+      const held = [{ id: "s1", name: "email" }];
+      SkillService.findActive = vi.fn().mockResolvedValueOnce(held).mockRejectedValueOnce(new Error("boom"));
+      const existing = buildAssistantDehydrated({ id: "a-sk5", engine: "operator" });
+      const { result } = renderHook(() => useAssistantContext(), {
+        wrapper: ({ children }) => <AssistantProvider dehydratedAssistant={existing}>{children}</AssistantProvider>,
+      });
+      await waitFor(() => expect(result.current.skills).toEqual(held));
+      await act(async () => {
+        await result.current.refreshSkills();
+      });
+      expect(result.current.skills).toEqual([]);
+    });
+
+    it("a failed findActive resolves [] and leaves no unhandled rejection", async () => {
+      mockSkillModule(true);
+      SkillService.findActive = vi.fn().mockRejectedValue(new Error("boom"));
+      const existing = buildAssistantDehydrated({ id: "a-sk4", engine: "operator" });
+      const { result } = renderHook(() => useAssistantContext(), {
+        wrapper: ({ children }) => <AssistantProvider dehydratedAssistant={existing}>{children}</AssistantProvider>,
+      });
+      await waitFor(() => expect(SkillService.findActive).toHaveBeenCalledTimes(1));
+      let refreshed: unknown;
+      await act(async () => {
+        refreshed = await result.current.refreshSkills();
+      });
+      expect(refreshed).toEqual([]);
+      expect(result.current.skills).toEqual([]);
+    });
+  });
+
+  describe("defaultOperatorMode", () => {
+    it("omitted: a new provider starts with operatorMode off and startNew keeps it off", () => {
+      const { result } = renderHook(() => useAssistantContext(), { wrapper });
+      expect(result.current.operatorMode).toBe(false);
+      act(() => result.current.setOperatorMode(true));
+      act(() => result.current.startNew());
+      expect(result.current.operatorMode).toBe(false);
+    });
+
+    it("true: a new provider starts on, startNew sets it back on, and a responder thread still starts off", () => {
+      const { result } = renderHook(() => useAssistantContext(), {
+        wrapper: ({ children }) => <AssistantProvider defaultOperatorMode>{children}</AssistantProvider>,
+      });
+      expect(result.current.operatorMode).toBe(true);
+      act(() => result.current.setOperatorMode(false));
+      act(() => result.current.startNew());
+      expect(result.current.operatorMode).toBe(true);
+
+      const responder = buildAssistantDehydrated({ id: "a-resp-default" });
+      const { result: hydrated } = renderHook(() => useAssistantContext(), {
+        wrapper: ({ children }) => (
+          <AssistantProvider defaultOperatorMode dehydratedAssistant={responder}>
+            {children}
+          </AssistantProvider>
+        ),
+      });
+      expect(hydrated.current.operatorMode).toBe(false);
+    });
+
+    it("a default that settles after mount (late plan read) moves a new conversation to it; an open one keeps its engine", () => {
+      let defaultOn = false;
+      const { result, rerender } = renderHook(() => useAssistantContext(), {
+        wrapper: ({ children }) => <AssistantProvider defaultOperatorMode={defaultOn}>{children}</AssistantProvider>,
+      });
+      expect(result.current.operatorMode).toBe(false);
+      defaultOn = true;
+      rerender();
+      expect(result.current.operatorMode).toBe(true);
+
+      const responder = buildAssistantDehydrated({ id: "a-resp-late" });
+      let lateDefault = false;
+      const { result: open, rerender: rerenderOpen } = renderHook(() => useAssistantContext(), {
+        wrapper: ({ children }) => (
+          <AssistantProvider defaultOperatorMode={lateDefault} dehydratedAssistant={responder}>
+            {children}
+          </AssistantProvider>
+        ),
+      });
+      lateDefault = true;
+      rerenderOpen();
+      expect(open.current.operatorMode).toBe(false);
+    });
+
+    it("an unchanged default never overrides a mode the host set itself on mount", () => {
+      const { result, rerender } = renderHook(() => useAssistantContext(), { wrapper });
+      act(() => result.current.setOperatorMode(true));
+      rerender();
+      expect(result.current.operatorMode).toBe(true);
+    });
+  });
+
+  describe("useAssistantContextOptional", () => {
+    it("returns null outside a provider", () => {
+      const { result } = renderHook(() => useAssistantContextOptional());
+      expect(result.current).toBeNull();
+    });
+
+    it("returns the context value inside a provider", () => {
+      const { result } = renderHook(
+        () => ({ optional: useAssistantContextOptional(), strict: useAssistantContext() }),
+        {
+          wrapper,
+        },
+      );
+      expect(result.current.optional).toBe(result.current.strict);
     });
   });
 });

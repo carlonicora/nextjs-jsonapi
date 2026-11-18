@@ -135,6 +135,35 @@ describe("AssistantMessage.rehydrate", () => {
   });
 });
 
+describe("AssistantMessage.rehydrate skillsUsed", () => {
+  it("reads skillsUsed from the attributes", () => {
+    const message = makeRehydratedMessage({
+      id: "msg-s1",
+      type: "assistant-messages",
+      attributes: { role: "assistant", content: "x", position: 1, skillsUsed: ["email"] },
+    });
+    expect(message.skillsUsed).toEqual(["email"]);
+  });
+
+  it("answers [] when skillsUsed is absent", () => {
+    const message = makeRehydratedMessage({
+      id: "msg-s2",
+      type: "assistant-messages",
+      attributes: { role: "assistant", content: "x", position: 1 },
+    });
+    expect(message.skillsUsed).toEqual([]);
+  });
+
+  it("answers [] when skillsUsed is not an array", () => {
+    const message = makeRehydratedMessage({
+      id: "msg-s3",
+      type: "assistant-messages",
+      attributes: { role: "assistant", content: "x", position: 1, skillsUsed: "email" },
+    });
+    expect(message.skillsUsed).toEqual([]);
+  });
+});
+
 describe("AssistantMessage.buildOptimistic", () => {
   const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

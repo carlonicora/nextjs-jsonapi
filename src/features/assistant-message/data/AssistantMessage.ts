@@ -14,6 +14,7 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
   private _content?: string;
   private _position?: number;
   private _suggestedQuestions?: string[];
+  private _skillsUsed?: string[];
   private _inputTokens?: number;
   private _outputTokens?: number;
   private _references?: ApiDataInterface[];
@@ -36,6 +37,10 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
 
   get suggestedQuestions(): string[] {
     return this._suggestedQuestions ?? [];
+  }
+
+  get skillsUsed(): string[] {
+    return this._skillsUsed ?? [];
   }
 
   get inputTokens(): number | undefined {
@@ -73,6 +78,7 @@ export class AssistantMessage extends AbstractApiData implements AssistantMessag
     this._content = attrs.content;
     this._position = typeof attrs.position === "number" ? attrs.position : Number(attrs.position ?? 0);
     this._suggestedQuestions = Array.isArray(attrs.suggestedQuestions) ? attrs.suggestedQuestions : [];
+    this._skillsUsed = Array.isArray(attrs.skillsUsed) ? attrs.skillsUsed : [];
     this._inputTokens = attrs.inputTokens;
     this._outputTokens = attrs.outputTokens;
     this._messageType = attrs.messageType as AssistantMessageType | undefined;

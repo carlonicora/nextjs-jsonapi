@@ -31,7 +31,7 @@ export const APP_PROVIDED_KEYS = [
   /^billing\.ui\.wizard\.errors\.discount_sold_out$/, // names who to contact: the app
   // The app's own entities (CommonDeleter / RecentPagesNavigator render
   // `entities.${type}` for any module). Only the library's own entities ship.
-  /^entities\.(?!(?:assistants|companies|howtos|rbac|roles|users)(?:\.|$))/,
+  /^entities\.(?!(?:assistants|companies|howtos|rbac|roles|skills|users)(?:\.|$))/,
   // Token-usage operation types an app backend defines (operation-label.ts: the
   // app supplies this vocabulary, unknown types render raw). Only the types the
   // backend library emits, plus its customer/platform scopes, ship.

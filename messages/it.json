@@ -1446,6 +1446,7 @@
     "howtos": "{count, plural, =1 {Guida} other {Guide}}",
     "rbac": "{count, plural, =1 {Permesso} other {Permessi}}",
     "roles": "{count, plural, =1 {Ruolo} other {Ruoli}}",
+    "skills": "{count, plural, =1 {Skill} other {Skill}}",
     "users": "{count, plural, =1 {Utente} other {Utenti}}"
   },
   "features": {
@@ -1993,6 +1994,79 @@
     },
     "roles": "{role, select, 2e1eee006cba45069059ccd24e4ea5b0 {Amministratore di sistema} other {N/D}}",
     "roles_descriptions": "{role, select, 2e1eee006cba45069059ccd24e4ea5b0 {Ha ACCESSO COMPLETO ai dati e alle funzionalità dell'azienda.} other {N/D}}"
+  },
+  "skill": {
+    "columns": {
+      "name": "Nome",
+      "description": "Descrizione",
+      "origin": "Origine",
+      "active": "Attiva"
+    },
+    "origin": {
+      "global": "Globale",
+      "copy": "Globale, modificata",
+      "company": "Azienda"
+    },
+    "hidden": "Nascosta dalla tua skill con lo stesso nome",
+    "empty": {
+      "title": "Ancora nessuna skill.",
+      "body": "Una skill insegna all'Assistente come fai una cosa. Scrivi la prima.",
+      "global": "Ancora nessuna skill globale."
+    },
+    "buttons": {
+      "new": "Nuova skill",
+      "restore": "Ripristina originale"
+    },
+    "editor": {
+      "create": "Nuova skill",
+      "edit": "Modifica skill"
+    },
+    "fields": {
+      "name": {
+        "label": "Nome",
+        "help": "Scrivi /{name} nell'Assistente per usarla.",
+        "error": "Usa da 2 a 40 lettere minuscole, cifre o trattini, iniziando con una lettera.",
+        "taken": "Hai già una skill con questo nome.",
+        "used": "Questo nome è già in uso.",
+        "global": "Una skill globale ha già questo nome. Modifica quella."
+      },
+      "description": {
+        "label": "Descrizione",
+        "help": "L'Assistente la legge per decidere quando usare la skill.",
+        "error": "Scrivi una descrizione di massimo 200 caratteri."
+      },
+      "instructions": {
+        "label": "Istruzioni",
+        "help": "Non inserire password o segreti in una skill.",
+        "error": "Scrivi istruzioni di massimo 20.000 caratteri."
+      },
+      "active": {
+        "label": "Attiva"
+      }
+    },
+    "counter": "{count, number} / {max, number}",
+    "notice": {
+      "global": "Questa è una skill globale. Salvando le modifiche ne crei una copia per te. Nessun altro ne risente.",
+      "copy": "Copia modificata di una skill globale."
+    },
+    "restore": {
+      "confirm": "Le tue modifiche a questa skill andranno perse."
+    },
+    "delete": {
+      "global": "Le aziende che hanno modificato questa skill mantengono la loro copia."
+    },
+    "errors": {
+      "limit": "Hai raggiunto il limite di 30 skill.",
+      "changed": "Questa skill è cambiata. L'elenco è stato ricaricato.",
+      "switch": "Non è stato possibile salvare la modifica."
+    },
+    "admin": {
+      "picker": {
+        "label": "Azienda",
+        "global": "Skill globali"
+      },
+      "title": "Skill · {company}"
+    }
   },
   "token_usage": {
     "admin": {

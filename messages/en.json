@@ -1446,6 +1446,7 @@
     "howtos": "{count, plural, =1 {How-To} other {How-Tos}}",
     "rbac": "{count, plural, =1 {Permission} other {Permissions}}",
     "roles": "{count, plural, =1 {Role} other {Roles}}",
+    "skills": "{count, plural, =1 {Skill} other {Skills}}",
     "users": "{count, plural, =1 {User} other {Users}}"
   },
   "features": {
@@ -1993,6 +1994,79 @@
     },
     "roles": "{role, select, 2e1eee006cba45069059ccd24e4ea5b0 {System Administrator} other {N/A}}",
     "roles_descriptions": "{role, select, 2e1eee006cba45069059ccd24e4ea5b0 {Has FULL ACCESS to the data and features of the company.} other {N/A}}"
+  },
+  "skill": {
+    "columns": {
+      "name": "Name",
+      "description": "Description",
+      "origin": "From",
+      "active": "On"
+    },
+    "origin": {
+      "global": "Global",
+      "copy": "Global, edited",
+      "company": "Company"
+    },
+    "hidden": "Hidden by your skill with the same name",
+    "empty": {
+      "title": "No skills yet.",
+      "body": "A skill teaches the Assistant how you do one thing. Write your first one.",
+      "global": "No global skills yet."
+    },
+    "buttons": {
+      "new": "New skill",
+      "restore": "Restore original"
+    },
+    "editor": {
+      "create": "New skill",
+      "edit": "Edit skill"
+    },
+    "fields": {
+      "name": {
+        "label": "Name",
+        "help": "Type /{name} in the Assistant to use it.",
+        "error": "Use 2 to 40 lowercase letters, digits or hyphens, starting with a letter.",
+        "taken": "You already have a skill with this name.",
+        "used": "This name is already taken.",
+        "global": "A global skill already has this name. Edit that skill instead."
+      },
+      "description": {
+        "label": "Description",
+        "help": "The Assistant reads this to decide when to use the skill.",
+        "error": "Write a description of up to 200 characters."
+      },
+      "instructions": {
+        "label": "Instructions",
+        "help": "Do not put passwords or secrets in a skill.",
+        "error": "Write instructions of up to 20,000 characters."
+      },
+      "active": {
+        "label": "On"
+      }
+    },
+    "counter": "{count, number} / {max, number}",
+    "notice": {
+      "global": "This is a global skill. Saving your changes makes a copy for you. Nobody else is affected.",
+      "copy": "Edited copy of a global skill."
+    },
+    "restore": {
+      "confirm": "Your changes to this skill will be lost."
+    },
+    "delete": {
+      "global": "Companies that edited this skill keep their copy."
+    },
+    "errors": {
+      "limit": "You have reached the limit of 30 skills.",
+      "changed": "This skill has changed. The list has been reloaded.",
+      "switch": "The change could not be saved."
+    },
+    "admin": {
+      "picker": {
+        "label": "Company",
+        "global": "Global skills"
+      },
+      "title": "Skills · {company}"
+    }
   },
   "token_usage": {
     "admin": {
