@@ -115,10 +115,11 @@ export function MessageItem({
         renderApprovalAction(message)
       ) : (
         // Markdown blocks arrive unstyled under Tailwind preflight (all margins
-        // zeroed): restore flow spacing between sibling blocks and give
-        // blockquotes a callout treatment — assistant answers use them for
-        // proposals and asides that must stand apart from factual prose.
-        <div className="bg-muted text-foreground rounded-2xl rounded-es-sm px-3.5 py-2.5 text-sm leading-relaxed [&>*+*]:mt-3 [&_blockquote]:border-s-2 [&_blockquote]:border-primary/50 [&_blockquote]:bg-primary/5 [&_blockquote]:rounded-md [&_blockquote]:px-3 [&_blockquote]:py-1.5">
+        // zeroed, list markers and indents removed): restore flow spacing between
+        // sibling blocks, bullets and numbers on lists, and give blockquotes a
+        // callout treatment — assistant answers use them for proposals and asides
+        // that must stand apart from factual prose.
+        <div className="bg-muted text-foreground rounded-2xl rounded-es-sm px-3.5 py-2.5 text-sm leading-relaxed [&>*+*]:mt-3 [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:ps-5 [&_ol]:ps-5 [&_li+li]:mt-1 [&_blockquote]:border-s-2 [&_blockquote]:border-primary/50 [&_blockquote]:bg-primary/5 [&_blockquote]:rounded-md [&_blockquote]:px-3 [&_blockquote]:py-1.5">
           <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents} urlTransform={mentionUrlTransform}>
             {message.content}
           </ReactMarkdown>
