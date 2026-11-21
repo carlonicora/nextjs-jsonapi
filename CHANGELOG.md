@@ -1,3 +1,9 @@
+## [6.45.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.44.1...v6.45.0) (2026-11-21)
+
+### 🚀 Features
+
+* **assistant-action:** on a pending create approval card the user can edit the proposed text and rich-text fields before approving, and Approve sends only the changed values; the new ProposedTextField shows a proposed rich text aligned with the one-line fields; the assistant thread takes renderBesideMessage, which puts content beside each message in a two-column row from lg up, hideSources, which hides the sources and suggested questions under each reply, and initialContentBlocks for the composer; a JSON:API answer whose data is null now returns data undefined instead of failing to rehydrate ([3fc1829](https://github.com/carlonicora/nextjs-jsonapi/commit/3fc1829077b0e1dcb55b92020fdeafc901924606))
+
 ## [6.44.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.44.0...v6.44.1) (2026-11-18)
 
 ### 🐛 Bug Fixes
