@@ -92,6 +92,19 @@ describe("MessageItem", () => {
     expect(container).not.toBeEmptyDOMElement();
   });
 
+  it("hideSources: no sources panel and no suggested questions", () => {
+    const msg = buildMessageStub({
+      role: "assistant",
+      content: "reply",
+      references: [makeRehydratedAccount({ id: "acc-2", name: "Globex" })],
+      suggestedQuestions: ["follow-up 1"],
+    });
+    render(<MessageItem message={msg} isLatestAssistant={true} onSelectFollowUp={vi.fn()} hideSources />);
+    expect(screen.getByText("reply")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /sources\.toggle/i })).not.toBeInTheDocument();
+    expect(screen.queryByText("follow-up 1")).not.toBeInTheDocument();
+  });
+
   it("failed user message: renders retry control and calls onRetry with the id", async () => {
     const msg = buildMessageStub({ role: "user", content: "oops" });
     (msg as any).id = "tmp-123";

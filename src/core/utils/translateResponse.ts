@@ -93,6 +93,15 @@ export async function translateResponse<T extends ApiDataInterface>(params: {
   // `.included` below.
   if (params.apiResponse.data === undefined || params.apiResponse.data === null) return response;
 
+  // A JSON:API document whose primary data is null ("no such resource") is a
+  // success with nothing to rehydrate: answer data undefined instead of calling
+  // rehydrate on null.
+  if (params.apiResponse.data.data === null) {
+    response.raw = params.apiResponse.data;
+    response.data = undefined;
+    return response;
+  }
+
   response.raw = params.apiResponse.data;
 
   // Extract meta from JSON:API response

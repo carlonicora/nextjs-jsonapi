@@ -18,18 +18,31 @@ export class AssistantActionService extends AbstractService {
   }
 
   /**
-   * POST (body-less) approve action — resumes the paused run and
-   * returns the resumed assistant message.
+   * POST approve action — resumes the paused run and returns the resumed
+   * assistant message. Body-less, unless `edits` holds at least one changed
+   * field of a create proposal: then the AssistantAction model builds the
+   * body (`attributes.edits`).
    */
-  static async approve(params: { id: string }): Promise<AssistantMessageInterface> {
+  static async approve(params: { id: string; edits?: Record<string, string> }): Promise<AssistantMessageInterface> {
+    const endpoint = new EndpointCreator({
+      endpoint: Modules.AssistantAction,
+      id: params.id,
+      childEndpoint: "approve",
+    }).generate();
+
+    if (params.edits && Object.keys(params.edits).length > 0)
+      return this.callApi<AssistantMessageInterface>({
+        type: Modules.AssistantAction,
+        method: HttpMethod.POST,
+        endpoint,
+        input: { id: params.id, edits: params.edits },
+        responseType: Modules.AssistantMessage,
+      });
+
     return this.callApi<AssistantMessageInterface>({
       type: Modules.AssistantMessage,
       method: HttpMethod.POST,
-      endpoint: new EndpointCreator({
-        endpoint: Modules.AssistantAction,
-        id: params.id,
-        childEndpoint: "approve",
-      }).generate(),
+      endpoint,
     });
   }
 

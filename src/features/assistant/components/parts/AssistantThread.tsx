@@ -2,7 +2,11 @@
 
 import { useEffect, useRef } from "react";
 import type { AssistantMessageInterface } from "../../../assistant-message/data/AssistantMessageInterface";
-import { MessageList, type AfterMessageRenderer } from "../../../assistant-message/components/MessageList";
+import {
+  MessageList,
+  type AfterMessageRenderer,
+  type BesideMessageRenderer,
+} from "../../../assistant-message/components/MessageList";
 import type { ApprovalActionRenderer, MentionRenderer } from "../../../assistant-message/components/MessageItem";
 import { AssistantStatusLine } from "./AssistantStatusLine";
 
@@ -18,6 +22,14 @@ interface Props {
   renderMention?: MentionRenderer;
   /** Host slot rendered after each message (see `AfterMessageRenderer`). */
   renderAfterMessage?: AfterMessageRenderer;
+  /**
+   * Opt-in: content rendered BESIDE each message (see `BesideMessageRenderer`).
+   * Given, every row is a two-column grid from `lg` up; omitted, the thread
+   * renders exactly as before.
+   */
+  renderBesideMessage?: BesideMessageRenderer;
+  /** Hides the sources panel and the suggested questions under each reply. */
+  hideSources?: boolean;
 }
 
 export function AssistantThread({
@@ -30,6 +42,8 @@ export function AssistantThread({
   renderApprovalAction,
   renderMention,
   renderAfterMessage,
+  renderBesideMessage,
+  hideSources = false,
 }: Props) {
   const lastMessageRef = useRef<HTMLDivElement>(null);
 
@@ -51,6 +65,8 @@ export function AssistantThread({
         renderMention={renderMention}
         lastMessageRef={lastMessageRef}
         renderAfterMessage={renderAfterMessage}
+        renderBesideMessage={renderBesideMessage}
+        hideSources={hideSources}
       />
       {sending && <AssistantStatusLine status={status} />}
     </div>

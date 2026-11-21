@@ -2,7 +2,9 @@
 
 import { ShieldAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, type ReactNode, useEffect, useMemo, useState } from "react";
+import { isDocumentEmpty } from "../../../components/editors/blockNoteEditorOptions";
+import { ProposedTextField, type ProposedTextFieldMentionProps } from "../../../components/editors/ProposedTextField";
 import { MicroLabel } from "../../../components/typography";
 import { Badge, Button } from "../../../shadcnui";
 import type { AssistantMessageInterface } from "../../assistant-message/data/AssistantMessageInterface";
@@ -64,6 +66,30 @@ interface OperatorActionProposal {
   relationship?: string;
   /** …and the records being linked or unlinked. */
   targets?: ProposalRef[];
+  /**
+   * create: the attribute keys the user may edit before approving, with how
+   * each is edited. A `"richtext"` value is a serialised BlockNote document.
+   */
+  editable?: Record<string, EditableKind>;
+}
+
+/** How an editable proposed attribute is edited. */
+type EditableKind = "text" | "richtext";
+
+/**
+ * One editable attribute of a pending create proposal. `"plain"` is a
+ * `"richtext"` value that is not a BlockNote document: it is edited as plain
+ * text instead.
+ */
+interface EditableField {
+  key: string;
+  kind: "text" | "richtext" | "plain";
+  /** The proposed value, as served. */
+  original: string;
+  /** richtext: the proposed blocks (stable reference for the editor). */
+  blocks: unknown[];
+  /** The proposed value holds text: the server refuses emptying it. */
+  filled: boolean;
 }
 
 /**
@@ -85,6 +111,8 @@ interface ProposalRow {
   key: string;
   label: string;
   value: string;
+  /** Set on an editable attribute of a pending create: the row renders a field. */
+  field?: EditableField;
 }
 
 /**
@@ -297,6 +325,14 @@ function parseOperatorProposal(proposal: string | undefined): OperatorActionProp
     }
   }
 
+  let editable: Record<string, EditableKind> | undefined;
+  if (payload.editable && typeof payload.editable === "object" && !Array.isArray(payload.editable)) {
+    editable = {};
+    for (const [key, kind] of Object.entries(payload.editable as Record<string, unknown>)) {
+      if (kind === "text" || kind === "richtext") editable[key] = kind;
+    }
+  }
+
   return {
     type: typeof payload.type === "string" ? payload.type : "",
     target: asRef(payload.target),
@@ -304,7 +340,47 @@ function parseOperatorProposal(proposal: string | undefined): OperatorActionProp
     relationships,
     relationship: typeof payload.relationship === "string" ? payload.relationship : undefined,
     targets: asRefs(payload.targets),
+    editable,
   };
+}
+
+/** A serialised document whose blocks are an empty array: an empty rich text. */
+function isEmptyDocumentString(value: string): boolean {
+  if (value.trim() === "") return true;
+  try {
+    const parsed: unknown = JSON.parse(value);
+    return Array.isArray(parsed) && parsed.length === 0;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * The editable attributes of a create proposal, by key. A key whose proposed
+ * value is not a string (or absent) is not editable: it renders as today.
+ */
+function buildEditableFields(proposal: OperatorActionProposal | undefined): Map<string, EditableField> {
+  const fields = new Map<string, EditableField>();
+  if (!proposal?.editable) return fields;
+  for (const [key, kind] of Object.entries(proposal.editable)) {
+    const value = proposal.attributes?.[key];
+    if (typeof value !== "string") continue;
+    if (kind === "text") {
+      fields.set(key, { key, kind: "text", original: value, blocks: [], filled: value.trim() !== "" });
+      continue;
+    }
+    if (isEmptyDocumentString(value)) {
+      fields.set(key, { key, kind: "richtext", original: value, blocks: [], filled: false });
+      continue;
+    }
+    const blocks = asBlockNoteDocument(value);
+    if (blocks) {
+      fields.set(key, { key, kind: "richtext", original: value, blocks, filled: !isDocumentEmpty(blocks) });
+      continue;
+    }
+    fields.set(key, { key, kind: "plain", original: value, blocks: [], filled: value.trim() !== "" });
+  }
+  return fields;
 }
 
 /**
@@ -336,7 +412,7 @@ function parseLegacyProposal(toolArgs: string | undefined): LegacyProposal | und
   };
 }
 
-interface Props {
+interface Props extends ProposedTextFieldMentionProps {
   /** Id of the pending AssistantAction linked to the approval-request message. */
   actionId: string;
   /** Human-readable summary fallback (the approval-request message content). */
@@ -363,8 +439,25 @@ interface Props {
  * NOTE: plain `<Button>` elements on purpose — never wrapped inside any
  * Base UI trigger component (no nested buttons, no `asChild`).
  */
-export function ApprovalActionCard({ actionId, summary, onResolved, hiddenRelationshipKeys }: Props) {
+export function ApprovalActionCard({
+  actionId,
+  summary,
+  onResolved,
+  hiddenRelationshipKeys,
+  mentionSearchFn,
+  mentionSearchParams,
+  mentionResolveFn,
+  suggestionMenuComponent,
+  mentionNameResolver,
+  onWarmMentions,
+}: Props) {
   const t = useTranslations();
+  // The user's edits of a pending create: plain values by key, rich-text blocks
+  // by key (set on the editor's first real change), and whether each rich text
+  // is now empty (from the editor).
+  const [textDrafts, setTextDrafts] = useState<Record<string, string>>({});
+  const [richDrafts, setRichDrafts] = useState<Record<string, unknown[]>>({});
+  const [richEmpty, setRichEmpty] = useState<Record<string, boolean>>({});
   const [status, setStatus] = useState<AssistantActionStatus | undefined>(undefined);
   const [actionSummary, setActionSummary] = useState<string | undefined>(undefined);
   const [toolName, setToolName] = useState<string | undefined>(undefined);
@@ -403,12 +496,19 @@ export function ApprovalActionCard({ actionId, summary, onResolved, hiddenRelati
   const loose = t as unknown as LooseTranslate;
   const entityLabel = entityName(loose, entityType);
   const targetLabel = presented?.target?.label ?? "";
+  // Only a pending create with `editable` shows fields; everything else renders as before.
+  const editableFields = useMemo(
+    () => (status === "pending" ? buildEditableFields(presented) : new Map<string, EditableField>()),
+    [status, presented],
+  );
 
   const rows = useMemo<ProposalRow[]>(() => {
     const yes = t("features.assistant.approval.proposal.yes");
     const no = t("features.assistant.approval.proposal.no");
     const attributes = presented?.attributes ?? legacy?.attributes;
     const attributeRows = Object.entries(attributes ?? {}).flatMap<ProposalRow>(([key, value]) => {
+      const field = editableFields.get(key);
+      if (field) return [{ key: `attribute:${key}`, label: fieldLabel(loose, entityType, key), value: "", field }];
       const text = formatAttribute(value, yes, no);
       return text === undefined
         ? []
@@ -443,20 +543,62 @@ export function ApprovalActionCard({ actionId, summary, onResolved, hiddenRelati
     }
 
     return [...attributeRows, ...relationshipRows, ...linkRows];
-  }, [presented, legacy, t, loose, entityType, hiddenRelationshipKeys]);
+  }, [presented, legacy, t, loose, entityType, hiddenRelationshipKeys, editableFields]);
 
   const hasProposal = rows.length > 0;
 
   const actionable = status === "pending" && !busy && !failed;
 
+  /** Whether a field is empty now: the draft, else the proposed value. */
+  const isFieldEmpty = (field: EditableField): boolean => {
+    if (field.kind === "richtext") return field.key in richEmpty ? richEmpty[field.key] : !field.filled;
+    return (textDrafts[field.key] ?? field.original).trim() === "";
+  };
+
+  // The server refuses emptying a field it proposed with text: Approve waits until it is filled again.
+  const emptiedField = [...editableFields.values()].some((field) => field.filled && isFieldEmpty(field));
+
+  /** Only the changed fields; a rich text as its stringified blocks. */
+  const collectEdits = (): Record<string, string> => {
+    const edits: Record<string, string> = {};
+    for (const field of editableFields.values()) {
+      if (field.kind === "richtext") {
+        if (field.key in richDrafts) edits[field.key] = JSON.stringify(richDrafts[field.key]);
+        continue;
+      }
+      const draft = textDrafts[field.key];
+      if (draft !== undefined && draft !== field.original) edits[field.key] = draft;
+    }
+    return edits;
+  };
+
+  /** After an approve with edits: the card shows the saved values. */
+  const applyEditsToProposal = (edits: Record<string, string>) => {
+    if (!actionProposal) return;
+    try {
+      const parsed = JSON.parse(actionProposal) as Record<string, unknown>;
+      const attributes =
+        parsed.attributes && typeof parsed.attributes === "object"
+          ? (parsed.attributes as Record<string, unknown>)
+          : {};
+      setActionProposal(JSON.stringify({ ...parsed, attributes: { ...attributes, ...edits } }));
+    } catch {
+      // The proposal parsed before (the fields came from it); nothing to update otherwise.
+    }
+  };
+
   const resolve = async (kind: "approve" | "deny") => {
     if (!actionable) return;
+    if (kind === "approve" && emptiedField) return;
     setBusy(true);
     try {
+      const edits = kind === "approve" ? collectEdits() : {};
+      const hasEdits = Object.keys(edits).length > 0;
       const message =
         kind === "approve"
-          ? await AssistantActionService.approve({ id: actionId })
+          ? await AssistantActionService.approve(hasEdits ? { id: actionId, edits } : { id: actionId })
           : await AssistantActionService.deny({ id: actionId });
+      if (hasEdits) applyEditsToProposal(edits);
       setStatus(kind === "approve" ? "executed" : "denied");
       if (message) onResolved?.(message);
     } catch (error) {
@@ -465,6 +607,48 @@ export function ApprovalActionCard({ actionId, summary, onResolved, hiddenRelati
     } finally {
       setBusy(false);
     }
+  };
+
+  const mentions: ProposedTextFieldMentionProps = {
+    mentionSearchFn,
+    mentionSearchParams,
+    mentionResolveFn,
+    suggestionMenuComponent,
+    mentionNameResolver,
+    onWarmMentions,
+  };
+
+  /** One editable proposed value: a one-line field, a plain box, or the rich-text editor. */
+  const renderField = (field: EditableField, label: string): ReactNode => {
+    const common = {
+      id: `approval-${actionId}-${field.key}`,
+      "aria-label": label,
+      "data-testid": `approval-field-${field.key}`,
+    };
+    if (field.kind === "richtext")
+      return (
+        <ProposedTextField
+          {...common}
+          {...mentions}
+          variant="richtext"
+          type={entityType}
+          initialContent={field.blocks}
+          onChange={(blocks, isEmpty) => {
+            setRichDrafts((drafts) => ({ ...drafts, [field.key]: blocks }));
+            setRichEmpty((empty) => ({ ...empty, [field.key]: isEmpty }));
+          }}
+        />
+      );
+    return (
+      <ProposedTextField
+        {...common}
+        variant="text"
+        multiline={field.kind === "plain" && field.original.includes("\n")}
+        value={textDrafts[field.key] ?? field.original}
+        onChange={(value) => setTextDrafts((drafts) => ({ ...drafts, [field.key]: value }))}
+        className="w-full"
+      />
+    );
   };
 
   return (
@@ -490,12 +674,23 @@ export function ApprovalActionCard({ actionId, summary, onResolved, hiddenRelati
             {targetLabel !== "" && <span className="text-foreground tracking-normal normal-case">{targetLabel}</span>}
           </MicroLabel>
           <dl className="grid grid-cols-1 gap-x-4 gap-y-1.5 sm:grid-cols-[minmax(0,10rem)_minmax(0,1fr)]">
-            {rows.map((row) => (
-              <Fragment key={row.key}>
-                <dt className="text-muted-foreground text-xs leading-relaxed break-words sm:text-sm">{row.label}</dt>
-                <dd className="text-foreground text-sm leading-relaxed break-words whitespace-pre-wrap">{row.value}</dd>
-              </Fragment>
-            ))}
+            {rows.map((row) =>
+              row.field ? (
+                <Fragment key={row.key}>
+                  <dt className="text-muted-foreground text-xs leading-relaxed break-words sm:text-sm">{row.label}</dt>
+                  <dd className="text-foreground min-w-0 text-sm leading-relaxed">
+                    {renderField(row.field, row.label)}
+                  </dd>
+                </Fragment>
+              ) : (
+                <Fragment key={row.key}>
+                  <dt className="text-muted-foreground text-xs leading-relaxed break-words sm:text-sm">{row.label}</dt>
+                  <dd className="text-foreground text-sm leading-relaxed break-words whitespace-pre-wrap">
+                    {row.value}
+                  </dd>
+                </Fragment>
+              ),
+            )}
           </dl>
         </div>
       )}
@@ -505,7 +700,7 @@ export function ApprovalActionCard({ actionId, summary, onResolved, hiddenRelati
         </div>
       )}
       <div className="flex items-center gap-2 pt-1">
-        <Button size="sm" disabled={!actionable} onClick={() => void resolve("approve")}>
+        <Button size="sm" disabled={!actionable || emptiedField} onClick={() => void resolve("approve")}>
           {t("features.assistant.approval.approve")}
         </Button>
         <Button size="sm" variant="outline" disabled={!actionable} onClick={() => void resolve("deny")}>

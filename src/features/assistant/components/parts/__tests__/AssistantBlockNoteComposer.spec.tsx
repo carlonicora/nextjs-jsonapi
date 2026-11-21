@@ -6,9 +6,16 @@ import { SkillSuggestionMenu } from "../../../../skill/components/parts/SkillSug
 // The real editor is a next/dynamic ssr:false import; assert on the props it receives.
 const editorProps = vi.hoisted(() => ({ current: null as null | Record<string, any> }));
 vi.mock("../../../../../components/editors/BlockNoteEditorContainer", () => ({
-  BlockNoteEditorContainer: (props: { placeholder?: string }) => {
+  BlockNoteEditorContainer: (props: { placeholder?: string; initialContent?: unknown[] }) => {
     editorProps.current = props;
-    return <div data-testid="composer-editor" data-placeholder={props.placeholder} tabIndex={0} />;
+    return (
+      <div
+        data-testid="composer-editor"
+        data-placeholder={props.placeholder}
+        data-initial-content={props.initialContent === undefined ? "none" : JSON.stringify(props.initialContent)}
+        tabIndex={0}
+      />
+    );
   },
 }));
 
@@ -45,6 +52,8 @@ function fakeEditor(textBeforeCaret: string) {
   };
   return { editor: editor as any, closeMenu, insertInlineContent };
 }
+
+const paragraph = [{ type: "paragraph", content: [{ type: "text", text: "Draft text", styles: {} }] }];
 
 describe("AssistantBlockNoteComposer", () => {
   beforeEach(() => {
@@ -205,5 +214,24 @@ describe("AssistantBlockNoteComposer", () => {
       });
       expect(refreshSkills).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it("initialContentBlocks start the editor with that content and enable Send", () => {
+    render(<AssistantBlockNoteComposer onSend={vi.fn()} initialContentBlocks={paragraph} />);
+    expect(screen.getByTestId("composer-editor")).toHaveAttribute("data-initial-content", JSON.stringify(paragraph));
+    expect(screen.getByRole("button", { name: /features\.assistant\.send/ })).toBeEnabled();
+  });
+
+  it("after a send the editor is empty again", async () => {
+    const onSend = vi.fn().mockResolvedValue(undefined);
+    render(<AssistantBlockNoteComposer onSend={onSend} initialContentBlocks={paragraph} />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /features\.assistant\.send/ }));
+    });
+
+    expect(onSend).toHaveBeenCalledWith("Draft text", { contentBlocks: paragraph });
+    expect(screen.getByTestId("composer-editor")).toHaveAttribute("data-initial-content", "none");
+    expect(screen.getByRole("button", { name: /features\.assistant\.send/ })).toBeDisabled();
   });
 });

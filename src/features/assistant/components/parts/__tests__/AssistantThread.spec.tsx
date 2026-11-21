@@ -96,4 +96,47 @@ describe("AssistantThread", () => {
     const secondText = screen.getByText("second text");
     expect(afterFirst.compareDocumentPosition(secondText) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
+
+  it("renders each row as before when renderBesideMessage is omitted", () => {
+    const only = buildMessageStub({ role: "assistant", content: "plain reply", position: 0 });
+    const { container } = render(<AssistantThread messages={[only]} sending={false} onSelectFollowUp={vi.fn()} />);
+    expect(container.querySelector("[data-message-row]")).toBeNull();
+    expect(container.querySelector("[data-message-beside]")).toBeNull();
+    const bubble = screen.getByText("plain reply").closest(".max-w-\\[78\\%\\]");
+    expect(bubble).not.toBeNull();
+  });
+
+  it("renderBesideMessage puts its output in a second column of the message's row, with the same neighbours", () => {
+    const question = buildMessageStub({ role: "user", content: "the question", position: 0 });
+    const reply = buildMessageStub({ role: "assistant", content: "the reply", position: 1 });
+    const renderBesideMessage = vi.fn(
+      (
+        m: AssistantMessageInterface,
+        _neighbours: { previous?: AssistantMessageInterface; next?: AssistantMessageInterface },
+      ) => (m.role === "assistant" ? <span data-testid={"beside-" + m.id} /> : null),
+    );
+
+    const { container } = render(
+      <AssistantThread
+        messages={[question, reply]}
+        sending={false}
+        onSelectFollowUp={vi.fn()}
+        renderBesideMessage={renderBesideMessage}
+      />,
+    );
+
+    const replyRow = container.querySelector('[data-message-row="' + reply.id + '"]');
+    expect(replyRow?.className).toContain("lg:grid-cols-2");
+    const beside = screen.getByTestId("beside-" + reply.id);
+    expect(beside.parentElement?.getAttribute("data-message-beside")).toBe(reply.id);
+    expect(replyRow?.contains(beside)).toBe(true);
+    expect(replyRow?.textContent).toContain("the reply");
+    // A row whose renderer returns null keeps no second cell.
+    const questionRow = container.querySelector('[data-message-row="' + question.id + '"]');
+    expect(questionRow?.querySelector("[data-message-beside]")).toBeNull();
+    const replyCall = renderBesideMessage.mock.calls.find((call) => call[0] === reply);
+    expect(replyCall?.[1]).toEqual({ previous: question, next: undefined });
+    // In a half-width column the reply bubble drops the default cap.
+    expect(screen.getByText("the reply").closest(".max-w-full")).not.toBeNull();
+  });
 });

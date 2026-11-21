@@ -12,7 +12,8 @@ export interface ApiResponseInterface {
   nextPage?: () => Promise<ApiResponseInterface>;
   prevPage?: () => Promise<ApiResponseInterface>;
 
-  data: ApiDataInterface | ApiDataInterface[];
+  /** Undefined when the server answered a JSON:API document whose primary data is null. */
+  data: ApiDataInterface | ApiDataInterface[] | undefined;
 
   error: string;
 }

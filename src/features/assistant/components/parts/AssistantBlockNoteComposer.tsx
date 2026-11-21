@@ -3,7 +3,7 @@
 import { ArrowUp } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useId, useMemo, useRef, useState, type FC, type KeyboardEvent } from "react";
-import type { BlockNoteEditor } from "@blocknote/core";
+import type { BlockNoteEditor, PartialBlock } from "@blocknote/core";
 import { SuggestionMenu } from "@blocknote/core/extensions";
 import type { DefaultReactSuggestionItem, SuggestionMenuProps } from "@blocknote/react";
 import type { BlockNoteSlashSuggestions } from "../../../../components/editors/BlockNoteEditor";
@@ -29,6 +29,12 @@ interface Props {
   suggestionMenuComponent?: FC<SuggestionMenuProps<DefaultReactSuggestionItem>>;
   /** Editor placeholder. Absent, the assistant's default placeholder text. */
   placeholder?: string;
+  /**
+   * BlockNote blocks the editor starts with (e.g. a draft carried over from
+   * another page). Read on the first mount only: after a send the editor is
+   * cleared and starts empty. With content, Send is enabled straight away.
+   */
+  initialContentBlocks?: unknown[];
 }
 
 /**
@@ -91,13 +97,14 @@ export function AssistantBlockNoteComposer({
   mentionResolveFn,
   suggestionMenuComponent,
   placeholder,
+  initialContentBlocks,
 }: Props) {
   const t = useTranslations();
   // React's generated ids carry delimiters (`:r0:` / `«r0»`) and this value ends
   // up inside an S3 object key, so keep it to path-safe characters.
   const editorId = useId().replace(/[^a-zA-Z0-9]/g, "");
-  const [blocks, setBlocks] = useState<unknown[]>([]);
-  const [isEmpty, setIsEmpty] = useState(true);
+  const [blocks, setBlocks] = useState<unknown[]>(initialContentBlocks ?? []);
+  const [isEmpty, setIsEmpty] = useState(!initialContentBlocks?.length);
   // Remounting the editor is the only reliable way to clear it: the editor
   // ignores an `initialContent` that merely echoes what it last emitted.
   const [resetKey, setResetKey] = useState(0);
@@ -205,6 +212,7 @@ export function AssistantBlockNoteComposer({
             id={editorId}
             type="assistants"
             placeholder={placeholder ?? t("features.assistant.composer_placeholder")}
+            initialContent={resetKey === 0 ? (initialContentBlocks as PartialBlock[] | undefined) : undefined}
             enableMentions
             mentionSearchFn={mentionSearchFn}
             mentionSearchParams={mentionSearchParams}

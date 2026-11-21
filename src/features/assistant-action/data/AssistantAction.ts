@@ -54,15 +54,19 @@ export class AssistantAction extends AbstractApiData implements AssistantActionI
   }
 
   /**
-   * Minimal payload (id only): the frontend never POSTs assistant actions —
-   * approve/deny are body-less POSTs handled by AssistantActionService.
+   * The frontend never creates assistant actions. The only body it sends is
+   * an approve with edits: `attributes.edits` holds the changed fields of a
+   * create proposal. Without edits the attributes stay empty (approve/deny
+   * without edits are body-less POSTs handled by AssistantActionService).
    */
   createJsonApi(data: AssistantActionInput) {
+    const attributes: Record<string, unknown> = {};
+    if (data.edits !== undefined) attributes.edits = data.edits;
     return {
       data: {
         type: Modules.AssistantAction.name,
         id: data.id,
-        attributes: {},
+        attributes,
       },
       included: [],
     };

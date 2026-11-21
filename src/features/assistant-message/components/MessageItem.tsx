@@ -5,6 +5,7 @@ import { Sparkles, AlertCircle } from "lucide-react";
 import { useMemo, type ReactNode } from "react";
 import ReactMarkdown, { defaultUrlTransform } from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { cn } from "../../../utils/cn";
 import type { AssistantMessageInterface } from "../data/AssistantMessageInterface";
 import { MessageSkillLabels } from "../../skill/components/parts/MessageSkillLabels";
 import { MessageSourcesContainer } from "./parts/MessageSourcesContainer";
@@ -42,6 +43,13 @@ interface Props {
   onRetry?: (tempId: string) => void;
   renderApprovalAction?: ApprovalActionRenderer;
   renderMention?: MentionRenderer;
+  /** Hides the sources panel and the suggested questions under each reply. */
+  hideSources?: boolean;
+  /**
+   * The message sits in a narrow column (a half-width row of `renderBesideMessage`):
+   * the bubbles may use the column's width instead of the default caps.
+   */
+  fillColumn?: boolean;
 }
 
 export function MessageItem({
@@ -52,6 +60,8 @@ export function MessageItem({
   onRetry,
   renderApprovalAction,
   renderMention,
+  hideSources = false,
+  fillColumn = false,
 }: Props) {
   const t = useTranslations();
   const isUser = message.role === "user";
@@ -83,7 +93,13 @@ export function MessageItem({
           renders invisible here, so force the on-primary colour and lean on
           weight for the affordance (links are never underlined in this UI).
         */}
-        <div className="bg-primary text-primary-foreground max-w-[72%] max-md:max-w-[92%] rounded-2xl rounded-ee-sm px-3.5 py-2 text-sm [&_a]:text-primary-foreground [&_a]:font-semibold [&_p]:m-0">
+        <div
+          className={cn(
+            "bg-primary text-primary-foreground rounded-2xl",
+            fillColumn ? "max-w-[92%]" : "max-w-[72%] max-md:max-w-[92%]",
+            "rounded-ee-sm px-3.5 py-2 text-sm [&_a]:text-primary-foreground [&_a]:font-semibold [&_p]:m-0",
+          )}
+        >
           <ReactMarkdown remarkPlugins={[remarkGfm]} urlTransform={mentionUrlTransform} components={markdownComponents}>
             {message.content}
           </ReactMarkdown>
@@ -104,7 +120,7 @@ export function MessageItem({
   const isApprovalRequest = message.messageType === "approval-request" && !!renderApprovalAction;
 
   return (
-    <div className="flex min-w-0 max-w-[78%] max-md:max-w-[92%] flex-col gap-1.5">
+    <div className={cn("flex min-w-0 flex-col gap-1.5", fillColumn ? "max-w-full" : "max-w-[78%] max-md:max-w-[92%]")}>
       <div className="text-muted-foreground flex items-center gap-2 ps-1 text-xs">
         <span className="flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-violet-500 text-white">
           <Sparkles className="h-2.5 w-2.5" />
@@ -126,11 +142,13 @@ export function MessageItem({
         </div>
       )}
       <MessageSkillLabels names={message.skillsUsed ?? []} />
-      <MessageSourcesContainer
-        message={message}
-        isLatestAssistant={isLatestAssistant}
-        onSelectFollowUp={onSelectFollowUp}
-      />
+      {!hideSources && (
+        <MessageSourcesContainer
+          message={message}
+          isLatestAssistant={isLatestAssistant}
+          onSelectFollowUp={onSelectFollowUp}
+        />
+      )}
     </div>
   );
 }

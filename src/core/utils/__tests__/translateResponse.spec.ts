@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiData } from "../../interfaces/ApiData";
 import { ApiDataInterface } from "../../interfaces/ApiDataInterface";
 import { ApiRequestDataTypeInterface } from "../../interfaces/ApiRequestDataTypeInterface";
@@ -79,5 +79,32 @@ describe("translateResponse error extraction", () => {
     });
 
     expect(response.error).toBe("Internal Server Error");
+  });
+});
+
+describe("translateResponse null resource", () => {
+  beforeEach(() => {
+    DataClassRegistry.clear();
+    DataClassRegistry.registerObjectClass(stubModule, StubData as unknown as { new (): ApiDataInterface });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("a 200 body { data: null } is ok with data undefined and logs nothing", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const response = await translateResponse({
+      classKey: stubModule,
+      apiResponse: { ok: true, status: 200, statusText: "", data: { data: null } } as ApiData,
+      language: "en",
+    });
+
+    expect(response.ok).toBe(true);
+    expect(response.response).toBe(200);
+    expect(response.data).toBeUndefined();
+    expect(response.raw).toEqual({ data: null });
+    expect(consoleError).not.toHaveBeenCalled();
   });
 });

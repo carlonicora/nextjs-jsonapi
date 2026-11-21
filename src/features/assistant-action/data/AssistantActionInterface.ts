@@ -8,11 +8,17 @@ export type AssistantActionStatus = "pending" | "approved" | "denied" | "expired
 
 /**
  * The frontend never creates assistant actions — the operator engine does.
- * The input therefore carries the id alone, so `createJsonApi()` can emit a
- * well-formed (if minimal) JSON:API resource object.
+ * The input carries the id, plus the user's edits of a create proposal when
+ * approving it, so `createJsonApi()` can emit a well-formed JSON:API resource
+ * object.
  */
 export type AssistantActionInput = {
   id: string;
+  /**
+   * Approve with edits: only the changed editable fields of a create
+   * proposal, by attribute key. A rich-text value is `JSON.stringify(blocks)`.
+   */
+  edits?: Record<string, string>;
 };
 
 export interface AssistantActionInterface extends ApiDataInterface {

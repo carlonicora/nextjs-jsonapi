@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ApprovalActionCard } from "../ApprovalActionCard";
 
@@ -20,6 +20,31 @@ vi.mock("next-intl", () => {
     useFormatter: () => ({ dateTime: vi.fn(), number: vi.fn(), relativeTime: vi.fn() }),
   };
 });
+
+/**
+ * The BlockNote editor stands in as a plain element: its props are kept per
+ * editor id so a test can fire the editor's change callback.
+ */
+const editors = vi.hoisted(
+  () =>
+    ({}) as Record<
+      string,
+      {
+        initialContent?: unknown[];
+        onChange?: (...args: any[]) => void;
+        className?: string;
+        bordered?: boolean;
+        enableMentions?: boolean;
+      }
+    >,
+);
+
+vi.mock("../../../../components/editors/BlockNoteEditorContainer", () => ({
+  BlockNoteEditorContainer: (props: any) => {
+    editors[props.id] = props;
+    return <div data-testid={`editor-${props.id}`} data-initial-content={JSON.stringify(props.initialContent ?? [])} />;
+  },
+}));
 
 const findOne = vi.fn();
 const approve = vi.fn();
@@ -345,5 +370,257 @@ describe("ApprovalActionCard", () => {
     expect(screen.getByRole("button", { name: "features.assistant.approval.deny" })).toBeEnabled();
     expect(screen.queryByText("features.assistant.approval.proposal.heading")).not.toBeInTheDocument();
     expect(screen.queryByText(UUID_LIKE)).toBeNull();
+  });
+});
+
+describe("ApprovalActionCard — editable create proposal", () => {
+  const DESCRIPTION_BLOCKS = [
+    { id: "b1", type: "paragraph", content: [{ type: "text", text: "Runs the docks" }], children: [] },
+  ];
+
+  const EDITABLE_PROPOSAL = JSON.stringify({
+    type: "npcs",
+    attributes: {
+      name: "Marcus",
+      tldr: "A nerd with bouts of rage",
+      description: JSON.stringify(DESCRIPTION_BLOCKS),
+      age: 42,
+    },
+    relationships: {
+      related: [{ id: "042ec319-9d3c-4f0a-9a6c-1a2b3c4d5e6f", type: "npcs", label: "Zoe" }],
+    },
+    editable: { name: "text", tldr: "text", description: "richtext" },
+  });
+
+  const EDITOR_ID = "approval-act-1-description";
+  const EDITED_BLOCKS = [
+    { id: "b1", type: "paragraph", content: [{ type: "text", text: "Owns the docks" }], children: [] },
+  ];
+
+  const approveButton = () => screen.getByRole("button", { name: "features.assistant.approval.approve" });
+
+  beforeEach(() => {
+    for (const key of Object.keys(messages)) delete messages[key];
+    for (const key of Object.keys(editors)) delete editors[key];
+    findOne.mockReset();
+    approve.mockReset();
+    deny.mockReset();
+  });
+
+  it("renders the editable attributes as fields while pending, and the rest read-only", async () => {
+    findOne.mockResolvedValue(makeAction({ proposal: EDITABLE_PROPOSAL }));
+
+    render(<ApprovalActionCard actionId="act-1" />);
+
+    const name = (await screen.findByTestId("approval-field-name")) as HTMLInputElement;
+    expect(name.tagName).toBe("INPUT");
+    expect(name.value).toBe("Marcus");
+    expect(name).toHaveAttribute("aria-label", "Name");
+    expect((screen.getByTestId("approval-field-tldr") as HTMLInputElement).value).toBe("A nerd with bouts of rage");
+    // the rich text is the bordered editor, holding the proposed blocks
+    expect(screen.getByTestId("approval-field-description")).toBeInTheDocument();
+    expect(editors[EDITOR_ID].initialContent).toEqual(DESCRIPTION_BLOCKS);
+    expect(editors[EDITOR_ID].bordered).toBe(true);
+    // numbers and relationships stay read-only text
+    expect(screen.getByText("42")).toBeInTheDocument();
+    expect(screen.getByText("Zoe")).toBeInTheDocument();
+  });
+
+  it("renders no field when the proposal has no editable map", async () => {
+    findOne.mockResolvedValue(makeAction());
+
+    render(<ApprovalActionCard actionId="act-1" />);
+
+    expect(await screen.findByText("Marcus")).toBeInTheDocument();
+    expect(screen.queryByRole("textbox")).toBeNull();
+    expect(screen.queryByTestId("approval-field-name")).toBeNull();
+  });
+
+  it("renders no field when the action is no longer pending", async () => {
+    findOne.mockResolvedValue(makeAction({ status: "executed", proposal: EDITABLE_PROPOSAL }));
+
+    render(<ApprovalActionCard actionId="act-1" />);
+
+    expect(await screen.findByText("Marcus")).toBeInTheDocument();
+    expect(screen.getByText("Runs the docks")).toBeInTheDocument();
+    expect(screen.queryByRole("textbox")).toBeNull();
+    expect(Object.keys(editors)).toHaveLength(0);
+  });
+
+  it("keeps an update card read-only", async () => {
+    findOne.mockResolvedValue(
+      makeAction({
+        toolName: "update_entity",
+        proposal: JSON.stringify({
+          type: "npcs",
+          target: { id: "t1", type: "npcs", label: "Marcus" },
+          attributes: { tldr: "Calmer now" },
+        }),
+      }),
+    );
+
+    render(<ApprovalActionCard actionId="act-1" />);
+
+    expect(await screen.findByText("Calmer now")).toBeInTheDocument();
+    expect(screen.queryByRole("textbox")).toBeNull();
+  });
+
+  it("approves body-less when nothing was edited", async () => {
+    findOne.mockResolvedValue(makeAction({ proposal: EDITABLE_PROPOSAL }));
+    approve.mockResolvedValue(undefined);
+
+    render(<ApprovalActionCard actionId="act-1" />);
+    await screen.findByTestId("approval-field-name");
+
+    fireEvent.click(approveButton());
+
+    await waitFor(() => expect(approve).toHaveBeenCalledTimes(1));
+    expect(approve).toHaveBeenCalledWith({ id: "act-1" });
+  });
+
+  it("approves with only the changed fields, the rich text as stringified blocks", async () => {
+    findOne.mockResolvedValue(makeAction({ proposal: EDITABLE_PROPOSAL }));
+    approve.mockResolvedValue(undefined);
+
+    render(<ApprovalActionCard actionId="act-1" />);
+    const name = await screen.findByTestId("approval-field-name");
+
+    fireEvent.change(name, { target: { value: "Marco" } });
+    act(() => editors[EDITOR_ID].onChange?.(EDITED_BLOCKS, false));
+    fireEvent.click(approveButton());
+
+    await waitFor(() => expect(approve).toHaveBeenCalledTimes(1));
+    expect(approve).toHaveBeenCalledWith({
+      id: "act-1",
+      edits: { name: "Marco", description: JSON.stringify(EDITED_BLOCKS) },
+    });
+  });
+
+  it("does not send a field typed back to its proposed value", async () => {
+    findOne.mockResolvedValue(makeAction({ proposal: EDITABLE_PROPOSAL }));
+    approve.mockResolvedValue(undefined);
+
+    render(<ApprovalActionCard actionId="act-1" />);
+    const name = await screen.findByTestId("approval-field-name");
+
+    fireEvent.change(name, { target: { value: "Marco" } });
+    fireEvent.change(name, { target: { value: "Marcus" } });
+    fireEvent.click(approveButton());
+
+    await waitFor(() => expect(approve).toHaveBeenCalledWith({ id: "act-1" }));
+  });
+
+  it("disables Approve while a proposed text or rich text is emptied, and enables it once refilled", async () => {
+    findOne.mockResolvedValue(makeAction({ proposal: EDITABLE_PROPOSAL }));
+
+    render(<ApprovalActionCard actionId="act-1" />);
+    const name = await screen.findByTestId("approval-field-name");
+
+    fireEvent.change(name, { target: { value: "   " } });
+    expect(approveButton()).toBeDisabled();
+    expect(screen.getByRole("button", { name: "features.assistant.approval.deny" })).toBeEnabled();
+    fireEvent.change(name, { target: { value: "Marco" } });
+    expect(approveButton()).toBeEnabled();
+
+    act(() => editors[EDITOR_ID].onChange?.([{ type: "paragraph", content: [] }], true));
+    expect(approveButton()).toBeDisabled();
+    act(() => editors[EDITOR_ID].onChange?.(DESCRIPTION_BLOCKS, false));
+    expect(approveButton()).toBeEnabled();
+  });
+
+  it("lets an originally empty editable field stay empty", async () => {
+    findOne.mockResolvedValue(
+      makeAction({
+        proposal: JSON.stringify({
+          type: "npcs",
+          attributes: { name: "Marcus", tldr: "" },
+          editable: { name: "text", tldr: "text" },
+        }),
+      }),
+    );
+
+    render(<ApprovalActionCard actionId="act-1" />);
+
+    expect(await screen.findByTestId("approval-field-tldr")).toHaveValue("");
+    expect(approveButton()).toBeEnabled();
+  });
+
+  it("edits a rich-text value that is not a BlockNote document as plain text", async () => {
+    findOne.mockResolvedValue(
+      makeAction({
+        proposal: JSON.stringify({
+          type: "npcs",
+          attributes: { name: "Marcus", description: "Line one\nLine two" },
+          editable: { description: "richtext" },
+        }),
+      }),
+    );
+    approve.mockResolvedValue(undefined);
+
+    render(<ApprovalActionCard actionId="act-1" />);
+
+    const box = (await screen.findByTestId("approval-field-description")) as HTMLTextAreaElement;
+    expect(box.tagName).toBe("TEXTAREA");
+    expect(box.value).toBe("Line one\nLine two");
+    expect(Object.keys(editors)).toHaveLength(0);
+
+    fireEvent.change(box, { target: { value: "Line one" } });
+    fireEvent.click(approveButton());
+    await waitFor(() => expect(approve).toHaveBeenCalledWith({ id: "act-1", edits: { description: "Line one" } }));
+  });
+
+  it("shows the saved values read-only with the status after an approve with edits", async () => {
+    findOne.mockResolvedValue(makeAction({ proposal: EDITABLE_PROPOSAL }));
+    approve.mockResolvedValue(undefined);
+
+    render(<ApprovalActionCard actionId="act-1" />);
+    const name = await screen.findByTestId("approval-field-name");
+    fireEvent.change(name, { target: { value: "Marco" } });
+    act(() => editors[EDITOR_ID].onChange?.(EDITED_BLOCKS, false));
+    fireEvent.click(approveButton());
+
+    expect(await screen.findByText("features.assistant.approval.status.executed")).toBeInTheDocument();
+    expect(screen.queryByRole("textbox")).toBeNull();
+    expect(screen.getByText("Marco")).toBeInTheDocument();
+    expect(screen.getByText("Owns the docks")).toBeInTheDocument();
+    expect(screen.getByText("A nerd with bouts of rage")).toBeInTheDocument();
+    expect(screen.queryByText("Marcus")).toBeNull();
+  });
+
+  it("denies without sending the edits", async () => {
+    findOne.mockResolvedValue(makeAction({ proposal: EDITABLE_PROPOSAL }));
+    deny.mockResolvedValue(undefined);
+
+    render(<ApprovalActionCard actionId="act-1" />);
+    const name = await screen.findByTestId("approval-field-name");
+    fireEvent.change(name, { target: { value: "Marco" } });
+    fireEvent.click(screen.getByRole("button", { name: "features.assistant.approval.deny" }));
+
+    await waitFor(() => expect(deny).toHaveBeenCalledWith({ id: "act-1" }));
+    expect(approve).not.toHaveBeenCalled();
+  });
+
+  it("passes the mention props to the rich-text editor", async () => {
+    findOne.mockResolvedValue(makeAction({ proposal: EDITABLE_PROPOSAL }));
+    const mentionSearchFn = vi.fn();
+    const mentionResolveFn = vi.fn();
+    const mentionSearchParams = { campaignId: "c1" };
+
+    render(
+      <ApprovalActionCard
+        actionId="act-1"
+        mentionSearchFn={mentionSearchFn}
+        mentionResolveFn={mentionResolveFn}
+        mentionSearchParams={mentionSearchParams}
+      />,
+    );
+    await screen.findByTestId("approval-field-description");
+
+    expect(editors[EDITOR_ID]).toMatchObject({
+      enableMentions: true,
+      mentionSearchFn,
+      mentionResolveFn,
+      mentionSearchParams,
+    });
   });
 });

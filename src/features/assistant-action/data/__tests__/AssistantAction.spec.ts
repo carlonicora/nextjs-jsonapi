@@ -138,6 +138,17 @@ describe("AssistantAction model", () => {
     expect(payload.data.id).toBe("action-1");
     expect(payload.data.attributes).toEqual({});
   });
+
+  it("puts the approve edits under attributes.edits", () => {
+    const action = new AssistantAction();
+    const payload = action.createJsonApi({ id: "action-1", edits: { name: "Marco", description: "[]" } });
+
+    expect(payload.data).toEqual({
+      type: "assistant-actions",
+      id: "action-1",
+      attributes: { edits: { name: "Marco", description: "[]" } },
+    });
+  });
 });
 
 describe("AssistantActionService", () => {
@@ -167,6 +178,27 @@ describe("AssistantActionService", () => {
     expect(call.method).toBe("POST");
     expect(call.endpoint).toBe("assistant-actions/action-1/approve");
     expect(call.input).toBeUndefined();
+  });
+
+  it("approve with no changed field stays body-less", async () => {
+    await AssistantActionService.approve({ id: "action-1", edits: {} });
+
+    const call = callApiMock.mock.calls[0][0];
+    expect(call.type.name).toBe("assistant-messages");
+    expect(call.input).toBeUndefined();
+  });
+
+  it("approve with edits POSTs them through the AssistantAction model and reads back an assistant message", async () => {
+    await AssistantActionService.approve({ id: "action-1", edits: { name: "Marco" } });
+
+    expect(callApiMock).toHaveBeenCalledTimes(1);
+    const call = callApiMock.mock.calls[0][0];
+    expect(call.type.name).toBe("assistant-actions");
+    expect(call.responseType.name).toBe("assistant-messages");
+    expect(call.method).toBe("POST");
+    expect(call.endpoint).toBe("assistant-actions/action-1/approve");
+    expect(call.input).toEqual({ id: "action-1", edits: { name: "Marco" } });
+    expect(call.overridesJsonApiCreation).toBeUndefined();
   });
 
   it("deny POSTs body-less to /deny typed as Modules.AssistantMessage", async () => {
