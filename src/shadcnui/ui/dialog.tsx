@@ -51,7 +51,13 @@ function DialogContent({
   const uiText = useUiText();
   return (
     <DialogPortal>
-      <DialogOverlay />
+      {/* forceRender: Base UI skips the backdrop entirely for a NESTED dialog
+          (`enabled: forceRender || !nested`). Without it a dialog opened from
+          inside a sheet or another dialog has no backdrop, so nothing dims the
+          parent popup, and a modal dialog only closes on a click on its own
+          backdrop, so clicking outside it does nothing. Same fix as SheetContent.
+          Non-nested dialogs are unaffected. */}
+      <DialogOverlay forceRender />
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
