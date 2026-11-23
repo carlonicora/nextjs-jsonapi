@@ -1,3 +1,9 @@
+## [6.45.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.45.0...v6.45.1) (2026-11-23)
+
+### 🐛 Bug Fixes
+
+* **dialog:** a dialog opened from a sheet or from another dialog now dims what is behind it and closes when you click outside it, like a dialog opened from the page ([38323a0](https://github.com/carlonicora/nextjs-jsonapi/commit/38323a0d09e272cb5806ba6ae5579be9d338d217))
+
 ## [6.45.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.44.1...v6.45.0) (2026-11-21)
 
 ### 🚀 Features
