@@ -4,8 +4,9 @@ import { useEffect } from "react";
 import { useNotificationContext, useSocketContext } from "../contexts";
 
 export function useNotificationSync() {
-  const { socketNotifications, clearSocketNotifications } = useSocketContext();
-  const { addSocketNotifications } = useNotificationContext();
+  const { socketNotifications, clearSocketNotifications, readNotificationIds, clearReadNotificationIds } =
+    useSocketContext();
+  const { addSocketNotifications, applyReadNotifications } = useNotificationContext();
 
   useEffect(() => {
     if (socketNotifications.length > 0) {
@@ -17,4 +18,10 @@ export function useNotificationSync() {
       }
     }
   }, [socketNotifications, addSocketNotifications, clearSocketNotifications]);
+
+  useEffect(() => {
+    if (readNotificationIds.length === 0) return;
+    applyReadNotifications(readNotificationIds);
+    clearReadNotificationIds();
+  }, [readNotificationIds, applyReadNotifications, clearReadNotificationIds]);
 }

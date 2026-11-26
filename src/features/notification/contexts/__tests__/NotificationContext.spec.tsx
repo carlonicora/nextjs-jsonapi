@@ -161,3 +161,48 @@ describe("NotificationContextProvider first render", () => {
     now.mockRestore();
   });
 });
+
+describe("NotificationContext.applyReadNotifications", () => {
+  beforeAll(() => {
+    configureI18n({
+      useRouter: () => stubRouter,
+      useTranslations: () => (key: string) => key,
+      usePathname: () => "/",
+      Link: (({ children }: { children: React.ReactNode }) => children) as any,
+    });
+  });
+
+  beforeEach(() => {
+    userMock.currentUser = undefined;
+    vi.mocked(NotificationService.findMany).mockReset();
+    vi.mocked(NotificationService.findMany).mockResolvedValue([] as never);
+  });
+
+  // Another tab marked these read: this tab still shows one of them unread, so it reloads.
+  it("reloads when one of the read ids is still unread here", async () => {
+    const { result } = renderHook(() => useNotificationContext(), { wrapper });
+    act(() => {
+      result.current.setNotifications([{ id: "n1", isRead: false } as any, { id: "n2", isRead: true } as any]);
+    });
+
+    await act(async () => {
+      result.current.applyReadNotifications(["n1"]);
+    });
+
+    expect(NotificationService.findMany).toHaveBeenCalledTimes(1);
+  });
+
+  // The tab that marked them has already reloaded its own list.
+  it("does nothing when every read id is already read here", async () => {
+    const { result } = renderHook(() => useNotificationContext(), { wrapper });
+    act(() => {
+      result.current.setNotifications([{ id: "n1", isRead: true } as any]);
+    });
+
+    await act(async () => {
+      result.current.applyReadNotifications(["n1", "unknown"]);
+    });
+
+    expect(NotificationService.findMany).not.toHaveBeenCalled();
+  });
+});

@@ -8,6 +8,9 @@ import { NotificationInterface } from "../features/notification/data";
 
 type Socket = ReturnType<typeof io>;
 
+/** Sent by the API after a mark-as-read, to every open connection of the user: `{ ids: string[] }`. */
+const NOTIFICATIONS_READ_EVENT = "notifications:read";
+
 interface UseSocketOptions {
   token: string;
   /** While true the socket is disconnected (no reconnect attempts); false connects it again. */
@@ -26,11 +29,14 @@ interface UseSocketReturn {
   isConnected: boolean;
   messages: any[];
   socketNotifications: NotificationInterface[];
+  /** Ids another tab or device marked as read, waiting to be applied to the notification list. */
+  readNotificationIds: string[];
   sendMessage: (event: string, data: any) => void;
   removeMessage: (index: number) => void;
   removeSocketNotification: (index: number) => void;
   clearMessages: () => void;
   clearSocketNotifications: () => void;
+  clearReadNotificationIds: () => void;
 }
 
 export function useSocket({ token, paused = false }: UseSocketOptions): UseSocketReturn {
@@ -41,6 +47,7 @@ export function useSocket({ token, paused = false }: UseSocketOptions): UseSocke
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [messages, setMessages] = useState<any[]>([]);
   const [socketNotifications, setSocketNotifications] = useState<NotificationInterface[]>([]);
+  const [readNotificationIds, setReadNotificationIds] = useState<string[]>([]);
 
   const socketRef = useRef<Socket | null>(null);
 
@@ -136,12 +143,19 @@ export function useSocket({ token, paused = false }: UseSocketOptions): UseSocke
       }
     };
 
+    const handleNotificationsRead = (data: any) => {
+      const ids = Array.isArray(data?.ids) ? data.ids.filter((id: unknown) => typeof id === "string") : [];
+      if (ids.length === 0) return;
+      setReadNotificationIds((prev) => [...prev, ...ids]);
+    };
+
     // Attach event listeners
     if (currentSocket) {
       currentSocket.on("connect", handleConnect);
       currentSocket.on("disconnect", handleDisconnect);
       currentSocket.on("message", handleMessage);
       currentSocket.on("notification", handleNotification);
+      currentSocket.on(NOTIFICATIONS_READ_EVENT, handleNotificationsRead);
     }
 
     return () => {
@@ -154,11 +168,13 @@ export function useSocket({ token, paused = false }: UseSocketOptions): UseSocke
           currentSocket.off("disconnect", handleDisconnect);
           currentSocket.off("message", handleMessage);
           currentSocket.off("notification", handleNotification);
+          currentSocket.off(NOTIFICATIONS_READ_EVENT, handleNotificationsRead);
         } else {
           currentSocket.off("connect", handleConnect);
           currentSocket.off("disconnect", handleDisconnect);
           currentSocket.off("message", handleMessage);
           currentSocket.off("notification", handleNotification);
+          currentSocket.off(NOTIFICATIONS_READ_EVENT, handleNotificationsRead);
 
           currentSocket.disconnect();
 
@@ -217,15 +233,21 @@ export function useSocket({ token, paused = false }: UseSocketOptions): UseSocke
     setSocketNotifications([]);
   };
 
+  const clearReadNotificationIds = () => {
+    setReadNotificationIds([]);
+  };
+
   return {
     socket,
     isConnected,
     messages,
     socketNotifications,
+    readNotificationIds,
     sendMessage,
     removeMessage,
     removeSocketNotification,
     clearMessages,
     clearSocketNotifications,
+    clearReadNotificationIds,
   };
 }

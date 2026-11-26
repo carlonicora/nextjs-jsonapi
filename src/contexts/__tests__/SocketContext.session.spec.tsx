@@ -8,11 +8,13 @@ const { useSocketMock } = vi.hoisted(() => ({
     isConnected: false,
     messages: [],
     socketNotifications: [],
+    readNotificationIds: [],
     sendMessage: () => {},
     removeMessage: () => {},
     removeSocketNotification: () => {},
     clearMessages: () => {},
     clearSocketNotifications: () => {},
+    clearReadNotificationIds: () => {},
   })),
 }));
 

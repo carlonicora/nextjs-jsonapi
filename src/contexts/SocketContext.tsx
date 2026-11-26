@@ -12,11 +12,13 @@ interface SocketContextProps {
   isConnected: boolean;
   messages: any[];
   socketNotifications: NotificationInterface[];
+  readNotificationIds: string[];
   sendMessage: (event: string, data: any) => void;
   removeMessage: (index: number) => void;
   removeSocketNotification: (index: number) => void;
   clearMessages: () => void;
   clearSocketNotifications: () => void;
+  clearReadNotificationIds: () => void;
 }
 
 const defaultContextValue: SocketContextProps = {
@@ -24,11 +26,13 @@ const defaultContextValue: SocketContextProps = {
   isConnected: false,
   messages: [],
   socketNotifications: [],
+  readNotificationIds: [],
   sendMessage: () => {},
   removeMessage: () => {},
   removeSocketNotification: () => {},
   clearMessages: () => {},
   clearSocketNotifications: () => {},
+  clearReadNotificationIds: () => {},
 };
 
 export const SocketContext = createContext<SocketContextProps>(defaultContextValue);

@@ -19,6 +19,7 @@ interface NotificationContextType {
   setNotifications: (notifications: NotificationInterface[]) => void;
   addNotification: (notification: NotificationInterface) => void;
   addSocketNotifications: (socketNotifications: NotificationInterface[]) => void;
+  applyReadNotifications: (ids: string[]) => void;
   loadNotifications: () => Promise<void>;
   generateNotification: (notification: NotificationInterface, closePopover: () => void) => ReactElement<any>;
   generateToastNotification: (
@@ -95,6 +96,10 @@ export const NotificationContextProvider = ({ children }: NotificationContextPro
     });
   }, []);
 
+  // Mirrors the latest list for applyReadNotifications without making it a dependency.
+  const notificationsRef = useRef(notifications);
+  notificationsRef.current = notifications;
+
   const loadNotifications = useCallback(async () => {
     // Coalesce concurrent callers into one request. Without this, the several
     // mount-time loaders fire before the first fetch resolves (lastLoaded is
@@ -124,6 +129,17 @@ export const NotificationContextProvider = ({ children }: NotificationContextPro
     inFlightRef.current = request;
     return request;
   }, []);
+
+  // Another tab or device marked these as read. Reload only when one of them is still
+  // unread here: the tab that marked them has already reloaded its own list.
+  const applyReadNotifications = useCallback(
+    (ids: string[]) => {
+      const readIds = new Set(ids);
+      const stale = notificationsRef.current.some((n) => readIds.has(n.id) && !n.isRead);
+      if (stale) loadNotifications();
+    },
+    [loadNotifications],
+  );
 
   // Initial load - runs once per session when user is available and not admin
   useEffect(() => {
@@ -217,6 +233,7 @@ export const NotificationContextProvider = ({ children }: NotificationContextPro
           setNotifications,
           addNotification,
           addSocketNotifications,
+          applyReadNotifications,
           loadNotifications,
           generateNotification,
           generateToastNotification,
