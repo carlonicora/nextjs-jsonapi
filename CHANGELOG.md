@@ -1,3 +1,9 @@
+## [6.45.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.45.1...v6.45.2) (2026-11-26)
+
+### 🐛 Bug Fixes
+
+* **notification:** reading notifications in one tab now clears the unread badge in every other open tab, browser and device of the same user; the socket context carries readNotificationIds from the API's notifications:read event, useNotificationSync applies them, and NotificationContext.applyReadNotifications reloads the list only when one of those ids is still unread there ([c716f89](https://github.com/carlonicora/nextjs-jsonapi/commit/c716f89520734c6800b53364dde89d081838447f))
+
 ## [6.45.1](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.45.0...v6.45.1) (2026-11-23)
 
 ### 🐛 Bug Fixes
