@@ -1,3 +1,9 @@
+## [6.47.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.46.0...v6.47.0) (2026-11-28)
+
+### 🚀 Features
+
+* **editor:** a BlockNote field shows its own text, at about its final height, while the editor code loads, so the page no longer grows and shifts under the pointer when the editor mounts; the server renders that text too ([89e0f62](https://github.com/carlonicora/nextjs-jsonapi/commit/89e0f621e5f9d8d039504c8d9293cdb37d737d6e))
+
 ## [6.46.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.45.2...v6.46.0) (2026-11-28)
 
 ### 🚀 Features
