@@ -8,6 +8,7 @@ const SharedContext = createContext<{
   title: {
     type: string | string[];
     element?: string;
+    elementSuffix?: ReactNode;
     functions?: ReactNode;
     titleActions?: ReactNode;
     prioritizeFunctions?: boolean;
@@ -23,6 +24,7 @@ interface SharedProviderProps {
     title: {
       type: string;
       element?: string;
+      elementSuffix?: ReactNode;
       functions?: ReactNode;
       titleActions?: ReactNode;
       prioritizeFunctions?: boolean;

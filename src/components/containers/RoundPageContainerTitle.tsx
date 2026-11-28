@@ -100,6 +100,7 @@ export function RoundPageContainerTitle({
               ) : (
                 <span className="truncate">{title.type}</span>
               )}
+              {title.element && title.elementSuffix}
             </div>
             {detailsToggle}
           </div>
@@ -115,8 +116,13 @@ export function RoundPageContainerTitle({
               {module && module.icon ? <module.icon className="text-primary h-6 w-6" /> : title.icon}
               {title.type}
             </div>
-            {title.element ? (
-              <h1 className={cn("text-primary w-full text-xl font-semibold")}>{title.element}</h1>
+            {title.element && title.elementSuffix ? (
+              <div className="flex w-full min-w-0 items-center gap-x-3">
+                <h1 className="text-primary text-xl font-semibold">{title.element}</h1>
+                {title.elementSuffix}
+              </div>
+            ) : title.element ? (
+              <h1 className="text-primary w-full text-xl font-semibold">{title.element}</h1>
             ) : (
               <div className="w-full" />
             )}

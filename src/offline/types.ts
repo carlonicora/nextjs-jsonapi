@@ -62,6 +62,11 @@ export type OfflineLocalWriteContext =
     })
   | (LocalWriteBase & { method: "DELETE"; resource: null; previous: StoredRecord["resource"] });
 
+/** One rank: a value, `null` for a missing value, or several values sharing the rank. */
+export type SortRankEntry = string | null | readonly (string | null)[];
+/** A rank sort field: the plain tuple (missing and unknown last), or the attribute it reads and its ranks. */
+export type SortRank = readonly string[] | { field: string; ranks: readonly SortRankEntry[] };
+
 export type OfflineTypeConfig = {
   module: ApiRequestDataTypeInterface;
   /**
@@ -84,8 +89,12 @@ export type OfflineTypeConfig = {
   searchFields?: string[];
   /** The server's order with no `orderBy` (default `updatedAt DESC`). */
   defaultOrderBy?: string;
-  /** `sort` fields ordered by rank (value → index in its tuple, unset after every rank), as the server's code-authored rank expressions. */
-  sortRanks?: Record<string, readonly string[]>;
+  /**
+   * `sort` fields ordered by rank, as the server's code-authored rank expressions: a plain tuple
+   * ranks by the value's index (missing and unknown last); `{ field, ranks }` reads `field` and
+   * ranks a missing value by the `null` entry.
+   */
+  sortRanks?: Record<string, SortRank>;
   /** The fields `sort` may name on the type's lists (default: any identifier); any other answers 400 "Invalid sort". */
   sortFields?: readonly string[];
   /**

@@ -10,6 +10,8 @@ import type {
   OfflineRootKind,
   OfflineRoute,
   OfflineTypeConfig,
+  SortRank,
+  SortRankEntry,
 } from "./types";
 
 const DEFAULT_PAGE_SIZE = 25;
@@ -177,8 +179,11 @@ export type ListOptions = {
   searchFields?: string[];
   /** The order with no `orderBy` (default `updatedAt DESC`, the server's). */
   defaultOrderBy?: string;
-  /** `sort` fields ordered by rank: the index of the value in its tuple, a missing or unknown value after every rank. */
-  sortRanks?: Record<string, readonly string[]>;
+  /**
+   * `sort` fields ordered by rank: a plain tuple ranks by the value's index (a missing or unknown
+   * value after every rank); `{ field, ranks }` reads `field` and ranks a missing value by the `null` entry.
+   */
+  sortRanks?: Record<string, SortRank>;
   /** The fields `sort` may name (default: any identifier); any other answers 400 "Invalid sort", as the server's `parseSort`. */
   sortFields?: readonly string[];
 };
@@ -242,19 +247,42 @@ const SORT_KEY = /^(-?)([A-Za-z_][A-Za-z0-9_]*)$/;
 /** Fields the server never compares as lowercased text (`caseInsensitiveSortKey`). */
 const NEVER_TEXT_FIELDS: readonly string[] = ["id", "createdAt", "updatedAt"];
 
+/** The `sortRanks` entry of a sort key, read as an own property only. */
+function sortRankFor(field: string, options: ListOptions): SortRank | undefined {
+  return options.sortRanks && Object.prototype.hasOwnProperty.call(options.sortRanks, field)
+    ? options.sortRanks[field]
+    : undefined;
+}
+
+/** The attribute a sort key reads: a `{ field }` rank entry reads that attribute, any other key its own name. */
+function sortSource(field: string, options: ListOptions): string {
+  const rank = sortRankFor(field, options);
+  return rank && isFieldRank(rank) ? rank.field : field;
+}
+
+/** A `{ field, ranks }` rank entry, as opposed to a plain tuple. */
+function isFieldRank(rank: SortRank): rank is { field: string; ranks: readonly SortRankEntry[] } {
+  return "field" in rank;
+}
+
+function rankEntryMatches(entry: SortRankEntry, key: string | null): boolean {
+  return typeof entry === "string" || entry === null ? entry === key : entry.includes(key);
+}
+
+function rankOf(value: unknown, rank: SortRank): number {
+  if (!isFieldRank(rank)) {
+    const index = typeof value === "string" ? rank.indexOf(value) : -1;
+    return index === -1 ? rank.length : index;
+  }
+  const key = typeof value === "string" ? value : null;
+  const index = rank.ranks.findIndex((entry) => rankEntryMatches(entry, key));
+  return index === -1 ? rank.ranks.length : index;
+}
+
 /** One `sort` key ascending, as the server's ORDER BY key for it compares. */
 function compareSortKey(left: unknown, right: unknown, field: string, options: ListOptions): number {
-  const ranks =
-    options.sortRanks && Object.prototype.hasOwnProperty.call(options.sortRanks, field)
-      ? options.sortRanks[field]
-      : undefined;
-  if (ranks) {
-    const rank = (value: unknown) => {
-      const index = typeof value === "string" ? ranks.indexOf(value) : -1;
-      return index === -1 ? ranks.length : index;
-    };
-    return rank(left) - rank(right);
-  }
+  const ranks = sortRankFor(field, options);
+  if (ranks) return rankOf(left, ranks) - rankOf(right, ranks);
   if (NEVER_TEXT_FIELDS.includes(field)) return compareAscending(left, right);
   const lower = (value: unknown) => (typeof value === "string" ? value.toLowerCase() : value);
   return compareAscending(lower(left), lower(right));
@@ -277,7 +305,8 @@ function sortRecords(records: StoredRecord[], sort: string, options: ListOptions
   }
   return [...records].sort((left, right) => {
     for (const { field, desc } of keys) {
-      const order = compareSortKey(attributeOf(left, field), attributeOf(right, field), field, options);
+      const source = sortSource(field, options);
+      const order = compareSortKey(attributeOf(left, source), attributeOf(right, source), field, options);
       if (order !== 0) return desc ? -order : order;
     }
     return compareAscending(left.id, right.id);

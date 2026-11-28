@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { buildGenericRoutes, linksOfKind, listAnswer } from "../generic-answers";
+import { buildGenericRoutes, linksOfKind, listAnswer, type ListOptions } from "../generic-answers";
 import { matchRoute } from "../router";
 import { setOfflineState } from "../state";
 import type { DeviceStore } from "../store/DeviceStore";
@@ -251,6 +251,53 @@ describe("generic answers", () => {
 
       expect(result.status).toBe(400);
       expect(result.body.errors[0].detail).toBe("Invalid orderBy");
+    });
+
+    describe("a { field, ranks } rank entry", () => {
+      const FIELD_RANKS: ListOptions = {
+        sortRanks: {
+          status: { field: "lifeState", ranks: [[null, "alive"], "missing", "captive", "departed", "dead"] },
+          group: {
+            field: "lifeState",
+            ranks: [
+              [null, "alive", "missing", "captive"],
+              ["departed", "dead"],
+            ],
+          },
+        },
+        sortFields: ["status", "group", "name"],
+      };
+
+      const stateRecords = () => [
+        ranked("a", { name: "Zed" }),
+        ranked("b", { name: "Ann", lifeState: "missing" }),
+        ranked("c", { name: "Bo", lifeState: "dead" }),
+        ranked("d", { name: "Cy", lifeState: "departed" }),
+        ranked("e", { name: "Al", lifeState: "captive" }),
+        ranked("f", { name: "Eve", lifeState: "alive" }),
+      ];
+
+      const stateIds = async (query: string) => {
+        const result = await listAnswer(
+          { request: { method: "GET", path: "x", query: new URLSearchParams(query) }, params: {}, store },
+          stateRecords(),
+          FIELD_RANKS,
+        );
+        expect(result.status).toBe(200);
+        return result.body.data.map((r: { id: string }) => r.id);
+      };
+
+      it("reads the named attribute and ranks a missing value by the null entry, ties by id", async () => {
+        expect(await stateIds("sort=status&fetchAll=true")).toEqual(["a", "f", "b", "e", "d", "c"]);
+      });
+
+      it("groups values sharing a rank, then the next key", async () => {
+        expect(await stateIds("sort=group,name&fetchAll=true")).toEqual(["e", "b", "f", "a", "c", "d"]);
+      });
+
+      it("a descending entry reverses the ranks", async () => {
+        expect(await stateIds("sort=-status&fetchAll=true")).toEqual(["c", "d", "e", "b", "a", "f"]);
+      });
     });
 
     it("the generic root list honours OfflineTypeConfig.sortRanks", async () => {
