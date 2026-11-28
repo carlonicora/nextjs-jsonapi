@@ -1,3 +1,9 @@
+## [6.46.0](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.45.2...v6.46.0) (2026-11-28)
+
+### 🚀 Features
+
+* **round-page:** the page title takes elementSuffix, shown next to the record name in the header (for a status badge, say); offline sortRanks also accept { field, ranks }, which sorts a key by another attribute, ranks a missing value by its null entry and lets several values share one rank ([3395679](https://github.com/carlonicora/nextjs-jsonapi/commit/3395679b2524bfa861bc88ff295f3b898aeb3b24))
+
 ## [6.45.2](https://github.com/carlonicora/nextjs-jsonapi/compare/v6.45.1...v6.45.2) (2026-11-26)
 
 ### 🐛 Bug Fixes
